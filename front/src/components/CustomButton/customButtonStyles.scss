@@ -1,0 +1,26 @@
+@use 'src/styles/vars';
+
+.custom-button {
+    font-weight: 500;
+    color: #fff;
+    background-color: vars.$primary-color;
+    border: none;
+    width: 40%;
+    height: 15%;  
+    border-radius: 27px;
+
+    &:hover {
+        background-color: lighten(vars.$primary-color, 10%);
+        border-color: lighten(vars.$primary-color, 10%);
+    }
+
+    &:focus {
+        box-shadow: vars.$primary-color;
+    }
+
+    &:active {
+        background-color: darken(vars.$primary-color, 10%);
+        border-color: darken(vars.$primary-color, 10%);
+    }
+
+}
