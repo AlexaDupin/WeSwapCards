@@ -1,16 +1,11 @@
 @use 'src/styles/vars';
 
-.login {
+.register {
     padding-top: 7rem !important;
 
     &-title {
         font-size: 1rem;
     }
-
-}
-
-.form-label {
-    display: flex;
 }
 
 .link {

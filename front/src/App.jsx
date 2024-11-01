@@ -1,5 +1,9 @@
 import Header from './components/Header/Header';
 import Login from './components/Login/Login';
+import Register from './components/Register/Register';
+import Menu from './components/Menu/Menu';
+import Report from './components/Report/Report';
+
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -27,7 +31,27 @@ function App() {
               element={(
                 <Login />
           )}
-          />          
+          />  
+          <Route
+              path="/register"
+              element={(
+                <Register />
+          )}
+          />
+          <Route
+              path="/menu"
+              element={(
+                <Menu 
+                />
+          )}
+          />
+          <Route
+              path="/report"
+              element={(
+                <Report 
+                />
+          )}
+          />           
       </Routes>
     </div>
   );

@@ -1,22 +1,27 @@
-import React, {useState} from 'react';
+import React from 'react';
 
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 import './customButtonStyles.scss';
 
-function CustomButton() {
-  const [text, setText] = useState('Login');
+function CustomButton({text, onClick}) {
 
   return (
     <button 
-        className="custom-button">
+        className="custom-button"
+        onClick={onClick}>
       {text}
     </button>     
   );
 }
 
 CustomButton.propTypes = {
+  text: PropTypes.string.isRequired,
+  onClick: PropTypes.func,
+};
 
+CustomButton.defaultProps = {
+  onClick: () => {},
 };
 
 export default React.memo(CustomButton);

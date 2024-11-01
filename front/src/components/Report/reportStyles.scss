@@ -1,0 +1,18 @@
+.report {
+    padding-top: 7rem !important;
+}
+
+.report-label {
+    display: block;
+    text-align: center;
+}
+
+.report-icon {
+    width: 100%;
+    height: 70%; 
+    padding: 1rem;
+
+    &-title {
+        font-size: 0.9rem !important;
+    }
+}
