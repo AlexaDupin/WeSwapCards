@@ -1,0 +1,12 @@
+### test home page
+
+POST http://localhost:3000/api/v1/login
+Content-Type: application/json
+
+{ 
+    "email" : "alexa.dupin+wecards@gmail.com",
+    "password" : "T1wC7,2QwT%a.5s4"
+}
+
+###
+
