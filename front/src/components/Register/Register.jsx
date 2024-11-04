@@ -57,19 +57,6 @@ function Register() {
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formGroupEmail">
-                  <Form.Label className="form-label">Username</Form.Label>
-                  <InputGroup className="">
-                      <InputGroup.Text>
-                          <PersonFill />
-                      </InputGroup.Text>
-                      <FormControl
-                          placeholder="Username"
-                          aria-label="Explorer's username"
-                          aria-describedby="basic-addon2" />
-                  </InputGroup>
-                </Form.Group>
-
-                <Form.Group className="mb-3" controlId="formGroupEmail">
                   <Form.Label className="form-label">Password</Form.Label>
                   <InputGroup className="justify-content-end">
                       <InputGroup.Text>
@@ -135,7 +122,9 @@ function Register() {
                     <Link to="/login" className="link">Already have an account?</Link>
 				</Card.Text>
 
-                <CustomButton />
+                <CustomButton 
+                  text="Register"
+                  />
               </Card.Body>
           </Card>
     </Form>

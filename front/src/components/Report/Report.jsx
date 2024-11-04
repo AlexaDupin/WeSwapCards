@@ -19,11 +19,12 @@ import {Icon1Square, Icon2Square, Icon3Square,Icon4Square,
 import './reportStyles.scss';
 
 function Report() {
-  const [iconClicked, setIconClicked] = useState(false);
+  const [checked, setChecked] = useState(false);
 
-  const handleIconClick = () => {
-    setIconClicked(!iconClicked);
+  const handleCheckboxChange = () => {
+    setChecked(!checked);
   };
+
   return (
     <Container className="report">
     <Form className="">
@@ -39,9 +40,110 @@ function Report() {
       <Form.Group className="mb-3" controlId="formGroupEmail">
         <Form.Label className="report-label">Click on the cards you have</Form.Label>
 
+        <Row className="d-flex g-3">
+        <Col xs={4}>
+          <Card
+            className="report-card"
+            onClick={handleCheckboxChange}
+            style={{ cursor: 'pointer' }}
+          >
+            <Icon1Square className="report-icon" />
+            <Card.Title className="report-icon-title">Brussels1</Card.Title>
+          </Card>
+        </Col>
+
+        <Col xs={4}>
+        <Card
+            className="report-card"
+            onClick={handleCheckboxChange}
+            style={{ cursor: 'pointer' }}
+          >          <Icon2Square className="report-icon" />
+            <Card.Title className="report-icon-title">Brussels2</Card.Title>
+        </Card>
+        </Col>
+
+        <Col xs={4}>
+        <Card
+            className="report-card"
+            onClick={handleCheckboxChange}
+            style={{ cursor: 'pointer' }}
+          >          <Icon3Square className="report-icon" />
+            <Card.Title className="report-icon-title">Brussels3</Card.Title>
+        </Card>
+        </Col>
+
+        <Col xs={4}>
+        <Card
+            className="report-card"
+            onClick={handleCheckboxChange}
+            style={{ cursor: 'pointer' }}
+          >          <Icon4Square className="report-icon" />
+            <Card.Title className="report-icon-title">Brussels4</Card.Title>
+        </Card>
+        </Col>
+
+        <Col xs={4}>
+        <Card
+            className="report-card"
+            onClick={handleCheckboxChange}
+            style={{ cursor: 'pointer' }}
+          >          <Icon5Square className="report-icon" />
+            <Card.Title className="report-icon-title">Brussels5</Card.Title>
+        </Card>
+        </Col>
+
+        <Col xs={4}>
+        <Card
+            className="report-card"
+            onClick={handleCheckboxChange}
+            style={{ cursor: 'pointer' }}
+          >          <Icon6Square className="report-icon" />
+            <Card.Title className="report-icon-title">Brussels6</Card.Title>
+        </Card>
+        </Col>
+
+        <Col xs={4}>
+        <Card
+            className="report-card"
+            onClick={handleCheckboxChange}
+            style={{ cursor: 'pointer' }}
+          >          <Icon7Square className="report-icon" />
+            <Card.Title className="report-icon-title">Brussels7</Card.Title>
+        </Card>
+        </Col>
+
+        <Col xs={4}>
+        <Card
+            className="report-card"
+            onClick={handleCheckboxChange}
+            style={{ cursor: 'pointer' }}
+          >          <Icon8Square className="report-icon" />
+            <Card.Title className="report-icon-title">Brussels8</Card.Title>
+        </Card>
+        </Col>
+
+        <Col xs={4}>
+          <Card
+            className="report-card"
+            onClick={handleCheckboxChange}
+            style={{ cursor: 'pointer' }}
+          >          <Icon9Square className="report-icon" />
+            <Card.Title className="report-icon-title">Brussels9</Card.Title>
+        </Card>
+        </Col>
+
+        </Row>
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="formGroupEmail">
+        <Form.Label className="report-label">Click on the cards you have duplicates for (2 or more)</Form.Label>
         <Row className="g-3">
         <Col xs={4}>
-        <Card>
+        <Card
+          className="report-card"
+          onClick={handleCheckboxChange}
+          style={{ cursor: 'pointer' }}
+        >
           <Icon1Square className="report-icon" />
           <Card.Title className="report-icon-title">Brussels1</Card.Title>
         </Card>
@@ -105,17 +207,9 @@ function Report() {
 
         </Row>
       </Form.Group>
-
-      <Form.Group className="mb-3" controlId="formGroupEmail">
-        <Form.Label className="report-label">Click on the cards you have duplicates for</Form.Label>
-        <Form.Select aria-label="Select a place">
-          <option>Select</option>
-          <option value="1">Brussels</option>
-        </Form.Select>
-      </Form.Group>
     
       <CustomButton 
-        text="Login"
+        text="Submit these cards"
       />
 
     </Form>

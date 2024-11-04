@@ -16,3 +16,23 @@
         font-size: 0.9rem !important;
     }
 }
+
+.report-card {
+    border-color: rgba(240, 122, 26, 1) !important;
+    border-width: medium !important;
+
+    &:checked {
+        border-color: rgb(22, 188, 144) !important;
+    }
+}
+
+
+@media (min-width: 768px) { /* This targets below the md breakpoint */
+    .report {
+        width: 50% !important; /* Reduce the width */
+
+        &-card {
+            width: 60%;
+        }
+    }
+}
