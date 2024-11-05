@@ -9,11 +9,13 @@ import axios from 'axios';
 
 import CustomButton from '../CustomButton/CustomButton';
 
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 import './menuStyles.scss';
 
-function Menu() {
+function Menu({
+    name
+}) {
     const navigate = useNavigate();
     const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -25,7 +27,7 @@ function Menu() {
 
   return (
     <Container className="menu">
-    <h1 className="menu-title pb-5">Welcome Alexa!</h1>
+    <h1 className="menu-title pb-5">Welcome {name}!</h1>
     <Container>
         <Row className="g-5">
             <Col sm={12}>
@@ -60,7 +62,7 @@ function Menu() {
 }
 
 Menu.propTypes = {
-
+    name: PropTypes.string,
 };
 
 export default React.memo(Menu);

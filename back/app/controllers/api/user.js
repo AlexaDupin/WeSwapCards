@@ -5,7 +5,8 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
-const datamapper = require("../../models/datamapper");
+// const datamapper = require("../../models/datamapper");
+const datamapper = require("../../models/user");
 
 const userController  = {
   // Sign up
@@ -19,7 +20,7 @@ const userController  = {
         password,
       })
 
-      console.log('Supabase response:', response); // Log the entire response
+      // console.log('Supabase response:', response); // Log the entire response
       const { user, session, error } = response.data;
       console.log('SIGN UP data', response.data);
 
@@ -34,27 +35,29 @@ const userController  = {
         res.status(500).send(error);
     }
 },
-// Create new user after retrieving username
-async createUser(req, res) {
-  const token = req.headers['authorization']?.split(' ')[1]; // Extract token from Authorization header
+  // Create new user after retrieving username
+  async createUser(req, res) {
+    // const token = req.headers['authorization']?.split(' ')[1]; // Extract token from Authorization header
+    // const token = req.headers['authorization']; // Extract token from Authorization header
 
-  // Passing through body
-  const userUIID = req.body.userUIID;
-  console.log("CTRL getUserByUIID userUIID", userUIID);
+    // Passing through body
+    const userUID = req.body.userUID;
+    const name = req.body.username;
+    console.log("CTRL req.body", req.body);
 
-  if (!token) {
-    // return res.redirect('/'); // Redirect to the login page if no token
-    return res.status(401).json({ message: 'Unauthorized - NO token' });
-  }
+    // if (!token) {
+    //   // return res.redirect('/'); // Redirect to the login page if no token
+    //   return res.status(401).json({ message: 'Unauthorized - NO token' });
+    // }
 
-  try {
-    const user = await datamapper.getExplorerInfo(userUIID);
-    console.log("CTRL user", user);
-    res.json(user);
-  } catch (error) {
-    res.status(500).send(error);
-  }
- },
+    try {
+      const user = await datamapper.createExplorer(userUID, name);
+      console.log("CTRL user", user);
+      res.json(user);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  },
   // Sign in
   async login(req, res) {
     const { email, password } = req.body;
@@ -86,7 +89,6 @@ async createUser(req, res) {
       res.status(500).send(error);
     }
   },
-
   // Sign out
   async signOut() {
       console.log("SUPA SIGNOUT");
@@ -96,8 +98,10 @@ async createUser(req, res) {
 
   // Authorization middleware
   async authMiddleware(req, res, next) {
-    const token = req.headers['authorization']?.split(' ')[1]; // Extract token from Authorization header
+    // const token = req.headers['authorization']?.split(' ')[1]; // Extract token from Authorization header
+    const token = req.headers['authorization']; // Extract token from Authorization header   
     console.log('TOKEN MDW', token);
+
     if (!token) {
       // return res.redirect('/'); // Redirect to the login page if no token
       // return res.status(401).json({ message: 'Unauthorized - NO token' });
@@ -131,7 +135,7 @@ async createUser(req, res) {
     const response = await supabase.auth.getUser(token);
     // console.log('RESPONSE GET U', response);
     const user = response.data.user;
-    
+
     console.log('USER DATA getUSer', user);
 
     if (!user) {
@@ -139,14 +143,14 @@ async createUser(req, res) {
       return res.redirect('/'); // Redirect to the login page if token is invalid
     }
 
-    res.status(200).json(user);             
+    res.status(200).json(user);
   },
-  async getUserByUIID(req, res) {
+  async getUserByUID(req, res) {
     const token = req.headers['authorization']?.split(' ')[1]; // Extract token from Authorization header
 
     // Passing through body
-    const userUIID = req.body.userUIID;
-    console.log("CTRL getUserByUIID userUIID", userUIID);
+    const userUID = req.body.userUID;
+    console.log("CTRL getUserByUID userUID", userUID);
 
     if (!token) {
       // return res.redirect('/'); // Redirect to the login page if no token
@@ -154,7 +158,7 @@ async createUser(req, res) {
     }
 
     try {
-      const user = await datamapper.getExplorerInfo(userUIID);
+      const user = await datamapper.getExplorerInfo(userUID);
       console.log("CTRL user", user);
       res.json(user);
     } catch (error) {

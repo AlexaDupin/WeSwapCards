@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
             app.initExplorerCards();
         }
         // window.addEventListener('DOMContentLoaded', userModule.fetchUserData);
-        // window.addEventListener('DOMContentLoaded', userModule.fetchUserData(explorerUIID));
+        // window.addEventListener('DOMContentLoaded', userModule.fetchUserData(explorerUID));
         // window.addEventListener('DOMContentLoaded', menuModule.initializeMenu);
     }
     window.scrollTo(0, 0);

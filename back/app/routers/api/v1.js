@@ -10,8 +10,12 @@ const menuController = require('../../controllers/api/menu');
 const router = express.Router();
 
 router.post('/register', userController.signUp);
-router.post('/register/user', userController.createUser);
+router.post('/register/user', userController.authMiddleware, userController.createUser);
 router.post('/login', userController.login);
+
+router.get('/signout', userController.signOut);
+
+
 
 
 // OLD ROUTES //
@@ -21,15 +25,15 @@ router.get('/menu', menuController.getMenu);
 
 /// TEST
 router.post('/menu', menuController.getMenu);
+// router.get('/menu', userController.authMiddleware, menuController.getMenu);
 
 router.get('/user', userController.authMiddleware, userController.getUser);
-router.post('/user', userController.getUserByUIID);
+router.post('/user', userController.getUserByUID);
 
 router.get('/cards/:placeId', declareController.getCardsFromPlace);
 router.get('/cards/:placeId/:explorerId', declareController.getExplorerCardsFromOnePlace);
 router.get('/cards/:placeId/:explorerId/duplicates', declareController.getDuplicateCards);
 // router.get('/cards/:cardId/:explorerId/duplicate', explorerCardsController.getDuplicateStatus);
-router.get('/signout', userController.signOut);
 
 // router.get('/opportunities/:placeId/:explorerId', opportunitiesController.getOpportunitiesCountForOnePlaceForOneExplorer);
 

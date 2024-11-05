@@ -14,34 +14,42 @@ import CustomButton from '../../CustomButton/CustomButton';
 
 import { PersonFill } from "react-bootstrap-icons";
 
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 import './userStyles.scss';
 
-function User() {
+function User({
+    userUID,
+    setName
+}
+) {
     const { register, handleSubmit, formState: { errors } } = useForm({
       defaultValues: {
-        email: "",
-        password: "",
+        username: "",
       },
     }); 
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
+    const token = localStorage.getItem('token'); // Retrieve token from local storage
 
-    const onSubmit = (data) => {
-      axios
-        .post(
-          `${baseUrl}/register/user`,
-          data,
-        )
-        .then((response) => {
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log(error.data);
-        });
-      navigate('/menu');
+    const onSubmit = async (data) => {
+        try {
+            const response = await axios.post(
+              `${baseUrl}/register/user`,
+              { userUID, ...data },
+              {headers: {
+                authorization: token,
+              },}
+            )
+              console.log("DM user response", response.data);
+              setName(response.data.name);
+
+              navigate('/menu');
+
+        } catch (error) {
+            console.log(error.data);
+        }
     };
 
   return (
@@ -86,7 +94,7 @@ function User() {
 }
 
 User.propTypes = {
-
+    setName: PropTypes.func,
 };
 
 export default React.memo(User);

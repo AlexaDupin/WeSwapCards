@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 import Header from './components/Header/Header';
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
@@ -17,6 +19,12 @@ import './App.css';
 import './App.scss';
 
 function App() {
+  const [userUID, setUserUID] = useState('');
+  const [name, setName] = useState('');
+
+  console.log("APP userUID", userUID);
+  console.log("APP name", name);
+
   return (
     <div className="App">
       <Header 
@@ -38,19 +46,25 @@ function App() {
           <Route
               path="/register"
               element={(
-                <Register />
+                <Register 
+                  setUserUID={setUserUID}
+                />
           )}
           />
           <Route
               path="/register/user"
               element={(
-                <User />
+                <User 
+                  userUID={userUID}
+                  setName={setName}
+                />
           )}
           />
           <Route
               path="/menu"
               element={(
                 <Menu 
+                  name={name}
                 />
           )}
           />

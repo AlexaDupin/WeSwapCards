@@ -15,14 +15,21 @@ import CustomButton from '../CustomButton/CustomButton';
 
 import {KeyFill, Eye, EyeSlash, At} from "react-bootstrap-icons";
 
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 import './loginStyles.scss';
 
-function Login() {
+function Login(
+  // {
+  // setToken,
+  // setIsLogged
+// }
+) {
     const [showPassword, setShowPassword] = useState(false)
     const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
+    const [errMsg, setErrMsg] = useState('');
+    let userUID = '';
 
     const { register, handleSubmit, formState: { errors } } = useForm({
       defaultValues: {
@@ -31,29 +38,47 @@ function Login() {
       },
     }); 
 
-	// const [showEye, setShowEye] = useState(true)
+  const onSubmit = async (data) => {
 
-// 	const handleChange = (event) => {
-// 		if (event.target.value !== ""){
-// 			setShowEye(true)
-// 		} else {
-// 			setShowEye(false)
-// 		}
-//   }
-
-  const onSubmit = (data) => {
-    axios
-      .post(
+    try {
+      const response = await axios.post(
         `${baseUrl}/login`,
         data,
       )
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.log(error.data);
-      });
-    navigate('/menu');
+      
+      console.log(response);
+        
+      // Retrieve token from response
+      const token = response.data.session.access_token;
+
+      // Error if undefined is returned meaning that we don't have credentials in database
+      if (token === undefined) {
+      setErrMsg('Your logins do not exist.');
+      localStorage.clear();
+      navigate('/login');
+      return;
+      }
+      // If OK, set token in props, activate IsLogged and redirect to menu
+      localStorage.setItem('token', token); // Save the token in local storage
+      // setToken(token);
+      // setIsLogged(true);
+
+      userUID = response.data.user.id;
+      console.log('userUID', userUID)
+
+      navigate('/menu');
+
+    } catch (error) {
+      if (!error?.response) {
+        setErrMsg('The server did not respond.');
+        console.log(errMsg);
+      }
+      else {
+        setErrMsg('The logins do not match. Try again.');
+        console.log(errMsg);
+      }
+    }
+    
   };
 
 	const onMouseDown = () => {
@@ -155,7 +180,8 @@ function Login() {
 }
 
 Login.propTypes = {
-
+  // setToken: PropTypes.func.isRequired,
+  // setIsLogged: PropTypes.func.isRequired,
 };
 
 export default React.memo(Login);

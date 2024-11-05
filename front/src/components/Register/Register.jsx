@@ -13,13 +13,15 @@ import axios from 'axios';
 
 import CustomButton from '../CustomButton/CustomButton';
 
-import {KeyFill, PersonFill, Eye, EyeSlash, At} from "react-bootstrap-icons";
+import {KeyFill, Eye, EyeSlash, At} from "react-bootstrap-icons";
 
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 import './registerStyles.scss';
 
-function Register() {
+function Register({
+  setUserUID
+}) {
     const { register, handleSubmit, watch, formState: { errors } } = useForm({
       defaultValues: {
         email: "",
@@ -30,33 +32,31 @@ function Register() {
     const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
 
-    const onSubmit = (data) => {
-      axios
-        .post(
+    const onSubmit = async (data) => {
+
+      try {
+        const response = await axios.post(
           `${baseUrl}/register`,
           data,
         )
-        .then((response) => {
           console.log(response.data);
-        })
-        .catch((error) => {
-          console.log(error.data);
-        });
-      navigate('/register/user');
+
+          // Retrieve token from response and store it in local storage
+          const token = response.data.session.access_token;
+          localStorage.setItem('token', token); // Save the token in local storage
+          setUserUID(response.data.user.id);
+
+          navigate('/register/user');
+
+      } catch (error) {
+        console.log(error.data);
+      }
     };
 
     const password = useRef({});
     password.current = watch('password', '');
 
-	//   const handleChange = (event) => {
-	// 	if (event.target.value !== ""){
-	// 		setShowEye(true)
-	// 	} else {
-	// 		setShowEye(false)
-	// 	}
-  // }
     const [showPassword, setShowPassword] = useState(false);
-    // const [showEye, setShowEye] = useState(false);
 
 	  const onMouseDown = () => {
 		setShowPassword(true)
@@ -192,7 +192,7 @@ function Register() {
 }
 
 Register.propTypes = {
-
+  setUserUID: PropTypes.func,
 };
 
 export default React.memo(Register);

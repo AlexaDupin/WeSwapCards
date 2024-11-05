@@ -1,9 +1,9 @@
 const userModule = {    
     page: window.location.pathname,
 
-    fetchUserData: async function(userUIID) {
+    fetchUserData: async function(userUID) {
         const token = localStorage.getItem('token'); // Retrieve token from local storage
-        console.log("FETCH USER DATA", userUIID);
+        console.log("FETCH USER DATA", userUID);
         
         if (!token) {
             console.error('No token found, please log in.');
@@ -18,7 +18,7 @@ const userModule = {
                     'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({userUIID})
+                body: JSON.stringify({userUID})
             });
     
             if (response.ok) {

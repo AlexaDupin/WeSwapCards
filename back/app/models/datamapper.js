@@ -174,14 +174,14 @@ module.exports = {
 
         return result.rows;
     },
-    async getExplorerInfo(userUIID) {
+    async getExplorerInfo(userUID) {
         console.log("ENTERING DATAMAPPER");
         const preparedQuery = {
             text: `
             SELECT * FROM explorer 
             WHERE userid = $1
             `,
-            values: [userUIID],
+            values: [userUID],
         };
         const result = await client.query(preparedQuery);
         console.log("result.rows DM", result.rows);

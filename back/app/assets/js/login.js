@@ -1,7 +1,7 @@
 const loginModule = {
     handleLoginForm: async function(event) {
         event.preventDefault();
-        let userUIID = '';
+        let userUID = '';
 
         const email = document.querySelector('input[name="email"]').value;
         const password = document.querySelector('input[name="password"]').value;
@@ -29,11 +29,11 @@ const loginModule = {
             } else if (token) {
                 localStorage.setItem('token', token); // Save the token in local storage
 
-                userUIID = data.user.id;
-                console.log(userUIID);
+                userUID = data.user.id;
+                console.log(userUID);
 
-                // Pass userUIID to fetch matching explorerId in database
-                const response = await userModule.fetchUserData(userUIID);
+                // Pass userUID to fetch matching explorerId in database
+                const response = await userModule.fetchUserData(userUID);
                 console.log("RESPONSE", response);
                 const explorerId = response[0].id;
                 console.log("explorerId", explorerId);
