@@ -5,9 +5,16 @@ const opportunitiesController = require('../../controllers/api/opportunities');
 const explorerCardsController = require('../../controllers/api/explorerCards');
 const userController = require('../../controllers/api/user');
 const menuController = require('../../controllers/api/menu');
-const websiteController = require('../../controllers/website');
+// const websiteController = require('../../controllers/website');
 
 const router = express.Router();
+
+router.post('/register', userController.signUp);
+router.post('/register/user', userController.createUser);
+router.post('/login', userController.login);
+
+
+// OLD ROUTES //
 
 // router.get('/menu', userController.authMiddleware, menuController.getMenu);
 router.get('/menu', menuController.getMenu);
@@ -26,7 +33,6 @@ router.get('/signout', userController.signOut);
 
 // router.get('/opportunities/:placeId/:explorerId', opportunitiesController.getOpportunitiesCountForOnePlaceForOneExplorer);
 
-router.post('/login', userController.login);
 router.post('/:explorerId/declare', declareController.addCardsToExplorer);
 router.get('/:explorerId/opportunities', opportunitiesController.handleOpportunities);
 router.get('/:explorerId/opportunities/:placeId', opportunitiesController.getOpportunitiesCountForOnePlaceForOneExplorer);

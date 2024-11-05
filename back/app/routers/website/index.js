@@ -18,18 +18,18 @@ const router = express.Router();
 //     next();
 // });
 
-router.get('/', websiteController.login);
+// router.get('/', websiteController.login);
 
-router.get('/menu', websiteController.displayMenu);
-// router.get('/menu/:explorerId', websiteController.displayMenu);
-router.get('/:explorerId/menu', websiteController.displayMenu);
+// router.get('/menu', websiteController.displayMenu);
+// // router.get('/menu/:explorerId', websiteController.displayMenu);
+// router.get('/:explorerId/menu', websiteController.displayMenu);
 
-// router.get('/signup', websiteController.signup);
+// // router.get('/signup', websiteController.signup);
 
-// router.get('/declare', declareController.getDataFromExplorer);
-router.get('/:explorerId/declare', declareController.getDataFromExplorer);
-router.get('/:explorerId/opportunities', opportunitiesController.getOpportunities);
-router.get('/:explorerId/cards', cardController.getExplorer);
+// // router.get('/declare', declareController.getDataFromExplorer);
+// router.get('/:explorerId/declare', declareController.getDataFromExplorer);
+// router.get('/:explorerId/opportunities', opportunitiesController.getOpportunities);
+// router.get('/:explorerId/cards', cardController.getExplorer);
 
 // router.get('/opportunities', opportunitiesController.getOpportunities);
 // router.get('/cards', cardController.getExplorers);

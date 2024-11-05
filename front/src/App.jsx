@@ -1,6 +1,7 @@
 import Header from './components/Header/Header';
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
+import User from './components/Register/User/User';
 import Menu from './components/Menu/Menu';
 import Report from './components/Report/Report';
 
@@ -38,6 +39,12 @@ function App() {
               path="/register"
               element={(
                 <Register />
+          )}
+          />
+          <Route
+              path="/register/user"
+              element={(
+                <User />
           )}
           />
           <Route

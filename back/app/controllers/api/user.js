@@ -9,17 +9,54 @@ const datamapper = require("../../models/datamapper");
 
 const userController  = {
   // Sign up
-  async signUp() {
-  const { email, password} = req.body;
+  async signUp(req, res) {
+    const { email, password} = req.body;
+    console.log({email, password});
 
-  const { user, session, error } = await supabase.auth.signUp({
-      email: 'user@example.com',
-      password: 'password'
-    })
-  },
+    try {
+      const response = await supabase.auth.signUp({
+        email,
+        password,
+      })
 
+      console.log('Supabase response:', response); // Log the entire response
+      const { user, session, error } = response.data;
+      console.log('SIGN UP data', response.data);
+
+      if (error) {
+        console.error('Supabase error:', error.message);
+        res.status(401).json({ message: error.message });
+      } else {
+        res.status(200).json({ user, session });
+      }
+
+    } catch (error) {
+        res.status(500).send(error);
+    }
+},
+// Create new user after retrieving username
+async createUser(req, res) {
+  const token = req.headers['authorization']?.split(' ')[1]; // Extract token from Authorization header
+
+  // Passing through body
+  const userUIID = req.body.userUIID;
+  console.log("CTRL getUserByUIID userUIID", userUIID);
+
+  if (!token) {
+    // return res.redirect('/'); // Redirect to the login page if no token
+    return res.status(401).json({ message: 'Unauthorized - NO token' });
+  }
+
+  try {
+    const user = await datamapper.getExplorerInfo(userUIID);
+    console.log("CTRL user", user);
+    res.json(user);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+ },
   // Sign in
-  async login(req, res, next) {
+  async login(req, res) {
     const { email, password } = req.body;
     console.log(email, password);
     if (!email || !password) {
@@ -32,10 +69,10 @@ const userController  = {
         password,
       });
       const { user, session, error } = response.data;
-      console.log('LOGIN data');
+      console.log('LOGIN data', response.data);
 
       if (error) {
-        console.error('Supabase error:', error.message); // Log Supabase error
+        console.error('Supabase error:', error.message);
         throw error;
       }
 
