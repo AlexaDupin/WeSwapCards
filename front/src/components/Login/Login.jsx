@@ -19,24 +19,21 @@ import PropTypes from 'prop-types';
 
 import './loginStyles.scss';
 
-function Login(
-  // {
-  // setToken,
-  // setIsLogged
-// }
-) {
-    const [showPassword, setShowPassword] = useState(false)
-    const baseUrl = process.env.REACT_APP_BASE_URL;
-    const navigate = useNavigate();
-    const [errMsg, setErrMsg] = useState('');
-    let userUID = '';
-
+function Login({
+  setUserUID,
+  setName,
+  setExplorerId
+}) {
     const { register, handleSubmit, formState: { errors } } = useForm({
       defaultValues: {
         email: "",
         password: "",
       },
     }); 
+  
+    const baseUrl = process.env.REACT_APP_BASE_URL;
+    const navigate = useNavigate();
+    const [errMsg, setErrMsg] = useState('');
 
   const onSubmit = async (data) => {
 
@@ -47,8 +44,6 @@ function Login(
       )
       
       console.log(response);
-        
-      // Retrieve token from response
       const token = response.data.session.access_token;
 
       // Error if undefined is returned meaning that we don't have credentials in database
@@ -58,13 +53,24 @@ function Login(
       navigate('/login');
       return;
       }
-      // If OK, set token in props, activate IsLogged and redirect to menu
-      localStorage.setItem('token', token); // Save the token in local storage
-      // setToken(token);
-      // setIsLogged(true);
+      // If OK, set token in props, retrieve token from response and store it in local storage
+      localStorage.setItem('token', token);
+      // Setting userUID from auth at App level
+      setUserUID(response.data.user.id); 
+      const userUID = response.data.user.id;
+      
+      // Retrieving explorer info from database
+      const user = await axios.post(
+        `${baseUrl}/login/user`,
+        userUID,
+        {headers: {
+          authorization: token,
+        },}
+      )
 
-      userUID = response.data.user.id;
-      console.log('userUID', userUID)
+      console.log("DM login response", user);
+      setName(user.data.name);
+      setExplorerId(user.data.id);
 
       navigate('/menu');
 
@@ -80,6 +86,9 @@ function Login(
     }
     
   };
+
+  // Show password feature with Eye icon
+  const [showPassword, setShowPassword] = useState(false)
 
 	const onMouseDown = () => {
 		setShowPassword(true)
@@ -180,8 +189,9 @@ function Login(
 }
 
 Login.propTypes = {
-  // setToken: PropTypes.func.isRequired,
-  // setIsLogged: PropTypes.func.isRequired,
+  setUserUID: PropTypes.func,
+  setName: PropTypes.func,
+  setExplorerId: PropTypes.func,
 };
 
 export default React.memo(Login);

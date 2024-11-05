@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import {
 	Form,
 	Card,
@@ -6,15 +6,14 @@ import {
 	FormControl,
     Container
 } from "react-bootstrap";
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
-
-import CustomButton from '../../CustomButton/CustomButton';
-
 import { PersonFill } from "react-bootstrap-icons";
 
+import axios from 'axios';
 import PropTypes from 'prop-types';
+
+import CustomButton from '../../CustomButton/CustomButton';
 
 import './userStyles.scss';
 
@@ -43,6 +42,7 @@ function User({
               },}
             )
               console.log("DM user response", response.data);
+              // Setting name at App level
               setName(response.data.name);
 
               navigate('/menu');

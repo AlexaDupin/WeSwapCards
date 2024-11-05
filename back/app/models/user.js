@@ -12,4 +12,16 @@ module.exports = {
         );
         return preparedQuery.rows[0];
     },
+    async getExplorerInfo(userUID) {
+        console.log("ENTERING DATAMAPPER");
+        const preparedQuery = {
+            text: `
+            SELECT * FROM explorer 
+            WHERE userid = $1
+            `,
+            values: [userUID],
+        };
+        const result = await client.query(preparedQuery);
+        return result.rows[0];
+    },
 };

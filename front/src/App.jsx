@@ -21,9 +21,11 @@ import './App.scss';
 function App() {
   const [userUID, setUserUID] = useState('');
   const [name, setName] = useState('');
+  const [explorerId, setExplorerId] = useState('');
 
   console.log("APP userUID", userUID);
   console.log("APP name", name);
+  console.log("APP explorerId", explorerId);
 
   return (
     <div className="App">
@@ -40,7 +42,11 @@ function App() {
           <Route
               path="/login"
               element={(
-                <Login />
+                <Login 
+                  setUserUID={setUserUID}
+                  setName={setName}
+                  setExplorerId={setExplorerId}
+                />
           )}
           />  
           <Route

@@ -37,21 +37,13 @@ const userController  = {
 },
   // Create new user after retrieving username
   async createUser(req, res) {
-    // const token = req.headers['authorization']?.split(' ')[1]; // Extract token from Authorization header
-    // const token = req.headers['authorization']; // Extract token from Authorization header
-
-    // Passing through body
-    const userUID = req.body.userUID;
-    const name = req.body.username;
+    // const userUID = req.body.userUID;
+    // const name = req.body.username;
+    const { userUID, username } = req.body;
     console.log("CTRL req.body", req.body);
 
-    // if (!token) {
-    //   // return res.redirect('/'); // Redirect to the login page if no token
-    //   return res.status(401).json({ message: 'Unauthorized - NO token' });
-    // }
-
     try {
-      const user = await datamapper.createExplorer(userUID, name);
+      const user = await datamapper.createExplorer(userUID, username);
       console.log("CTRL user", user);
       res.json(user);
     } catch (error) {
@@ -98,13 +90,10 @@ const userController  = {
 
   // Authorization middleware
   async authMiddleware(req, res, next) {
-    // const token = req.headers['authorization']?.split(' ')[1]; // Extract token from Authorization header
     const token = req.headers['authorization']; // Extract token from Authorization header   
     console.log('TOKEN MDW', token);
 
     if (!token) {
-      // return res.redirect('/'); // Redirect to the login page if no token
-      // return res.status(401).json({ message: 'Unauthorized - NO token' });
       return res.redirect('/');
     }
 
@@ -118,13 +107,27 @@ const userController  = {
     req.user = user; // Attach user info to request object
     req.authenticated = true;
 
-    // console.log('REQ USER', req.user);
+    console.log('MDLW REQ USER', req.user);
 
-    next(); // Proceed to the next middleware or route handler
+    next();
   },
+  async getUserByUID(req, res) {
+    const userUID = req.user.id;
+    console.log("CTRL getUserByUID req.user", req.user);
+
+    try {
+      const user = await datamapper.getExplorerInfo(userUID);
+      console.log("CTRL user", user);
+      res.json(user);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+   },
+
+   
   // GetUserData
   async getUser(req, res) {
-    const token = req.headers['authorization']?.split(' ')[1]; // Extract token from Authorization header
+    const token = req.headers['authorization']; // Extract token from Authorization header   
 
     if (!token) {
       // return res.redirect('/'); // Redirect to the login page if no token
@@ -136,7 +139,7 @@ const userController  = {
     // console.log('RESPONSE GET U', response);
     const user = response.data.user;
 
-    console.log('USER DATA getUSer', user);
+    console.log('GET USER', user);
 
     if (!user) {
       console.log('AUTH ERROR');
@@ -145,26 +148,7 @@ const userController  = {
 
     res.status(200).json(user);
   },
-  async getUserByUID(req, res) {
-    const token = req.headers['authorization']?.split(' ')[1]; // Extract token from Authorization header
 
-    // Passing through body
-    const userUID = req.body.userUID;
-    console.log("CTRL getUserByUID userUID", userUID);
-
-    if (!token) {
-      // return res.redirect('/'); // Redirect to the login page if no token
-      return res.status(401).json({ message: 'Unauthorized - NO token' });
-    }
-
-    try {
-      const user = await datamapper.getExplorerInfo(userUID);
-      console.log("CTRL user", user);
-      res.json(user);
-    } catch (error) {
-      res.status(500).send(error);
-    }
-   },
 };
 
 module.exports = userController;

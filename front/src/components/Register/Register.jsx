@@ -43,8 +43,9 @@ function Register({
 
           // Retrieve token from response and store it in local storage
           const token = response.data.session.access_token;
-          localStorage.setItem('token', token); // Save the token in local storage
-          setUserUID(response.data.user.id);
+          localStorage.setItem('token', token);
+          // Setting userUID from auth at App level
+          setUserUID(response.data.user.id); 
 
           navigate('/register/user');
 
@@ -56,6 +57,7 @@ function Register({
     const password = useRef({});
     password.current = watch('password', '');
 
+    // Show password feature with Eye icon
     const [showPassword, setShowPassword] = useState(false);
 
 	  const onMouseDown = () => {
@@ -108,13 +110,11 @@ function Register({
                           type="button"
                           aria-label="Show password"
                           className="my-1 btn-sm position-absolute"
-                        //   style={{ zIndex: 4 }}
                           onMouseDown={onMouseDown}
                           onMouseUp={onMouseUp}
                           onMouseLeave={onMouseUp}
                           onTouchStart={onMouseDown}
                           onTouchEnd={onMouseUp}>
-                          {/* {showEye ? showPassword ? <EyeSlash /> : <Eye /> : null} */}
                           {showPassword ? <EyeSlash /> : <Eye />}
                       </Button>
                       <FormControl
@@ -123,8 +123,7 @@ function Register({
                           placeholder="Password"
                           aria-label="Explorer's password"
                           aria-describedby="basic-addon2"
-                        //   onChange={handleChange}
-                        {...register('password', {
+                          {...register('password', {
                           required: 'Password required',
                           pattern: {
                             value: /^(?=.*[0-9])(?=.*[!@#$?%^&*])[a-zA-Z0-9!@#$%?^&*]{6,16}$/,
@@ -152,13 +151,11 @@ function Register({
                           type="button"
                           aria-label="Show password"
                           className="my-1 btn-sm position-absolute"
-                        //   style={{ zIndex: 4 }}
                           onMouseDown={onMouseDown}
                           onMouseUp={onMouseUp}
                           onMouseLeave={onMouseUp}
                           onTouchStart={onMouseDown}
                           onTouchEnd={onMouseUp}>
-                          {/* {showEye ? showPassword ? <EyeSlash /> : <Eye /> : null} */}
                           {showPassword ? <EyeSlash /> : <Eye />}
                       </Button>
                       <FormControl
@@ -167,10 +164,9 @@ function Register({
                           placeholder="Confirm password"
                           aria-label="Explorer's confirming password"
                           aria-describedby="basic-addon4"
-                        //   onChange={handleChange}
-                        {...register('confirm_password', {
-                          validate: (value) => value === password.current || 'The passwords do not match. Please check.',
-                        })}
+                          {...register('confirm_password', {
+                            validate: (value) => value === password.current || 'The passwords do not match. Please check.',
+                          })}
                       />
                   </InputGroup>
                 </Form.Group>
