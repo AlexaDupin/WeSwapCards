@@ -6,8 +6,9 @@ import PropTypes from 'prop-types';
 
 import './headerStyles.scss';
 
-function Header({title}) {
-
+function Header({
+  title = 'WeSwapCards',
+}) {
   return (
     <header className="header text-center container p-3 border-bottom fixed-top">
         <div className="back-button position-absolute top-5 start-5">
@@ -25,9 +26,5 @@ function Header({title}) {
 Header.propTypes = {
     title: PropTypes.string,
 };
-
-Header.defaultProps = {
-    title: 'WeSwapCards',
-  };
 
 export default React.memo(Header);

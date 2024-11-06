@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Header from './components/Header/Header';
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
-import User from './components/Register/User/User';
+import User from './components/User/User';
 import Menu from './components/Menu/Menu';
 import Report from './components/Report/Report';
 
@@ -26,6 +26,12 @@ function App() {
   console.log("APP userUID", userUID);
   console.log("APP name", name);
   console.log("APP explorerId", explorerId);
+
+  useEffect(() => {
+    setName(name);
+    setExplorerId(explorerId);
+    setUserUID(userUID)
+}, []);
 
   return (
     <div className="App">
@@ -54,6 +60,8 @@ function App() {
               element={(
                 <Register 
                   setUserUID={setUserUID}
+                  setName={setName}
+                  setExplorerId={setExplorerId}
                 />
           )}
           />
@@ -63,6 +71,7 @@ function App() {
                 <User 
                   userUID={userUID}
                   setName={setName}
+                  setExplorerId={setExplorerId}
                 />
           )}
           />
@@ -71,6 +80,7 @@ function App() {
               element={(
                 <Menu 
                   name={name}
+                  explorerId={explorerId}
                 />
           )}
           />

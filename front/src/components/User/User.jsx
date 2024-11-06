@@ -13,15 +13,15 @@ import { PersonFill } from "react-bootstrap-icons";
 import axios from 'axios';
 import PropTypes from 'prop-types';
 
-import CustomButton from '../../CustomButton/CustomButton';
+import CustomButton from '../CustomButton/CustomButton';
 
 import './userStyles.scss';
 
 function User({
     userUID,
-    setName
-}
-) {
+    setName,
+    setExplorerId
+}) {
     const { register, handleSubmit, formState: { errors } } = useForm({
       defaultValues: {
         username: "",
@@ -41,17 +41,22 @@ function User({
                 authorization: token,
               },}
             )
-              console.log("DM user response", response.data);
-              // Setting name at App level
-              setName(response.data.name);
+            
+            console.log("DM user response", response.data);
 
-              navigate('/menu');
+            // Setting name and explorerId at App level
+            setExplorerId(response.data.id);
+            setName(response.data.name);
+            
+            navigate('/menu');
 
         } catch (error) {
             console.log(error.data);
         }
-    };
 
+
+    };
+   
   return (
     <Container className="user">
     <h1 className="user-title pb-1">Enter a username</h1>
@@ -94,7 +99,9 @@ function User({
 }
 
 User.propTypes = {
+    userUID: PropTypes.string,
     setName: PropTypes.func,
+    setExplorerId: PropTypes.func,
 };
 
 export default React.memo(User);

@@ -4,7 +4,10 @@ import PropTypes from 'prop-types';
 
 import './customButtonStyles.scss';
 
-function CustomButton({text, onClick}) {
+function CustomButton({
+  text, 
+  onClick = () => {}
+}) {
 
   return (
     <button 
@@ -18,10 +21,6 @@ function CustomButton({text, onClick}) {
 CustomButton.propTypes = {
   text: PropTypes.string.isRequired,
   onClick: PropTypes.func,
-};
-
-CustomButton.defaultProps = {
-  onClick: () => {},
 };
 
 export default React.memo(CustomButton);

@@ -20,7 +20,9 @@ import PropTypes from 'prop-types';
 import './registerStyles.scss';
 
 function Register({
-  setUserUID
+  setUserUID,
+  setName,
+  setExplorerId
 }) {
     const { register, handleSubmit, watch, formState: { errors } } = useForm({
       defaultValues: {
@@ -46,6 +48,8 @@ function Register({
           localStorage.setItem('token', token);
           // Setting userUID from auth at App level
           setUserUID(response.data.user.id); 
+          setName('');
+          setExplorerId('');
 
           navigate('/register/user');
 
@@ -189,6 +193,8 @@ function Register({
 
 Register.propTypes = {
   setUserUID: PropTypes.func,
+  setName: PropTypes.func,
+  setExplorerId: PropTypes.func,
 };
 
 export default React.memo(Register);

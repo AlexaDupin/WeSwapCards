@@ -14,11 +14,14 @@ import PropTypes from 'prop-types';
 import './menuStyles.scss';
 
 function Menu({
-    name
+    name,
+    explorerId
 }) {
     const navigate = useNavigate();
     const baseUrl = process.env.REACT_APP_BASE_URL;
 
+    console.log("MENU explorerId", explorerId);
+    
     const handleSignOut = () => {
         localStorage.clear();
         axios.get(`${baseUrl}/signout`);
@@ -63,6 +66,7 @@ function Menu({
 
 Menu.propTypes = {
     name: PropTypes.string,
+    explorerId: PropTypes.number,
 };
 
 export default React.memo(Menu);

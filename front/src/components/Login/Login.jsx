@@ -46,19 +46,23 @@ function Login({
       console.log(response);
       const token = response.data.session.access_token;
 
-      // Error if undefined is returned meaning that we don't have credentials in database
-      if (token === undefined) {
-      setErrMsg('Your logins do not exist.');
-      localStorage.clear();
-      navigate('/login');
-      return;
-      }
+        // Error if undefined is returned meaning that we don't have credentials in database
+        if (token === undefined) {
+        setErrMsg('Your logins do not exist.');
+        localStorage.clear();
+        navigate('/login');
+        return;
+        }
+
       // If OK, set token in props, retrieve token from response and store it in local storage
       localStorage.setItem('token', token);
       // Setting userUID from auth at App level
-      setUserUID(response.data.user.id); 
       const userUID = response.data.user.id;
-      
+
+      setUserUID(userUID);
+      setName('');
+      setExplorerId('');
+
       // Retrieving explorer info from database
       const user = await axios.post(
         `${baseUrl}/login/user`,
