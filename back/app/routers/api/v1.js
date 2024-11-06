@@ -1,9 +1,12 @@
 const express = require('express');
+const userController = require('../../controllers/api/user');
+const reportController = require('../../controllers/api/report');
+
+
 const cardController = require('../../controllers/api/explorerCards');
 const declareController = require('../../controllers/api/declare');
 const opportunitiesController = require('../../controllers/api/opportunities');
 const explorerCardsController = require('../../controllers/api/explorerCards');
-const userController = require('../../controllers/api/user');
 const menuController = require('../../controllers/api/menu');
 // const websiteController = require('../../controllers/website');
 
@@ -16,7 +19,9 @@ router.post('/login/user', userController.authMiddleware, userController.getUser
 
 router.get('/signout', userController.signOut);
 
-
+router
+    .route('/places')
+    .get(reportController.getAllPlaces)
 
 
 // OLD ROUTES //

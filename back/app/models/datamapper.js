@@ -1,14 +1,6 @@
 const client = require('./client');
 
 module.exports = {
-    async getAllExplorers() {
-        const preparedQuery = {
-            text: `SELECT * FROM explorer
-            ORDER BY name`,
-        };
-        const result = await client.query(preparedQuery);
-        return result.rows;
-    },
     async getAllPlaces() {
         const preparedQuery = {
             text: `SELECT * FROM place
@@ -17,6 +9,16 @@ module.exports = {
         const result = await client.query(preparedQuery);
         return result.rows;
     },
+
+    // async getAllExplorers() {
+    //     const preparedQuery = {
+    //         text: `SELECT * FROM explorer
+    //         ORDER BY name`,
+    //     };
+    //     const result = await client.query(preparedQuery);
+    //     return result.rows;
+    // },
+
     async getAllCardsFromOnePlace(placeId) {
         const preparedQuery = {
             text: `SELECT * FROM card WHERE place_id = $1

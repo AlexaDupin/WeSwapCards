@@ -1,18 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
 	Form,
 	Row,
 	Card,
 	Col,
-	FormControl,
-    Container
+  Container
 } from "react-bootstrap";
-import { Link } from 'react-router-dom';
-
-import CustomButton from '../CustomButton/CustomButton';
-
 import {Icon1Square, Icon2Square, Icon3Square,Icon4Square,
   Icon5Square,Icon6Square,Icon7Square,Icon8Square,Icon9Square} from "react-bootstrap-icons";
+
+import axios from 'axios';
+
+import CustomButton from '../CustomButton/CustomButton';
 
 // import PropTypes from 'prop-types';
 
@@ -20,10 +19,32 @@ import './reportStyles.scss';
 
 function Report() {
   const [checked, setChecked] = useState(false);
+  const [places, setPlaces] = useState([]);
+
+  const baseUrl = process.env.REACT_APP_BASE_URL;
 
   const handleCheckboxChange = () => {
     setChecked(!checked);
   };
+
+  const fetchAllPlaces = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/places`);
+      setPlaces(response.data.places);
+    } catch (error) {
+      console.log(error);
+    }
+    console.log(places);
+
+  };
+
+  // useEffect so that data is fetched on mount
+  useEffect(
+    () => {
+      fetchAllPlaces();
+    },
+    [],
+  );
 
   return (
     <Container className="report">
@@ -33,7 +54,9 @@ function Report() {
         <Form.Label className="report-label">Select a place, Alexa</Form.Label>
         <Form.Select aria-label="Select a place">
           <option>Select</option>
-          <option value="1">Brussels</option>
+          {places.map((place) => (
+            <option value={place.id}>{place.name}</option>
+          ))}
         </Form.Select>
       </Form.Group>
 
@@ -218,7 +241,6 @@ function Report() {
 }
 
 Report.propTypes = {
-
 };
 
 export default React.memo(Report);
