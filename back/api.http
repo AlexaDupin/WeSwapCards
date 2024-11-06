@@ -1,0 +1,11 @@
+### test register page
+POST http://localhost:3001/api/v1/register
+Content-Type: application/json
+
+{ 
+    "email" : "cards@gmail.com",
+    "password" : "testtest1*"
+}
+
+###
+

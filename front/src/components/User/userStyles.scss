@@ -1,19 +1,18 @@
 @use 'src/styles/vars';
 
-.login {
+.user {
     padding-top: 7rem !important;
 
     &-title {
         font-size: 1rem;
     }
 
+    &-subtitle {
+        font-size: 0.8rem;
+    }
 }
 
-.form-label {
+.errors {
+    color: red;
     display: flex;
-}
-
-.link {
-    color: vars.$primary-color;
-    text-decoration: none; 
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
 	Form,
 	Button,
@@ -17,99 +17,70 @@ import {KeyFill, Eye, EyeSlash, At} from "react-bootstrap-icons";
 
 import PropTypes from 'prop-types';
 
-import './loginStyles.scss';
+import './registerStyles.scss';
 
-function Login({
+function Register({
   setUserUID,
   setName,
   setExplorerId
 }) {
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const { register, handleSubmit, watch, formState: { errors } } = useForm({
       defaultValues: {
         email: "",
         password: "",
       },
     }); 
-  
+
     const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
-    const [errMsg, setErrMsg] = useState('');
 
-  const onSubmit = async (data) => {
+    const onSubmit = async (data) => {
 
-    try {
-      const response = await axios.post(
-        `${baseUrl}/login`,
-        data,
-      )
-      
-      console.log(response);
-      const token = response.data.session.access_token;
+      try {
+        const response = await axios.post(
+          `${baseUrl}/register`,
+          data,
+        )
+          console.log(response.data);
 
-        // Error if undefined is returned meaning that we don't have credentials in database
-        if (token === undefined) {
-        setErrMsg('Your logins do not exist.');
-        localStorage.clear();
-        navigate('/login');
-        return;
-        }
+          // Retrieve token from response and store it in local storage
+          const token = response.data.session.access_token;
+          localStorage.setItem('token', token);
+          // Setting userUID from auth at App level
+          setUserUID(response.data.user.id); 
+          setName('');
+          setExplorerId('');
 
-      // If OK, set token in props, retrieve token from response and store it in local storage
-      localStorage.setItem('token', token);
-      // Setting userUID from auth at App level
-      const userUID = response.data.user.id;
+          navigate('/register/user');
 
-      setUserUID(userUID);
-      setName('');
-      setExplorerId('');
-
-      // Retrieving explorer info from database
-      const user = await axios.post(
-        `${baseUrl}/login/user`,
-        userUID,
-        {headers: {
-          authorization: token,
-        },}
-      )
-
-      console.log("DM login response", user);
-      setName(user.data.name);
-      setExplorerId(user.data.id);
-
-      navigate('/menu');
-
-    } catch (error) {
-      if (!error?.response) {
-        setErrMsg('The server did not respond.');
-        console.log(errMsg);
+      } catch (error) {
+        console.log(error.data);
       }
-      else {
-        setErrMsg('The logins do not match. Try again.');
-        console.log(errMsg);
-      }
-    }
-    
-  };
+    };
 
-  // Show password feature with Eye icon
-  const [showPassword, setShowPassword] = useState(false)
+    const password = useRef({});
+    password.current = watch('password', '');
 
-	const onMouseDown = () => {
+    // Show password feature with Eye icon
+    const [showPassword, setShowPassword] = useState(false);
+
+	  const onMouseDown = () => {
 		setShowPassword(true)
-  }
+    }
   
-  const onMouseUp = () => {
+    const onMouseUp = () => {
     setShowPassword(false)
-  }
+    }
 
   return (
-    <Container className="login">
-    <h1 className="login-title pb-5">Welcome to WeSwapCards!</h1>
+    <Container className="register">
+    <h1 className="login-title pb-5">To start swapping cards, create an account</h1>
+
     <Form onSubmit={handleSubmit(onSubmit)}>
-        <Card className="bg-light">
-            <Card.Body className="">
-              
-                <Form.Group className="mb-3" controlId="formGroupEmail">
+
+          <Card className="bg-light">
+              <Card.Body className="">
+              <Form.Group className="mb-3" controlId="formGroupEmail">
                   <Form.Label className="form-label">Email address</Form.Label>
                   <InputGroup className="">
                       <InputGroup.Text>
@@ -118,7 +89,7 @@ function Login({
                       <FormControl
                           placeholder="Email"
                           aria-label="Explorer's email"
-                          aria-describedby="basic-addon1" 
+                          aria-describedby="basic-addon1"
                           {...register('email', {
                             required: 'Required field',
                             pattern: {
@@ -126,7 +97,7 @@ function Login({
                               message: 'Invalid email format',
                             },
                           })}
-                          />
+                      />
                   </InputGroup>
                 </Form.Group>
 
@@ -143,13 +114,11 @@ function Login({
                           type="button"
                           aria-label="Show password"
                           className="my-1 btn-sm position-absolute"
-                        //   style={{ zIndex: 4 }}
                           onMouseDown={onMouseDown}
                           onMouseUp={onMouseUp}
                           onMouseLeave={onMouseUp}
                           onTouchStart={onMouseDown}
                           onTouchEnd={onMouseUp}>
-                          {/* {showEye ? showPassword ? <EyeSlash /> : <Eye /> : null} */}
                           {showPassword ? <EyeSlash /> : <Eye />}
                       </Button>
                       <FormControl
@@ -158,11 +127,10 @@ function Login({
                           placeholder="Password"
                           aria-label="Explorer's password"
                           aria-describedby="basic-addon2"
-                        //   onChange={handleChange}
-                        {...register('password', {
+                          {...register('password', {
                           required: 'Password required',
                           pattern: {
-                            value: /^(?=.*[0-9])[a-zA-Z0-9!@#,.$%?^&*]{6,16}$/,
+                            value: /^(?=.*[0-9])(?=.*[!@#$?%^&*])[a-zA-Z0-9!@#$%?^&*]{6,16}$/,
                             message: 'The format is invalid. Your password must contain at least 1 number and 1 special character (!@#$?%^&*).',
                           },
                           minLength: {
@@ -176,14 +144,45 @@ function Login({
 
                 {errors.password && <p className="errors">{errors.password.message}</p>}
 
+                <Form.Group className="mb-3" controlId="formGroupConfirmPwd">
+                  <Form.Label className="form-label">Confirm password</Form.Label>
+                  <InputGroup className="justify-content-end">
+                      <InputGroup.Text>
+                          <KeyFill />
+                      </InputGroup.Text>
+                      <Button
+                          variant="white"
+                          type="button"
+                          aria-label="Show password"
+                          className="my-1 btn-sm position-absolute"
+                          onMouseDown={onMouseDown}
+                          onMouseUp={onMouseUp}
+                          onMouseLeave={onMouseUp}
+                          onTouchStart={onMouseDown}
+                          onTouchEnd={onMouseUp}>
+                          {showPassword ? <EyeSlash /> : <Eye />}
+                      </Button>
+                      <FormControl
+                          type={showPassword ? "text" : "password"}
+                          className="shadow-none pr-4"
+                          placeholder="Confirm password"
+                          aria-label="Explorer's confirming password"
+                          aria-describedby="basic-addon4"
+                          {...register('confirm_password', {
+                            validate: (value) => value === password.current || 'The passwords do not match. Please check.',
+                          })}
+                      />
+                  </InputGroup>
+                </Form.Group>
+
+                {errors.confirm_password && <p className="errors">{errors.confirm_password.message}</p>}
+
                 <Card.Text className="">
-                    <Link to="#" className="link">Forgot Password?</Link>
-						    &nbsp;&nbsp;
-                    <Link to="/register" className="link">Don't have an account?</Link>
+                    <Link to="/login" className="link">Already have an account?</Link>
 				        </Card.Text>
 
                 <CustomButton 
-                  text="Login"
+                  text="Register"
                 />
               </Card.Body>
           </Card>
@@ -192,10 +191,10 @@ function Login({
 )
 }
 
-Login.propTypes = {
+Register.propTypes = {
   setUserUID: PropTypes.func,
   setName: PropTypes.func,
   setExplorerId: PropTypes.func,
 };
 
-export default React.memo(Login);
+export default React.memo(Register);
