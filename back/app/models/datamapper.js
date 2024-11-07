@@ -9,6 +9,17 @@ module.exports = {
         const result = await client.query(preparedQuery);
         return result.rows;
     },
+    async getAllCardsFromOnePlace(placeId) {
+        const preparedQuery = {
+            text: `SELECT * FROM card WHERE place_id = $1
+            ORDER BY name`,
+            values: [placeId],
+        };
+        const result = await client.query(preparedQuery);
+        console.log(result.rows);
+        return result.rows;
+    },
+
 
     // async getAllExplorers() {
     //     const preparedQuery = {
@@ -19,15 +30,7 @@ module.exports = {
     //     return result.rows;
     // },
 
-    async getAllCardsFromOnePlace(placeId) {
-        const preparedQuery = {
-            text: `SELECT * FROM card WHERE place_id = $1
-            ORDER BY name`,
-            values: [placeId],
-        };
-        const result = await client.query(preparedQuery);
-        return result.rows;
-    },
+
     async createExplorerHasCard(formObject) {
         const preparedQuery = await client.query(
             `

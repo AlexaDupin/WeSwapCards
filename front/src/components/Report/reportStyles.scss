@@ -1,3 +1,5 @@
+@use 'src/styles/vars';
+
 .report {
     padding-top: 7rem !important;
 }
@@ -18,11 +20,12 @@
 }
 
 .report-card {
-    border-color: rgba(240, 122, 26, 1) !important;
+    border-color: vars.$primary-color !important;
     border-width: medium !important;
 
-    &:checked {
-        border-color: rgb(22, 188, 144) !important;
+    &-selected {
+        border-color: vars.$secondary-color !important;
+        border-width: medium !important;
     }
 }
 
@@ -31,8 +34,18 @@
     .report {
         width: 50% !important; /* Reduce the width */
 
-        &-card {
-            width: 60%;
+        &-card, &-card-selected {
+            width: 60%;   
+        }
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1200px) { /* This targets below the md breakpoint */
+    .report {
+        width: 50% !important; /* Reduce the width */
+
+        &-card, &-card-selected {
+            width: 80%;   
         }
     }
 }

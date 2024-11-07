@@ -16,16 +16,16 @@ import CustomButton from '../CustomButton/CustomButton';
 // import PropTypes from 'prop-types';
 
 import './reportStyles.scss';
+import PlaceCard from '../PlaceCard/PlaceCard';
 
 function Report() {
   const [checked, setChecked] = useState(false);
   const [places, setPlaces] = useState([]);
+  const [placeId, setPlaceId] = useState();
+  const [cards, setCards] = useState([]);
+  const [selectedCards, setSelectedCards] = useState([]);
 
   const baseUrl = process.env.REACT_APP_BASE_URL;
-
-  const handleCheckboxChange = () => {
-    setChecked(!checked);
-  };
 
   const fetchAllPlaces = async () => {
     try {
@@ -34,16 +34,43 @@ function Report() {
     } catch (error) {
       console.log(error);
     }
-    console.log(places);
-
   };
+
+  const handleSelectPlace = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/cards/${placeId}`);
+      setCards(response.data.cards);
+      setSelectedCards([]);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCardSelection = (id) => {
+    setSelectedCards((prevSelectedCards) => {
+      if (prevSelectedCards.includes(id)) {
+        // If selected, remove the card id from the array (deselect)
+        return prevSelectedCards.filter(cardId => cardId !== id);
+      } else {
+        // If not selected, add the card id to the array (select)
+        return [...prevSelectedCards, id];
+      }
+    });
+    
+  };
+
+  console.log("placeId", placeId);
+  console.log("cards", cards);  
+  console.log("selectedCards", selectedCards);
 
   // useEffect so that data is fetched on mount
   useEffect(
     () => {
       fetchAllPlaces();
+      handleSelectPlace();
     },
-    [],
+    [placeId],
   );
 
   return (
@@ -52,10 +79,15 @@ function Report() {
               
       <Form.Group className="mb-3" controlId="formGroupPlace">
         <Form.Label className="report-label">Select a place, Alexa</Form.Label>
-        <Form.Select aria-label="Select a place">
+        <Form.Select 
+          aria-label="Select a place" 
+          onChange={(e) => {setPlaceId(e.target.value)}}
+        >
           <option>Select</option>
           {places.map((place) => (
-            <option value={place.id}>{place.name}</option>
+            <option value={place.id}>
+              {place.name}
+            </option>
           ))}
         </Form.Select>
       </Form.Group>
@@ -64,97 +96,16 @@ function Report() {
         <Form.Label className="report-label">Click on the cards you have</Form.Label>
 
         <Row className="d-flex g-3">
-        <Col xs={4}>
-          <Card
-            className="report-card"
-            onClick={handleCheckboxChange}
-            style={{ cursor: 'pointer' }}
-          >
-            <Icon1Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels1</Card.Title>
-          </Card>
-        </Col>
-
-        <Col xs={4}>
-        <Card
-            className="report-card"
-            onClick={handleCheckboxChange}
-            style={{ cursor: 'pointer' }}
-          >          <Icon2Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels2</Card.Title>
-        </Card>
-        </Col>
-
-        <Col xs={4}>
-        <Card
-            className="report-card"
-            onClick={handleCheckboxChange}
-            style={{ cursor: 'pointer' }}
-          >          <Icon3Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels3</Card.Title>
-        </Card>
-        </Col>
-
-        <Col xs={4}>
-        <Card
-            className="report-card"
-            onClick={handleCheckboxChange}
-            style={{ cursor: 'pointer' }}
-          >          <Icon4Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels4</Card.Title>
-        </Card>
-        </Col>
-
-        <Col xs={4}>
-        <Card
-            className="report-card"
-            onClick={handleCheckboxChange}
-            style={{ cursor: 'pointer' }}
-          >          <Icon5Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels5</Card.Title>
-        </Card>
-        </Col>
-
-        <Col xs={4}>
-        <Card
-            className="report-card"
-            onClick={handleCheckboxChange}
-            style={{ cursor: 'pointer' }}
-          >          <Icon6Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels6</Card.Title>
-        </Card>
-        </Col>
-
-        <Col xs={4}>
-        <Card
-            className="report-card"
-            onClick={handleCheckboxChange}
-            style={{ cursor: 'pointer' }}
-          >          <Icon7Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels7</Card.Title>
-        </Card>
-        </Col>
-
-        <Col xs={4}>
-        <Card
-            className="report-card"
-            onClick={handleCheckboxChange}
-            style={{ cursor: 'pointer' }}
-          >          <Icon8Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels8</Card.Title>
-        </Card>
-        </Col>
-
-        <Col xs={4}>
-          <Card
-            className="report-card"
-            onClick={handleCheckboxChange}
-            style={{ cursor: 'pointer' }}
-          >          <Icon9Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels9</Card.Title>
-        </Card>
-        </Col>
-
+        {cards.map((card) => (
+            <PlaceCard
+              key={card.id}
+              id={card.id}
+              name={card.name}
+              number={card.number}
+              selectedCards={selectedCards} // Pass the selectedCards array
+              handleCardSelection={handleCardSelection} // Pass the selection handler
+            />
+          ))}
         </Row>
       </Form.Group>
 
@@ -164,7 +115,6 @@ function Report() {
         <Col xs={4}>
         <Card
           className="report-card"
-          onClick={handleCheckboxChange}
           style={{ cursor: 'pointer' }}
         >
           <Icon1Square className="report-icon" />

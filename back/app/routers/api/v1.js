@@ -23,6 +23,9 @@ router
     .route('/places')
     .get(reportController.getAllPlaces)
 
+router
+    .route('/cards/:placeId')
+    .get(reportController.getCardsFromPlace);
 
 // OLD ROUTES //
 
@@ -36,7 +39,6 @@ router.post('/menu', menuController.getMenu);
 router.get('/user', userController.authMiddleware, userController.getUser);
 router.post('/user', userController.getUserByUID);
 
-router.get('/cards/:placeId', declareController.getCardsFromPlace);
 router.get('/cards/:placeId/:explorerId', declareController.getExplorerCardsFromOnePlace);
 router.get('/cards/:placeId/:explorerId/duplicates', declareController.getDuplicateCards);
 // router.get('/cards/:cardId/:explorerId/duplicate', explorerCardsController.getDuplicateStatus);
