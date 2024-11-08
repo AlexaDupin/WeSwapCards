@@ -9,12 +9,14 @@ import axios from 'axios';
 
 import CustomButton from '../CustomButton/CustomButton';
 
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 import './reportStyles.scss';
 import PlaceCard from '../PlaceCard/PlaceCard';
 
-function Report() {
+function Report({
+  explorerId
+}) {
   const [places, setPlaces] = useState([]);
   const [placeId, setPlaceId] = useState();
   const [cards, setCards] = useState([]);
@@ -34,11 +36,19 @@ function Report() {
 
   const handleSelectPlace = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/cards/${placeId}`);
-      setCards(response.data.cards);
-      setSelectedCards([]);
-      setDuplicates([]);
-      console.log(response);
+      const allCards = await axios.get(`${baseUrl}/cards/${placeId}`);
+      const explorerCards = await axios.get(`${baseUrl}/cards/${placeId}/${explorerId}`);
+      const explorerDuplicates = await axios.get(`${baseUrl}/cards/${placeId}/${explorerId}/duplicates`);
+
+      console.log("allCards", allCards);
+      console.log('explorerCards', explorerCards);
+      console.log('explorerDuplicates', explorerDuplicates);
+
+      setCards(allCards.data.cards);
+      setSelectedCards(explorerCards.data.cards);
+      setDuplicates(explorerDuplicates.data.cards);
+
+
     } catch (error) {
       console.log(error);
     }
@@ -81,6 +91,30 @@ function Report() {
   console.log("cards", cards);  
   console.log("selectedCards", selectedCards);
   console.log("duplicates", duplicates);
+
+  // const onSubmit = async (data) => {
+
+  //   try {
+  //     const response = await axios.post(
+  //       `${baseUrl}/register`,
+  //       data,
+  //     )
+  //       console.log(response.data);
+
+  //       // Retrieve token from response and store it in local storage
+  //       const token = response.data.session.access_token;
+  //       localStorage.setItem('token', token);
+  //       // Setting userUID from auth at App level
+  //       setUserUID(response.data.user.id); 
+  //       setName('');
+  //       setExplorerId('');
+
+  //       navigate('/register/user');
+
+  //   } catch (error) {
+  //     console.log(error.data);
+  //   }
+  // };
 
   // useEffect so that data is fetched on mount
   useEffect(
@@ -159,6 +193,7 @@ function Report() {
 }
 
 Report.propTypes = {
+  explorerId: PropTypes.number.isRequired
 };
 
 export default React.memo(Report);

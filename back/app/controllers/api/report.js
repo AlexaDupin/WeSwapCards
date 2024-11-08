@@ -19,6 +19,28 @@ const reportController = {
             res.status(500).send(error);
         }
     },
+    async getExplorerCardsFromOnePlace(req, res) {
+        const placeId = req.params.placeId;
+        const explorerId = req.params.explorerId;
+
+        try {
+            const cards = await datamapper.getCardsFromOneExplorerInOnePlace(placeId, explorerId);
+            res.json({ cards });
+        } catch (error) {
+            res.status(500).send(error);
+        }
+    },
+    async getDuplicateCards(req, res) {
+        const placeId = req.params.placeId;
+        const explorerId = req.params.explorerId;
+
+        try {
+            const cards = await datamapper.getDuplicatesFromExplorerInOnePlace(explorerId, placeId);
+            res.json({ cards });
+        } catch (error) {
+            res.status(500).send(error);
+        }
+    },
 };
 
 module.exports = reportController;

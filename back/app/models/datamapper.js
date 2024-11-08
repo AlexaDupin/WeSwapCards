@@ -19,8 +19,33 @@ module.exports = {
         console.log(result.rows);
         return result.rows;
     },
+    async getCardsFromOneExplorerInOnePlace(placeId, explorerId) {
+        const preparedQuery = {
+            text: `
+                SELECT DISTINCT c.id, c.name, c.number, c.place_id FROM card AS c
+                JOIN explorer_has_cards ON c.id = explorer_has_cards.card_id
+                WHERE place_id = $1 AND explorer_has_cards.explorer_id = $2`,
+            values: [placeId, explorerId],
+        };
+        const result = await client.query(preparedQuery);
+        return result.rows;
+    },
+    async getDuplicatesFromExplorerInOnePlace(explorerId, placeId) {
+        const preparedQuery = {
+            text: `
+            SELECT DISTINCT c.id, c.name, c.number, c.place_id FROM card AS c
+            JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
+            WHERE place_id = $2
+            AND ehc.explorer_id = $1
+            AND ehc.duplicate=true
+            `,
+            values: [explorerId, placeId]
+        };
+        const result = await client.query(preparedQuery);
+        console.log(result.rows);
 
-
+        return result.rows;
+    },
     // async getAllExplorers() {
     //     const preparedQuery = {
     //         text: `SELECT * FROM explorer
@@ -42,17 +67,7 @@ module.exports = {
         );
         return preparedQuery.rows[0];
     },
-    async getCardsFromOneExplorerInOnePlace(placeId, explorerId) {
-        const preparedQuery = {
-            text: `
-                SELECT DISTINCT c.id, c.name, c.number, c.place_id FROM card AS c
-                JOIN explorer_has_cards ON c.id = explorer_has_cards.card_id
-                WHERE place_id = $1 AND explorer_has_cards.explorer_id = $2`,
-            values: [placeId, explorerId],
-        };
-        const result = await client.query(preparedQuery);
-        return result.rows;
-    },
+
     async getOpportunitiesForOneExplorer(explorerId) {
         const preparedQuery = {
             text: `
@@ -74,22 +89,7 @@ module.exports = {
 
         return result.rows;
     },
-    async checkDuplicates(explorerId, placeId) {
-        const preparedQuery = {
-            text: `
-            SELECT card_id FROM explorer_has_cards AS ehc
-            JOIN card ON card.id = ehc.card_id
-            WHERE duplicate=true
-            AND explorer_id = $1
-            AND place_id = $2
-            `,
-            values: [explorerId, placeId]
-        };
-        const result = await client.query(preparedQuery);
-        // console.log(result.rows);
 
-        return result.rows;
-    },
     async checkCardExists(explorerId, cardId) {
         const preparedQuery = {
             text: `

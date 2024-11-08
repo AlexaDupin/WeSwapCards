@@ -89,6 +89,7 @@ function App() {
               path="/report"
               element={(
                 <Report 
+                  explorerId={explorerId}
                 />
           )}
           />           
