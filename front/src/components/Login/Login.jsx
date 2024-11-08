@@ -83,6 +83,8 @@ function Login({
       console.log("DM login response", user);
       setName(user.data.name);
       setExplorerId(user.data.id);
+      localStorage.setItem('name', user.data.name);
+      localStorage.setItem('explorerId', user.data.id);
 
       navigate('/menu');
 

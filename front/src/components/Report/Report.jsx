@@ -19,7 +19,6 @@ import './reportStyles.scss';
 import PlaceCard from '../PlaceCard/PlaceCard';
 
 function Report() {
-  const [checked, setChecked] = useState(false);
   const [places, setPlaces] = useState([]);
   const [placeId, setPlaceId] = useState();
   const [cards, setCards] = useState([]);
@@ -85,7 +84,9 @@ function Report() {
         >
           <option>Select</option>
           {places.map((place) => (
-            <option value={place.id}>
+            <option 
+              key={place.id}
+              value={place.id}>
               {place.name}
             </option>
           ))}

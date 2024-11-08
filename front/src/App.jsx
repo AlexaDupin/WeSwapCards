@@ -6,6 +6,7 @@ import Register from './components/Register/Register';
 import User from './components/User/User';
 import Menu from './components/Menu/Menu';
 import Report from './components/Report/Report';
+import usePersistState from './hooks/usePersistState';
 
 import { Routes, Route, Navigate } from 'react-router-dom';
 
@@ -20,8 +21,8 @@ import './App.scss';
 
 function App() {
   const [userUID, setUserUID] = useState('');
-  const [name, setName] = useState('');
-  const [explorerId, setExplorerId] = useState('');
+  const [name, setName] = usePersistState('', 'name');
+  const [explorerId, setExplorerId] = usePersistState('', 'explorerId');
 
   console.log("APP userUID", userUID);
   console.log("APP name", name);
