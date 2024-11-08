@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
 	Card,
 	Col,
-  Form
 } from "react-bootstrap";
 
 import {Icon1Square, Icon2Square, Icon3Square,Icon4Square,
@@ -13,12 +12,28 @@ import PropTypes from 'prop-types';
 import './placeCardStyles.scss';
 
 function PlaceCard({
-  id,
-  name,
-  number, 
+  card,
   selectedCards, 
-  handleCardSelection
+  handleCardSelection,
+  isDuplicateSection,
+  handleCardDuplicate,
+  duplicates
 }) {
+  if (!card) {
+    console.error('Missing card or selectedCards');
+    return null;  // Return null or some fallback UI
+  }
+
+  const isSelected = selectedCards.some(selectedCard => selectedCard.id === card.id);
+  const hasDuplicates = duplicates?.some(duplicate => duplicate.id === card.id);
+
+  const cardClassName = isDuplicateSection 
+    ? isSelected && hasDuplicates ? 'report-card-selected' : 'report-card' // In the second section, toggling between classes
+    : isSelected ? 'report-card-selected' : 'report-card'; // Same logic for the first section
+
+  const cardAction = isDuplicateSection 
+    ? () => handleCardDuplicate(card) // In the second section, 
+    : () => handleCardSelection(card); // Same logic for the first section
 
   // Setting icon based on number of the card
   const iconMap = {
@@ -33,31 +48,40 @@ function PlaceCard({
     9: Icon9Square,
   };
 
-  const SelectedIcon = iconMap[number] || Icon1Square;
+  const SelectedIcon = iconMap[card.number] || Icon1Square;
 
   return (
     
-        <Col xs={4} key={id}>
+        <Col xs={4} key={card.id}>
         <Card
-          // className="report-card"
-          className={`${selectedCards.includes(id) ? 'report-card-selected' : 'report-card'}`}
-          id={id}
+          className={cardClassName}
+          id={card.id}
           style={{ cursor: 'pointer' }}
-          onClick={() => handleCardSelection(id)}
+          // onClick={() => handleCardSelection(card)}
+          onClick={cardAction}
         >
           <SelectedIcon className="report-icon"/>    
-          <Card.Title className="report-icon-title">{name}</Card.Title>
+          <Card.Title className="report-icon-title">{card.name}</Card.Title>
         </Card>
         </Col>
 )
 }
 
 PlaceCard.propTypes = {
-  id: PropTypes.number.isRequired,
-  name: PropTypes.string.isRequired,
-  number: PropTypes.number.isRequired,
+  card: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    number: PropTypes.number.isRequired,
+    place_id: PropTypes.number.isRequired
+  }),  
   selectedCards: PropTypes.array,
   handleCardSelection: PropTypes.func,
+  duplicates: PropTypes.array,
 };
+
+// PlaceCard.defaultProps = {
+//   card: { id: 0, name: 'Default Card', number: 0, place_id: 0 },  // Default card data
+//   selectedCards: [],  // Default empty array for selectedCards
+// };
 
 export default React.memo(PlaceCard);

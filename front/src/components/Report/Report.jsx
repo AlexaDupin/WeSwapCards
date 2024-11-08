@@ -2,12 +2,8 @@ import React, { useState, useEffect } from 'react';
 import {
 	Form,
 	Row,
-	Card,
-	Col,
   Container
 } from "react-bootstrap";
-import {Icon1Square, Icon2Square, Icon3Square,Icon4Square,
-  Icon5Square,Icon6Square,Icon7Square,Icon8Square,Icon9Square} from "react-bootstrap-icons";
 
 import axios from 'axios';
 
@@ -23,6 +19,7 @@ function Report() {
   const [placeId, setPlaceId] = useState();
   const [cards, setCards] = useState([]);
   const [selectedCards, setSelectedCards] = useState([]);
+  const [duplicates, setDuplicates] = useState([]);
 
   const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -40,28 +37,50 @@ function Report() {
       const response = await axios.get(`${baseUrl}/cards/${placeId}`);
       setCards(response.data.cards);
       setSelectedCards([]);
+      setDuplicates([]);
       console.log(response);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleCardSelection = (id) => {
+  const handleCardSelection = (card) => {
     setSelectedCards((prevSelectedCards) => {
-      if (prevSelectedCards.includes(id)) {
-        // If selected, remove the card id from the array (deselect)
-        return prevSelectedCards.filter(cardId => cardId !== id);
+      // Check if the card is already selected (by matching the id)
+      const isCardSelected = prevSelectedCards.some(selectedCard => selectedCard.id === card.id);
+
+      if (isCardSelected) {
+        // If already selected, remove the card from the array (deselect)
+        return prevSelectedCards.filter(selectedCard => selectedCard.id !== card.id);
       } else {
-        // If not selected, add the card id to the array (select)
-        return [...prevSelectedCards, id];
+        // If not selected, add the card to the array (select)
+        return [...prevSelectedCards, card];
       }
     });
-    
+  };
+
+  // Sort selected cards so that they can show in proper order in duplicate section
+  const sortedCards = selectedCards.slice().sort((a, b) => a.id - b.id);
+
+  const handleCardDuplicate = (card) => {
+    setDuplicates((prevDuplicates) => {
+      // Check if the card is already selected (by matching the id)
+      const isCardSelected = prevDuplicates.some(duplicate => duplicate.id === card.id);
+
+      if (isCardSelected) {
+        // If already selected, remove the card from the array (deselect)
+        return prevDuplicates.filter(duplicate => duplicate.id !== card.id);
+      } else {
+        // If not selected, add the card to the array (select)
+        return [...prevDuplicates, card];
+      }
+    });
   };
 
   console.log("placeId", placeId);
   console.log("cards", cards);  
   console.log("selectedCards", selectedCards);
+  console.log("duplicates", duplicates);
 
   // useEffect so that data is fetched on mount
   useEffect(
@@ -97,88 +116,36 @@ function Report() {
         <Form.Label className="report-label">Click on the cards you have</Form.Label>
 
         <Row className="d-flex g-3">
-        {cards.map((card) => (
+        {cards && cards.length > 0 ? (
+          cards.map((card) => (
             <PlaceCard
               key={card.id}
-              id={card.id}
-              name={card.name}
-              number={card.number}
+              card={card}
               selectedCards={selectedCards} // Pass the selectedCards array
               handleCardSelection={handleCardSelection} // Pass the selection handler
-            />
-          ))}
+              />
+              ))
+            ) : (
+              <div>No cards available</div>  // Fallback UI if no cards
+            )}
         </Row>
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="formGroupEmail">
         <Form.Label className="report-label">Click on the cards you have duplicates for (2 or more)</Form.Label>
-        <Row className="g-3">
-        <Col xs={4}>
-        <Card
-          className="report-card"
-          style={{ cursor: 'pointer' }}
-        >
-          <Icon1Square className="report-icon" />
-          <Card.Title className="report-icon-title">Brussels1</Card.Title>
-        </Card>
-        </Col>
-
-        <Col xs={4}>
-        <Card>
-          <Icon2Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels2</Card.Title>
-        </Card>
-        </Col>
-
-        <Col xs={4}>
-        <Card>
-          <Icon3Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels3</Card.Title>
-        </Card>
-        </Col>
-
-        <Col xs={4}>
-        <Card>
-          <Icon4Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels4</Card.Title>
-        </Card>
-        </Col>
-
-        <Col xs={4}>
-        <Card>
-          <Icon5Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels5</Card.Title>
-        </Card>
-        </Col>
-
-        <Col xs={4}>
-        <Card>
-          <Icon6Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels6</Card.Title>
-        </Card>
-        </Col>
-
-        <Col xs={4}>
-        <Card>
-          <Icon7Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels7</Card.Title>
-        </Card>
-        </Col>
-
-        <Col xs={4}>
-        <Card>
-          <Icon8Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels8</Card.Title>
-        </Card>
-        </Col>
-
-        <Col xs={4}>
-        <Card>
-          <Icon9Square className="report-icon" />
-            <Card.Title className="report-icon-title">Brussels9</Card.Title>
-        </Card>
-        </Col>
-
+        
+        <Row className="d-flex g-3">
+        {sortedCards.map((selectedCard) => (
+            <PlaceCard
+              key={selectedCard.id}
+              card={selectedCard}
+              selectedCards={selectedCards} // Pass the selectedCards array
+              handleCardSelection={handleCardSelection} // Pass the selection handler
+              isDuplicateSection={true} // Pass a prop to identify if it's in the second section
+              handleCardDuplicate={handleCardDuplicate}
+              duplicates={duplicates}
+            />
+          ))}
         </Row>
       </Form.Group>
     
