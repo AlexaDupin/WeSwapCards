@@ -25,6 +25,7 @@ function Report({
 
   const baseUrl = process.env.REACT_APP_BASE_URL;
 
+  // Fetch all places to show in dropdown
   const fetchAllPlaces = async () => {
     try {
       const response = await axios.get(`${baseUrl}/places`);
@@ -34,26 +35,29 @@ function Report({
     }
   };
 
+  // When a place is selected, fetch all cards in that place
+  // + cards and duplicates already logged for this explorer in the db so they are highlighted
   const handleSelectPlace = async () => {
     try {
-      const allCards = await axios.get(`${baseUrl}/cards/${placeId}`);
-      const explorerCards = await axios.get(`${baseUrl}/cards/${placeId}/${explorerId}`);
-      const explorerDuplicates = await axios.get(`${baseUrl}/cards/${placeId}/${explorerId}/duplicates`);
-
-      console.log("allCards", allCards);
-      console.log('explorerCards', explorerCards);
-      console.log('explorerDuplicates', explorerDuplicates);
+      const [allCards, explorerCards, explorerDuplicates] = await Promise.all([
+        axios.get(`${baseUrl}/cards/${placeId}`), 
+        axios.get(`${baseUrl}/cards/${placeId}/${explorerId}`),
+        axios.get(`${baseUrl}/cards/${placeId}/${explorerId}/duplicates`),
+      ]);
+      // console.log("allCards", allCards);
+      // console.log('explorerCards', explorerCards);
+      // console.log('explorerDuplicates', explorerDuplicates);
 
       setCards(allCards.data.cards);
       setSelectedCards(explorerCards.data.cards);
       setDuplicates(explorerDuplicates.data.cards);
-
 
     } catch (error) {
       console.log(error);
     }
   };
 
+  // Add card to selected cards if not in it
   const handleCardSelection = (card) => {
     setSelectedCards((prevSelectedCards) => {
       // Check if the card is already selected (by matching the id)
@@ -72,6 +76,7 @@ function Report({
   // Sort selected cards so that they can show in proper order in duplicate section
   const sortedCards = selectedCards.slice().sort((a, b) => a.id - b.id);
 
+  // Add card to duplicate selection array if not in it
   const handleCardDuplicate = (card) => {
     setDuplicates((prevDuplicates) => {
       // Check if the card is already selected (by matching the id)
@@ -92,29 +97,30 @@ function Report({
   console.log("selectedCards", selectedCards);
   console.log("duplicates", duplicates);
 
-  // const onSubmit = async (data) => {
+  // On submit, send selected cards and duplicate selection to db
+  const handleSubmit = async () => {
 
-  //   try {
-  //     const response = await axios.post(
-  //       `${baseUrl}/register`,
-  //       data,
-  //     )
-  //       console.log(response.data);
+      // Extracting ids of selected cards and duplicates
+      const selectedCardsIds = selectedCards.map(item => item.id);
+      const duplicatesIds = duplicates.map(item => item.id);
+      console.log('LOGGING selectedCardsIds', selectedCardsIds);
+      // Combine the data to send
+      const payload = {
+        selectedCardsIds,
+        duplicatesIds,     
+      };
 
-  //       // Retrieve token from response and store it in local storage
-  //       const token = response.data.session.access_token;
-  //       localStorage.setItem('token', token);
-  //       // Setting userUID from auth at App level
-  //       setUserUID(response.data.user.id); 
-  //       setName('');
-  //       setExplorerId('');
+      try {
+        const response = await axios.post(
+          `${baseUrl}/declare/${explorerId}`,
+          payload,
+        )
+        console.log(response.data);
 
-  //       navigate('/register/user');
-
-  //   } catch (error) {
-  //     console.log(error.data);
-  //   }
-  // };
+      } catch (error) {
+        console.log(error.data);
+    }
+  };
 
   // useEffect so that data is fetched on mount
   useEffect(
@@ -127,7 +133,7 @@ function Report({
 
   return (
     <Container className="report">
-    <Form className="">
+    <Form onSubmit={handleSubmit}>
               
       <Form.Group className="mb-3" controlId="formGroupPlace">
         <Form.Label className="report-label">Select a place, Alexa</Form.Label>
