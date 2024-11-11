@@ -72,6 +72,12 @@ function Report({
     });
   };
 
+  // Handle Select All in cards section
+  const handleSelectAllCards = (event) => {
+    event.preventDefault();
+    setSelectedCards(cards)
+  };
+
   // Sort selected cards so that they can show in proper order in duplicate section
   const sortedCards = selectedCards.slice().sort((a, b) => a.id - b.id);
 
@@ -91,6 +97,12 @@ function Report({
     });
   };
 
+  // Handle Select All in duplicates section
+  const handleSelectAllDuplicates = (event) => {
+    event.preventDefault();
+    setDuplicates(cards)
+  };
+
   console.log("placeId", placeId);
   console.log("cards", cards);  
   console.log("selectedCards", selectedCards);
@@ -98,7 +110,6 @@ function Report({
 
   // On submit, send selected cards and duplicate selection to db
   const handleSubmit = async () => {
-
       // Extracting ids of selected cards and duplicates
       const selectedCardsIds = selectedCards.map(item => item.id);
       const duplicatesIds = duplicates.map(item => item.id);
@@ -134,7 +145,7 @@ function Report({
     <Container className="report">
     <Form onSubmit={handleSubmit}>
               
-      <Form.Group className="mb-3" controlId="formGroupPlace">
+      <Form.Group className="mb-5" controlId="formGroupPlace">
         <Form.Label className="report-label">Select a place, Alexa</Form.Label>
         <Form.Select 
           aria-label="Select a place" 
@@ -155,9 +166,16 @@ function Report({
       </Form.Group>
 
       <Form.Group 
-        className={hidden ? 'hidden mb-3' : 'mb-3'} 
+        className={hidden ? 'hidden' : 'mb-5'} 
         controlId="formGroupEmail">
         <Form.Label className="report-label">Click on the cards you have</Form.Label>
+
+        <button 
+          className={hidden ? 'hidden' : 'selectall-button mb-3'}
+          onClick={handleSelectAllCards}
+        >
+          Select all
+        </button>
 
         <Row className="d-flex g-3">
         {cards && cards.length > 0 ? (
@@ -167,19 +185,26 @@ function Report({
               card={card}
               selectedCards={selectedCards} // Pass the selectedCards array
               handleCardSelection={handleCardSelection} // Pass the selection handler
-              />
-              ))
+            />
+            ))
             ) : (
               <div>No cards available</div>  // Fallback UI if no cards
-            )}
+        )}
         </Row>
       </Form.Group>
 
       <Form.Group 
-        className={hidden ? 'hidden mb-3' : 'mb-3'}  
+        className={hidden ? 'hidden' : 'mb-5'}  
         controlId="formGroupEmail">
         <Form.Label className="report-label">Click on the cards you have duplicates for (2 or more)</Form.Label>
         
+        <button 
+          className={hidden ? 'hidden' : 'selectall-button mb-3'}
+          onClick={handleSelectAllDuplicates}
+        >
+          Select all
+        </button>
+
         <Row className="d-flex g-3">
         {sortedCards.map((selectedCard) => (
             <PlaceCard
@@ -196,7 +221,7 @@ function Report({
       </Form.Group>
     
       <button 
-        className={hidden ? 'hidden custom-button' : 'custom-button'}>
+        className={hidden ? 'hidden' : 'custom-button'}>
         Submit these cards
       </button>
 

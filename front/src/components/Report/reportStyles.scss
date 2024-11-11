@@ -57,6 +57,13 @@
 
 }
 
+.selectall-button {
+    font-weight: 500;
+    color: vars.$primary-color;
+    background-color: #fff;
+    border: none;
+}
+
 @media (min-width: 768px) { /* This targets below the md breakpoint */
     .report {
         width: 50% !important; /* Reduce the width */
