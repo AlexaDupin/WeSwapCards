@@ -7,8 +7,6 @@ import {
 
 import axios from 'axios';
 
-import CustomButton from '../CustomButton/CustomButton';
-
 import PropTypes from 'prop-types';
 
 import './reportStyles.scss';
@@ -22,6 +20,7 @@ function Report({
   const [cards, setCards] = useState([]);
   const [selectedCards, setSelectedCards] = useState([]);
   const [duplicates, setDuplicates] = useState([]);
+  const [hidden, setHidden] = useState(true);
 
   const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -139,7 +138,10 @@ function Report({
         <Form.Label className="report-label">Select a place, Alexa</Form.Label>
         <Form.Select 
           aria-label="Select a place" 
-          onChange={(e) => {setPlaceId(e.target.value)}}
+          onChange={(e) => {
+            setPlaceId(e.target.value)
+            setHidden(false)
+          }}
         >
           <option>Select</option>
           {places.map((place) => (
@@ -152,7 +154,9 @@ function Report({
         </Form.Select>
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formGroupEmail">
+      <Form.Group 
+        className={hidden ? 'hidden mb-3' : 'mb-3'} 
+        controlId="formGroupEmail">
         <Form.Label className="report-label">Click on the cards you have</Form.Label>
 
         <Row className="d-flex g-3">
@@ -171,7 +175,9 @@ function Report({
         </Row>
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formGroupEmail">
+      <Form.Group 
+        className={hidden ? 'hidden mb-3' : 'mb-3'}  
+        controlId="formGroupEmail">
         <Form.Label className="report-label">Click on the cards you have duplicates for (2 or more)</Form.Label>
         
         <Row className="d-flex g-3">
@@ -189,9 +195,10 @@ function Report({
         </Row>
       </Form.Group>
     
-      <CustomButton 
-        text="Submit these cards"
-      />
+      <button 
+        className={hidden ? 'hidden custom-button' : 'custom-button'}>
+        Submit these cards
+      </button>
 
     </Form>
     </Container>
