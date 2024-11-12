@@ -57,7 +57,6 @@ function PlaceCard({
           className={cardClassName}
           id={card.id}
           style={{ cursor: 'pointer' }}
-          // onClick={() => handleCardSelection(card)}
           onClick={cardAction}
         >
           <SelectedIcon className="report-icon"/>    

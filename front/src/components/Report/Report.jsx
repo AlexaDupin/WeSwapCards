@@ -13,7 +13,7 @@ import './reportStyles.scss';
 import PlaceCard from '../PlaceCard/PlaceCard';
 
 function Report({
-  explorerId
+  explorerId, name
 }) {
   const [places, setPlaces] = useState([]);
   const [placeId, setPlaceId] = useState();
@@ -146,7 +146,7 @@ function Report({
     <Form onSubmit={handleSubmit}>
               
       <Form.Group className="mb-5" controlId="formGroupPlace">
-        <Form.Label className="report-label">Select a place, Alexa</Form.Label>
+        <Form.Label className="report-label">Select a place, {name}</Form.Label>
         <Form.Select 
           aria-label="Select a place" 
           onChange={(e) => {
@@ -231,7 +231,8 @@ function Report({
 }
 
 Report.propTypes = {
-  explorerId: PropTypes.number.isRequired
+  explorerId: PropTypes.number.isRequired,
+  name: PropTypes.string,
 };
 
 export default React.memo(Report);

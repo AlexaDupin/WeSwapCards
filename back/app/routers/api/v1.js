@@ -39,6 +39,15 @@ router
     .route('/declare/:explorerId')
     .post(reportController.addCardsToExplorer);
 
+router
+    .route('/opportunities/:explorerId')
+    .get(opportunitiesController.getOpportunities);
+
+router
+    .route('/opportunities/:explorerId/:placeId')
+    .get(opportunitiesController.getCountForOnePlaceForOneExplorer);
+
+
 // OLD ROUTES //
 
 // router.get('/menu', userController.authMiddleware, menuController.getMenu);
@@ -55,8 +64,6 @@ router.post('/user', userController.getUserByUID);
 
 // router.get('/opportunities/:placeId/:explorerId', opportunitiesController.getOpportunitiesCountForOnePlaceForOneExplorer);
 
-router.get('/:explorerId/opportunities', opportunitiesController.handleOpportunities);
-router.get('/:explorerId/opportunities/:placeId', opportunitiesController.getOpportunitiesCountForOnePlaceForOneExplorer);
 router.get('/:explorerId/cards', cardController.getExplorerCards);
 router.get('/:explorerId/cards/:cardId/duplicate', explorerCardsController.getDuplicateStatus);
 

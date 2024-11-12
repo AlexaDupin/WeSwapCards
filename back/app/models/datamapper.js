@@ -100,19 +100,6 @@ module.exports = {
         const result = await client.query(preparedQuery);
         return result.rows;
     },
-
-    // async getAllExplorers() {
-    //     const preparedQuery = {
-    //         text: `SELECT * FROM explorer
-    //         ORDER BY name`,
-    //     };
-    //     const result = await client.query(preparedQuery);
-    //     return result.rows;
-    // },
-
-
-
-
     async getOpportunitiesForOneExplorer(explorerId) {
         const preparedQuery = {
             text: `
@@ -130,27 +117,11 @@ module.exports = {
             values: [explorerId],
         };
         const result = await client.query(preparedQuery);
-        // console.log(result.rows);
+        console.log(result.rows);
 
         return result.rows;
     },
-
-
-
-    async editDuplicateStatus(explorerId, cardId, newDuplicateData) {
-        const preparedQuery = {
-            text: `
-            UPDATE explorer_has_cards
-            SET duplicate = $3
-            WHERE explorer_id = $1
-            AND card_id = $2
-            `,
-            values: [explorerId, cardId, newDuplicateData]
-        };
-        await client.query(preparedQuery);
-    },
-
-    async getOpportunitiesCountForOnePlaceForOneExplorer(explorerId, placeId) {
+    async getCountForOnePlaceForExplorer(explorerId, placeId) {
         const preparedQuery = {
             text: `
             SELECT COUNT(*) FROM explorer_has_cards AS ehc
@@ -167,6 +138,37 @@ module.exports = {
 
         return result.rows;
     },
+
+    // async getAllExplorers() {
+    //     const preparedQuery = {
+    //         text: `SELECT * FROM explorer
+    //         ORDER BY name`,
+    //     };
+    //     const result = await client.query(preparedQuery);
+    //     return result.rows;
+    // },
+
+
+
+
+
+
+
+
+    async editDuplicateStatus(explorerId, cardId, newDuplicateData) {
+        const preparedQuery = {
+            text: `
+            UPDATE explorer_has_cards
+            SET duplicate = $3
+            WHERE explorer_id = $1
+            AND card_id = $2
+            `,
+            values: [explorerId, cardId, newDuplicateData]
+        };
+        await client.query(preparedQuery);
+    },
+
+
     async getCardsForOneExplorer(explorerId) {
         const preparedQuery = {
             text: `

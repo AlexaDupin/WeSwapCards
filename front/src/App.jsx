@@ -6,6 +6,8 @@ import Register from './components/Register/Register';
 import User from './components/User/User';
 import Menu from './components/Menu/Menu';
 import Report from './components/Report/Report';
+import Opportunities from './components/Opportunities/Opportunities';
+
 import usePersistState from './hooks/usePersistState';
 
 import { Routes, Route, Navigate } from 'react-router-dom';
@@ -44,7 +46,7 @@ function App() {
               path="/"
               element={(
               <Navigate replace to="/login"/>
-          )}
+              )}
           />   
           <Route
               path="/login"
@@ -54,7 +56,7 @@ function App() {
                   setName={setName}
                   setExplorerId={setExplorerId}
                 />
-          )}
+              )}
           />  
           <Route
               path="/register"
@@ -64,7 +66,7 @@ function App() {
                   setName={setName}
                   setExplorerId={setExplorerId}
                 />
-          )}
+              )}
           />
           <Route
               path="/register/user"
@@ -74,7 +76,7 @@ function App() {
                   setName={setName}
                   setExplorerId={setExplorerId}
                 />
-          )}
+              )}
           />
           <Route
               path="/menu"
@@ -83,16 +85,26 @@ function App() {
                   name={name}
                   explorerId={explorerId}
                 />
-          )}
+              )}
           />
           <Route
               path="/report"
               element={(
                 <Report 
+                  name={name}
                   explorerId={explorerId}
                 />
-          )}
-          />           
+              )}
+          />
+          <Route
+              path="/opportunities"
+              element={(
+                <Opportunities
+                  name={name}
+                  explorerId={explorerId}
+                />
+              )}
+          />               
       </Routes>
     </div>
   );

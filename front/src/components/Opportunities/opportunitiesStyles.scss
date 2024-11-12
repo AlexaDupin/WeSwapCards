@@ -1,0 +1,30 @@
+@use 'src/styles/vars';
+
+.opportunities {
+    padding-top: 7rem !important;
+}
+
+.custom-button {
+    font-weight: 500;
+    color: #fff;
+    background-color: vars.$primary-color;
+    border: none;
+    border-radius: 27px;
+    padding: 0.375rem 0.75rem;
+    margin: 0.5rem;
+
+    &:hover {
+        background-color: lighten(vars.$primary-color, 10%);
+        border-color: lighten(vars.$primary-color, 10%);
+    }
+
+    &:focus {
+        box-shadow: vars.$primary-color;
+    }
+
+    &:active {
+        background-color: darken(vars.$primary-color, 10%);
+        border-color: darken(vars.$primary-color, 10%);
+    }
+
+}
