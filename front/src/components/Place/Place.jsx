@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ProgressBar from 'react-bootstrap/ProgressBar';
-
-import axios from 'axios';
+import CardPreview from '../CardPreview/CardPreview';
 
 import PropTypes from 'prop-types';
 
@@ -9,8 +7,10 @@ import './placeStyles.scss';
 
 function Place({
     place,
+    placeCards,
+    explorerId
 }) {
-    const percentage = place.cards.length/9*100;
+    const percentage = placeCards.length/9*100;
     const [className, setClassName] = useState('progress-bar');
 
     const progressClassName = () => {
@@ -47,6 +47,17 @@ function Place({
     </div>
 
     <div class="explorerCard-numbers" id="">
+    {placeCards && placeCards.length > 0 ? (
+          placeCards.map((card) => (
+            <CardPreview
+              key={card.id}
+              card={card}
+              explorerId={explorerId}
+            />
+            ))
+            ) : (
+              <div>Unable to retrieve your data.</div>
+        )}
     </div>
     </div>
 )

@@ -141,7 +141,8 @@ module.exports = {
     async getCardsByPlaceForOneExplorer(explorerId) {
         const preparedQuery = {
             text: `
-            SELECT p.name AS place_name, JSON_AGG (c.* ORDER BY c.number) AS cards FROM card AS c
+            SELECT p.name AS place_name, JSON_AGG (ex.* ORDER BY c.number) AS cards FROM explorercards_with_duplicate_by_place AS ex
+            JOIN card AS c ON c.id = ex.id
             JOIN explorer_has_cards AS ehc ON ehc.card_id = c.id
             JOIN place AS p ON p.id = c.place_id
             WHERE ehc.explorer_id = $1

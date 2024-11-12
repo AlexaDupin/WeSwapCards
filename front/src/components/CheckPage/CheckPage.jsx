@@ -24,12 +24,6 @@ function CheckPage({
           const fetchedCardsByPlace = response.data;
           console.log("fetchedCardsByPlace", fetchedCardsByPlace);
           setCardsByPlace(fetchedCardsByPlace);
-        //   if (fetchedOpportunities.length === 1) {
-        //     setMessage(`Cool ${name}, you have 1 opportunity!`)
-        //   } else if (fetchedOpportunities.length > 1) {
-        //     setMessage(`Amazing ${name}, you have ${fetchedOpportunities.length} opportunities!`)
-        //   }
-
         } catch (error) {
           console.log(error);
         }
@@ -50,6 +44,8 @@ function CheckPage({
             <Place
               key={place.name}
               place={place}
+              placeCards={place.cards}
+              explorerId={explorerId}
             />
             ))
             ) : (
