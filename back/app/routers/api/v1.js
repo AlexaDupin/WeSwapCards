@@ -1,14 +1,9 @@
 const express = require('express');
 const userController = require('../../controllers/api/user');
 const reportController = require('../../controllers/api/report');
-
-
-const cardController = require('../../controllers/api/explorerCards');
-const declareController = require('../../controllers/api/declare');
 const opportunitiesController = require('../../controllers/api/opportunities');
 const explorerCardsController = require('../../controllers/api/explorerCards');
 const menuController = require('../../controllers/api/menu');
-// const websiteController = require('../../controllers/website');
 
 const router = express.Router();
 
@@ -47,6 +42,9 @@ router
     .route('/opportunities/:explorerId/:placeId')
     .get(opportunitiesController.getCountForOnePlaceForOneExplorer);
 
+router
+    .route('/explorercards/:explorerId')
+    .get(explorerCardsController.getExplorerCardsByPlace);
 
 // OLD ROUTES //
 
@@ -64,15 +62,14 @@ router.post('/user', userController.getUserByUID);
 
 // router.get('/opportunities/:placeId/:explorerId', opportunitiesController.getOpportunitiesCountForOnePlaceForOneExplorer);
 
-router.get('/:explorerId/cards', cardController.getExplorerCards);
-router.get('/:explorerId/cards/:cardId/duplicate', explorerCardsController.getDuplicateStatus);
+// router.get('/:explorerId/cards/:cardId/duplicate', explorerCardsController.getDuplicateStatus);
 
 
 // router.post('/declare', userController.authMiddleware,declareController.addCardsToExplorer);
 // router.post('/opportunities', opportunitiesController.handleOpportunities);
 
 
-router.patch('/cards/:cardId/:explorerId/duplicate', explorerCardsController.editDuplicateStatus);
+// router.patch('/cards/:cardId/:explorerId/duplicate', explorerCardsController.editDuplicateStatus);
 
 
 module.exports = router;

@@ -138,6 +138,25 @@ module.exports = {
 
         return result.rows;
     },
+    async getCardsByPlaceForOneExplorer(explorerId) {
+        const preparedQuery = {
+            text: `
+            SELECT p.name AS place_name, JSON_AGG (c.* ORDER BY c.number) AS cards FROM card AS c
+            JOIN explorer_has_cards AS ehc ON ehc.card_id = c.id
+            JOIN place AS p ON p.id = c.place_id
+            WHERE ehc.explorer_id = $1
+            GROUP BY p.name
+            ORDER BY p.name
+                `,
+            values: [explorerId],
+        };
+        const result = await client.query(preparedQuery);
+        console.log(result.rows);
+
+        return result.rows;
+    },
+
+
 
     // async getAllExplorers() {
     //     const preparedQuery = {
@@ -169,23 +188,7 @@ module.exports = {
     },
 
 
-    async getCardsForOneExplorer(explorerId) {
-        const preparedQuery = {
-            text: `
-            SELECT p.name AS place_name, JSON_AGG (c.* ORDER BY c.number) AS cards FROM card AS c
-            JOIN explorer_has_cards AS ehc ON ehc.card_id = c.id
-            JOIN place AS p ON p.id = c.place_id
-            WHERE ehc.explorer_id = $1
-            GROUP BY p.name
-            ORDER BY p.name
-                `,
-            values: [explorerId],
-        };
-        const result = await client.query(preparedQuery);
-        // console.log(result.rows);
 
-        return result.rows;
-    },
     async getExplorerInfo(userUID) {
         console.log("ENTERING DATAMAPPER");
         const preparedQuery = {
