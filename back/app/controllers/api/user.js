@@ -71,7 +71,7 @@ const userController  = {
         throw error;
       }
 
-      if (response.data.user == null) {
+      if (response.data.user === null) {
         res.status(401).json({message: "Wrong logins", user, session});
       } else {
         res.status(200).json({ user, session });

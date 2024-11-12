@@ -54,6 +54,14 @@ function Login({
         return;
         }
 
+        // Error if undefined is returned meaning that we don't have credentials in database
+        if (response.data.user === null) {
+          setErrMsg('Your logins do not exist.');
+          localStorage.clear();
+          navigate('/login');
+          return;
+        }
+
       // If OK, set token in props, retrieve token from response and store it in local storage
       localStorage.setItem('token', token);
       // Setting userUID from auth at App level
@@ -75,6 +83,8 @@ function Login({
       console.log("DM login response", user);
       setName(user.data.name);
       setExplorerId(user.data.id);
+      localStorage.setItem('name', user.data.name);
+      localStorage.setItem('explorerId', user.data.id);
 
       navigate('/menu');
 
@@ -84,8 +94,9 @@ function Login({
         console.log(errMsg);
       }
       else {
-        setErrMsg('The logins do not match. Try again.');
-        console.log(errMsg);
+        setErrMsg('Looks like your login details do not match. Try again.');
+        // console.log(errMsg);
+        console.log("401 Unauthorized");      
       }
     }
     
@@ -175,6 +186,7 @@ function Login({
                 </Form.Group>
 
                 {errors.password && <p className="errors">{errors.password.message}</p>}
+                {<p className="errors">{errMsg}</p>}
 
                 <Card.Text className="">
                     <Link to="#" className="link">Forgot Password?</Link>

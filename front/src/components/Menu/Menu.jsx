@@ -42,7 +42,7 @@ function Menu({
             <Col sm={12}>
                     <CustomButton
                     text="Discover my opportunities"
-                    onClick={() => navigate('/login')}
+                    onClick={() => navigate('/opportunities')}
                     />
             </Col>
             <Col sm={12}>

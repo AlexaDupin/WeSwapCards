@@ -1,14 +1,6 @@
 const client = require('./client');
 
 module.exports = {
-    async getAllExplorers() {
-        const preparedQuery = {
-            text: `SELECT * FROM explorer
-            ORDER BY name`,
-        };
-        const result = await client.query(preparedQuery);
-        return result.rows;
-    },
     async getAllPlaces() {
         const preparedQuery = {
             text: `SELECT * FROM place
@@ -24,18 +16,8 @@ module.exports = {
             values: [placeId],
         };
         const result = await client.query(preparedQuery);
+        console.log(result.rows);
         return result.rows;
-    },
-    async createExplorerHasCard(formObject) {
-        const preparedQuery = await client.query(
-            `
-        INSERT INTO "explorer_has_cards"
-        (explorer_id, card_id, duplicate) VALUES
-        ($1, $2, $3) RETURNING *
-        `,
-            [formObject.explorerId, formObject.cardId, formObject.duplicate],
-        );
-        return preparedQuery.rows[0];
     },
     async getCardsFromOneExplorerInOnePlace(placeId, explorerId) {
         const preparedQuery = {
@@ -45,6 +27,76 @@ module.exports = {
                 WHERE place_id = $1 AND explorer_has_cards.explorer_id = $2`,
             values: [placeId, explorerId],
         };
+        const result = await client.query(preparedQuery);
+        return result.rows;
+    },
+    async getDuplicatesFromExplorerInOnePlace(explorerId, placeId) {
+        const preparedQuery = {
+            text: `
+            SELECT DISTINCT c.id, c.name, c.number, c.place_id FROM card AS c
+            JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
+            WHERE place_id = $2
+            AND ehc.explorer_id = $1
+            AND ehc.duplicate=true
+            `,
+            values: [explorerId, placeId]
+        };
+        const result = await client.query(preparedQuery);
+        console.log(result.rows);
+
+        return result.rows;
+    },
+    async checkIfCardLoggedForExplorer(explorerId, cardId) {
+        const preparedQuery = {
+            text: `
+            SELECT * FROM explorer_has_cards AS ehc
+            WHERE explorer_id = $1
+            AND card_id = $2
+            `,
+            values: [explorerId, cardId]
+        };
+        const result = await client.query(preparedQuery);
+        if (result.rowCount > 0) {
+            return true;
+        }
+        return null;    
+    },
+    async createExplorerHasCard(data) {
+        const preparedQuery = await client.query(
+            `
+        INSERT INTO "explorer_has_cards"
+        (explorer_id, card_id, duplicate) VALUES
+        ($1, $2, $3) RETURNING *
+        `,
+            [data.explorerId, data.cardId, data.duplicate],
+        );
+        return preparedQuery.rows[0];
+    },
+    async checkDuplicateStatus(explorerId, cardId) {
+        const preparedQuery = {
+            text: `
+            SELECT duplicate FROM explorer_has_cards
+            WHERE explorer_id = $1
+            AND card_id = $2
+            `,
+            values: [explorerId, cardId]
+        };
+        const result = await client.query(preparedQuery);
+        if (result.rowCount > 0) {
+            return result.rows[0];
+        }
+        return null;
+    },
+    async editExplorerHasCard(duplicateValue, explorerId, cardId) {
+        const preparedQuery = {
+            text: `
+            UPDATE explorer_has_cards SET duplicate = $1
+            WHERE explorer_id = $2
+            AND card_id = $3
+            `,
+            values: [duplicateValue, explorerId, cardId]
+        };
+        // return preparedQuery.rows[0];
         const result = await client.query(preparedQuery);
         return result.rows;
     },
@@ -65,82 +117,11 @@ module.exports = {
             values: [explorerId],
         };
         const result = await client.query(preparedQuery);
-        // console.log(result.rows);
+        console.log(result.rows);
 
         return result.rows;
     },
-    async checkDuplicates(explorerId, placeId) {
-        const preparedQuery = {
-            text: `
-            SELECT card_id FROM explorer_has_cards AS ehc
-            JOIN card ON card.id = ehc.card_id
-            WHERE duplicate=true
-            AND explorer_id = $1
-            AND place_id = $2
-            `,
-            values: [explorerId, placeId]
-        };
-        const result = await client.query(preparedQuery);
-        // console.log(result.rows);
-
-        return result.rows;
-    },
-    async checkCardExists(explorerId, cardId) {
-        const preparedQuery = {
-            text: `
-            SELECT * FROM explorer_has_cards AS ehc
-            WHERE explorer_id = $1
-            AND card_id = $2
-            `,
-            values: [explorerId, cardId]
-        };
-        const result = await client.query(preparedQuery);
-        if (result.rowCount > 0) {
-            return true;
-        }
-        return null;    
-    },
-    async checkDuplicateStatus(explorerId, cardId) {
-        const preparedQuery = {
-            text: `
-            SELECT duplicate FROM explorer_has_cards AS ehc
-            WHERE explorer_id = $1
-            AND card_id = $2
-            `,
-            values: [explorerId, cardId]
-        };
-        const result = await client.query(preparedQuery);
-        if (result.rowCount > 0) {
-            return result.rows[0];
-        }
-        return null;
-    },
-    async editDuplicateStatus(explorerId, cardId, newDuplicateData) {
-        const preparedQuery = {
-            text: `
-            UPDATE explorer_has_cards
-            SET duplicate = $3
-            WHERE explorer_id = $1
-            AND card_id = $2
-            `,
-            values: [explorerId, cardId, newDuplicateData]
-        };
-        await client.query(preparedQuery);
-    },
-    async editExplorerHasCard(duplicateValue, explorerId, cardId) {
-        const preparedQuery = {
-            text: `
-            UPDATE explorer_has_cards SET duplicate = $1
-            WHERE explorer_id = $2
-            AND card_id = $3
-            `,
-            values: [duplicateValue, explorerId, cardId]
-        };
-        // return preparedQuery.rows[0];
-        const result = await client.query(preparedQuery);
-        return result.rows;
-    },
-    async getOpportunitiesCountForOnePlaceForOneExplorer(explorerId, placeId) {
+    async getCountForOnePlaceForExplorer(explorerId, placeId) {
         const preparedQuery = {
             text: `
             SELECT COUNT(*) FROM explorer_has_cards AS ehc
@@ -157,6 +138,37 @@ module.exports = {
 
         return result.rows;
     },
+
+    // async getAllExplorers() {
+    //     const preparedQuery = {
+    //         text: `SELECT * FROM explorer
+    //         ORDER BY name`,
+    //     };
+    //     const result = await client.query(preparedQuery);
+    //     return result.rows;
+    // },
+
+
+
+
+
+
+
+
+    async editDuplicateStatus(explorerId, cardId, newDuplicateData) {
+        const preparedQuery = {
+            text: `
+            UPDATE explorer_has_cards
+            SET duplicate = $3
+            WHERE explorer_id = $1
+            AND card_id = $2
+            `,
+            values: [explorerId, cardId, newDuplicateData]
+        };
+        await client.query(preparedQuery);
+    },
+
+
     async getCardsForOneExplorer(explorerId) {
         const preparedQuery = {
             text: `

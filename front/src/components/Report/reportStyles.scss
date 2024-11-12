@@ -1,3 +1,5 @@
+@use 'src/styles/vars';
+
 .report {
     padding-top: 7rem !important;
 }
@@ -18,21 +20,66 @@
 }
 
 .report-card {
-    border-color: rgba(240, 122, 26, 1) !important;
+    border-color: vars.$primary-color !important;
     border-width: medium !important;
 
-    &:checked {
-        border-color: rgb(22, 188, 144) !important;
+    &-selected {
+        border-color: vars.$secondary-color !important;
+        border-width: medium !important;
     }
 }
 
+.hidden {
+    display: none;
+}
+
+.custom-button {
+    font-weight: 500;
+    color: #fff;
+    background-color: vars.$primary-color;
+    border: none;
+    border-radius: 27px;
+    padding: 0.375rem 0.75rem;
+
+    &:hover {
+        background-color: lighten(vars.$primary-color, 10%);
+        border-color: lighten(vars.$primary-color, 10%);
+    }
+
+    &:focus {
+        box-shadow: vars.$primary-color;
+    }
+
+    &:active {
+        background-color: darken(vars.$primary-color, 10%);
+        border-color: darken(vars.$primary-color, 10%);
+    }
+
+}
+
+.selectall-button {
+    font-weight: 500;
+    color: vars.$primary-color;
+    background-color: #fff;
+    border: none;
+}
 
 @media (min-width: 768px) { /* This targets below the md breakpoint */
     .report {
         width: 50% !important; /* Reduce the width */
 
-        &-card {
-            width: 60%;
+        &-card, &-card-selected {
+            width: 60%;   
+        }
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1200px) { /* This targets below the md breakpoint */
+    .report {
+        width: 50% !important; /* Reduce the width */
+
+        &-card, &-card-selected {
+            width: 80%;   
         }
     }
 }

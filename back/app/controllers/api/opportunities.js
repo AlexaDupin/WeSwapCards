@@ -2,18 +2,6 @@ const datamapper = require("../../models/datamapper");
 
 const opportunitiesController = {
     async getOpportunities(req, res) {
-        explorerId = req.params.explorerId;
-
-            try {
-                // const explorers = await datamapper.getAllExplorers();
-                const explorer = await datamapper.getExplorerInfoByExplorerId(explorerId);
-
-                res.render('opportunities', {explorer, title: "Mes opportunités"});
-            } catch (error) {
-                res.status(500).send(error);
-            }
-    },
-    async handleOpportunities(req, res) {
         const explorerId = req.params.explorerId;
 
         try {
@@ -25,13 +13,13 @@ const opportunitiesController = {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     },
-    async getOpportunitiesCountForOnePlaceForOneExplorer(req, res) {
+    async getCountForOnePlaceForOneExplorer(req, res) {
         const explorerId = Number(req.params.explorerId);
         const placeId = Number(req.params.placeId);
 
         try {
-            const opportunitiesCount = await datamapper.getOpportunitiesCountForOnePlaceForOneExplorer(explorerId, placeId);
-            res.status(200).json(opportunitiesCount);
+            const count = await datamapper.getCountForOnePlaceForExplorer(explorerId, placeId);
+            res.status(200).json(count);
         } catch (error) {
             console.error('Error adding cards to explorer:', error);
             res.status(500).json({ error: 'Internal Server Error' });
