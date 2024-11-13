@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import {
 	Form,
 	Row,
-  Container
+  Container,
+  Alert
 } from "react-bootstrap";
 
 import axios from 'axios';
@@ -20,6 +21,7 @@ function Report({
   const [selectedCards, setSelectedCards] = useState([]);
   const [duplicates, setDuplicates] = useState([]);
   const [hidden, setHidden] = useState(true);
+  const [hiddenAlert, setHiddenAlert] = useState(true);
 
   const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -108,7 +110,8 @@ function Report({
   console.log("duplicates", duplicates);
 
   // On submit, send selected cards and duplicate selection to db
-  const handleSubmit = async () => {
+  const handleSubmit = async (event) => {
+      event.preventDefault();
       // Extracting ids of selected cards and duplicates
       const selectedCardsIds = selectedCards.map(item => item.id);
       const duplicatesIds = duplicates.map(item => item.id);
@@ -121,16 +124,25 @@ function Report({
 
       try {
         const response = await axios.post(
-          `${baseUrl}/declare/${explorerId}`,
+          `${baseUrl}/report/${explorerId}`,
           payload,
         )
         console.log(response.data);
+        console.log("RESPONSE", response);
+
+        if (response.status === 201) {
+          setHiddenAlert(false);
+          setHidden(true);
+        } else {
+        console.error('Failed to submit cards');
+        }
 
       } catch (error) {
         console.log(error.data);
     }
   };
 
+  console.log("hiddenAlert", hiddenAlert);
   // useEffect so that data is fetched on mount
   useEffect(
     () => {
@@ -149,6 +161,7 @@ function Report({
           aria-label="Select a place" 
           onChange={(e) => {
             setHidden(false)
+            setHiddenAlert(true);
             handleSelectPlace(e.target.value)
           }}
         >
@@ -162,6 +175,12 @@ function Report({
           ))}
         </Form.Select>
       </Form.Group>
+
+      <Alert 
+      variant="success"
+      className={hiddenAlert ? 'hidden-alert' : ''}>
+          Your cards have been logged!
+      </Alert>
 
       <Form.Group 
         className={hidden ? 'hidden' : 'mb-5'} 

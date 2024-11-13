@@ -31,7 +31,7 @@ router
     .get(reportController.getDuplicateCards);
 
 router
-    .route('/declare/:explorerId')
+    .route('/report/:explorerId')
     .post(reportController.addCardsToExplorer);
 
 router
