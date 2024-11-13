@@ -72,6 +72,21 @@ module.exports = {
         );
         return preparedQuery.rows[0];
     },
+    async checkDuplicateStatus(explorerId, cardId) {
+        const preparedQuery = {
+            text: `
+            SELECT duplicate FROM explorer_has_cards
+            WHERE explorer_id = $1
+            AND card_id = $2
+            `,
+            values: [explorerId, cardId]
+        };
+        const result = await client.query(preparedQuery);
+        if (result.rowCount > 0) {
+            return result.rows[0];
+        }
+        return null;
+    },
     async editExplorerHasCard(duplicateValue, explorerId, cardId) {
         const preparedQuery = {
             text: `
@@ -126,8 +141,14 @@ module.exports = {
     async getCardsByPlaceForOneExplorer(explorerId) {
         const preparedQuery = {
             text: `
-            SELECT p.name AS place_name, JSON_AGG (ex.* ORDER BY c.number) AS cards FROM explorercards_with_duplicate_by_place AS ex
-            JOIN card AS c ON c.id = ex.id
+            SELECT 
+                p.name AS place_name, 
+                JSON_AGG(
+                    jsonb_build_object(
+                        'card', c,
+                        'duplicate', ehc.duplicate) 
+                    ORDER BY c.number) AS cards
+            FROM card AS c        
             JOIN explorer_has_cards AS ehc ON ehc.card_id = c.id
             JOIN place AS p ON p.id = c.place_id
             WHERE ehc.explorer_id = $1

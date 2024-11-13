@@ -42,9 +42,7 @@ function Login({
         `${baseUrl}/login`,
         data,
       )
-      
-      console.log(response);
-      const token = response.data.session.access_token;
+        const token = response.data.session.access_token;
 
         // Error if undefined is returned meaning that we don't have credentials in database
         if (token === undefined) {

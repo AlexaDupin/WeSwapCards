@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import CardPreview from '../CardPreview/CardPreview';
+import CardPreview from '../Place/CardPreview/CardPreview';
 
 import axios from 'axios';
 
@@ -17,7 +17,7 @@ function Place({
     const percentage = place.cards.length/9*100;
     const baseUrl = process.env.REACT_APP_BASE_URL;
 
-    // console.log(placeCards);
+    console.log(placeCards);
 
     const progressClassName = () => {
         if (percentage === 100) {
@@ -80,13 +80,13 @@ function Place({
         <div className="progress-bar-label">{place.cards.length}/9</div> 
     </div>
 
-    <div class="explorerCard-numbers" id="">
+    <div className="explorerCard-numbers" id="">
     {placeCards && placeCards.length > 0 ? (
           placeCards.map((card) => (
             <CardPreview
-              key={card.id}
-              card={card}
-              explorerId={explorerId}
+              key={card.card.id}
+              card={card.card}
+              duplicate={card.duplicate}
               handleDuplicateStatus={handleDuplicateStatus}
             />
             ))

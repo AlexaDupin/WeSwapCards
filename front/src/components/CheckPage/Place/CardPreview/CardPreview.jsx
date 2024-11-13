@@ -8,11 +8,9 @@ import './cardPreviewStyles.scss';
 
 function CardPreview({
     card,
+    duplicate,
     handleDuplicateStatus
 }) {
-  // Conditionally apply the className based on the duplicate status
-  const className = card.duplicate ? "card-square-duplicate" : "card-square";
-
     // Setting icon based on number of the card
   const iconMap = {
     1: Icon1Square,
@@ -33,9 +31,9 @@ function CardPreview({
       className="placeCards-container d-inline-flex"
     >
         <SelectedIcon 
-          className={className}
-          cardId={card.id}
-          duplicate={card.duplicate}
+          className={duplicate ? "card-square-duplicate" : "card-square"}
+          cardid={card.id}
+          duplicate={duplicate.toString()}
           onClick={() => handleDuplicateStatus(card.id, card.duplicate)}
           style={{ cursor: 'pointer' }}
         />    

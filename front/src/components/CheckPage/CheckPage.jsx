@@ -8,7 +8,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 
 import './checkPageStyles.scss';
-import Place from '../Place/Place';
+import Place from '../CheckPage/Place/Place';
 
 function CheckPage({
     explorerId, name
@@ -41,7 +41,7 @@ function CheckPage({
         {cardsByPlace && cardsByPlace.length > 0 ? (
           cardsByPlace.map((place) => (
             <Place
-              key={place.name}
+              key={place.place_name}
               place={place}
               explorerId={explorerId}
             />
