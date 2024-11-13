@@ -48,7 +48,7 @@ function Menu({
             <Col sm={12}>
                     <CustomButton
                     text="Check my cards"
-                    onClick={() => navigate('/login')}
+                    onClick={() => navigate('/check')}
                     />
             </Col>
             <Col sm={12}>

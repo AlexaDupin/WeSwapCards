@@ -7,6 +7,7 @@ import User from './components/User/User';
 import Menu from './components/Menu/Menu';
 import Report from './components/Report/Report';
 import Opportunities from './components/Opportunities/Opportunities';
+import CheckPage from './components/CheckPage/CheckPage';
 
 import usePersistState from './hooks/usePersistState';
 
@@ -104,7 +105,16 @@ function App() {
                   explorerId={explorerId}
                 />
               )}
-          />               
+          />
+          <Route
+              path="/check"
+              element={(
+                <CheckPage
+                  name={name}
+                  explorerId={explorerId}
+                />
+              )}
+          />                 
       </Routes>
     </div>
   );

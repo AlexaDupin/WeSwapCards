@@ -16,7 +16,6 @@ function Report({
   explorerId, name
 }) {
   const [places, setPlaces] = useState([]);
-  const [placeId, setPlaceId] = useState();
   const [cards, setCards] = useState([]);
   const [selectedCards, setSelectedCards] = useState([]);
   const [duplicates, setDuplicates] = useState([]);
@@ -36,7 +35,7 @@ function Report({
 
   // When a place is selected, fetch all cards in that place
   // + cards and duplicates already logged for this explorer in the db so they are highlighted
-  const handleSelectPlace = async () => {
+  const handleSelectPlace = async (placeId) => {
     try {
       const [allCards, explorerCards, explorerDuplicates] = await Promise.all([
         axios.get(`${baseUrl}/cards/${placeId}`), 
@@ -103,7 +102,7 @@ function Report({
     setDuplicates(cards)
   };
 
-  console.log("placeId", placeId);
+  // console.log("placeId", placeId);
   console.log("cards", cards);  
   console.log("selectedCards", selectedCards);
   console.log("duplicates", duplicates);
@@ -136,9 +135,8 @@ function Report({
   useEffect(
     () => {
       fetchAllPlaces();
-      handleSelectPlace();
     },
-    [placeId],
+    [],
   );
 
   return (
@@ -150,8 +148,8 @@ function Report({
         <Form.Select 
           aria-label="Select a place" 
           onChange={(e) => {
-            setPlaceId(e.target.value)
             setHidden(false)
+            handleSelectPlace(e.target.value)
           }}
         >
           <option>Select</option>
