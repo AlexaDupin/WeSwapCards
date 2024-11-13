@@ -48,9 +48,9 @@ router
 
 router
     .route('/explorercards/:explorerId/cards/:cardId/duplicate')
-    .get(explorerCardsController.getDuplicateStatus);
+    .patch(explorerCardsController.editDuplicateStatus);
 
-
+ 
     
 // OLD ROUTES //
 
@@ -73,7 +73,6 @@ router.post('/user', userController.getUserByUID);
 // router.post('/opportunities', opportunitiesController.handleOpportunities);
 
 
-// router.patch('/cards/:cardId/:explorerId/duplicate', explorerCardsController.editDuplicateStatus);
 
 
 module.exports = router;

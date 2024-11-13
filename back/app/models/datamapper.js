@@ -72,21 +72,6 @@ module.exports = {
         );
         return preparedQuery.rows[0];
     },
-    async checkDuplicateStatus(explorerId, cardId) {
-        const preparedQuery = {
-            text: `
-            SELECT duplicate FROM explorer_has_cards
-            WHERE explorer_id = $1
-            AND card_id = $2
-            `,
-            values: [explorerId, cardId]
-        };
-        const result = await client.query(preparedQuery);
-        if (result.rowCount > 0) {
-            return result.rows[0];
-        }
-        return null;
-    },
     async editExplorerHasCard(duplicateValue, explorerId, cardId) {
         const preparedQuery = {
             text: `
@@ -152,11 +137,23 @@ module.exports = {
             values: [explorerId],
         };
         const result = await client.query(preparedQuery);
-        console.log(result.rows);
+        // console.log(result.rows);
 
         return result.rows;
     },
-
+    async editDuplicateStatus(explorerId, cardId, newDuplicateData) {
+        const preparedQuery = {
+            text: `
+            UPDATE explorer_has_cards
+            SET duplicate = $3
+            WHERE explorer_id = $1
+            AND card_id = $2
+            `,
+            values: [explorerId, cardId, newDuplicateData]
+        };
+        const result = await client.query(preparedQuery);
+        console.log(result.command);
+    },
 
 
     // async getAllExplorers() {
@@ -175,18 +172,7 @@ module.exports = {
 
 
 
-    async editDuplicateStatus(explorerId, cardId, newDuplicateData) {
-        const preparedQuery = {
-            text: `
-            UPDATE explorer_has_cards
-            SET duplicate = $3
-            WHERE explorer_id = $1
-            AND card_id = $2
-            `,
-            values: [explorerId, cardId, newDuplicateData]
-        };
-        await client.query(preparedQuery);
-    },
+
 
 
 

@@ -11,14 +11,15 @@ const explorerCardsController = {
                 console.error('Error retrieving cards from explorer:', error);
                 res.status(500).json({ error: 'Internal Server Error' });            }
     },
-    async getDuplicateStatus(req, res) {
+    async editDuplicateStatus(req, res) {
         const cardId = Number(req.params.cardId);
         const explorerId = Number(req.params.explorerId);
-
+        const newDuplicateData = req.body.duplicate;
+        console.log(cardId, explorerId, req.body);
+        
             try {
-                const duplicateStatus = await datamapper.checkDuplicateStatus(explorerId, cardId);
-                // console.log(cardId, duplicateStatus);
-                res.status(200).json(duplicateStatus);
+                await datamapper.editDuplicateStatus(explorerId, cardId, newDuplicateData);
+                res.status(200).json({ message: `Update done to ${cardId}` });
             } catch (error) {
                 console.error('Error retrieving cards from explorer:', error);
                 res.status(500).json({ error: 'Internal Server Error' });            }

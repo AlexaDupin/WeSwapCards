@@ -43,6 +43,7 @@ function CheckPage({
             <Place
               key={place.name}
               place={place}
+              explorerId={explorerId}
             />
             ))
             ) : (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {Icon1Square, Icon2Square, Icon3Square,Icon4Square,
     Icon5Square,Icon6Square,Icon7Square,Icon8Square,Icon9Square} from "react-bootstrap-icons";
 
@@ -8,24 +8,12 @@ import './cardPreviewStyles.scss';
 
 function CardPreview({
     card,
+    handleDuplicateStatus
 }) {
-    const [className, setClassName] = useState('card-square');
-    console.log(card);
+  // Conditionally apply the className based on the duplicate status
+  const className = card.duplicate ? "card-square-duplicate" : "card-square";
 
-    const setDuplicateStatus = async () => {
-        try {
-          if (card.duplicate) {
-            setClassName("card-square-duplicate");
-        } else {
-            setClassName("card-square");
-        }
-
-        } catch (error) {
-          console.log(error);
-        }
-    };
-
-      // Setting icon based on number of the card
+    // Setting icon based on number of the card
   const iconMap = {
     1: Icon1Square,
     2: Icon2Square,
@@ -40,16 +28,17 @@ function CardPreview({
 
   const SelectedIcon = iconMap[card.number] || Icon1Square;
     
-  useEffect(
-    () => {
-    setDuplicateStatus()
-    },
-    [],
-  );
-
   return (
-    <div class="placeCards-container d-inline-flex">
-        <SelectedIcon className={className}/>    
+    <div 
+      className="placeCards-container d-inline-flex"
+    >
+        <SelectedIcon 
+          className={className}
+          cardId={card.id}
+          duplicate={card.duplicate}
+          onClick={() => handleDuplicateStatus(card.id, card.duplicate)}
+          style={{ cursor: 'pointer' }}
+        />    
     </div>
     )
 }

@@ -1,21 +1,57 @@
 import React, { useState, useEffect } from 'react';
 import CardPreview from '../CardPreview/CardPreview';
 
+import axios from 'axios';
+
 import PropTypes from 'prop-types';
 
 import './placeStyles.scss';
 
 function Place({
     place,
+    explorerId
 }) {
-    const percentage = place.cards.length/9*100;
+    const [placeCards, setPlaceCards] = useState(place.cards);
     const [className, setClassName] = useState('progress-bar');
+
+    const percentage = place.cards.length/9*100;
+    const baseUrl = process.env.REACT_APP_BASE_URL;
+
+    // console.log(placeCards);
 
     const progressClassName = () => {
         if (percentage === 100) {
             setClassName("progress-bar-full");
         } else {
             setClassName("progress-bar");
+        }
+    };
+
+    const handleDuplicateStatus = async (cardId, currentDuplicateStatus) => {
+        const updatedDuplicateStatus = !currentDuplicateStatus;
+
+        try {
+            const response = await axios.patch(
+              `${baseUrl}/explorercards/${explorerId}/cards/${cardId}/duplicate`, {
+                duplicate: updatedDuplicateStatus,
+              });
+  
+            //   setHasDuplicate(!hasDuplicate);
+            if (response.status === 200) {
+                const updatedCard = response.data;  // Assuming the server returns the updated card object
+                console.log("handleDuplicateStatus", updatedCard);
+
+                // Update the local state to reflect the change
+                setPlaceCards((prevPlaceCards) => {
+                    return prevPlaceCards.map((card) =>
+                    card.id === cardId ? { ...card, duplicate: updatedDuplicateStatus } : card
+                    );
+                });
+            } else {
+              console.error('Failed to update duplicate status');
+            }
+        } catch (error) {
+          console.log(error);
         }
     };
 
@@ -45,11 +81,13 @@ function Place({
     </div>
 
     <div class="explorerCard-numbers" id="">
-    {place.cards && place.cards.length > 0 ? (
-          place.cards.map((card) => (
+    {placeCards && placeCards.length > 0 ? (
+          placeCards.map((card) => (
             <CardPreview
               key={card.id}
               card={card}
+              explorerId={explorerId}
+              handleDuplicateStatus={handleDuplicateStatus}
             />
             ))
             ) : (
