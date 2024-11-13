@@ -7,10 +7,8 @@ import './placeStyles.scss';
 
 function Place({
     place,
-    placeCards,
-    explorerId
 }) {
-    const percentage = placeCards.length/9*100;
+    const percentage = place.cards.length/9*100;
     const [className, setClassName] = useState('progress-bar');
 
     const progressClassName = () => {
@@ -47,12 +45,11 @@ function Place({
     </div>
 
     <div class="explorerCard-numbers" id="">
-    {placeCards && placeCards.length > 0 ? (
-          placeCards.map((card) => (
+    {place.cards && place.cards.length > 0 ? (
+          place.cards.map((card) => (
             <CardPreview
               key={card.id}
               card={card}
-              explorerId={explorerId}
             />
             ))
             ) : (

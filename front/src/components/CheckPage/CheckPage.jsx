@@ -14,7 +14,6 @@ function CheckPage({
     explorerId, name
   }) {
     const [cardsByPlace, setCardsByPlace] = useState([]);
-    console.log(explorerId);
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -44,8 +43,6 @@ function CheckPage({
             <Place
               key={place.name}
               place={place}
-              placeCards={place.cards}
-              explorerId={explorerId}
             />
             ))
             ) : (

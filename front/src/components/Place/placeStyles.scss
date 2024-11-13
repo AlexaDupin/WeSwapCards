@@ -10,17 +10,17 @@
 }
 
 .progress {
-    height: 0.5rem;
+    height: 0.5rem !important;
 
     &-bar {
-        background-color: vars.$primary-color;
+        background-color: vars.$primary-color !important;
 
         &-full {
             background-color: vars.$secondary-color;
         }
     
         &-label {
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             margin-left: 1rem;
         }
     }

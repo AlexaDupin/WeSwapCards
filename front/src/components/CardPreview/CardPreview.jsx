@@ -2,15 +2,12 @@ import React, { useState, useEffect } from 'react';
 import {Icon1Square, Icon2Square, Icon3Square,Icon4Square,
     Icon5Square,Icon6Square,Icon7Square,Icon8Square,Icon9Square} from "react-bootstrap-icons";
 
-import axios from 'axios';
-
 import PropTypes from 'prop-types';
 
 import './cardPreviewStyles.scss';
 
 function CardPreview({
     card,
-    explorerId
 }) {
     const [className, setClassName] = useState('card-square');
     console.log(card);
@@ -43,7 +40,6 @@ function CardPreview({
 
   const SelectedIcon = iconMap[card.number] || Icon1Square;
     
-
   useEffect(
     () => {
     setDuplicateStatus()
@@ -52,11 +48,10 @@ function CardPreview({
   );
 
   return (
-    
     <div class="placeCards-container d-inline-flex">
         <SelectedIcon className={className}/>    
     </div>
-)
+    )
 }
 
 CardPreview.propTypes = {
