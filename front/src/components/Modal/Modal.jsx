@@ -25,10 +25,38 @@ function OpportunitiesModal() {
           </Modal.Header>
           <Modal.Body>
               <ul>To help you prioritize, here are some hints:<br /><br />
-              <li>- white card: you are still missing quite a lot of cards in this chapter</li><br />
-              <li>- orange: this chapter is getting interesting</li><br />
-              <li>- green: you are almost done with this chapter!</li><br />
-              <li>- shiny card: this is the card you have been waiting for, the last one in this chapter!</li>
+              <li>
+                <button
+                  className="low-card" 
+                > 
+                White card
+                </button>
+                <p>You are still missing quite a lot of cards in this chapter</p>
+              </li><br />
+              <li>
+                <button
+                  className="custom-button" 
+                > 
+                Orange card
+                </button>
+                <p>This chapter is getting interesting</p>
+              </li><br />
+              <li>
+                <button
+                  className="key-card" 
+                > 
+                Green card
+                </button>
+                <p>You are almost done with this chapter!</p>
+              </li><br />
+              <li>
+                <button
+                  className="star-card" 
+                > 
+                Shiny card
+                </button>
+                <p>This is the card you have been waiting for, the last one in this chapter!</p>
+              </li>
               </ul>
             </Modal.Body>
           <Modal.Footer>
