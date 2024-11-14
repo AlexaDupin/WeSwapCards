@@ -21,7 +21,12 @@ function Report({
   const [selectedCards, setSelectedCards] = useState([]);
   const [duplicates, setDuplicates] = useState([]);
   const [hidden, setHidden] = useState(true);
+  const [hiddenDuplicates, setHiddenDuplicates] = useState(true);
+
+  // Alert states
   const [hiddenAlert, setHiddenAlert] = useState(true);
+  const [variant, setVariant] = useState('success');
+  const [message, setMessage] = useState('');
 
   const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -51,11 +56,22 @@ function Report({
       setCards(allCards.data.cards);
       setSelectedCards(explorerCards.data.cards);
       setDuplicates(explorerDuplicates.data.cards);
-
+ 
     } catch (error) {
       console.log(error);
     }
   };
+
+  const showDuplicateSection = () => {
+    if (selectedCards.length > 0) {
+      setHidden(false)
+      setHiddenAlert(true);
+      setHiddenDuplicates(false);
+    } else {
+      console.log("NO SELECTED CARDS!!!!!");
+      setHiddenDuplicates(true)
+    }
+  }
 
   // Add card to selected cards if not in it
   const handleCardSelection = (card) => {
@@ -105,7 +121,7 @@ function Report({
   };
 
   // console.log("placeId", placeId);
-  console.log("cards", cards);  
+  // console.log("cards", cards);  
   console.log("selectedCards", selectedCards);
   console.log("duplicates", duplicates);
 
@@ -127,29 +143,46 @@ function Report({
           `${baseUrl}/report/${explorerId}`,
           payload,
         )
-        console.log(response.data);
         console.log("RESPONSE", response);
 
         if (response.status === 201) {
+          setVariant("success");
+          setMessage("Your cards have been logged!");
           setHiddenAlert(false);
           setHidden(true);
         } else {
-        console.error('Failed to submit cards');
+          setVariant("danger");
+          setMessage("Oops, there was an issue and your cards haven't been logged");
+          setHiddenAlert(false);
+          setHidden(true);
+          console.error("Failed to submit cards");
         }
 
       } catch (error) {
+        setVariant("danger");
+        setMessage("Oops, there was an issue and your cards haven't been logged");
+        setHiddenAlert(false);
+        setHidden(true);
         console.log(error.data);
     }
   };
 
-  console.log("hiddenAlert", hiddenAlert);
-  // useEffect so that data is fetched on mount
   useEffect(
     () => {
       fetchAllPlaces();
-    },
+      showDuplicateSection();
+      },
     [],
   );
+
+  useEffect(
+    () => {
+      showDuplicateSection();
+      },
+    [selectedCards],
+  );
+
+
 
   return (
     <Container className="report">
@@ -160,8 +193,6 @@ function Report({
         <Form.Select 
           aria-label="Select a place" 
           onChange={(e) => {
-            setHidden(false)
-            setHiddenAlert(true);
             handleSelectPlace(e.target.value)
           }}
         >
@@ -177,9 +208,9 @@ function Report({
       </Form.Group>
 
       <Alert 
-      variant="success"
+      variant={variant}
       className={hiddenAlert ? 'hidden-alert' : ''}>
-          Your cards have been logged!
+        {message}      
       </Alert>
 
       <Form.Group 
@@ -211,7 +242,7 @@ function Report({
       </Form.Group>
 
       <Form.Group 
-        className={hidden ? 'hidden' : 'mb-5'}  
+        className={hiddenDuplicates ? 'hidden' : 'mb-5'}  
         controlId="formGroupEmail">
         <Form.Label className="report-label">Click on the cards you have duplicates for (2 or more)</Form.Label>
         
@@ -238,7 +269,7 @@ function Report({
       </Form.Group>
     
       <button 
-        className={hidden ? 'hidden' : 'custom-button'}>
+        className={hidden ? 'hidden' : 'custom-button' && hiddenDuplicates ? 'hidden' : 'custom-button'}>
         Submit these cards
       </button>
 
