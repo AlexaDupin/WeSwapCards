@@ -20,9 +20,9 @@ function Report({
   const [cards, setCards] = useState([]);
   const [selectedCards, setSelectedCards] = useState([]);
   const [duplicates, setDuplicates] = useState([]);
+  // Showing sections at a time
   const [hidden, setHidden] = useState(true);
   const [hiddenDuplicates, setHiddenDuplicates] = useState(true);
-
   // Alert states
   const [hiddenAlert, setHiddenAlert] = useState(true);
   const [variant, setVariant] = useState('success');
@@ -43,6 +43,8 @@ function Report({
   // When a place is selected, fetch all cards in that place
   // + cards and duplicates already logged for this explorer in the db so they are highlighted
   const handleSelectPlace = async (placeId) => {
+    console.log(placeId);
+
     try {
       const [allCards, explorerCards, explorerDuplicates] = await Promise.all([
         axios.get(`${baseUrl}/cards/${placeId}`), 
@@ -68,7 +70,6 @@ function Report({
       setHiddenAlert(true);
       setHiddenDuplicates(false);
     } else {
-      console.log("NO SELECTED CARDS!!!!!");
       setHiddenDuplicates(true)
     }
   }
@@ -125,7 +126,7 @@ function Report({
   console.log("selectedCards", selectedCards);
   console.log("duplicates", duplicates);
 
-  // On submit, send selected cards and duplicate selection to db
+  // On submit, log selected cards and duplicate selection into db
   const handleSubmit = async (event) => {
       event.preventDefault();
       // Extracting ids of selected cards and duplicates
@@ -150,11 +151,13 @@ function Report({
           setMessage("Your cards have been logged!");
           setHiddenAlert(false);
           setHidden(true);
+          setHiddenDuplicates(true);
         } else {
           setVariant("danger");
           setMessage("Oops, there was an issue and your cards haven't been logged");
           setHiddenAlert(false);
           setHidden(true);
+          setHiddenDuplicates(true);
           console.error("Failed to submit cards");
         }
 
@@ -163,6 +166,7 @@ function Report({
         setMessage("Oops, there was an issue and your cards haven't been logged");
         setHiddenAlert(false);
         setHidden(true);
+        setHiddenDuplicates(true);
         console.log(error.data);
     }
   };
@@ -170,7 +174,6 @@ function Report({
   useEffect(
     () => {
       fetchAllPlaces();
-      showDuplicateSection();
       },
     [],
   );
@@ -183,7 +186,6 @@ function Report({
   );
 
 
-
   return (
     <Container className="report">
     <Form onSubmit={handleSubmit}>
@@ -193,10 +195,13 @@ function Report({
         <Form.Select 
           aria-label="Select a place" 
           onChange={(e) => {
-            handleSelectPlace(e.target.value)
+            const selectedValue = e.target.value;
+            if (selectedValue !== "") {
+              handleSelectPlace(selectedValue);
+            }
           }}
         >
-          <option>Select</option>
+          <option value="">Select</option>
           {places.map((place) => (
             <option 
               key={place.id}
