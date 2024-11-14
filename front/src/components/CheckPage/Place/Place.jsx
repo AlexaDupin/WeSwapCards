@@ -17,7 +17,7 @@ function Place({
     const percentage = place.cards.length/9*100;
     const baseUrl = process.env.REACT_APP_BASE_URL;
 
-    console.log(placeCards);
+    // console.log(placeCards);
 
     const progressClassName = () => {
         if (percentage === 100) {

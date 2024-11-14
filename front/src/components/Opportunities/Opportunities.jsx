@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Container
+    Container,
+    Spinner
 } from "react-bootstrap";
-import Opportunity from '../Opportunity/Opportunity';
+import Opportunity from './Opportunity/Opportunity';
 
 import axios from 'axios';
 
@@ -15,37 +16,65 @@ function Opportunities({
   }) {
     const [opportunities, setOpportunities] = useState([]);
     const [message, setMessage] = useState('');
-    console.log(explorerId);
+    const [loading, setLoading] = useState(true);
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
 
     const fetchOpportunities = async () => {
-        try {
-          const response = await axios.get(`${baseUrl}/opportunities/${explorerId}`);
-          const fetchedOpportunities = response.data;
-          console.log("OPPORTUNITIES", fetchedOpportunities);
-          setOpportunities(fetchedOpportunities);
+      try {
+        // Fetch opportunities
+        const response = await axios.get(`${baseUrl}/opportunities/${explorerId}`);
+        const fetchedOpportunities = response.data;
+        console.log("OPPORTUNITIES", fetchedOpportunities);
+  
+        // Fetch the count for each opportunity and determine the className
+        const opportunitiesWithClassNames = await Promise.all(
+          fetchedOpportunities.map(async (opportunity) => {
+            const countResponse = await axios.get(`${baseUrl}/opportunities/${explorerId}/${opportunity.place_id}`);
+            const count = countResponse.data[0].count;
+            
+            // Determine className based on count
+            let className = 'custom-button';
+            if (count >= 8) { // Shiny
+              className = 'star-card';
+            } else if (count >= 6 && count < 8) { // Green (Orange is 5)
+              className = 'key-card';
+            } else if (count <= 4) { // White
+              className = 'low-card';
+            }
 
-          if (fetchedOpportunities.length === 1) {
-            setMessage(`Cool ${name}, you have 1 opportunity!`)
-          } else if (fetchedOpportunities.length > 1) {
-            setMessage(`Amazing ${name}, you have ${fetchedOpportunities.length} opportunities!`)
-          }
+            return { ...opportunity, className }; // Add the className to each opportunity
+          })
+        );
+  
+        // Update the opportunities state with the class names
+        setOpportunities(opportunitiesWithClassNames);
+        setLoading(false);
 
-        } catch (error) {
-          console.log(error);
+        // Set the message based on number of opportunities
+        if (fetchedOpportunities.length === 1) {
+          setMessage(`Cool ${name}, you have 1 opportunity!`);
+        } else if (fetchedOpportunities.length > 1) {
+          setMessage(`Amazing ${name}, you have ${fetchedOpportunities.length} opportunities!`);
         }
+      } catch (error) {
+        console.log(error);
+      }
     };
+  
+    useEffect(() => {
+      fetchOpportunities();
+    }, []);
 
-
-
-    useEffect(
-      () => {
-      fetchOpportunities()
-      },
-      [],
-    );
-
+    if (loading) {
+      return <Container className="opportunities">
+       <Spinner 
+        animation="border"
+        className="spinner" 
+       />
+       <p>Looking for your opportunities...</p>
+      </Container>
+    }
 
   return (
     <Container className="opportunities">
@@ -57,6 +86,7 @@ function Opportunities({
               key={opportunity.id}
               opportunity={opportunity}
               explorerId={explorerId}
+              className={opportunity.className}
             />
             ))
             ) : (
