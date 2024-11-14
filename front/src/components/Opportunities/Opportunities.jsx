@@ -4,6 +4,7 @@ import {
     Spinner
 } from "react-bootstrap";
 import Opportunity from './Opportunity/Opportunity';
+import OpportunitiesModal from '../Modal/Modal';
 
 import axios from 'axios';
 
@@ -78,6 +79,7 @@ function Opportunities({
 
   return (
     <Container className="opportunities">
+      <OpportunitiesModal />
         <p>{message}</p>
 
         {opportunities && opportunities.length > 0 ? (

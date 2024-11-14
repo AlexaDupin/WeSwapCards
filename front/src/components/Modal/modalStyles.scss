@@ -1,0 +1,15 @@
+@use 'src/styles/vars';
+
+.questionBtn {
+    position: fixed;
+    top: 60px;
+    right: 10px;
+    background-color: white;
+    color: black;
+    font-weight: 500;
+    border: 1px solid;
+    border-color: black;
+    border-radius: 27px;
+    padding: 0.3rem 0.8rem;
+    margin: 0.5rem;
+}
