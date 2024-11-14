@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Container
+    Container,
+    Spinner
 } from "react-bootstrap";
 
 import axios from 'axios';
@@ -14,6 +15,7 @@ function CheckPage({
     explorerId, name
   }) {
     const [cardsByPlace, setCardsByPlace] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -23,6 +25,8 @@ function CheckPage({
           const fetchedCardsByPlace = response.data;
           console.log("fetchedCardsByPlace", fetchedCardsByPlace);
           setCardsByPlace(fetchedCardsByPlace);
+          setLoading(false);
+
         } catch (error) {
           console.log(error);
         }
@@ -35,6 +39,14 @@ function CheckPage({
       [],
     );
 
+    if (loading) {
+      return <Container className="opportunities">
+       <Spinner 
+        animation="border"
+        className="spinner" 
+       />
+      </Container>
+    }
   return (
     <Container className="checkpage">
 
