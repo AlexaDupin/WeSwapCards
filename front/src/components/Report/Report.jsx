@@ -12,6 +12,7 @@ import PropTypes from 'prop-types';
 
 import './reportStyles.scss';
 import PlaceCard from '../PlaceCard/PlaceCard';
+import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 function Report({
   explorerId, name
@@ -279,6 +280,8 @@ function Report({
       </button>
 
     </Form>
+    <ScrollToTop />
+
     </Container>
 )
 }

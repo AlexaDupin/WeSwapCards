@@ -9,6 +9,7 @@ import OpportunitiesModal from '../Modal/Modal';
 import axios from 'axios';
 
 import PropTypes from 'prop-types';
+import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 import './opportunitiesStyles.scss';
 
@@ -94,6 +95,8 @@ function Opportunities({
             ) : (
               <div>Unfortunately, you don't have any opportunities at the moment, {name}.</div>
         )}
+        
+      <ScrollToTop />
 
     </Container>
 )

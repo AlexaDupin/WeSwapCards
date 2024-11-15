@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 
 import './checkPageStyles.scss';
 import Place from '../CheckPage/Place/Place';
+import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 function CheckPage({
     explorerId, name
@@ -62,6 +63,7 @@ function CheckPage({
               <div>Unable to retrieve your data, {name}.</div>
         )}
 
+      <ScrollToTop />
     </Container>
 )
 }

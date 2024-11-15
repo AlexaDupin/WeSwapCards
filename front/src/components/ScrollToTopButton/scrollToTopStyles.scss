@@ -1,0 +1,21 @@
+@use 'src/styles/vars';
+
+.top-icon {
+    position: fixed;
+    bottom: 40px;
+    right: 25px;
+    z-index: 20;
+    background-color: vars.$primary-color;
+    border: none;
+    border-radius: 50%;
+    height: 2rem;
+    width: 2rem;
+    color: #fff;
+    cursor: pointer;
+    // transition: all .5s ease-in-out;
+    padding: 0.3rem;
+
+    &:hover{
+      background-color: lighten(vars.$primary-color, 10%);
+    }
+  }
