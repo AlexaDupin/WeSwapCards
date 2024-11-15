@@ -12,36 +12,32 @@ function Place({
     explorerId
 }) {
     const [placeCards, setPlaceCards] = useState(place.cards);
-    const [className, setClassName] = useState('progress-bar');
+    const [progressClassName, setProgressClassName] = useState('progress-bar');
 
-    const percentage = place.cards.length/9*100;
     const baseUrl = process.env.REACT_APP_BASE_URL;
 
-    // console.log(placeCards);
-
-    const progressClassName = () => {
+    const percentage = place.cards.length/9*100;
+    const attributeProgressClassName = () => {
         if (percentage === 100) {
-            setClassName("progress-bar-full");
+          setProgressClassName("progress-bar-full");
         } else {
-            setClassName("progress-bar");
+          setProgressClassName("progress-bar");
         }
     };
 
-    const handleDuplicateStatus = async (cardId, currentDuplicateStatus) => {
-        const updatedDuplicateStatus = !currentDuplicateStatus;
-
+    const handleDuplicateStatus = async (cardId, updatedDuplicateStatus) => {
+        // Update duplicate status in database
         try {
             const response = await axios.patch(
               `${baseUrl}/explorercards/${explorerId}/cards/${cardId}/duplicate`, {
                 duplicate: updatedDuplicateStatus,
               });
-  
-            //   setHasDuplicate(!hasDuplicate);
-            if (response.status === 200) {
-                const updatedCard = response.data;  // Assuming the server returns the updated card object
-                console.log("handleDuplicateStatus", updatedCard);
 
-                // Update the local state to reflect the change
+            if (response.status === 200) {
+                const confirmation = response.data;
+                console.log("handleDuplicateStatus", confirmation);
+
+                // Update duplicate status in state
                 setPlaceCards((prevPlaceCards) => {
                     return prevPlaceCards.map((card) =>
                     card.id === cardId ? { ...card, duplicate: updatedDuplicateStatus } : card
@@ -57,10 +53,12 @@ function Place({
 
     useEffect(
         () => {
-        progressClassName()
+        attributeProgressClassName()
         },
         [],
       );
+
+    // console.log("placeCards", placeCards);
 
   return (
     
@@ -70,9 +68,8 @@ function Place({
     </h1>
 
     <div className="container d-flex flex-row justify-content-center">
-        {/* <ProgressBar className="progress w-25 mb-3" now={now}/> */}
         <div className="progress w-25 mb-3">
-            <div role="progressbar" className={className} aria-valuenow={percentage} 
+            <div role="progressbar" className={progressClassName} aria-valuenow={percentage} 
             aria-valuemin="0" aria-valuemax="100" style={{width: `${percentage}%`}}>
             </div>
         </div>

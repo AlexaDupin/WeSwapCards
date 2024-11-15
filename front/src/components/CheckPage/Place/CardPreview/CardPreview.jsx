@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Icon1Square, Icon2Square, Icon3Square,Icon4Square,
     Icon5Square,Icon6Square,Icon7Square,Icon8Square,Icon9Square} from "react-bootstrap-icons";
 
@@ -9,9 +9,11 @@ import './cardPreviewStyles.scss';
 function CardPreview({
     card,
     duplicate,
-    handleDuplicateStatus
+    handleDuplicateStatus,
 }) {
-    // Setting icon based on number of the card
+  const [hasDuplicate, setHasDuplicate] = useState(duplicate);
+
+  // Setting icon based on number of the card
   const iconMap = {
     1: Icon1Square,
     2: Icon2Square,
@@ -26,15 +28,24 @@ function CardPreview({
 
   const SelectedIcon = iconMap[card.number] || Icon1Square;
     
+  const handleClick = () => {
+    // Toggle the local state for duplicate
+    const newDuplicateStatus = !hasDuplicate;
+    setHasDuplicate(newDuplicateStatus);
+    
+    // Notify the parent about the change
+    handleDuplicateStatus(card.id, newDuplicateStatus);
+  };
+
   return (
     <div 
       className="placeCards-container d-inline-flex"
     >
         <SelectedIcon 
-          className={duplicate ? "card-square-duplicate" : "card-square"}
+          className={hasDuplicate ? "card-square-duplicate" : "card-square"}
           cardid={card.id}
-          duplicate={duplicate.toString()}
-          onClick={() => handleDuplicateStatus(card.id, card.duplicate)}
+          duplicate={hasDuplicate.toString()}
+          onClick={handleClick}
           style={{ cursor: 'pointer' }}
         />    
     </div>

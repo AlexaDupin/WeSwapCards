@@ -43,7 +43,7 @@ function Report({
   // When a place is selected, fetch all cards in that place
   // + cards and duplicates already logged for this explorer in the db so they are highlighted
   const handleSelectPlace = async (placeId) => {
-    console.log(placeId);
+    // console.log(placeId);
 
     try {
       const [allCards, explorerCards, explorerDuplicates] = await Promise.all([
