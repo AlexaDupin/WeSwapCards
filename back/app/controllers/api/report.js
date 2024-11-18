@@ -74,7 +74,7 @@ const reportController = {
                     // console.log('hasDuplicate', hasDuplicate, cardId);
                     if (duplicateStatus.duplicate === hasDuplicate) {
                         console.log('Card already logged', selectedCardId);
-                    } else if (duplicateStatus.duplicate !== hasDuplicate) {
+                    } else if (duplicateStatus?.duplicate !== hasDuplicate) {
                         const result = await datamapper.editExplorerHasCard(hasDuplicate, explorerId, selectedCardId);
                         console.log("Change in duplicate", selectedCardId);
                         results.push(result)
