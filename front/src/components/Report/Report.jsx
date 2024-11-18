@@ -21,6 +21,8 @@ function Report({
   const [cards, setCards] = useState([]);
   const [selectedCards, setSelectedCards] = useState([]);
   const [duplicates, setDuplicates] = useState([]);
+  const [toBeDeleted, setToBeDeleted] = useState([]);
+
   // Showing sections at a time
   const [hidden, setHidden] = useState(true);
   const [hiddenDuplicates, setHiddenDuplicates] = useState(true);
@@ -84,6 +86,9 @@ function Report({
       if (isCardSelected) {
         // If already selected, remove the card from the array (deselect)
         console.log("TO REMOVE IN DATABASE")
+        setToBeDeleted((prevToBeDeleted) => { 
+          return [...prevToBeDeleted, card]
+        });
         return prevSelectedCards.filter(alreadySelectedCard => alreadySelectedCard.id !== card.id);
       } else {
         // If not selected, add the card to the array (select)
@@ -97,9 +102,6 @@ function Report({
     event.preventDefault();
     setSelectedCards(cards)
   };
-
-  // // Sort selected cards so that they can show in proper order in duplicate section
-  // const sortedCards = selectedCards.slice().sort((a, b) => a.id - b.id);
 
   // Add card to duplicate selection array if not in it
   const handleCardDuplicate = (card) => {
@@ -125,6 +127,7 @@ function Report({
 
   console.log("selectedCards", selectedCards);
   console.log("duplicates", duplicates);
+  console.log("toBeDeleted", toBeDeleted);
 
   // On submit, log selected cards and duplicate selection into db
   const handleSubmit = async (event) => {
@@ -132,12 +135,15 @@ function Report({
       // Extracting ids of selected cards and duplicates
       const selectedCardsIds = selectedCards.map(item => item.id);
       const duplicatesIds = duplicates.map(item => item.id);
-      console.log('LOGGING selectedCardsIds', selectedCardsIds);
+      const toBeDeletedIds = toBeDeleted.map(item => item.id);
+
       // Combine the data to send
       const payload = {
         selectedCardsIds,
-        duplicatesIds,     
+        duplicatesIds,
+        toBeDeletedIds     
       };
+      console.log('SUBMIT payload', payload);
 
       try {
         const response = await axios.post(

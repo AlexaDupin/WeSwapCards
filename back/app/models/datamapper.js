@@ -100,6 +100,19 @@ module.exports = {
         const result = await client.query(preparedQuery);
         return result.rows;
     },
+    async deleteCardFromExplorerHasCard(explorerId, cardId) {
+        const preparedQuery = {
+            text: `
+            DELETE FROM explorer_has_cards
+            WHERE explorer_id = $1
+            AND card_id = $2
+            `,
+            values: [explorerId, cardId]
+        };
+        // return preparedQuery.rows[0];
+        const result = await client.query(preparedQuery);
+        return result.rows;
+    },
     async getOpportunitiesForOneExplorer(explorerId) {
         const preparedQuery = {
             text: `
