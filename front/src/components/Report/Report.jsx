@@ -11,7 +11,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 
 import './reportStyles.scss';
-import PlaceCard from '../PlaceCard/PlaceCard';
+import PlaceCard from './PlaceCard/PlaceCard';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 function Report({
@@ -44,8 +44,6 @@ function Report({
   // When a place is selected, fetch all cards in that place
   // + cards and duplicates already logged for this explorer in the db so they are highlighted
   const handleSelectPlace = async (placeId) => {
-    // console.log(placeId);
-
     try {
       const [allCards, explorerCards, explorerDuplicates] = await Promise.all([
         axios.get(`${baseUrl}/cards/${placeId}`), 
@@ -73,17 +71,20 @@ function Report({
     } else {
       setHiddenDuplicates(true)
     }
-  }
+  };
 
   // Add card to selected cards if not in it
   const handleCardSelection = (card) => {
+    console.log("handleCardSelection", card);
+
     setSelectedCards((prevSelectedCards) => {
       // Check if the card is already selected (by matching the id)
-      const isCardSelected = prevSelectedCards.some(selectedCard => selectedCard.id === card.id);
+      const isCardSelected = prevSelectedCards.some(alreadySelectedCard => alreadySelectedCard.id === card.id);
 
       if (isCardSelected) {
         // If already selected, remove the card from the array (deselect)
-        return prevSelectedCards.filter(selectedCard => selectedCard.id !== card.id);
+        console.log("TO REMOVE IN DATABASE")
+        return prevSelectedCards.filter(alreadySelectedCard => alreadySelectedCard.id !== card.id);
       } else {
         // If not selected, add the card to the array (select)
         return [...prevSelectedCards, card];
@@ -97,8 +98,8 @@ function Report({
     setSelectedCards(cards)
   };
 
-  // Sort selected cards so that they can show in proper order in duplicate section
-  const sortedCards = selectedCards.slice().sort((a, b) => a.id - b.id);
+  // // Sort selected cards so that they can show in proper order in duplicate section
+  // const sortedCards = selectedCards.slice().sort((a, b) => a.id - b.id);
 
   // Add card to duplicate selection array if not in it
   const handleCardDuplicate = (card) => {
@@ -122,8 +123,6 @@ function Report({
     setDuplicates(cards)
   };
 
-  // console.log("placeId", placeId);
-  // console.log("cards", cards);  
   console.log("selectedCards", selectedCards);
   console.log("duplicates", duplicates);
 
@@ -222,7 +221,9 @@ function Report({
       <Form.Group 
         className={hidden ? 'hidden' : 'mb-5'} 
         controlId="formGroupEmail">
-        <Form.Label className="report-label">Click on the cards you have</Form.Label>
+        <Form.Label className="report-label">
+          Click on the cards you have
+        </Form.Label>
 
         <button 
           className={hidden ? 'hidden' : 'selectall-button mb-3'}
@@ -237,12 +238,12 @@ function Report({
             <PlaceCard
               key={card.id}
               card={card}
-              selectedCards={selectedCards} // Pass the selectedCards array
-              handleCardSelection={handleCardSelection} // Pass the selection handler
+              selectedCards={selectedCards} 
+              handleCardSelection={handleCardSelection} 
             />
             ))
             ) : (
-              <div>No cards available</div>  // Fallback UI if no cards
+              <div>No cards available</div> 
         )}
         </Row>
       </Form.Group>
@@ -250,7 +251,9 @@ function Report({
       <Form.Group 
         className={hiddenDuplicates ? 'hidden' : 'mb-5'}  
         controlId="formGroupEmail">
-        <Form.Label className="report-label">Click on the cards you have duplicates for (2 or more)</Form.Label>
+        <Form.Label className="report-label">
+          Click on the cards you have duplicates for (2 or more)
+        </Form.Label>
         
         <button 
           className={hidden ? 'hidden' : 'selectall-button mb-3'}
@@ -260,17 +263,21 @@ function Report({
         </button>
 
         <Row className="d-flex g-3">
-        {sortedCards.map((selectedCard) => (
-            <PlaceCard
-              key={selectedCard.id}
-              card={selectedCard}
-              selectedCards={selectedCards} // Pass the selectedCards array
-              handleCardSelection={handleCardSelection} // Pass the selection handler
-              isDuplicateSection={true} // Pass a prop to identify if it's in the second section
+        {cards && cards.length > 0 ? (
+          cards.map((duplicateCard) => (            
+          <PlaceCard
+              key={duplicateCard.id}
+              card={duplicateCard}
+              selectedCards={selectedCards} 
+              handleCardSelection={handleCardSelection}
+              isDuplicateSection={true} 
               handleCardDuplicate={handleCardDuplicate}
               duplicates={duplicates}
             />
-          ))}
+          ))
+          ) : (
+            <div>No duplicates available</div> 
+        )}
         </Row>
       </Form.Group>
     
