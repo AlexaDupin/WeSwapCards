@@ -22,7 +22,9 @@ import './registerStyles.scss';
 function Register({
   setUserUID,
   setName,
-  setExplorerId
+  setExplorerId,
+  setToken,
+  setIsLogged,
 }) {
     const { register, handleSubmit, watch, formState: { errors } } = useForm({
       defaultValues: {
@@ -30,6 +32,8 @@ function Register({
         password: "",
       },
     }); 
+
+    const [errMsg, setErrMsg] = useState('');
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
@@ -43,9 +47,18 @@ function Register({
         )
           console.log(response.data);
 
+          // Error if undefined is returned meaning that we don't have credentials in database
+          if (response.data.user === null) {
+          setErrMsg('There was an issue during registration.');
+          localStorage.clear();
+          // navigate('/register');
+          return;
+          }
+
           // Retrieve token from response and store it in local storage
           const token = response.data.session.access_token;
-          localStorage.setItem('token', token);
+          setToken(token);
+          setIsLogged(true);
           // Setting userUID from auth at App level
           setUserUID(response.data.user.id); 
           setName('');
@@ -176,6 +189,7 @@ function Register({
                 </Form.Group>
 
                 {errors.confirm_password && <p className="errors">{errors.confirm_password.message}</p>}
+                {<p className="errors">{errMsg}</p>}
 
                 <Card.Text className="">
                     <Link to="/login" className="link">Already have an account?</Link>

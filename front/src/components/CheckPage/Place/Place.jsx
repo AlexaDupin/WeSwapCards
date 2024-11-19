@@ -9,7 +9,8 @@ import './placeStyles.scss';
 
 function Place({
     place,
-    explorerId
+    explorerId,
+    token
 }) {
     const [placeCards, setPlaceCards] = useState(place.cards);
     const [progressClassName, setProgressClassName] = useState('progress-bar');
@@ -31,6 +32,11 @@ function Place({
             const response = await axios.patch(
               `${baseUrl}/explorercards/${explorerId}/cards/${cardId}/duplicate`, {
                 duplicate: updatedDuplicateStatus,
+              }
+              , {
+                headers: {
+                  authorization: token,
+                },
               });
 
             if (response.status === 200) {

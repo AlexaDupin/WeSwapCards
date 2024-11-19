@@ -13,14 +13,15 @@ import { PersonFill } from "react-bootstrap-icons";
 import axios from 'axios';
 import PropTypes from 'prop-types';
 
-import CustomButton from '../CustomButton/CustomButton';
+import CustomButton from '../../CustomButton/CustomButton';
 
 import './userStyles.scss';
 
 function User({
     userUID,
     setName,
-    setExplorerId
+    setExplorerId,
+    token
 }) {
     const { register, handleSubmit, formState: { errors } } = useForm({
       defaultValues: {
@@ -30,7 +31,7 @@ function User({
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
-    const token = localStorage.getItem('token'); // Retrieve token from local storage
+    // const token = localStorage.getItem('token'); // Retrieve token from local storage
 
     const onSubmit = async (data) => {
         try {

@@ -14,7 +14,7 @@ import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 import './opportunitiesStyles.scss';
 
 function Opportunities({
-    explorerId, name
+    explorerId, name, token
   }) {
     const [opportunities, setOpportunities] = useState([]);
     const [message, setMessage] = useState('');
@@ -25,14 +25,26 @@ function Opportunities({
     const fetchOpportunities = async () => {
       try {
         // Fetch opportunities
-        const response = await axios.get(`${baseUrl}/opportunities/${explorerId}`);
+        const response = await axios.get(
+          `${baseUrl}/opportunities/${explorerId}`
+          , {
+            headers: {
+              authorization: token,
+            },
+          });
         const fetchedOpportunities = response.data;
         console.log("OPPORTUNITIES", fetchedOpportunities);
   
         // Fetch the count for each opportunity and determine the className
         const opportunitiesWithClassNames = await Promise.all(
           fetchedOpportunities.map(async (opportunity) => {
-            const countResponse = await axios.get(`${baseUrl}/opportunities/${explorerId}/${opportunity.place_id}`);
+            const countResponse = await axios.get(
+              `${baseUrl}/opportunities/${explorerId}/${opportunity.place_id}`
+              , {
+                headers: {
+                  authorization: token,
+                },
+              });
             const count = countResponse.data[0].count;
             
             // Determine className based on count

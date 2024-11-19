@@ -3,13 +3,14 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header/Header';
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
-import User from './components/User/User';
+import User from './components/Register/User/User';
 import Menu from './components/Menu/Menu';
 import Report from './components/Report/Report';
 import Opportunities from './components/Opportunities/Opportunities';
 import CheckPage from './components/CheckPage/CheckPage';
 
 import usePersistState from './hooks/usePersistState';
+import useToken from './hooks/useToken';
 
 import { Routes, Route, Navigate } from 'react-router-dom';
 
@@ -26,10 +27,24 @@ function App() {
   const [userUID, setUserUID] = useState('');
   const [name, setName] = usePersistState('', 'name');
   const [explorerId, setExplorerId] = usePersistState('', 'explorerId');
+  // Hook created to manage token
+  const { token, setToken } = useToken();
+  const [isLogged, setIsLogged] = useState(false);
+
+  // To maintain login state to true on refresh
+  useEffect(
+    () => {
+      if (token) {
+        setIsLogged(true);
+      }
+    },
+    [],
+  );
 
   console.log("APP userUID", userUID);
   console.log("APP name", name);
   console.log("APP explorerId", explorerId);
+  console.log("isLogged", isLogged);
 
   useEffect(() => {
     setName(name);
@@ -56,6 +71,8 @@ function App() {
                   setUserUID={setUserUID}
                   setName={setName}
                   setExplorerId={setExplorerId}
+                  setToken={setToken}
+                  setIsLogged={setIsLogged}
                 />
               )}
           />  
@@ -66,54 +83,60 @@ function App() {
                   setUserUID={setUserUID}
                   setName={setName}
                   setExplorerId={setExplorerId}
+                  setToken={setToken}
+                  setIsLogged={setIsLogged}
                 />
               )}
           />
           <Route
               path="/register/user"
               element={(
-                <User 
+                <User
                   userUID={userUID}
                   setName={setName}
                   setExplorerId={setExplorerId}
+                  token={token}
                 />
               )}
           />
           <Route
               path="/menu"
-              element={(
+              element={isLogged ? (
                 <Menu 
+                  token={token}
                   name={name}
                   explorerId={explorerId}
                 />
-              )}
+              ) : <Navigate replace to="/login" />}
           />
           <Route
               path="/report"
-              element={(
+              element={isLogged ? (
                 <Report 
+                  token={token}
                   name={name}
                   explorerId={explorerId}
                 />
-              )}
-          />
+              ) : <Navigate replace to="/login" />}          />
           <Route
               path="/opportunities"
-              element={(
+              element={isLogged ? (
                 <Opportunities
+                  token={token}
                   name={name}
                   explorerId={explorerId}
                 />
-              )}
+              ) : <Navigate replace to="/login" />}
           />
           <Route
               path="/check"
-              element={(
+              element={isLogged ? (
                 <CheckPage
+                  token={token}
                   name={name}
                   explorerId={explorerId}
                 />
-              )}
+              ) : <Navigate replace to="/login" />}
           />                 
       </Routes>
     </div>

@@ -24,6 +24,12 @@ const userController  = {
       const { user, session, error } = response.data;
       console.log('SIGN UP data', response.data);
 
+      if (response.data.user === null) {
+        res.status(401).json({message: "There was an issue during registration.", user, session});
+      } else {
+        res.status(200).json({ user, session });
+      }
+
       if (error) {
         console.error('Supabase error:', error.message);
         res.status(401).json({ message: error.message });

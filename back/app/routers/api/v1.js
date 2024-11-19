@@ -32,22 +32,22 @@ router
 
 router
     .route('/report/:explorerId')
-    .post(controllerHandler(reportController.addCardsToExplorer));
+    .post(userController.authMiddleware, controllerHandler(reportController.addCardsToExplorer));
 
 router
     .route('/opportunities/:explorerId')
-    .get(controllerHandler(opportunitiesController.getOpportunities));
+    .get(userController.authMiddleware, controllerHandler(opportunitiesController.getOpportunities));
 
 router
     .route('/opportunities/:explorerId/:placeId')
-    .get(controllerHandler(opportunitiesController.getCountForOnePlaceForOneExplorer));
+    .get(userController.authMiddleware, controllerHandler(opportunitiesController.getCountForOnePlaceForOneExplorer));
 
 router
     .route('/explorercards/:explorerId')
-    .get(controllerHandler(explorerCardsController.getExplorerCardsByPlace));
+    .get(userController.authMiddleware, controllerHandler(explorerCardsController.getExplorerCardsByPlace));
 
 router
     .route('/explorercards/:explorerId/cards/:cardId/duplicate')
-    .patch(controllerHandler(explorerCardsController.editDuplicateStatus));
+    .patch(userController.authMiddleware, controllerHandler(explorerCardsController.editDuplicateStatus));
 
 module.exports = router;

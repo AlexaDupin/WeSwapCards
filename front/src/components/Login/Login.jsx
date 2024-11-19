@@ -22,7 +22,9 @@ import './loginStyles.scss';
 function Login({
   setUserUID,
   setName,
-  setExplorerId
+  setExplorerId,
+  setToken,
+  setIsLogged,
 }) {
     const { register, handleSubmit, formState: { errors } } = useForm({
       defaultValues: {
@@ -34,6 +36,7 @@ function Login({
     const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
     const [errMsg, setErrMsg] = useState('');
+    // const [token, setToken] = useState('');
 
   const onSubmit = async (data) => {
 
@@ -61,7 +64,9 @@ function Login({
         }
 
       // If OK, set token in props, retrieve token from response and store it in local storage
-      localStorage.setItem('token', token);
+      // localStorage.setItem('token', token);
+        setToken(token);
+        setIsLogged(true);
       // Setting userUID from auth at App level
       const userUID = response.data.user.id;
 

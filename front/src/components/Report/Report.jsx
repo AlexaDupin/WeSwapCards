@@ -15,7 +15,7 @@ import PlaceCard from './PlaceCard/PlaceCard';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 function Report({
-  explorerId, name
+  explorerId, name, token
 }) {
   const [places, setPlaces] = useState([]);
   const [cards, setCards] = useState([]);
@@ -25,6 +25,7 @@ function Report({
 
   // Showing sections at a time
   const [hidden, setHidden] = useState(true);
+  console.log("hidden", hidden);
   const [hiddenDuplicates, setHiddenDuplicates] = useState(true);
   // Alert states
   const [hiddenAlert, setHiddenAlert] = useState(true);
@@ -59,6 +60,8 @@ function Report({
       setCards(allCards.data.cards);
       setSelectedCards(explorerCards.data.cards);
       setDuplicates(explorerDuplicates.data.cards);
+      setHidden(false);
+
  
     } catch (error) {
       console.log(error);
@@ -148,8 +151,12 @@ function Report({
       try {
         const response = await axios.post(
           `${baseUrl}/report/${explorerId}`,
-          payload,
-        )
+          payload
+        , {
+          headers: {
+            authorization: token,
+          },
+        });
         console.log("RESPONSE", response);
 
         if (response.status === 201) {
