@@ -15,7 +15,7 @@ import useToken from './hooks/useToken';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import "bootstrap/dist/css/bootstrap.min.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './styles/_reset.css';
 import './styles/index.scss';
@@ -29,17 +29,7 @@ function App() {
   const [explorerId, setExplorerId] = usePersistState('', 'explorerId');
   // Hook created to manage token
   const { token, setToken } = useToken();
-  const [isLogged, setIsLogged] = useState(false);
-
-  // To maintain login state to true on refresh
-  useEffect(
-    () => {
-      if (token) {
-        setIsLogged(true);
-      }
-    },
-    [],
-  );
+  const isLogged = token !== null;
 
   console.log("APP userUID", userUID);
   console.log("APP name", name);
@@ -96,7 +86,6 @@ const location = useLocation();
                   setName={setName}
                   setExplorerId={setExplorerId}
                   setToken={setToken}
-                  setIsLogged={setIsLogged}
                 />
               )}
           />  
@@ -108,7 +97,6 @@ const location = useLocation();
                   setName={setName}
                   setExplorerId={setExplorerId}
                   setToken={setToken}
-                  setIsLogged={setIsLogged}
                 />
               )}
           />
@@ -127,7 +115,6 @@ const location = useLocation();
               path="/menu"
               element={isLogged ? (
                 <Menu 
-                  token={token}
                   name={name}
                   explorerId={explorerId}
                 />

@@ -24,7 +24,6 @@ function Login({
   setName,
   setExplorerId,
   setToken,
-  setIsLogged,
 }) {
     const { register, handleSubmit, formState: { errors } } = useForm({
       defaultValues: {
@@ -36,7 +35,6 @@ function Login({
     const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
     const [errMsg, setErrMsg] = useState('');
-    // const [token, setToken] = useState('');
 
   const onSubmit = async (data) => {
 
@@ -45,35 +43,30 @@ function Login({
         `${baseUrl}/login`,
         data,
       )
-        const token = response.data.session.access_token;
+      const token = response.data.session.access_token;
 
-        // Error if undefined is returned meaning that we don't have credentials in database
-        if (token === undefined) {
+      // Error if undefined is returned meaning that we don't have credentials in database
+      if (token === undefined) {
         setErrMsg('Your logins do not exist.');
         localStorage.clear();
         navigate('/login');
         return;
-        }
+      }
 
-        // Error if undefined is returned meaning that we don't have credentials in database
-        if (response.data.user === null) {
-          setErrMsg('Your logins do not exist.');
-          localStorage.clear();
-          navigate('/login');
-          return;
-        }
+      // Error if undefined is returned meaning that we don't have credentials in database
+      if (response.data.user === null) {
+        setErrMsg('Your logins do not exist.');
+        localStorage.clear();
+        navigate('/login');
+        return;
+      }
 
-      // If OK, set token in props, retrieve token from response and store it in local storage
-      // localStorage.setItem('token', token);
-        setToken(token);
-        setIsLogged(true);
-      // Setting userUID from auth at App level
+      // If OK, set token and other user infos in props
+      setToken(token);
       const userUID = response.data.user.id;
-
       setUserUID(userUID);
       setName('');
       setExplorerId('');
-
       // Retrieving explorer info from database
       const user = await axios.post(
         `${baseUrl}/login/user`,
@@ -82,13 +75,11 @@ function Login({
           authorization: token,
         },}
       )
-
       console.log("DM login response", user);
       setName(user.data.name);
       setExplorerId(user.data.id);
       localStorage.setItem('name', user.data.name);
       localStorage.setItem('explorerId', user.data.id);
-
       navigate('/menu');
 
     } catch (error) {

@@ -24,7 +24,6 @@ function Register({
   setName,
   setExplorerId,
   setToken,
-  setIsLogged,
 }) {
     const { register, handleSubmit, watch, formState: { errors } } = useForm({
       defaultValues: {
@@ -58,7 +57,6 @@ function Register({
           // Retrieve token from response and store it in local storage
           const token = response.data.session.access_token;
           setToken(token);
-          setIsLogged(true);
           // Setting userUID from auth at App level
           setUserUID(response.data.user.id); 
           setName('');
