@@ -25,7 +25,6 @@ function Report({
 
   // Showing sections at a time
   const [hidden, setHidden] = useState(true);
-  console.log("hidden", hidden);
   const [hiddenDuplicates, setHiddenDuplicates] = useState(true);
   // Alert states
   const [hiddenAlert, setHiddenAlert] = useState(true);
@@ -245,7 +244,7 @@ function Report({
           Select all
         </button>
 
-        <Row className="d-flex g-3">
+        <Row className="g-3">
         {cards && cards.length > 0 ? (
           cards.map((card) => (
             <PlaceCard

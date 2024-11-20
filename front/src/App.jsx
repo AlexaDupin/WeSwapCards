@@ -12,7 +12,7 @@ import CheckPage from './components/CheckPage/CheckPage';
 import usePersistState from './hooks/usePersistState';
 import useToken from './hooks/useToken';
 
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -31,46 +31,20 @@ function App() {
   const { token, setToken } = useToken();
   const isLogged = token !== null;
 
-  console.log("APP userUID", userUID);
-  console.log("APP name", name);
-  console.log("APP explorerId", explorerId);
-  console.log("isLogged", isLogged);
-
   useEffect(() => {
     setName(name);
     setExplorerId(explorerId);
     setUserUID(userUID)
 }, []);
 
-// Determine the title based on the current route
-const location = useLocation();
- let pageTitle;
- switch (location.pathname) {
-   case '/login':
-     pageTitle = 'Login';
-     break;
-   case '/register':
-    pageTitle = 'Sign up';
-    break;
-   case '/report':
-     pageTitle = 'Report my cards';
-     break;
-   case '/opportunities':
-    pageTitle = 'My opportunities';
-    break;
-   case '/check':
-     pageTitle = 'My cards';
-     break;
-   default:
-     pageTitle = 'WeSwapCards';
-     break;
- }
+console.log("APP userUID", userUID);
+console.log("APP name", name);
+console.log("APP explorerId", explorerId);
+console.log("isLogged", isLogged);
 
   return (
     <div className="App">
-      <Header 
-        title={pageTitle}
-      />
+      <Header />
       <Routes>
           <Route
               path="/"
@@ -129,7 +103,8 @@ const location = useLocation();
                   name={name}
                   explorerId={explorerId}
                 />
-              ) : <Navigate replace to="/login" />}          />
+              ) : <Navigate replace to="/login" />}
+          />
           <Route
               path="/opportunities"
               element={isLogged ? (

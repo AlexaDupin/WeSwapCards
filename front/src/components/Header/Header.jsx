@@ -6,17 +6,39 @@ import PropTypes from 'prop-types';
 
 import './headerStyles.scss';
 
-function Header({
-  title
-}) {
+function Header() {
   const location = useLocation();
   const hiddenPaths = ['/menu', '/login', '/register', '/register/user']; 
 
+  // Managing back button
   let btnClassName;
   if (hiddenPaths.includes(location.pathname)) {
     btnClassName = "d-none";
   } else {
     btnClassName = "back-button position-absolute top-5 start-5";
+  }
+
+  // Managing page Title
+  let pageTitle;
+  switch (location.pathname) {
+    case '/login':
+      pageTitle = 'Login';
+      break;
+    case '/register':
+     pageTitle = 'Sign up';
+     break;
+    case '/report':
+      pageTitle = 'Report my cards';
+      break;
+    case '/opportunities':
+     pageTitle = 'My opportunities';
+     break;
+    case '/check':
+      pageTitle = 'My cards';
+      break;
+    default:
+      pageTitle = 'WeSwapCards';
+      break;
   }
 
   return (
@@ -29,7 +51,7 @@ function Header({
                   </NavLink>
         </div>
         <div>
-            <h1 className="header-title m-0">{title}</h1>
+            <h1 className="header-title m-0">{pageTitle}</h1>
         </div>
     </header>     
   );

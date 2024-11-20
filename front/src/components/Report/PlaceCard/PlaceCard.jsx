@@ -72,7 +72,9 @@ function PlaceCard({
 
   return (
     
-        <Col xs={4} key={card.id}>
+        <Col xs={4} key={card.id}
+          className="column"
+        >
         <Card
           className={cardClassName}
           id={card.id}

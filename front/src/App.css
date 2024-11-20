@@ -4,4 +4,10 @@
   margin-bottom: 3rem; /* Added to see on dev tool TO BE REMOVED */
 }
 
+@media (min-width: 1200px) {
+  body {
+    font-size: 18px !important;
+    /* padding: 40px; */
+  }
+}
 

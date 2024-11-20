@@ -81,7 +81,7 @@
 
 @media (min-width: 768px) { /* This targets below the md breakpoint */
     .report {
-        width: 50% !important; /* Reduce the width */
+        width: 50% !important; 
 
         &-card, &-card-selected {
             width: 60%;   
@@ -89,12 +89,30 @@
     }
 }
 
-@media (min-width: 768px) and (max-width: 1200px) { /* This targets below the md breakpoint */
+@media (min-width: 768px) and (max-width: 1200px) { /* This targets medium screens */
     .report {
-        width: 50% !important; /* Reduce the width */
+        width: 50% !important; 
 
         &-card, &-card-selected {
             width: 80%;   
         }
     }
+}
+
+@media (min-width: 1200px) { /* This targets large screens */
+    .report {
+        width: 40% !important;
+
+        &-card, &-card-selected {
+            width: 60%;   
+        }
+    }
+    .report-card {
+        margin-left: 20%;
+
+        &-selected {
+            margin-left: 20%;
+        }
+    }
+
 }
