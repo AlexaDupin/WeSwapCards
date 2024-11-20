@@ -91,6 +91,8 @@ console.log("isLogged", isLogged);
                 <Menu 
                   name={name}
                   explorerId={explorerId}
+                  setName={setName}
+                  setExplorerId={setExplorerId}
                 />
               ) : <Navigate replace to="/login" />}
           />

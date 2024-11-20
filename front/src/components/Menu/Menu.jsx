@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     Container,
     Row,
@@ -15,7 +15,9 @@ import './menuStyles.scss';
 
 function Menu({
     name,
-    explorerId
+    explorerId,
+    setName,
+    setExplorerId
 }) {
     const navigate = useNavigate();
     const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -27,6 +29,19 @@ function Menu({
         axios.get(`${baseUrl}/signout`);
         navigate('/login');    
     }
+
+    // If user quitted after registering without entering username
+    const checkUsername = () => {
+        if (name === undefined || !name) {
+            setName("");
+            setExplorerId("");
+            navigate('/register/user');
+        }    
+    }
+
+    useEffect(() => {
+        checkUsername();
+    }, []);
 
   return (
     <Container className="menu">

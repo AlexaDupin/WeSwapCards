@@ -5,7 +5,8 @@ import {
 	Card,
 	InputGroup,
 	FormControl,
-  Container
+  Container,
+  Alert
 } from "react-bootstrap";
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -33,6 +34,8 @@ function Register({
     }); 
 
     const [errMsg, setErrMsg] = useState('');
+    const [hiddenAlert, setHiddenAlert] = useState(true);
+    const [message, setMessage] = useState('This email address is already linked to an account. Please log in.');
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
@@ -48,7 +51,8 @@ function Register({
 
           // Error if undefined is returned meaning that we don't have credentials in database
           if (response.data.user === null) {
-          setErrMsg('There was an issue during registration.');
+          // setErrMsg('There was an issue during registration.');
+          setHiddenAlert(false);
           localStorage.clear();
           // navigate('/register');
           return;
@@ -65,7 +69,7 @@ function Register({
           navigate('/register/user');
 
       } catch (error) {
-        console.log(error.data);
+        console.log(error.message);
       }
     };
 
@@ -86,6 +90,12 @@ function Register({
   return (
     <Container className="register">
     <h1 className="login-title pb-5">To start swapping cards, create an account</h1>
+
+    <Alert 
+      variant="danger"
+      className={hiddenAlert ? 'hidden-alert' : ''}>
+        {message}      
+    </Alert>
 
     <Form onSubmit={handleSubmit(onSubmit)}>
 
@@ -199,6 +209,7 @@ function Register({
               </Card.Body>
           </Card>
     </Form>
+
     </Container>
 )
 }

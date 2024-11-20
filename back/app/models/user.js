@@ -2,6 +2,7 @@ const client = require('./client');
 
 module.exports = {
     async createExplorer(userUID, name) {
+        console.log('DATAMAPPER');
         const preparedQuery = await client.query(
             `
         INSERT INTO "explorer"

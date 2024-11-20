@@ -5,7 +5,8 @@ import {
 	Card,
 	InputGroup,
 	FormControl,
-  Container
+  Container,
+  Alert
 } from "react-bootstrap";
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -35,6 +36,8 @@ function Login({
     const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
     const [errMsg, setErrMsg] = useState('');
+    const [hiddenAlert, setHiddenAlert] = useState(true);
+    const [message, setMessage] = useState('');
 
   const onSubmit = async (data) => {
 
@@ -84,12 +87,13 @@ function Login({
 
     } catch (error) {
       if (!error?.response) {
-        setErrMsg('The server did not respond.');
-        console.log(errMsg);
+        setMessage("The serveur did not respond.");
+        setHiddenAlert(false);        
+        console.log(message);
       }
       else {
-        setErrMsg('Looks like your login details do not match. Try again.');
-        // console.log(errMsg);
+        setMessage("Looks like you don't have an account or your login details do not match. Please try again.");
+        setHiddenAlert(false);
         console.log("401 Unauthorized");      
       }
     }
@@ -110,6 +114,13 @@ function Login({
   return (
     <Container className="login">
     <h1 className="login-title pb-5">Welcome to WeSwapCards!</h1>
+
+    <Alert 
+      variant="danger"
+      className={hiddenAlert ? 'hidden-alert' : ''}>
+        {message}      
+    </Alert>
+
     <Form onSubmit={handleSubmit(onSubmit)}>
         <Card className="bg-light">
             <Card.Body className="">
@@ -194,6 +205,7 @@ function Login({
               </Card.Body>
           </Card>
     </Form>
+
     </Container>
 )
 }

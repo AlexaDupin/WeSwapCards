@@ -24,12 +24,6 @@ const userController  = {
       const { user, session, error } = response.data;
       console.log('SIGN UP data', response.data);
 
-      if (response.data.user === null) {
-        res.status(401).json({message: "There was an issue during registration.", user, session});
-      } else {
-        res.status(200).json({ user, session });
-      }
-
       if (error) {
         console.error('Supabase error:', error.message);
         res.status(401).json({ message: error.message });
@@ -50,10 +44,20 @@ const userController  = {
 
     try {
       const user = await datamapper.createExplorer(userUID, username);
+
       console.log("CTRL user", user);
       res.json(user);
+
     } catch (error) {
-      res.status(500).send(error);
+      console.error("Error in creating user:", error);
+
+        // Check if the error is due to a unique constraint violation
+        if (error.code === '23505') {
+            // Unique constraint violation
+            return res.status(400).send({ message: 'Username must be unique' });
+        } else {
+            return res.status(500).send({ message: 'An error occurred while creating the user', error: error.message });
+        }
     }
   },
   // Sign in
@@ -84,14 +88,22 @@ const userController  = {
       }
 
     } catch (error) {
-      res.status(500).send(error);
+      console.error("Error in creating user:", error);
+      return res.status(500).send({ message: 'An error occurred while creating the user', error: error.message });
     }
   },
   // Sign out
   async signOut() {
       console.log("SUPA SIGNOUT");
+
+      try {
       const { error } = await supabase.auth.signOut()
-      if (error) throw error
+    } catch (error) {
+      console.error("Error in creating user:", error);
+
+      // res.status(500).send(error);
+    }
+      // if (error) throw error
   },
 
   // Authorization middleware

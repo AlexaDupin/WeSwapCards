@@ -51,7 +51,12 @@ function Header() {
                   </NavLink>
         </div>
         <div>
-            <h1 className="header-title m-0">{pageTitle}</h1>
+          {location.pathname === "/register/user" ? 
+            <NavLink to="/" style={{ textDecoration: 'none' }}>
+            <h1 className="header-title m-0 header-title-link">{pageTitle}</h1>
+            </NavLink>
+            : <h1 className="header-title m-0">{pageTitle}</h1>
+          }
         </div>
     </header>     
   );
