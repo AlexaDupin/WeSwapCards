@@ -12,7 +12,7 @@ import CheckPage from './components/CheckPage/CheckPage';
 import usePersistState from './hooks/usePersistState';
 import useToken from './hooks/useToken';
 
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -52,10 +52,34 @@ function App() {
     setUserUID(userUID)
 }, []);
 
+// Determine the title based on the current route
+const location = useLocation();
+ let pageTitle;
+ switch (location.pathname) {
+   case '/login':
+     pageTitle = 'Login';
+     break;
+   case '/register':
+    pageTitle = 'Sign up';
+    break;
+   case '/report':
+     pageTitle = 'Report my cards';
+     break;
+   case '/opportunities':
+    pageTitle = 'My opportunities';
+    break;
+   case '/check':
+     pageTitle = 'My cards';
+     break;
+   default:
+     pageTitle = 'WeSwapCards';
+     break;
+ }
+
   return (
     <div className="App">
       <Header 
-        title="WeSwapCards"
+        title={pageTitle}
       />
       <Routes>
           <Route
@@ -111,6 +135,7 @@ function App() {
           />
           <Route
               path="/report"
+              title="Report my cards"
               element={isLogged ? (
                 <Report 
                   token={token}
