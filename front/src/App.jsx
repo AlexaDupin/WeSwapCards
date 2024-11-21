@@ -87,7 +87,7 @@ console.log("isLogged", isLogged);
           />
           <Route
               path="/menu"
-              element={isLogged ? (
+              element={isLogged && name ? (
                 <Menu 
                   name={name}
                   explorerId={explorerId}
@@ -99,7 +99,7 @@ console.log("isLogged", isLogged);
           <Route
               path="/report"
               title="Report my cards"
-              element={isLogged ? (
+              element={isLogged && name ? (
                 <Report 
                   token={token}
                   name={name}
@@ -109,7 +109,7 @@ console.log("isLogged", isLogged);
           />
           <Route
               path="/opportunities"
-              element={isLogged ? (
+              element={isLogged && name ? (
                 <Opportunities
                   token={token}
                   name={name}
@@ -119,7 +119,7 @@ console.log("isLogged", isLogged);
           />
           <Route
               path="/check"
-              element={isLogged ? (
+              element={isLogged && name ? (
                 <CheckPage
                   token={token}
                   name={name}

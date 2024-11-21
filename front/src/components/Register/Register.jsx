@@ -79,12 +79,16 @@ function Register({
     // Show password feature with Eye icon
     const [showPassword, setShowPassword] = useState(false);
 
-	  const onMouseDown = () => {
-		setShowPassword(true)
-    }
+	  // const onMouseDown = () => {
+		// setShowPassword(true)
+    // }
   
-    const onMouseUp = () => {
-    setShowPassword(false)
+    // const onMouseUp = () => {
+    // setShowPassword(false)
+    // }
+
+    const togglePassword = () => {
+      setShowPassword(!showPassword);
     }
 
   return (
@@ -135,11 +139,13 @@ function Register({
                           type="button"
                           aria-label="Show password"
                           className="my-1 btn-sm position-absolute"
-                          onMouseDown={onMouseDown}
-                          onMouseUp={onMouseUp}
-                          onMouseLeave={onMouseUp}
-                          onTouchStart={onMouseDown}
-                          onTouchEnd={onMouseUp}>
+                          // onMouseDown={onMouseDown}
+                          // onMouseUp={onMouseUp}
+                          // onMouseLeave={onMouseUp}
+                          // onTouchStart={onMouseDown}
+                          // onTouchEnd={onMouseUp}
+                          onClick={togglePassword}
+                          >
                           {showPassword ? <EyeSlash /> : <Eye />}
                       </Button>
                       <FormControl
@@ -151,12 +157,16 @@ function Register({
                           {...register('password', {
                           required: 'Password required',
                           pattern: {
-                            value: /^(?=.*[0-9])(?=.*[!@#$?%^&*])[a-zA-Z0-9!@#$%?^&*]{6,16}$/,
-                            message: 'The format is invalid. Your password must contain at least 1 number and 1 special character (!@#$?%^&*).',
+                            value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,16}$/,
+                            message: 'The format is invalid. Your password must contain at least 1 lowercase, 1 uppercase, 1 number and 1 special character.',
                           },
                           minLength: {
-                            value: 6,
-                            message: 'Your password must contain between 6 and 16 characters.',
+                            value: 8,
+                            message: 'Your password must contain between 8 and 16 characters.',
+                          },
+                          maxLength: {
+                            value: 16,
+                            message: 'Your password must contain between 8 and 16 characters.',
                           },
                         })}
                       />
@@ -176,11 +186,13 @@ function Register({
                           type="button"
                           aria-label="Show password"
                           className="my-1 btn-sm position-absolute"
-                          onMouseDown={onMouseDown}
-                          onMouseUp={onMouseUp}
-                          onMouseLeave={onMouseUp}
-                          onTouchStart={onMouseDown}
-                          onTouchEnd={onMouseUp}>
+                          // onMouseDown={onMouseDown}
+                          // onMouseUp={onMouseUp}
+                          // onMouseLeave={onMouseUp}
+                          // onTouchStart={onMouseDown}
+                          // onTouchEnd={onMouseUp}
+                          onClick={togglePassword}
+                          >
                           {showPassword ? <EyeSlash /> : <Eye />}
                       </Button>
                       <FormControl

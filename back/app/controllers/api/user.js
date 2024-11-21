@@ -32,7 +32,8 @@ const userController  = {
       }
 
     } catch (error) {
-        res.status(500).send(error);
+      console.error("Error during registration:", error);
+      return res.status(500).send({ message: 'An error occurred during registration.', error: error.message });
     }
 },
   // Create new user after retrieving username
@@ -76,7 +77,7 @@ const userController  = {
       const { user, session, error } = response.data;
       console.log('LOGIN data', response.data);
 
-      if (error) {
+      if ({error}) {
         console.error('Supabase error:', error.message);
         throw error;
       }
@@ -88,22 +89,19 @@ const userController  = {
       }
 
     } catch (error) {
-      console.error("Error in creating user:", error);
-      return res.status(500).send({ message: 'An error occurred while creating the user', error: error.message });
+      console.error("Error during login:", error);
+      return res.status(500).send({ message: 'An error occurred during login.', error: error.message });
     }
   },
   // Sign out
   async signOut() {
       console.log("SUPA SIGNOUT");
-
       try {
       const { error } = await supabase.auth.signOut()
     } catch (error) {
-      console.error("Error in creating user:", error);
-
-      // res.status(500).send(error);
+      console.error("Error during sign out:", error);
+      return res.status(500).send({ message: 'An error occurred during sign out.', error: error.message });
     }
-      // if (error) throw error
   },
 
   // Authorization middleware
@@ -112,13 +110,14 @@ const userController  = {
     console.log('TOKEN MDW', token);
 
     if (!token) {
+      console.log('AUTH ERROR: no token');
       return res.redirect('/');
     }
 
     const { data: { user } } = await supabase.auth.getUser(token);
 
     if (!user) {
-      console.log('AUTH ERROR');
+      console.log('AUTH ERROR: no user');
       return res.redirect('/'); // Redirect to the login page if token is invalid
     }
 

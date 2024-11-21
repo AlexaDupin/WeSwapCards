@@ -103,6 +103,14 @@ function User({
                           aria-describedby="basic-addon1"
                           {...register('username', {
                             required: 'This field is required',
+                            pattern: {
+                              value: /^[a-zA-Z0-9]{2,}$/,
+                              message: 'The format is invalid. Your username must contain at least 2 letters or numbers.',
+                            },
+                            minLength: {
+                              value: 2,
+                              message: 'Your username must contain at least 2 characters.',
+                            },
                             },
                           )}
                       />

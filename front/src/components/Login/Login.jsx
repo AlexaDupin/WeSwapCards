@@ -92,7 +92,7 @@ function Login({
         console.log(message);
       }
       else {
-        setMessage("Looks like you don't have an account or your login details do not match. Please try again.");
+        setMessage("Looks like you don't have an account or your password is not correct. Please try again.");
         setHiddenAlert(false);
         console.log("401 Unauthorized");      
       }
@@ -174,16 +174,19 @@ function Login({
                           placeholder="Password"
                           aria-label="Explorer's password"
                           aria-describedby="basic-addon2"
-                        //   onChange={handleChange}
                         {...register('password', {
                           required: 'Password required',
                           pattern: {
-                            value: /^(?=.*[0-9])[a-zA-Z0-9!@#,.$%?^&*]{6,16}$/,
-                            message: 'The format is invalid. Your password must contain at least 1 number and 1 special character (!@#$?%^&*).',
+                            value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,16}$/,
+                            message: 'The format is invalid. Your password must contain at least 1 lowercase, 1 uppercase, 1 number and 1 special character.',
                           },
                           minLength: {
-                            value: 6,
-                            message: 'Your password must contain between 6 and 16 characters.',
+                            value: 8,
+                            message: 'Your password must contain between 8 and 16 characters.',
+                          },
+                          maxLength: {
+                            value: 16,
+                            message: 'Your password must contain between 8 and 16 characters.',
                           },
                         })}
                       />
