@@ -45,8 +45,11 @@ const reportController = {
         const explorerId = req.params.explorerId;
         const selectedCardsIds = req.body.selectedCardsIds;
         const duplicatesIds = req.body.duplicatesIds;
+        const toBeDeletedIds = req.body.toBeDeletedIds;
+
         console.log("selectedCardsIds", selectedCardsIds);
         console.log("duplicatesIds", duplicatesIds);
+        console.log("toBeDeletedIds", toBeDeletedIds);
 
         try {
             const results = [];
@@ -71,7 +74,7 @@ const reportController = {
                     // console.log('hasDuplicate', hasDuplicate, cardId);
                     if (duplicateStatus.duplicate === hasDuplicate) {
                         console.log('Card already logged', selectedCardId);
-                    } else if (duplicateStatus.duplicate !== hasDuplicate) {
+                    } else if (duplicateStatus?.duplicate !== hasDuplicate) {
                         const result = await datamapper.editExplorerHasCard(hasDuplicate, explorerId, selectedCardId);
                         console.log("Change in duplicate", selectedCardId);
                         results.push(result)
@@ -79,6 +82,12 @@ const reportController = {
                 }
             })
        
+            toBeDeletedIds.forEach(async (toBeDeletedId) => {
+                const result = await datamapper.deleteCardFromExplorerHasCard(explorerId, toBeDeletedId);
+                console.log("Card deleted for this explorer", toBeDeletedId);
+                results.push(result)
+            })
+
             res.status(201).json(results);             
 
         } catch (error) {

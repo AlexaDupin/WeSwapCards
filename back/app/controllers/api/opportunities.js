@@ -9,7 +9,7 @@ const opportunitiesController = {
             // console.log(opportunities);
             res.status(200).json(opportunities);
         } catch (error) {
-            console.error('Error adding cards to explorer:', error);
+            console.error('Error fetching opportunities:', error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     },

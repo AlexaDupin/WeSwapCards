@@ -100,6 +100,19 @@ module.exports = {
         const result = await client.query(preparedQuery);
         return result.rows;
     },
+    async deleteCardFromExplorerHasCard(explorerId, cardId) {
+        const preparedQuery = {
+            text: `
+            DELETE FROM explorer_has_cards
+            WHERE explorer_id = $1
+            AND card_id = $2
+            `,
+            values: [explorerId, cardId]
+        };
+        // return preparedQuery.rows[0];
+        const result = await client.query(preparedQuery);
+        return result.rows;
+    },
     async getOpportunitiesForOneExplorer(explorerId) {
         const preparedQuery = {
             text: `
@@ -108,7 +121,7 @@ module.exports = {
                 JOIN explorer AS e ON e.id = ehc.explorer_id
                 JOIN place AS p ON p.id = c.place_id
                 WHERE ehc.duplicate = true AND ehc.explorer_id NOT IN ($1) 
-                AND ehc.explorer_id NOT IN (3)  
+                AND ehc.explorer_id NOT IN (3, 10)  
                 AND c.id NOT IN (SELECT DISTINCT c.id FROM card AS c
                 JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
                 WHERE ehc.explorer_id = $1)

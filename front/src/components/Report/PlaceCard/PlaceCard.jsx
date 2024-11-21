@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
 	Card,
 	Col,
@@ -21,15 +21,35 @@ function PlaceCard({
 }) {
   if (!card) {
     console.error('Missing card or selectedCards');
-    return null;  // Return null or some fallback UI
+    return null;
   }
-
   const isSelected = selectedCards.some(selectedCard => selectedCard.id === card.id);
   const hasDuplicates = duplicates?.some(duplicate => duplicate.id === card.id);
 
-  const cardClassName = isDuplicateSection 
-    ? isSelected && hasDuplicates ? 'report-card-selected' : 'report-card' // In the second section, toggling between classes
-    : isSelected ? 'report-card-selected' : 'report-card'; // Same logic for the first section
+  // Setting card classname depending on status and section
+  let cardClassName = 'report-card'
+    if (isDuplicateSection) {
+      if (isSelected) {
+        cardClassName = 'report-card';
+        if (hasDuplicates) {
+          cardClassName = 'report-card-selected';
+        }
+      } else {
+        cardClassName = 'report-card report-card-unclickable';
+      }
+    } else {
+      if (isSelected) {
+        cardClassName = 'report-card-selected';
+      }
+    }
+
+  // Setting icon classname to make it unclickable on duplicate section if not selected
+  let iconClassName = "report-icon";
+  if (isDuplicateSection) {
+    if (!isSelected) {
+      iconClassName = 'report-icon-unclickable';
+    }
+  }
 
   const cardAction = isDuplicateSection 
     ? () => handleCardDuplicate(card) // In the second section, 
@@ -52,14 +72,17 @@ function PlaceCard({
 
   return (
     
-        <Col xs={4} key={card.id}>
+        <Col xs={4} key={card.id}
+          className="column"
+        >
         <Card
           className={cardClassName}
           id={card.id}
-          style={{ cursor: 'pointer' }}
           onClick={cardAction}
         >
-          <SelectedIcon className="report-icon"/>    
+          <SelectedIcon 
+            className={iconClassName} 
+          />    
           <Card.Title className="report-icon-title">{card.name}</Card.Title>
         </Card>
         </Col>

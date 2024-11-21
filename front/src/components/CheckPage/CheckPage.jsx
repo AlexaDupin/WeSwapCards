@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Container
+    Container,
+    Spinner
 } from "react-bootstrap";
 
 import axios from 'axios';
@@ -9,20 +10,30 @@ import PropTypes from 'prop-types';
 
 import './checkPageStyles.scss';
 import Place from '../CheckPage/Place/Place';
+import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 function CheckPage({
-    explorerId, name
+    explorerId, name, token
   }) {
     const [cardsByPlace, setCardsByPlace] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
 
     const fetchExplorerCardsByPlace = async () => {
         try {
-          const response = await axios.get(`${baseUrl}/explorercards/${explorerId}`);
+          const response = await axios.get(
+            `${baseUrl}/explorercards/${explorerId}`
+            , {
+              headers: {
+                authorization: token,
+              },
+            });
           const fetchedCardsByPlace = response.data;
           console.log("fetchedCardsByPlace", fetchedCardsByPlace);
           setCardsByPlace(fetchedCardsByPlace);
+          setLoading(false);
+
         } catch (error) {
           console.log(error);
         }
@@ -35,6 +46,14 @@ function CheckPage({
       [],
     );
 
+    if (loading) {
+      return <Container className="opportunities">
+       <Spinner 
+        animation="border"
+        className="spinner" 
+       />
+      </Container>
+    }
   return (
     <Container className="checkpage">
 
@@ -44,12 +63,14 @@ function CheckPage({
               key={place.place_name}
               place={place}
               explorerId={explorerId}
+              token={token}
             />
             ))
             ) : (
-              <div>Unable to retrieve your data, {name}.</div>
+              <div>You don't have any logged cards for the moment, {name}.</div>
         )}
 
+      <ScrollToTop />
     </Container>
 )
 }

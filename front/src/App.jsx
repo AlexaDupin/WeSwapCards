@@ -3,18 +3,20 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header/Header';
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
-import User from './components/User/User';
+import User from './components/Register/User/User';
 import Menu from './components/Menu/Menu';
 import Report from './components/Report/Report';
 import Opportunities from './components/Opportunities/Opportunities';
 import CheckPage from './components/CheckPage/CheckPage';
+import NotFound from './components/NotFound/NotFound';
 
 import usePersistState from './hooks/usePersistState';
+import useToken from './hooks/useToken';
 
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import "bootstrap/dist/css/bootstrap.min.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './styles/_reset.css';
 import './styles/index.scss';
@@ -26,10 +28,9 @@ function App() {
   const [userUID, setUserUID] = useState('');
   const [name, setName] = usePersistState('', 'name');
   const [explorerId, setExplorerId] = usePersistState('', 'explorerId');
-
-  console.log("APP userUID", userUID);
-  console.log("APP name", name);
-  console.log("APP explorerId", explorerId);
+  // Hook created to manage token
+  const { token, setToken } = useToken();
+  const isLogged = token !== null;
 
   useEffect(() => {
     setName(name);
@@ -37,11 +38,14 @@ function App() {
     setUserUID(userUID)
 }, []);
 
+console.log("APP userUID", userUID);
+console.log("APP name", name);
+console.log("APP explorerId", explorerId);
+console.log("isLogged", isLogged);
+
   return (
     <div className="App">
-      <Header 
-        title="WeSwapCards"
-      />
+      <Header />
       <Routes>
           <Route
               path="/"
@@ -56,6 +60,7 @@ function App() {
                   setUserUID={setUserUID}
                   setName={setName}
                   setExplorerId={setExplorerId}
+                  setToken={setToken}
                 />
               )}
           />  
@@ -66,54 +71,66 @@ function App() {
                   setUserUID={setUserUID}
                   setName={setName}
                   setExplorerId={setExplorerId}
+                  setToken={setToken}
                 />
               )}
           />
           <Route
               path="/register/user"
               element={(
-                <User 
+                <User
                   userUID={userUID}
                   setName={setName}
                   setExplorerId={setExplorerId}
+                  token={token}
                 />
               )}
           />
           <Route
               path="/menu"
-              element={(
+              element={isLogged && name ? (
                 <Menu 
                   name={name}
                   explorerId={explorerId}
+                  setName={setName}
+                  setExplorerId={setExplorerId}
                 />
-              )}
+              ) : <Navigate replace to="/login" />}
           />
           <Route
               path="/report"
-              element={(
+              title="Report my cards"
+              element={isLogged && name ? (
                 <Report 
+                  token={token}
                   name={name}
                   explorerId={explorerId}
                 />
-              )}
+              ) : <Navigate replace to="/login" />}
           />
           <Route
               path="/opportunities"
-              element={(
+              element={isLogged && name ? (
                 <Opportunities
+                  token={token}
                   name={name}
                   explorerId={explorerId}
                 />
-              )}
+              ) : <Navigate replace to="/login" />}
           />
           <Route
               path="/check"
-              element={(
+              element={isLogged && name ? (
                 <CheckPage
+                  token={token}
                   name={name}
                   explorerId={explorerId}
                 />
-              )}
+              ) : <Navigate replace to="/login" />}
+          />
+          <Route
+              path="*"
+              element={<NotFound />}
           />                 
       </Routes>
     </div>

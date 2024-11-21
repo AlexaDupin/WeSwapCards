@@ -5,7 +5,8 @@ import {
 	Card,
 	InputGroup,
 	FormControl,
-  Container
+  Container,
+  Alert
 } from "react-bootstrap";
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -22,7 +23,8 @@ import './registerStyles.scss';
 function Register({
   setUserUID,
   setName,
-  setExplorerId
+  setExplorerId,
+  setToken,
 }) {
     const { register, handleSubmit, watch, formState: { errors } } = useForm({
       defaultValues: {
@@ -30,6 +32,10 @@ function Register({
         password: "",
       },
     }); 
+
+    const [errMsg, setErrMsg] = useState('');
+    const [hiddenAlert, setHiddenAlert] = useState(true);
+    const [message, setMessage] = useState('This email address is already linked to an account. Please log in.');
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
@@ -43,9 +49,18 @@ function Register({
         )
           console.log(response.data);
 
+          // Error if undefined is returned meaning that we don't have credentials in database
+          if (response.data.user === null) {
+          // setErrMsg('There was an issue during registration.');
+          setHiddenAlert(false);
+          localStorage.clear();
+          // navigate('/register');
+          return;
+          }
+
           // Retrieve token from response and store it in local storage
           const token = response.data.session.access_token;
-          localStorage.setItem('token', token);
+          setToken(token);
           // Setting userUID from auth at App level
           setUserUID(response.data.user.id); 
           setName('');
@@ -54,7 +69,7 @@ function Register({
           navigate('/register/user');
 
       } catch (error) {
-        console.log(error.data);
+        console.log(error.message);
       }
     };
 
@@ -64,17 +79,27 @@ function Register({
     // Show password feature with Eye icon
     const [showPassword, setShowPassword] = useState(false);
 
-	  const onMouseDown = () => {
-		setShowPassword(true)
-    }
+	  // const onMouseDown = () => {
+		// setShowPassword(true)
+    // }
   
-    const onMouseUp = () => {
-    setShowPassword(false)
+    // const onMouseUp = () => {
+    // setShowPassword(false)
+    // }
+
+    const togglePassword = () => {
+      setShowPassword(!showPassword);
     }
 
   return (
     <Container className="register">
     <h1 className="login-title pb-5">To start swapping cards, create an account</h1>
+
+    <Alert 
+      variant="danger"
+      className={hiddenAlert ? 'hidden-alert' : ''}>
+        {message}      
+    </Alert>
 
     <Form onSubmit={handleSubmit(onSubmit)}>
 
@@ -114,11 +139,13 @@ function Register({
                           type="button"
                           aria-label="Show password"
                           className="my-1 btn-sm position-absolute"
-                          onMouseDown={onMouseDown}
-                          onMouseUp={onMouseUp}
-                          onMouseLeave={onMouseUp}
-                          onTouchStart={onMouseDown}
-                          onTouchEnd={onMouseUp}>
+                          // onMouseDown={onMouseDown}
+                          // onMouseUp={onMouseUp}
+                          // onMouseLeave={onMouseUp}
+                          // onTouchStart={onMouseDown}
+                          // onTouchEnd={onMouseUp}
+                          onClick={togglePassword}
+                          >
                           {showPassword ? <EyeSlash /> : <Eye />}
                       </Button>
                       <FormControl
@@ -130,12 +157,16 @@ function Register({
                           {...register('password', {
                           required: 'Password required',
                           pattern: {
-                            value: /^(?=.*[0-9])(?=.*[!@#$?%^&*])[a-zA-Z0-9!@#$%?^&*]{6,16}$/,
-                            message: 'The format is invalid. Your password must contain at least 1 number and 1 special character (!@#$?%^&*).',
+                            value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,16}$/,
+                            message: 'The format is invalid. Your password must contain at least 1 lowercase, 1 uppercase, 1 number and 1 special character.',
                           },
                           minLength: {
-                            value: 6,
-                            message: 'Your password must contain between 6 and 16 characters.',
+                            value: 8,
+                            message: 'Your password must contain between 8 and 16 characters.',
+                          },
+                          maxLength: {
+                            value: 16,
+                            message: 'Your password must contain between 8 and 16 characters.',
                           },
                         })}
                       />
@@ -155,11 +186,13 @@ function Register({
                           type="button"
                           aria-label="Show password"
                           className="my-1 btn-sm position-absolute"
-                          onMouseDown={onMouseDown}
-                          onMouseUp={onMouseUp}
-                          onMouseLeave={onMouseUp}
-                          onTouchStart={onMouseDown}
-                          onTouchEnd={onMouseUp}>
+                          // onMouseDown={onMouseDown}
+                          // onMouseUp={onMouseUp}
+                          // onMouseLeave={onMouseUp}
+                          // onTouchStart={onMouseDown}
+                          // onTouchEnd={onMouseUp}
+                          onClick={togglePassword}
+                          >
                           {showPassword ? <EyeSlash /> : <Eye />}
                       </Button>
                       <FormControl
@@ -176,6 +209,7 @@ function Register({
                 </Form.Group>
 
                 {errors.confirm_password && <p className="errors">{errors.confirm_password.message}</p>}
+                {<p className="errors">{errMsg}</p>}
 
                 <Card.Text className="">
                     <Link to="/login" className="link">Already have an account?</Link>
@@ -187,6 +221,7 @@ function Register({
               </Card.Body>
           </Card>
     </Form>
+
     </Container>
 )
 }

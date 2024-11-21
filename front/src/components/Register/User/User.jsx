@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
 	Form,
 	Card,
 	InputGroup,
 	FormControl,
-    Container
+  Container,
+  Alert
 } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -13,14 +14,15 @@ import { PersonFill } from "react-bootstrap-icons";
 import axios from 'axios';
 import PropTypes from 'prop-types';
 
-import CustomButton from '../CustomButton/CustomButton';
+import CustomButton from '../../CustomButton/CustomButton';
 
 import './userStyles.scss';
 
 function User({
     userUID,
     setName,
-    setExplorerId
+    setExplorerId,
+    token
 }) {
     const { register, handleSubmit, formState: { errors } } = useForm({
       defaultValues: {
@@ -28,9 +30,11 @@ function User({
       },
     }); 
 
+    const [hiddenAlert, setHiddenAlert] = useState(true);
+    const [message, setMessage] = useState('You already have an account. Please log in.');
+
     const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
-    const token = localStorage.getItem('token'); // Retrieve token from local storage
 
     const onSubmit = async (data) => {
         try {
@@ -51,10 +55,23 @@ function User({
             navigate('/menu');
 
         } catch (error) {
-            console.log(error.data);
-        }
-
-
+          if (error.response) {
+            // If the backend returned an error with a message (e.g., 400 or 500 status)
+            console.log("ERROR", error);
+            console.log("Error from backend:", error.response.data.message);
+            setExplorerId('');
+            setName('');
+            setMessage("This username is already taken. Please try another one.");
+            setHiddenAlert(false);
+          } else {
+            // If the error is not from the server (e.g., network error)
+            console.log("Network error or unexpected error:", error.message);
+            setExplorerId('');
+            setName('');
+            setMessage("An unexpected error occurred. Please try again later.");
+            setHiddenAlert(false);
+          }
+        }    
     };
    
   return (
@@ -63,6 +80,12 @@ function User({
     <p className="user-subtitle pb-3">It will be shown to other users when you have a card they are interested in.
     You can use the username you use on the WeWard app to make things easier.
     </p>
+
+    <Alert 
+      variant="danger"
+      className={hiddenAlert ? 'hidden-alert' : ''}>
+        {message}      
+    </Alert>
 
     <Form onSubmit={handleSubmit(onSubmit)}>
 
@@ -80,6 +103,14 @@ function User({
                           aria-describedby="basic-addon1"
                           {...register('username', {
                             required: 'This field is required',
+                            pattern: {
+                              value: /^[a-zA-Z0-9]{2,}$/,
+                              message: 'The format is invalid. Your username must contain at least 2 letters or numbers.',
+                            },
+                            minLength: {
+                              value: 2,
+                              message: 'Your username must contain at least 2 characters.',
+                            },
                             },
                           )}
                       />
@@ -94,6 +125,7 @@ function User({
               </Card.Body>
           </Card>
     </Form>
+
     </Container>
 )
 }
