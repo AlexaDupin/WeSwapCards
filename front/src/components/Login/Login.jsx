@@ -177,7 +177,7 @@ function Login({
                         {...register('password', {
                           required: 'Password required',
                           pattern: {
-                            value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,16}$/,
+                            // value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,16}$/,
                             message: 'The format is invalid. Your password must contain at least 1 lowercase, 1 uppercase, 1 number and 1 special character.',
                           },
                           minLength: {

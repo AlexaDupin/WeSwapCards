@@ -77,7 +77,7 @@ const userController  = {
       const { user, session, error } = response.data;
       console.log('LOGIN data', response.data);
 
-      if ({error}) {
+      if (error) {
         console.error('Supabase error:', error.message);
         throw error;
       }
