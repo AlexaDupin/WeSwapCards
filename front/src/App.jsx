@@ -8,6 +8,7 @@ import Menu from './components/Menu/Menu';
 import Report from './components/Report/Report';
 import Opportunities from './components/Opportunities/Opportunities';
 import CheckPage from './components/CheckPage/CheckPage';
+import NotFound from './components/NotFound/NotFound';
 
 import usePersistState from './hooks/usePersistState';
 import useToken from './hooks/useToken';
@@ -126,6 +127,10 @@ console.log("isLogged", isLogged);
                   explorerId={explorerId}
                 />
               ) : <Navigate replace to="/login" />}
+          />
+          <Route
+              path="*"
+              element={<NotFound />}
           />                 
       </Routes>
     </div>

@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
+const cookie = require('cookie'); 
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
@@ -82,11 +83,24 @@ const userController  = {
         throw error;
       }
 
-      if (response.data.user === null) {
+      if (!user) {
         res.status(401).json({message: "Wrong logins", user, session});
-      } else {
-        res.status(200).json({ user, session });
       }
+
+       // Successfully authenticated, set the refresh token in an HTTP-only cookie
+      const refreshToken = session.refresh_token;
+
+      // Set the refresh token cookie (HTTP-only, Secure, SameSite=Strict for protection)
+      res.setHeader('Set-Cookie', cookie.serialize('refresh_token', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',  // Only secure cookies in production
+        sameSite: 'Strict',  // CSRF protection
+        maxAge: 30 * 24 * 60 * 60,  // Refresh token expiry (e.g., 30 days)
+        path: '/',  // Available to all paths
+      }));
+
+      // Send back user and session data (Access token is not necessary since it's in the Authorization header)
+      res.status(200).json({ user, session });
 
     } catch (error) {
       console.error("Error during login:", error);
@@ -94,14 +108,20 @@ const userController  = {
     }
   },
   // Sign out
-  async signOut() {
+  async signOut(req, res) {
       console.log("SUPA SIGNOUT");
       try {
-      const { error } = await supabase.auth.signOut()
-    } catch (error) {
-      console.error("Error during sign out:", error);
-      return res.status(500).send({ message: 'An error occurred during sign out.', error: error.message });
-    }
+        const { error } = await supabase.auth.signOut()
+
+        if (error) {
+          return res.status(400).send({ message: 'An error occurred during sign out.', error: error.message });
+        }
+    
+        res.status(200).send({ message: 'User signed out successfully' });
+      } catch (error) {
+        console.error("Error during sign out:", error);
+        return res.status(500).send({ message: 'An error occurred during sign out.', error: error.message });
+      }
   },
 
   // Authorization middleware
@@ -114,17 +134,63 @@ const userController  = {
       return res.redirect('/');
     }
 
-    const { data: { user } } = await supabase.auth.getUser(token);
+    try {
+      const response = await supabase.auth.getUser(token);
 
-    if (!user) {
-      console.log('AUTH ERROR: no user');
-      return res.redirect('/'); // Redirect to the login page if token is invalid
+      if (response.error && response.error.code === 'bad_jwt') {
+        // Token is expired or invalid, try to refresh it using the refresh token from cookies
+        console.log('Token expired or invalid, trying to refresh token...');
+  
+        const refreshToken = req.cookies.refresh_token; // Extract refresh token from cookies
+        if (!refreshToken) {
+          console.log('AUTH ERROR: no refresh token');
+          return res.redirect('/login'); // If no refresh token, re-login required
+        }
+  
+        // Use the refresh token to get a new access token
+        const refreshResponse = await supabase.auth.api.refreshAccessToken(refreshToken);
+        if (refreshResponse.error) {
+          console.log('AUTH ERROR: refresh token failed');
+          return res.redirect('/login'); // Refresh failed, redirect to login
+        }
+  
+        // If refresh is successful, get the new access token
+        const newToken = refreshResponse.data.access_token;
+        req.headers['authorization'] = newToken; // Set the new token in the headers
+  
+        // Get the user again with the new access token
+        const userResponse = await supabase.auth.getUser(newToken);
+        if (!userResponse.data.user) {
+          console.log('AUTH ERROR: no user');
+          return res.redirect('/login');
+        }
+  
+        req.user = userResponse.data.user;
+        req.authenticated = true;
+        console.log('MDLW REQ USER', req.user);
+      } else {
+        // Token is valid, proceed with the request
+        req.user = response.data.user;
+        req.authenticated = true;
+        console.log('MDLW REQ USER', req.user);
+      }
+      // // const { data: { user } } = await supabase.auth.getUser(token);
+      // console.log("DATA", response);
+
+      // if (!response.data.user) {
+      //   console.log('AUTH ERROR: no user');
+      //   return res.redirect('/login'); // Redirect to the login page if token is invalid
+      // }
+
+      // req.user = user; // Attach user info to request object
+      // req.authenticated = true;
+
+      // console.log('MDLW REQ USER', req.user);
+
+    } catch (error) {
+      console.error("Error in authentication middleware:", error);
+      return res.status(500).send({ message: 'An error occurred in authentication middleware.', error: error.message });
     }
-
-    req.user = user; // Attach user info to request object
-    req.authenticated = true;
-
-    console.log('MDLW REQ USER', req.user);
 
     next();
   },
