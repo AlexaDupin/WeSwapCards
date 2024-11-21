@@ -1,12 +1,15 @@
 import React from 'react';
+import {
+  Container,
+} from "react-bootstrap";
 
 import './notFoundStyles.scss';
 
 function NotFound() {
   return (
-    <div>
+    <Container className="notfound">
       <p>Not Found</p>
-    </div>
+    </Container>
   );
 }
 
