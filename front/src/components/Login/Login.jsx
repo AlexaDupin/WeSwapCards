@@ -77,8 +77,9 @@ function Login({
         userUID,
         {headers: {
           authorization: token,
-        },}
-      )
+        },
+        withCredentials: true,  // Ensure credentials (cookies) are sent
+      })
       console.log("DM login response", user);
       setName(user.data.name);
       setExplorerId(user.data.id);

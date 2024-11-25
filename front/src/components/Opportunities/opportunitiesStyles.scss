@@ -32,3 +32,11 @@
 .spinner {
     color: vars.$primary-color;
 }
+
+
+
+@media (min-width: 768px) { /* This targets medium screens */
+    .opportunities {
+        width: 50% !important; 
+    }
+}

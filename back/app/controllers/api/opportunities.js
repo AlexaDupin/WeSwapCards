@@ -3,9 +3,16 @@ const datamapper = require("../../models/datamapper");
 const opportunitiesController = {
     async getOpportunities(req, res) {
         const explorerId = req.params.explorerId;
+        const limit = parseInt(req.query.limit) || 30;
+        const offset = parseInt(req.query.offset) || 0;
+        console.log("ENTERING getOpportunities", limit, offset);
 
         try {
-            const opportunities = await datamapper.getOpportunitiesForOneExplorer(explorerId);
+            const opportunities = await datamapper.getOpportunitiesForOneExplorer(
+                explorerId,
+                limit,
+                offset
+                );
             // console.log(opportunities);
             res.status(200).json(opportunities);
         } catch (error) {

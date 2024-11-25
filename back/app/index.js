@@ -15,10 +15,11 @@ app.use(express.json());
 // On active le middleware pour parser le payload urlencoded
 app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
-    // origin: 'http://localhost:3000',
+    origin: 'http://localhost:3000',
     // origin: 'https://actiively-front.onrender.com',
-    origin: '*',
-    optionsSuccessStatus: 200
+    // origin: '*',
+    optionsSuccessStatus: 200,
+    credentials: true,
 };
 
 app.use(cors(corsOptions));

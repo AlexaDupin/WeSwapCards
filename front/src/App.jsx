@@ -49,9 +49,14 @@ console.log("isLogged", isLogged);
       <Routes>
           <Route
               path="/"
-              element={(
-              <Navigate replace to="/login"/>
-              )}
+              element={isLogged && name ? (
+                <Menu 
+                  name={name}
+                  explorerId={explorerId}
+                  setName={setName}
+                  setExplorerId={setExplorerId}
+                />
+              ) : <Navigate replace to="/login" />}
           />   
           <Route
               path="/login"

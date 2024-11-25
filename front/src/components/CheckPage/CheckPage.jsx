@@ -28,6 +28,7 @@ function CheckPage({
               headers: {
                 authorization: token,
               },
+              withCredentials: true,  // Ensure credentials (cookies) are sent
             });
           const fetchedCardsByPlace = response.data;
           console.log("fetchedCardsByPlace", fetchedCardsByPlace);

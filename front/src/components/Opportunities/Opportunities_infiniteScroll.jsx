@@ -19,14 +19,20 @@ function Opportunities({
     const [opportunities, setOpportunities] = useState([]);
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(true);
+    const [offset, setOffset] = useState(0);
+    const [hasMore, setHasMore] = useState(true); // Track if more data is available
 
+    console.log("offset", offset);
     const baseUrl = process.env.REACT_APP_BASE_URL;
 
     const fetchOpportunities = async () => {
+      // if (loading || !hasMore) return; // Prevent duplicate requests
+      // setLoading(true);
+
       try {
         // Fetch opportunities
         const response = await axios.get(
-          `${baseUrl}/opportunities/${explorerId}`
+          `${baseUrl}/opportunities/${explorerId}?limit=30&offset=${offset}`
           , {
             headers: {
               authorization: token,
@@ -34,7 +40,11 @@ function Opportunities({
           });
         const fetchedOpportunities = response.data;
         console.log("OPPORTUNITIES", fetchedOpportunities);
-  
+
+        if (fetchedOpportunities.length < 30) {
+          setHasMore(false); // No more data to load
+        }
+
         // Fetch the count for each opportunity and determine the className
         const opportunitiesWithClassNames = await Promise.all(
           fetchedOpportunities.map(async (opportunity) => {
@@ -60,9 +70,11 @@ function Opportunities({
             return { ...opportunity, className }; // Add the className to each opportunity
           })
         );
-  
-        // Update the opportunities state with the class names
-        setOpportunities(opportunitiesWithClassNames);
+
+        setOpportunities(prevOpportunities => [...prevOpportunities, ...opportunitiesWithClassNames]);
+
+        // // Update the opportunities state with the class names
+        // setOpportunities(opportunitiesWithClassNames);
         setLoading(false);
 
         // Set the message based on number of opportunities
@@ -72,13 +84,33 @@ function Opportunities({
           setMessage(`Amazing ${name}, you have ${fetchedOpportunities.length} opportunities!`);
         }
       } catch (error) {
-        console.log(error);
-      }
+        console.log('Error fetching opportunities:', error);
+      } 
+      // finally {
+      //   setLoading(false);
+      // }
     };
+
+    // Trigger the fetch when the user scrolls to the bottom of the page
+  const handleScroll = () => {
+    const bottom = document.documentElement.scrollHeight === document.documentElement.scrollTop + window.innerHeight;
+    if (bottom) {
+      setOffset(prevOffset => prevOffset + 30); // Update the offset for the next scroll
+      // fetchOpportunities();
+    }
+  };
+
+  // Set up scroll event listener
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
   
     useEffect(() => {
       fetchOpportunities();
-    }, []);
+    }, [offset]);
 
   return (
     <Container className="opportunities">

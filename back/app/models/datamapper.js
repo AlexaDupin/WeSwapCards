@@ -114,26 +114,54 @@ module.exports = {
         return result.rows;
     },
     async getOpportunitiesForOneExplorer(explorerId) {
+        console.log("ENTERING DATAMAPPER");
+
         const preparedQuery = {
             text: `
-                SELECT ehc.id, c.id AS card_id, c.name AS card_name, e.name AS explorer_name, p.id AS place_id FROM card AS c
-                JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
-                JOIN explorer AS e ON e.id = ehc.explorer_id
-                JOIN place AS p ON p.id = c.place_id
-                WHERE ehc.duplicate = true AND ehc.explorer_id NOT IN ($1) 
-                AND ehc.explorer_id NOT IN (3, 10)  
-                AND c.id NOT IN (SELECT DISTINCT c.id FROM card AS c
-                JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
-                WHERE ehc.explorer_id = $1)
-                ORDER BY c.name
-                `,
+            SELECT ehc.id, c.id AS card_id, c.name AS card_name, e.name AS explorer_name, p.id AS place_id FROM card AS c
+            JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
+            JOIN explorer AS e ON e.id = ehc.explorer_id
+            JOIN place AS p ON p.id = c.place_id
+            WHERE ehc.duplicate = true AND ehc.explorer_id NOT IN ($1) 
+            AND ehc.explorer_id NOT IN (3, $1)  
+            AND c.id NOT IN (SELECT DISTINCT c.id FROM card AS c
+            JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
+            WHERE ehc.explorer_id = $1)
+            ORDER BY c.name, e.name
+            `,
             values: [explorerId],
         };
         const result = await client.query(preparedQuery);
-        console.log(result.rows);
+        // console.log(result.rows);
 
         return result.rows;
     },
+    ////// INFINITE SCROLL //////
+    // async getOpportunitiesForOneExplorer(explorerId, limit, offset) {
+    //     console.log("ENTERING DATAMAPPER", limit, offset);
+
+    //     const preparedQuery = {
+    //         text: `
+    //         SELECT ehc.id, c.id AS card_id, c.name AS card_name, e.name AS explorer_name, p.id AS place_id FROM card AS c
+    //         JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
+    //         JOIN explorer AS e ON e.id = ehc.explorer_id
+    //         JOIN place AS p ON p.id = c.place_id
+    //         WHERE ehc.duplicate = true AND ehc.explorer_id NOT IN ($1) 
+    //         AND ehc.explorer_id NOT IN (3, $1)  
+    //         AND c.id NOT IN (SELECT DISTINCT c.id FROM card AS c
+    //         JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
+    //         WHERE ehc.explorer_id = $1)
+    //         ORDER BY c.name, e.name
+    //         LIMIT $2 
+    //         OFFSET $3
+    //             `,
+    //         values: [explorerId, limit, offset],
+    //     };
+    //     const result = await client.query(preparedQuery);
+    //     // console.log(result.rows);
+
+    //     return result.rows;
+    // },
     async getCountForOnePlaceForExplorer(explorerId, placeId) {
         const preparedQuery = {
             text: `
