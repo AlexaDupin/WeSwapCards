@@ -30,7 +30,13 @@ function Header() {
     case '/report':
       pageTitle = 'Report my cards';
       break;
-    case '/opportunities':
+    case '/swap':
+      pageTitle = 'Swap my cards';
+      break;
+    case '/swap/card':
+      pageTitle = 'Find a swap';
+      break;
+    case '/swap/opportunities':
      pageTitle = 'My opportunities';
      break;
     case '/check':
@@ -46,9 +52,14 @@ function Header() {
         <div 
           className={btnClassName}
         >
-                  <NavLink to="/menu">
+                {location.pathname === "/swap/card" || location.pathname === "/swap/opportunities" ? 
+                  <NavLink to="/swap">
                   <i className="header-icon bi bi-chevron-left"></i>
                   </NavLink>
+                : <NavLink to="/menu">
+                  <i className="header-icon bi bi-chevron-left"></i>
+                  </NavLink>
+                }
         </div>
         <div>
           {location.pathname === "/register/user" ? 

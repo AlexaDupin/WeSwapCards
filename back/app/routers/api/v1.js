@@ -43,6 +43,18 @@ router
     .get(userController.authMiddleware, controllerHandler(opportunitiesController.getCountForOnePlaceForOneExplorer));
 
 router
+    .route('/opportunities/:explorerId/card/:cardId')
+    .get(userController.authMiddleware, controllerHandler(opportunitiesController.findSwapOpportunities));
+
+// router
+//     .route('/opportunities/:explorerId/card/:cardId')
+//     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findExplorerForswapCard));
+
+// router
+//     .route('/opportunities/:explorerId/swapexplorer/:swapExplorerId')
+//     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findSwapOpportunities));
+
+router
     .route('/explorercards/:explorerId')
     .get(userController.authMiddleware, controllerHandler(explorerCardsController.getExplorerCardsByPlace));
 

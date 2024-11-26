@@ -1,0 +1,55 @@
+@use 'src/styles/vars';
+
+.opportunity-card {
+    border-color: vars.$primary-color !important;
+    border-width: medium !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;   
+}
+
+.opportunity-title {
+    font-size: 1.5rem !important;
+    padding: 1rem;
+}
+
+.opportunity-text {
+    height: 150px !important;
+    overflow-y: auto;
+}
+
+.opportunity-tag {
+    font-weight: 500;
+    color: #fff;
+    background-color: vars.$secondary-color;
+    border: none;
+    padding: 0.375rem 0.75rem;
+    margin: 0.5rem;
+    cursor: default !important; 
+}
+
+.custom-button {
+    font-weight: 500;
+    color: #fff;
+    background-color: vars.$primary-color; 
+    border: none;
+    border-radius: 27px;
+    padding: 0.375rem 0.75rem;
+    margin-bottom: 1rem !important;
+    width: fit-content;
+    text-align: center;
+
+    &:hover {
+        background-color: lighten(vars.$primary-color, 10%);
+        border-color: lighten(vars.$primary-color, 10%);
+    }
+
+    &:focus {
+        box-shadow: vars.$primary-color;
+    }
+
+    &:active {
+        background-color: darken(vars.$primary-color, 10%);
+        border-color: darken(vars.$primary-color, 10%);
+    }
+}

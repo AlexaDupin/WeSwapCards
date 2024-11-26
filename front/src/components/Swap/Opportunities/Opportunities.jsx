@@ -4,12 +4,12 @@ import {
     Spinner
 } from "react-bootstrap";
 import Opportunity from './Opportunity/Opportunity';
-import OpportunitiesModal from '../Modal/Modal';
+import OpportunitiesModal from '../../Modal/Modal';
 
 import axios from 'axios';
 
 import PropTypes from 'prop-types';
-import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
+import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
 import './opportunitiesStyles.scss';
 

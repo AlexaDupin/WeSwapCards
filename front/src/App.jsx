@@ -6,7 +6,9 @@ import Register from './components/Register/Register';
 import User from './components/Register/User/User';
 import Menu from './components/Menu/Menu';
 import Report from './components/Report/Report';
-import Opportunities from './components/Opportunities/Opportunities';
+import Swap from './components/Swap/Swap';
+import SwapCard from './components/Swap/SwapCard/SwapCard';
+import Opportunities from './components/Swap/Opportunities/Opportunities';
 import CheckPage from './components/CheckPage/CheckPage';
 import NotFound from './components/NotFound/NotFound';
 
@@ -114,7 +116,27 @@ console.log("isLogged", isLogged);
               ) : <Navigate replace to="/login" />}
           />
           <Route
-              path="/opportunities"
+              path="/swap"
+              element={isLogged && name ? (
+                <Swap
+                  token={token}
+                  name={name}
+                  explorerId={explorerId}
+                />
+              ) : <Navigate replace to="/login" />}
+          />
+          <Route
+              path="/swap/card"
+              element={isLogged && name ? (
+                <SwapCard
+                  token={token}
+                  name={name}
+                  explorerId={explorerId}
+                />
+              ) : <Navigate replace to="/login" />}
+          />
+          <Route
+              path="/swap/opportunities"
               element={isLogged && name ? (
                 <Opportunities
                   token={token}
