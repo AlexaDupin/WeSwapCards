@@ -4,12 +4,12 @@ import {
     Spinner
 } from "react-bootstrap";
 import Opportunity from './Opportunity/Opportunity';
-import OpportunitiesModal from '../Modal/Modal';
+import OpportunitiesModal from '../../Modal/Modal';
 
 import axios from 'axios';
 
 import PropTypes from 'prop-types';
-import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
+import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
 import './opportunitiesStyles.scss';
 
@@ -48,13 +48,13 @@ function Opportunities({
             const count = countResponse.data[0].count;
             
             // Determine className based on count
-            let className = 'custom-button';
+            let className = 'opportunity-tag';
             if (count >= 8) { // Shiny
-              className = 'star-card';
+              className = 'opportunity-tag-star';
             } else if (count >= 6 && count < 8) { // Green (Orange is 5)
-              className = 'key-card';
+              className = 'opportunity-tag-key';
             } else if (count <= 4) { // White
-              className = 'low-card';
+              className = 'opportunity-tag-low';
             }
 
             return { ...opportunity, className }; // Add the className to each opportunity
@@ -80,20 +80,18 @@ function Opportunities({
       fetchOpportunities();
     }, []);
 
-    if (loading) {
-      return <Container className="opportunities">
-       <Spinner 
-        animation="border"
-        className="spinner" 
-       />
-       <p>Looking for your opportunities...</p>
-      </Container>
-    }
-
   return (
     <Container className="opportunities">
-      <OpportunitiesModal />
-        <p>{message}</p>
+
+    {loading &&
+      <><Spinner
+          animation="border"
+          className="spinner" /><p>Looking for your opportunities...</p></>
+    }
+
+    {!loading &&
+
+      <><OpportunitiesModal /><p>{message}</p>
 
         {opportunities && opportunities.length > 0 ? (
           opportunities.map((opportunity) => (
@@ -109,7 +107,8 @@ function Opportunities({
         )}
         
       <ScrollToTop />
-
+      </>
+    }
     </Container>
 )
 }

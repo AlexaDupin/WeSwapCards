@@ -56,8 +56,8 @@ function Menu({
             </Col>
             <Col sm={12}>
                     <CustomButton
-                    text="Discover my opportunities"
-                    onClick={() => navigate('/opportunities')}
+                    text="Swap my cards"
+                    onClick={() => navigate('/swap')}
                     />
             </Col>
             <Col sm={12}>

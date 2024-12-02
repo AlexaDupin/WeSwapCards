@@ -31,6 +31,10 @@ router
     .get(controllerHandler(reportController.getDuplicateCards));
 
 router
+    .route('/card/:cardId')
+    .get(controllerHandler(opportunitiesController.getCardName));
+
+router
     .route('/report/:explorerId')
     .post(userController.authMiddleware, controllerHandler(reportController.addCardsToExplorer));
 
@@ -41,6 +45,18 @@ router
 router
     .route('/opportunities/:explorerId/:placeId')
     .get(userController.authMiddleware, controllerHandler(opportunitiesController.getCountForOnePlaceForOneExplorer));
+
+router
+    .route('/opportunities/:explorerId/card/:cardId')
+    .get(userController.authMiddleware, controllerHandler(opportunitiesController.findSwapOpportunities));
+
+// router
+//     .route('/opportunities/:explorerId/card/:cardId')
+//     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findExplorerForswapCard));
+
+// router
+//     .route('/opportunities/:explorerId/swapexplorer/:swapExplorerId')
+//     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findSwapOpportunities));
 
 router
     .route('/explorercards/:explorerId')

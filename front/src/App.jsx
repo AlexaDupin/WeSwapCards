@@ -6,7 +6,10 @@ import Register from './components/Register/Register';
 import User from './components/Register/User/User';
 import Menu from './components/Menu/Menu';
 import Report from './components/Report/Report';
-import Opportunities from './components/Opportunities/Opportunities';
+import Swap from './components/Swap/Swap';
+import SwapCard from './components/Swap/SwapCard/SwapCard';
+import Chat from './components/Chat/Chat';
+import Opportunities from './components/Swap/Opportunities/Opportunities';
 import CheckPage from './components/CheckPage/CheckPage';
 import NotFound from './components/NotFound/NotFound';
 
@@ -49,9 +52,14 @@ console.log("isLogged", isLogged);
       <Routes>
           <Route
               path="/"
-              element={(
-              <Navigate replace to="/login"/>
-              )}
+              element={isLogged && name ? (
+                <Menu 
+                  name={name}
+                  explorerId={explorerId}
+                  setName={setName}
+                  setExplorerId={setExplorerId}
+                />
+              ) : <Navigate replace to="/login" />}
           />   
           <Route
               path="/login"
@@ -109,7 +117,37 @@ console.log("isLogged", isLogged);
               ) : <Navigate replace to="/login" />}
           />
           <Route
-              path="/opportunities"
+              path="/swap"
+              element={isLogged && name ? (
+                <Swap
+                  token={token}
+                  name={name}
+                  explorerId={explorerId}
+                />
+              ) : <Navigate replace to="/login" />}
+          />
+          <Route
+              path="/swap/card"
+              element={isLogged && name ? (
+                <SwapCard
+                  token={token}
+                  name={name}
+                  explorerId={explorerId}
+                />
+              ) : <Navigate replace to="/login" />}
+          />
+          <Route
+              path="/swap/card/chat"
+              element={isLogged && name ? (
+                <Chat
+                  token={token}
+                  name={name}
+                  explorerId={explorerId}
+                />
+              ) : <Navigate replace to="/login" />}
+          />
+          <Route
+              path="/swap/opportunities"
               element={isLogged && name ? (
                 <Opportunities
                   token={token}

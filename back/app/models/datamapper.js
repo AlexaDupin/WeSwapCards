@@ -114,26 +114,148 @@ module.exports = {
         return result.rows;
     },
     async getOpportunitiesForOneExplorer(explorerId) {
+        console.log("ENTERING DATAMAPPER");
+
         const preparedQuery = {
             text: `
-                SELECT ehc.id, c.id AS card_id, c.name AS card_name, e.name AS explorer_name, p.id AS place_id FROM card AS c
-                JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
-                JOIN explorer AS e ON e.id = ehc.explorer_id
-                JOIN place AS p ON p.id = c.place_id
-                WHERE ehc.duplicate = true AND ehc.explorer_id NOT IN ($1) 
-                AND ehc.explorer_id NOT IN (3, 10)  
-                AND c.id NOT IN (SELECT DISTINCT c.id FROM card AS c
-                JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
-                WHERE ehc.explorer_id = $1)
-                ORDER BY c.name
-                `,
+            SELECT ehc.id, c.id AS card_id, c.name AS card_name, e.name AS explorer_name, p.id AS place_id FROM card AS c
+            JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
+            JOIN explorer AS e ON e.id = ehc.explorer_id
+            JOIN place AS p ON p.id = c.place_id
+            WHERE ehc.duplicate = true AND ehc.explorer_id NOT IN ($1) 
+            AND ehc.explorer_id NOT IN (3, $1)  
+            AND c.id NOT IN (SELECT DISTINCT c.id FROM card AS c
+            JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
+            WHERE ehc.explorer_id = $1)
+            ORDER BY c.name, e.name
+            `,
             values: [explorerId],
         };
         const result = await client.query(preparedQuery);
-        console.log(result.rows);
+        // console.log(result.rows);
 
         return result.rows;
     },
+    async findSwapOpportunities(cardId, explorerId) {
+        console.log("ENTERING DATAMAPPER");
+
+        const preparedQuery = {
+            text: `
+            WITH explorers_with_duplicate AS (
+                SELECT ehc.explorer_id, explorer.name
+                FROM explorer_has_cards AS ehc
+                JOIN explorer ON explorer.id = ehc.explorer_id
+                WHERE card_id = $1 AND duplicate = true
+                  AND explorer_id != $2
+            ),
+            explorer_duplicates AS (
+                SELECT card_id
+                FROM explorer_has_cards
+                WHERE explorer_id = $2 AND duplicate = true
+            )
+            SELECT 
+            swapexp.explorer_id AS explorer_id,
+            swapexp.name AS explorer_name,
+            jsonb_agg(
+                jsonb_build_object(
+                    'card', 
+                    jsonb_build_object(
+                        'id', c.id, 
+                        'name', c.name)
+                    )
+                ORDER BY c.name) AS opportunities
+            FROM 
+                explorers_with_duplicate swapexp
+            JOIN 
+                card c ON c.id IN (SELECT card_id FROM explorer_duplicates)
+            LEFT JOIN 
+                explorer_has_cards ehc_all ON ehc_all.explorer_id = swapexp.explorer_id AND ehc_all.card_id = c.id
+            WHERE 
+                ehc_all.explorer_id IS NULL
+            GROUP BY 
+                swapexp.explorer_id, swapexp.name
+            ORDER BY random()
+            `,
+            values: [cardId, explorerId],
+        };
+        const result = await client.query(preparedQuery);
+        // console.log(result.rows);
+        return result.rows;
+    },
+    async getCardName(cardId) {
+        const preparedQuery = {
+            text: `
+            SELECT name FROM card
+            WHERE id = $1
+            `,
+            values: [cardId]
+        };
+        const result = await client.query(preparedQuery);
+        // console.log(result.rows);
+        return result.rows[0];
+    },
+//     async findExplorersForCardIdOpportunity(cardId, explorerId) {
+//         console.log("ENTERING DATAMAPPER");
+
+//         const preparedQuery = {
+//             text: `
+//             SELECT explorer_id FROM explorer_has_cards
+//             WHERE card_id = $1 AND duplicate = true AND explorer_id NOT IN ($2)
+//             ORDER BY random()
+//             `,
+//             values: [cardId, explorerId],
+//         };
+//         const result = await client.query(preparedQuery);
+//         // console.log(result.rows);
+//         return result.rows;
+//     },
+//     async findSwapOpportunities(explorerId, swapExplorerId) {
+//         console.log("ENTERING DATAMAPPER");
+
+//         const preparedQuery = {
+//             text: `
+// SELECT id FROM card
+// WHERE id NOT IN (
+//     SELECT card_id FROM explorer_has_cards
+//     WHERE explorer_id = $2
+//     ) AND id IN (
+//     SELECT card_id FROM explorer_has_cards
+//     WHERE explorer_id = $1 and duplicate = true
+//     )
+//             `,
+//             values: [explorerId, swapExplorerId],
+//         };
+//         const result = await client.query(preparedQuery);
+//         // console.log(result.rows);
+//         return result.rows;
+//     },
+    
+    ////// INFINITE SCROLL //////
+    // async getOpportunitiesForOneExplorer(explorerId, limit, offset) {
+    //     console.log("ENTERING DATAMAPPER", limit, offset);
+
+    //     const preparedQuery = {
+    //         text: `
+    //         SELECT ehc.id, c.id AS card_id, c.name AS card_name, e.name AS explorer_name, p.id AS place_id FROM card AS c
+    //         JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
+    //         JOIN explorer AS e ON e.id = ehc.explorer_id
+    //         JOIN place AS p ON p.id = c.place_id
+    //         WHERE ehc.duplicate = true AND ehc.explorer_id NOT IN ($1) 
+    //         AND ehc.explorer_id NOT IN (3, $1)  
+    //         AND c.id NOT IN (SELECT DISTINCT c.id FROM card AS c
+    //         JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
+    //         WHERE ehc.explorer_id = $1)
+    //         ORDER BY c.name, e.name
+    //         LIMIT $2 
+    //         OFFSET $3
+    //             `,
+    //         values: [explorerId, limit, offset],
+    //     };
+    //     const result = await client.query(preparedQuery);
+    //     // console.log(result.rows);
+
+    //     return result.rows;
+    // },
     async getCountForOnePlaceForExplorer(explorerId, placeId) {
         const preparedQuery = {
             text: `

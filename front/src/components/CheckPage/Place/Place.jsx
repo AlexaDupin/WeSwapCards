@@ -37,6 +37,7 @@ function Place({
                 headers: {
                   authorization: token,
                 },
+                withCredentials: true,  // Ensure credentials (cookies) are sent
               });
 
             if (response.status === 200) {
