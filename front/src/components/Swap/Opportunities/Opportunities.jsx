@@ -48,13 +48,13 @@ function Opportunities({
             const count = countResponse.data[0].count;
             
             // Determine className based on count
-            let className = 'custom-button';
+            let className = 'opportunity-tag';
             if (count >= 8) { // Shiny
-              className = 'star-card';
+              className = 'opportunity-tag-star';
             } else if (count >= 6 && count < 8) { // Green (Orange is 5)
-              className = 'key-card';
+              className = 'opportunity-tag-key';
             } else if (count <= 4) { // White
-              className = 'low-card';
+              className = 'opportunity-tag-low';
             }
 
             return { ...opportunity, className }; // Add the className to each opportunity

@@ -91,6 +91,17 @@ const opportunitiesController = {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     },
+    async getCardName(req, res) {
+        const cardId = Number(req.params.cardId);
+
+        try {
+            const name = await datamapper.getCardName(cardId);
+            res.status(200).json(name);
+        } catch (error) {
+            console.error('Error adding cards to explorer:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
 };
 
 

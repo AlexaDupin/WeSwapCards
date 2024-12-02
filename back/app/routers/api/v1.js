@@ -31,6 +31,10 @@ router
     .get(controllerHandler(reportController.getDuplicateCards));
 
 router
+    .route('/card/:cardId')
+    .get(controllerHandler(opportunitiesController.getCardName));
+
+router
     .route('/report/:explorerId')
     .post(userController.authMiddleware, controllerHandler(reportController.addCardsToExplorer));
 

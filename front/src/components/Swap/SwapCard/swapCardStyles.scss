@@ -9,7 +9,7 @@
 }
 
 .opportunity-title {
-    font-size: 1.5rem !important;
+    font-size: 1.3rem !important;
     padding: 1rem;
 }
 
@@ -18,7 +18,7 @@
     overflow-y: auto;
 }
 
-.opportunity-tag {
+.swap-tag {
     font-weight: 500;
     color: #fff;
     background-color: vars.$secondary-color;
@@ -28,7 +28,13 @@
     cursor: default !important; 
 }
 
-.custom-button {
+.swap-cardName {
+    color: vars.$primary-color; 
+    font-size: 1rem !important;
+    font-weight: bold;
+}
+
+.contact-button {
     font-weight: 500;
     color: #fff;
     background-color: vars.$primary-color; 
@@ -52,4 +58,10 @@
         background-color: darken(vars.$primary-color, 10%);
         border-color: darken(vars.$primary-color, 10%);
     }
+}
+
+.lock-icon {
+    height: 100px;
+    color: vars.$primary-color;
+    padding-top: 1rem;
 }

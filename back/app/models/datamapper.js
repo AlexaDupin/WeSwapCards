@@ -182,7 +182,18 @@ module.exports = {
         // console.log(result.rows);
         return result.rows;
     },
-
+    async getCardName(cardId) {
+        const preparedQuery = {
+            text: `
+            SELECT name FROM card
+            WHERE id = $1
+            `,
+            values: [cardId]
+        };
+        const result = await client.query(preparedQuery);
+        // console.log(result.rows);
+        return result.rows[0];
+    },
 //     async findExplorersForCardIdOpportunity(cardId, explorerId) {
 //         console.log("ENTERING DATAMAPPER");
 

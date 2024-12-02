@@ -6,6 +6,8 @@ import {
     Card,
     Col
 } from "react-bootstrap";
+import {Lock} from "react-bootstrap-icons";
+import { useNavigate } from 'react-router-dom';
 
 import PlaceCard from './PlaceCard/PlaceCard';
 
@@ -24,8 +26,13 @@ function SwapCard({
     const [hidden, setHidden] = useState(true);
     const [hiddenSwapOpportunities, setHiddenSwapOpportunities] = useState(true);
     const [swapOpportunities, setSwapOpportunities] = useState([]);
+    const [selectedCardId, setSelectedCardId] = useState();
+    const [selectedCardName, setSelectedCardName] = useState();
+
+    console.log(selectedCardId);
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
+    const navigate = useNavigate();
 
     // Fetch all places to show in dropdown
     const fetchAllPlaces = async () => {
@@ -52,8 +59,31 @@ function SwapCard({
       }
     };
 
+    const fetchSearchedCardName = async (cardId) => {
+      try {
+        const response = await axios.get(
+        `${baseUrl}/card/${cardId}`
+        , {
+          headers: {
+            authorization: token,
+          },
+        });
+
+      const cardName = response.data.name;
+      console.log("cardName", cardName);
+      setSelectedCardName(cardName);
+
+    } catch (error) {
+      console.log(error);
+    }
+    }
+
     const fetchOpportunity = async (cardId) => {
       console.log("FETCH OPP");
+      setSelectedCardId(cardId);
+
+      // Fetch card name
+      fetchSearchedCardName(cardId);
 
       try {
           const response = await axios.get(
@@ -74,6 +104,10 @@ function SwapCard({
         console.log(error);
       }
     };
+
+    const handleContactButton = () => {
+      navigate('/swap/card/chat')
+    }
   
     useEffect(
       () => {
@@ -95,6 +129,8 @@ function SwapCard({
           aria-label="Select a chapter" 
           onChange={(e) => {
             const selectedValue = e.target.value;
+            console.log(selectedValue);
+
             if (selectedValue !== "") {
               handleSelectPlace(selectedValue);
             }
@@ -137,50 +173,59 @@ function SwapCard({
       <div 
         className={hiddenSwapOpportunities ? 'hidden' : ''}
       >        
-      <p>Here are the users that can give you this card</p>
-      <Row className="g-3">
 
-      {swapOpportunities && swapOpportunities.length > 0 ? (
-        swapOpportunities.map((opportunity) => (
-        <Col xs={12} key={opportunity.explorer_id}
-          className="column"
-        >
-        <Card
-          className="opportunity-card"
-          id={opportunity.explorer_id}
-        >
-          <Card.Title 
-            className="opportunity-title"
+        <Row className="g-3">
+          {swapOpportunities && swapOpportunities.length > 0 ? (
+            <>
+            <p>Here are the users that can give you this card: <br /><br />
+            <span className='swap-cardName'>{selectedCardName}</span></p>
+
+            {swapOpportunities.map((opportunity) => (
+          <Col xs={12} 
+            key={opportunity.explorer_id}
+            className="column"
           >
-            {opportunity.explorer_name}
-          </Card.Title>
-          <Card.Text
-            className="opportunity-text"
+          <Card
+            className="opportunity-card"
+            id={opportunity.explorer_id}
           >
-            In exchange, here are the cards you can offer them: <br />
-            {opportunity.opportunities.map((exchange) => (
-              <button 
-                className="opportunity-tag"
-              >
-                {exchange.card.name}
-              </button>
-            ))}
-          </Card.Text>
+            <Card.Title 
+              className="opportunity-title"
+            >
+              {opportunity.explorer_name}
+            </Card.Title>
+            <Card.Text
+              className="opportunity-text"
+            >
+              In exchange, here are the cards you can offer them: <br />
+              {opportunity.opportunities.map((exchange) => (
+                <button 
+                  key={exchange.card.id}
+                  className="swap-tag"
+                >
+                  {exchange.card.name}
+                </button>
+              ))}
+            </Card.Text>
 
-          <button 
-            className="custom-button"
-          >
-            Contact this user to swap
-          </button>
+            <button 
+              className="contact-button"
+              onClick={handleContactButton}
+            >
+              Contact this user to swap
+            </button>
 
-        </Card>
-        </Col>
-        ))
-        ) : (
-          <div>No opportunities available for this card</div> 
-        )}
-
-      </Row>
+          </Card>
+          </Col>
+          ))}
+          </>
+          ) : (
+            <>
+            <div>No opportunities available for <span className='swap-cardName'>{selectedCardName}</span>, try another one!</div>
+            <Lock className='lock-icon'/>
+            </>
+          )}
+        </Row>
       </div>        
       
       <ScrollToTop />

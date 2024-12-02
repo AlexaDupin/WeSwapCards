@@ -8,6 +8,7 @@ import Menu from './components/Menu/Menu';
 import Report from './components/Report/Report';
 import Swap from './components/Swap/Swap';
 import SwapCard from './components/Swap/SwapCard/SwapCard';
+import Chat from './components/Chat/Chat';
 import Opportunities from './components/Swap/Opportunities/Opportunities';
 import CheckPage from './components/CheckPage/CheckPage';
 import NotFound from './components/NotFound/NotFound';
@@ -129,6 +130,16 @@ console.log("isLogged", isLogged);
               path="/swap/card"
               element={isLogged && name ? (
                 <SwapCard
+                  token={token}
+                  name={name}
+                  explorerId={explorerId}
+                />
+              ) : <Navigate replace to="/login" />}
+          />
+          <Route
+              path="/swap/card/chat"
+              element={isLogged && name ? (
+                <Chat
                   token={token}
                   name={name}
                   explorerId={explorerId}
