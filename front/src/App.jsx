@@ -34,7 +34,8 @@ function App() {
   // Hook created to manage token
   const { token, setToken } = useToken();
   const isLogged = token !== null;
-
+  const [swapExplorerId, setSwapExplorerId] = useState('');
+  
   useEffect(() => {
     setName(name);
     setExplorerId(explorerId);
@@ -45,6 +46,7 @@ console.log("APP userUID", userUID);
 console.log("APP name", name);
 console.log("APP explorerId", explorerId);
 console.log("isLogged", isLogged);
+console.log("APP swapExplorerId", swapExplorerId);
 
   return (
     <div className="App">
@@ -133,6 +135,7 @@ console.log("isLogged", isLogged);
                   token={token}
                   name={name}
                   explorerId={explorerId}
+                  setSwapExplorerId={setSwapExplorerId}
                 />
               ) : <Navigate replace to="/login" />}
           />
@@ -143,6 +146,7 @@ console.log("isLogged", isLogged);
                   token={token}
                   name={name}
                   explorerId={explorerId}
+                  swapExplorerId={swapExplorerId}
                 />
               ) : <Navigate replace to="/login" />}
           />

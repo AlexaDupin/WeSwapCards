@@ -19,7 +19,7 @@ import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 import './swapCardStyles.scss';
 
 function SwapCard({
-    explorerId, name, token
+    explorerId, name, token, setSwapExplorerId
   }) {
     const [places, setPlaces] = useState([]);
     const [cards, setCards] = useState([]);
@@ -54,6 +54,8 @@ function SwapCard({
         setCards(allCards.data.cards);
         setHidden(false);
         setHiddenSwapOpportunities(true);
+        setSwapExplorerId('');
+
       } catch (error) {
         console.log(error);
       }
@@ -78,7 +80,7 @@ function SwapCard({
     }
     }
 
-    const fetchOpportunity = async (cardId) => {
+    const fetchSwapOpportunities = async (cardId) => {
       console.log("FETCH OPP");
       setSelectedCardId(cardId);
 
@@ -105,8 +107,9 @@ function SwapCard({
       }
     };
 
-    const handleContactButton = () => {
-      navigate('/swap/card/chat')
+    const handleContactButton = (swapExplorerId) => {
+      setSwapExplorerId(swapExplorerId);
+      navigate('/swap/card/chat');
     }
   
     useEffect(
@@ -160,7 +163,7 @@ function SwapCard({
             <PlaceCard
               key={card.id}
               card={card}
-              fetchOpportunity={fetchOpportunity} 
+              fetchSwapOpportunities={fetchSwapOpportunities} 
             />
             ))
             ) : (
@@ -210,7 +213,7 @@ function SwapCard({
 
             <button 
               className="contact-button"
-              onClick={handleContactButton}
+              onClick={() => handleContactButton(opportunity.explorer_id)}
             >
               Contact this user to swap
             </button>

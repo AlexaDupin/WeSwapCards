@@ -3,6 +3,8 @@ const userController = require('../../controllers/api/user');
 const reportController = require('../../controllers/api/report');
 const opportunitiesController = require('../../controllers/api/opportunities');
 const explorerCardsController = require('../../controllers/api/explorerCards');
+const chatController = require('../../controllers/api/chat');
+
 const controllerHandler = require('../../helpers/controllerHandler');
 
 const router = express.Router();
@@ -50,6 +52,14 @@ router
     .route('/opportunities/:explorerId/card/:cardId')
     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findSwapOpportunities));
 
+router
+    .route('/chat')
+    .post(userController.authMiddleware, controllerHandler(chatController.insertNewMessage));
+
+router
+    .route('/chat/:explorerId/:swapExplorerId')
+    .get(userController.authMiddleware, controllerHandler(chatController.getAllMessages))
+    
 // router
 //     .route('/opportunities/:explorerId/card/:cardId')
 //     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findExplorerForswapCard));

@@ -194,6 +194,30 @@ module.exports = {
         // console.log(result.rows);
         return result.rows[0];
     },
+    async insertNewMessage(data) {
+        const preparedQuery = await client.query(
+            `
+        INSERT INTO "message"
+        (content, timestamp, sender_id, recipient_id) VALUES
+        ($1, $2, $3, $4) RETURNING *
+        `,
+            [data.content, data.timestamp, data.senderId, data.recipientId],
+        );
+        return preparedQuery.rows[0];
+    },
+    async getAllMessagesInAChat(explorerId, swapExplorerId) {
+        console.log("GET ALL MESSAGES IN CHAT DTMP")
+        const preparedQuery = {
+            text: `SELECT * FROM "message"
+                WHERE sender_id = $1 OR sender_id = $2
+                AND recipient_id = $2 OR recipient_id = $1`,
+            values: [explorerId, swapExplorerId],
+        };
+        const result = await client.query(preparedQuery);
+        console.log(result.rows);
+        return result.rows;
+    },
+
 //     async findExplorersForCardIdOpportunity(cardId, explorerId) {
 //         console.log("ENTERING DATAMAPPER");
 

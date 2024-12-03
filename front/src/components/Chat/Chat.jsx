@@ -16,75 +16,125 @@ import PropTypes from 'prop-types';
 import './chatStyles.scss';
 
 function Chat({
-    explorerId, name, token
+    explorerId, name, token, swapExplorerId
   }) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const messageEndRef = useRef(null);
-    const [otherUserId, setOtherUserId] = useState(1);
+    console.log("explorerId", explorerId);
+    console.log("CHAT JSX swapExplorerId", swapExplorerId);
+    console.log("messages", messages);
 
-    // Simulate fetching messages from an API
+    const baseUrl = process.env.REACT_APP_BASE_URL;
+
     useEffect(() => {
       const fetchMessages = async () => {
-        const fetchedMessages = [
-          { id: 1, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-          { id: 2, senderId: otherUserId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-          { id: 3, senderId: explorerId, 
-            content: "I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you?", 
-            timestamp: "10:02 AM" },
-          { id: 4, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-          { id: 5, senderId: otherUserId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-          { id: 6, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-          { id: 7, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-          { id: 8, senderId: otherUserId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-          { id: 9, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-          { id: 10, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-          { id: 11, senderId: otherUserId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-          { id: 12, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-          { id: 3, senderId: explorerId, 
-            content: "I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you?", 
-            timestamp: "10:02 AM" },
-          // { id: 4, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-          // { id: 5, senderId: otherUserId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-          // { id: 6, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-          // { id: 7, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-          // { id: 8, senderId: otherUserId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-          // { id: 9, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-          // { id: 10, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-          // { id: 11, senderId: otherUserId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-          // { id: 12, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-        ];
-        setMessages(fetchedMessages);
+        try {
+          const response = await axios.get(
+            `${baseUrl}/chat/${explorerId}/${swapExplorerId}`
+          , {
+            headers: {
+              authorization: token,
+            },
+          });
+          console.log(response.data.allMessages);
+          const allFetchedMessages = response.data.allMessages;
+          const allMessagesFormattedDate = allFetchedMessages.map((message) => {
+            return {
+            ...message, 
+              timestamp: new Date(message.timestamp).toLocaleString(undefined, { 
+                weekday: 'long', hour: '2-digit', minute: '2-digit' 
+              }),
+            };
+          });
+          console.log("allMessagesFormattedDate", allMessagesFormattedDate);
+          setMessages(allMessagesFormattedDate);
+        } catch (error) {
+          console.log(error);
+        }
+      
+
+        // const fetchedMessages = [
+        //   { id: 1, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
+        //   { id: 2, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
+        //   { id: 3, senderId: explorerId, 
+        //     content: "I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you?", 
+        //     timestamp: "10:02 AM" },
+        //   { id: 4, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
+        //   { id: 5, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
+        //   { id: 6, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
+        //   { id: 7, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
+        //   { id: 8, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
+        //   { id: 9, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
+        //   { id: 10, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
+        //   { id: 11, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
+        //   { id: 12, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
+        //   { id: 3, senderId: explorerId, 
+        //     content: "I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you?", 
+        //     timestamp: "10:02 AM" },
+        //   { id: 4, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
+        //   { id: 5, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
+        //   { id: 6, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
+        //   { id: 7, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
+        //   { id: 8, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
+        //   { id: 9, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
+        //   { id: 10, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
+        //   { id: 11, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
+        //   { id: 12, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
+        // ];
+        // setMessages(fetchedMessages);
       };
       fetchMessages();
-    }, [explorerId, otherUserId]);
+    }, [explorerId, swapExplorerId]);
   
     // Scroll to the bottom of the chat after sending a new message
     useEffect(() => {
       messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
   
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
       if (newMessage.trim() === '') return;
   
       const message = {
         id: messages.length + 1,
-        senderId: explorerId,
         content: newMessage,
-        timestamp: new Date().toLocaleTimeString().slice(0, 5),
+        // timestamp: new Date().toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit' }),
+        timestamp: new Date(),
+        sender_id: explorerId,
+        recipient_id: swapExplorerId,
       };
   
-      setMessages((prevMessages) => [...prevMessages, message]);
-      setNewMessage('');
+      try {
+        const response = await axios.post(
+          `${baseUrl}/chat`,
+          message
+        , {
+          headers: {
+            authorization: token,
+          },
+        });
+        console.log("RESPONSE", response);
+
+        if (response.status === 201) {
+          setMessages((prevMessages) => [...prevMessages, message]);
+          setNewMessage('');
+        } else {
+          console.error("Failed to send message");
+        }
+
+      } catch (error) {
+        console.log(error.data);
+    }
+
     };
 
   return (
     <Container fluid className="chat">
       <Row className="message-list">
         {messages.map((message) => (
-          <Col key={message.id} className={`message-bubble ${message.senderId === explorerId ? 'sent' : 'received'}`}>
+          <Col key={message.id} className={`message-bubble ${message.sender_id === explorerId ? 'sent' : 'received'}`}>
             <div className="message-content">{message.content}</div>
-            <div className="message-timestamp">{message.timestamp}</div>
+            <div className="message-timestamp">{message.timestamp.toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit' })}</div>
           </Col>
         ))}
         <div ref={messageEndRef} />
