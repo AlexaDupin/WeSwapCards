@@ -6,7 +6,9 @@ import PropTypes from 'prop-types';
 
 import './headerStyles.scss';
 
-function Header() {
+function Header({
+  swapCardName, swapExplorerName
+}) {
   const location = useLocation();
   const hiddenPaths = ['/menu', '/login', '/register', '/register/user']; 
 
@@ -36,6 +38,13 @@ function Header() {
     case '/swap/card':
       pageTitle = 'Find a swap';
       break;
+    case '/swap/card/chat':
+      if (!swapCardName || !swapExplorerName) {
+        pageTitle = 'Find a swap';
+      } else {
+      pageTitle = `${swapCardName} - ${swapExplorerName}`;
+      }
+      break;
     case '/swap/opportunities':
      pageTitle = 'My opportunities';
      break;
@@ -52,7 +61,7 @@ function Header() {
         <div 
           className={btnClassName}
         >
-                {location.pathname === "/swap/card" || location.pathname === "/swap/opportunities" ? 
+                {location.pathname === "/swap/card" || location.pathname === "/swap/card/chat" || location.pathname === "/swap/opportunities" ? 
                   <NavLink to="/swap">
                   <i className="header-icon bi bi-chevron-left"></i>
                   </NavLink>

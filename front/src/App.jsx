@@ -34,6 +34,10 @@ function App() {
   // Hook created to manage token
   const { token, setToken } = useToken();
   const isLogged = token !== null;
+  // Swap feature
+  const [swapExplorerId, setSwapExplorerId] = useState('');
+  const [swapCardName, setSwapCardName] = useState();
+  const [swapExplorerName, setSwapExplorerName] = useState();
 
   useEffect(() => {
     setName(name);
@@ -45,10 +49,14 @@ console.log("APP userUID", userUID);
 console.log("APP name", name);
 console.log("APP explorerId", explorerId);
 console.log("isLogged", isLogged);
+console.log("APP swapExplorerId", swapExplorerId);
 
   return (
     <div className="App">
-      <Header />
+      <Header 
+        swapCardName={swapCardName}
+        swapExplorerName={swapExplorerName}
+      />
       <Routes>
           <Route
               path="/"
@@ -133,6 +141,10 @@ console.log("isLogged", isLogged);
                   token={token}
                   name={name}
                   explorerId={explorerId}
+                  setSwapExplorerId={setSwapExplorerId}
+                  swapCardName={swapCardName}
+                  setSwapCardName={setSwapCardName}
+                  setSwapExplorerName={setSwapExplorerName}
                 />
               ) : <Navigate replace to="/login" />}
           />
@@ -141,8 +153,9 @@ console.log("isLogged", isLogged);
               element={isLogged && name ? (
                 <Chat
                   token={token}
-                  name={name}
                   explorerId={explorerId}
+                  swapExplorerId={swapExplorerId}
+                  swapCardName={swapCardName}
                 />
               ) : <Navigate replace to="/login" />}
           />

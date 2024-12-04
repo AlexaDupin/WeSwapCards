@@ -19,7 +19,7 @@ import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 import './swapCardStyles.scss';
 
 function SwapCard({
-    explorerId, name, token
+    explorerId, name, token, setSwapExplorerId, setSwapCardName, swapCardName, setSwapExplorerName
   }) {
     const [places, setPlaces] = useState([]);
     const [cards, setCards] = useState([]);
@@ -27,7 +27,6 @@ function SwapCard({
     const [hiddenSwapOpportunities, setHiddenSwapOpportunities] = useState(true);
     const [swapOpportunities, setSwapOpportunities] = useState([]);
     const [selectedCardId, setSelectedCardId] = useState();
-    const [selectedCardName, setSelectedCardName] = useState();
 
     console.log(selectedCardId);
 
@@ -54,6 +53,8 @@ function SwapCard({
         setCards(allCards.data.cards);
         setHidden(false);
         setHiddenSwapOpportunities(true);
+        setSwapExplorerId('');
+
       } catch (error) {
         console.log(error);
       }
@@ -71,14 +72,14 @@ function SwapCard({
 
       const cardName = response.data.name;
       console.log("cardName", cardName);
-      setSelectedCardName(cardName);
+      setSwapCardName(cardName);
 
     } catch (error) {
       console.log(error);
     }
     }
 
-    const fetchOpportunity = async (cardId) => {
+    const fetchSwapOpportunities = async (cardId) => {
       console.log("FETCH OPP");
       setSelectedCardId(cardId);
 
@@ -105,8 +106,10 @@ function SwapCard({
       }
     };
 
-    const handleContactButton = () => {
-      navigate('/swap/card/chat')
+    const handleContactButton = (swapExplorerId, swapExplorerName) => {
+      setSwapExplorerId(swapExplorerId);
+      setSwapExplorerName(swapExplorerName);
+      navigate('/swap/card/chat');
     }
   
     useEffect(
@@ -160,7 +163,7 @@ function SwapCard({
             <PlaceCard
               key={card.id}
               card={card}
-              fetchOpportunity={fetchOpportunity} 
+              fetchSwapOpportunities={fetchSwapOpportunities} 
             />
             ))
             ) : (
@@ -178,7 +181,7 @@ function SwapCard({
           {swapOpportunities && swapOpportunities.length > 0 ? (
             <>
             <p>Here are the users that can give you this card: <br /><br />
-            <span className='swap-cardName'>{selectedCardName}</span></p>
+            <span className='swap-cardName'>{swapCardName}</span></p>
 
             {swapOpportunities.map((opportunity) => (
           <Col xs={12} 
@@ -210,7 +213,7 @@ function SwapCard({
 
             <button 
               className="contact-button"
-              onClick={handleContactButton}
+              onClick={() => handleContactButton(opportunity.explorer_id, opportunity.explorer_name)}
             >
               Contact this user to swap
             </button>
@@ -221,7 +224,7 @@ function SwapCard({
           </>
           ) : (
             <>
-            <div>No opportunities available for <span className='swap-cardName'>{selectedCardName}</span>, try another one!</div>
+            <div>No opportunities available for <span className='swap-cardName'>{swapCardName}</span>, try another one!</div>
             <Lock className='lock-icon'/>
             </>
           )}

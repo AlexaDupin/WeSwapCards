@@ -13,7 +13,7 @@ import './placeCardStyles.scss';
 
 function PlaceCard({
   card,
-  fetchOpportunity
+  fetchSwapOpportunities
 }) {
   if (!card) {
     console.error('Missing card or selectedCards');
@@ -36,7 +36,7 @@ function PlaceCard({
   const SelectedIcon = iconMap[card.number] || Icon1Square;
 
   const handleClick = () => {
-    fetchOpportunity(card.id);
+    fetchSwapOpportunities(card.id);
   };
 
   return (

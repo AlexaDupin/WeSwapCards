@@ -35,6 +35,12 @@ function Swap({
                     onClick={() => navigate('/swap/opportunities')}
                     />
             </Col>
+            <Col sm={12}>
+                    <CustomButton
+                    text="Check my requests"
+                    onClick={() => navigate('/swap/requests')}
+                    />
+            </Col>
         </Row> 
                
     </Container>
