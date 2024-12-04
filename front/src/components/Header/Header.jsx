@@ -6,7 +6,9 @@ import PropTypes from 'prop-types';
 
 import './headerStyles.scss';
 
-function Header() {
+function Header({
+  swapCardName, swapExplorerName
+}) {
   const location = useLocation();
   const hiddenPaths = ['/menu', '/login', '/register', '/register/user']; 
 
@@ -35,6 +37,13 @@ function Header() {
       break;
     case '/swap/card':
       pageTitle = 'Find a swap';
+      break;
+    case '/swap/card/chat':
+      if (!swapCardName || !swapExplorerName) {
+        pageTitle = 'Find a swap';
+      } else {
+      pageTitle = `${swapCardName} - ${swapExplorerName}`;
+      }
       break;
     case '/swap/opportunities':
      pageTitle = 'My opportunities';

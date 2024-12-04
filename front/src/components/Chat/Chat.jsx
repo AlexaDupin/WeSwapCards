@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
 import './chatStyles.scss';
 
 function Chat({
-    explorerId, name, token, swapExplorerId
+    explorerId, token, swapExplorerId, swapCardName
   }) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
@@ -24,6 +24,7 @@ function Chat({
     console.log("explorerId", explorerId);
     console.log("CHAT JSX swapExplorerId", swapExplorerId);
     console.log("messages", messages);
+    console.log("swapCardName", swapCardName);
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -85,7 +86,7 @@ function Chat({
         // setMessages(fetchedMessages);
       };
       fetchMessages();
-    }, [explorerId, swapExplorerId]);
+    }, [setNewMessage]);
   
     // Scroll to the bottom of the chat after sending a new message
     useEffect(() => {
@@ -95,19 +96,20 @@ function Chat({
     const handleSendMessage = async () => {
       if (newMessage.trim() === '') return;
   
-      const message = {
-        id: messages.length + 1,
+      const input = {
+        // id: messages.length + 1,
         content: newMessage,
         // timestamp: new Date().toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit' }),
         timestamp: new Date(),
         sender_id: explorerId,
         recipient_id: swapExplorerId,
+        card_name: swapCardName,
       };
   
       try {
         const response = await axios.post(
           `${baseUrl}/chat`,
-          message
+          input
         , {
           headers: {
             authorization: token,
@@ -116,7 +118,7 @@ function Chat({
         console.log("RESPONSE", response);
 
         if (response.status === 201) {
-          setMessages((prevMessages) => [...prevMessages, message]);
+          setMessages((prevMessages) => [...prevMessages, input]);
           setNewMessage('');
         } else {
           console.error("Failed to send message");

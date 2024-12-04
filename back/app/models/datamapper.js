@@ -198,10 +198,10 @@ module.exports = {
         const preparedQuery = await client.query(
             `
         INSERT INTO "message"
-        (content, timestamp, sender_id, recipient_id) VALUES
-        ($1, $2, $3, $4) RETURNING *
+        (content, timestamp, sender_id, recipient_id, card_name) VALUES
+        ($1, $2, $3, $4, $5) RETURNING *
         `,
-            [data.content, data.timestamp, data.senderId, data.recipientId],
+            [data.content, data.timestamp, data.senderId, data.recipientId, data.swapCardName],
         );
         return preparedQuery.rows[0];
     },
@@ -209,8 +209,9 @@ module.exports = {
         console.log("GET ALL MESSAGES IN CHAT DTMP")
         const preparedQuery = {
             text: `SELECT * FROM "message"
-                WHERE sender_id = $1 OR sender_id = $2
-                AND recipient_id = $2 OR recipient_id = $1`,
+                WHERE sender_id = $1 AND recipient_id = $2
+                OR sender_id = $2 AND recipient_id = $1
+                ORDER BY timestamp`,
             values: [explorerId, swapExplorerId],
         };
         const result = await client.query(preparedQuery);

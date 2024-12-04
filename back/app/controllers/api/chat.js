@@ -6,11 +6,13 @@ const chatController = {
         const timestamp = req.body.timestamp;
         const senderId = req.body.sender_id;
         const recipientId = req.body.recipient_id;
+        const swapCardName = req.body.card_name;
 
         console.log("content", content);
         console.log("timestamp", timestamp);
         console.log("senderId", senderId);
         console.log("recipientId", recipientId);
+        console.log("swapCardName", swapCardName);
 
         try {
             const result = await datamapper.insertNewMessage({
@@ -18,6 +20,7 @@ const chatController = {
                 timestamp: timestamp,
                 senderId: senderId,
                 recipientId: recipientId,
+                swapCardName: swapCardName,
             });
             console.log("result", result);
               
