@@ -218,6 +218,31 @@ module.exports = {
         console.log(result.rows);
         return result.rows;
     },
+    async getAllConversationsOfExplorer(explorerId) {
+        const preparedQuery = {
+            text: `SELECT
+                ROW_NUMBER() OVER () AS id,
+                m.card_name,
+                CASE
+                  WHEN m.sender_id = $1 THEN e2.name
+                  WHEN m.recipient_id = $1 THEN e1.name
+                END AS swap_explorer,
+                CASE
+                  WHEN m.sender_id = $1 THEN e2.id
+                  WHEN m.recipient_id = $1 THEN e1.id
+                END AS swap_explorer_id
+            FROM message m
+            JOIN explorer e1 ON e1.id = m.sender_id
+            JOIN explorer e2 ON e2.id = m.recipient_id
+            WHERE m.sender_id = $1 OR m.recipient_id = $1
+            GROUP BY m.card_name, swap_explorer, m.sender_id, e2.id, m.recipient_id, e1.id
+            ORDER BY m.card_name;`,
+            values: [explorerId],
+        };
+        const result = await client.query(preparedQuery);
+        console.log(result.rows);
+        return result.rows;
+    },
 
 //     async findExplorersForCardIdOpportunity(cardId, explorerId) {
 //         console.log("ENTERING DATAMAPPER");

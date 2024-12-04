@@ -11,6 +11,7 @@ import SwapCard from './components/Swap/SwapCard/SwapCard';
 import Chat from './components/Chat/Chat';
 import Opportunities from './components/Swap/Opportunities/Opportunities';
 import CheckPage from './components/CheckPage/CheckPage';
+import Requests from './components/Requests/Requests';
 import NotFound from './components/NotFound/NotFound';
 
 import usePersistState from './hooks/usePersistState';
@@ -166,6 +167,19 @@ console.log("APP swapExplorerId", swapExplorerId);
                   token={token}
                   name={name}
                   explorerId={explorerId}
+                />
+              ) : <Navigate replace to="/login" />}
+          />
+          <Route
+              path="/swap/requests"
+              element={isLogged && name ? (
+                <Requests
+                  token={token}
+                  name={name}
+                  explorerId={explorerId}
+                  setSwapCardName={setSwapCardName}
+                  setSwapExplorerId={setSwapExplorerId}
+                  setSwapExplorerName={setSwapExplorerName}
                 />
               ) : <Navigate replace to="/login" />}
           />

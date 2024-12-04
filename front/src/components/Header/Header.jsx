@@ -48,6 +48,9 @@ function Header({
     case '/swap/opportunities':
      pageTitle = 'My opportunities';
      break;
+    case '/swap/requests':
+     pageTitle = 'My swap requests';
+     break;
     case '/check':
       pageTitle = 'My cards';
       break;

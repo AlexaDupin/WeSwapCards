@@ -86,7 +86,7 @@ function Chat({
         // setMessages(fetchedMessages);
       };
       fetchMessages();
-    }, [setNewMessage]);
+    }, [newMessage]);
   
     // Scroll to the bottom of the chat after sending a new message
     useEffect(() => {
@@ -118,7 +118,7 @@ function Chat({
         console.log("RESPONSE", response);
 
         if (response.status === 201) {
-          setMessages((prevMessages) => [...prevMessages, input]);
+          // setMessages((prevMessages) => [...prevMessages, input]);
           setNewMessage('');
         } else {
           console.error("Failed to send message");

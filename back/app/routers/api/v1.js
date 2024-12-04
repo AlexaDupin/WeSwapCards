@@ -59,7 +59,11 @@ router
 router
     .route('/chat/:explorerId/:swapExplorerId')
     .get(userController.authMiddleware, controllerHandler(chatController.getAllMessages))
-    
+
+router
+    .route('/chat/:explorerId')
+    .get(userController.authMiddleware, controllerHandler(chatController.getAllConversations))
+
 // router
 //     .route('/opportunities/:explorerId/card/:cardId')
 //     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findExplorerForswapCard));
