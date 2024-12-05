@@ -25,14 +25,49 @@ function Chat({
     console.log("CHAT JSX swapExplorerId", swapExplorerId);
     console.log("messages", messages);
     console.log("swapCardName", swapCardName);
+    const [conversationId, setConversationId] = useState('');
+    console.log("conversationId", conversationId);
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
 
     useEffect(() => {
-      const fetchMessages = async () => {
+      const fetchConversation = async () => {
         try {
           const response = await axios.get(
-            `${baseUrl}/chat/${explorerId}/${swapExplorerId}`
+            `${baseUrl}/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`
+          , {
+            headers: {
+              authorization: token,
+            },
+          });
+
+          console.log("fetchConversation response", response);
+
+          if (!response.data) {
+            return
+          } else {
+          setConversationId(response.data.id);
+          // fetchMessages();
+          }
+
+        } catch (error) {
+          console.log(error);
+        }
+      
+      };
+      fetchConversation();
+    }, []);
+
+
+    const fetchMessages = async () => {
+      console.log("FETCHING MESSAGES");
+
+      if (conversationId) {
+        try {
+          console.log("FETCHING MESSAGES conversationId", conversationId);
+  
+          const response = await axios.get(
+            `${baseUrl}/chat/${conversationId}`
           , {
             headers: {
               authorization: token,
@@ -53,49 +88,61 @@ function Chat({
         } catch (error) {
           console.log(error);
         }
+      } else {
+        return
+      }
       
-
-        // const fetchedMessages = [
-        //   { id: 1, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-        //   { id: 2, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-        //   { id: 3, senderId: explorerId, 
-        //     content: "I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you?", 
-        //     timestamp: "10:02 AM" },
-        //   { id: 4, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-        //   { id: 5, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-        //   { id: 6, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-        //   { id: 7, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-        //   { id: 8, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-        //   { id: 9, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-        //   { id: 10, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-        //   { id: 11, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-        //   { id: 12, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-        //   { id: 3, senderId: explorerId, 
-        //     content: "I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you?", 
-        //     timestamp: "10:02 AM" },
-        //   { id: 4, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-        //   { id: 5, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-        //   { id: 6, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-        //   { id: 7, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-        //   { id: 8, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-        //   { id: 9, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-        //   { id: 10, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-        //   { id: 11, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-        //   { id: 12, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-        // ];
-        // setMessages(fetchedMessages);
-      };
-      fetchMessages();
-    }, [newMessage]);
+    };
   
-    // Scroll to the bottom of the chat after sending a new message
+    // // Scroll to the bottom of the chat after sending a new message
     useEffect(() => {
       messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
+
+    useEffect(() => {
+      fetchMessages();
+    }, [conversationId]);
   
     const handleSendMessage = async () => {
       if (newMessage.trim() === '') return;
+
+      if (!conversationId) {
+        const conversation = {
+          card_name: swapCardName,
+          creator_id: explorerId,
+          recipient_id: swapExplorerId,
+        }
+
+        try {
+          const response = await axios.post(
+            `${baseUrl}/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`,
+            conversation
+          , {
+            headers: {
+              authorization: token,
+            },
+          });
+          console.log("RESPONSE", response);
   
+          if (response.status === 201) {
+            setConversationId(response.data.id);
+            sendMessage();
+          } else {
+            console.error("Failed to create conversation");
+            return
+          }
+  
+        } catch (error) {
+          console.log(error.data);
+        }
+  
+      } else {
+        sendMessage();
+      }
+      
+    };
+
+    const sendMessage = async () => {
       const input = {
         // id: messages.length + 1,
         content: newMessage,
@@ -103,9 +150,9 @@ function Chat({
         timestamp: new Date(),
         sender_id: explorerId,
         recipient_id: swapExplorerId,
-        card_name: swapCardName,
+        conversation_id: conversationId,
       };
-  
+
       try {
         const response = await axios.post(
           `${baseUrl}/chat`,
@@ -118,7 +165,7 @@ function Chat({
         console.log("RESPONSE", response);
 
         if (response.status === 201) {
-          // setMessages((prevMessages) => [...prevMessages, input]);
+          setMessages((prevMessages) => [...prevMessages, input]);
           setNewMessage('');
         } else {
           console.error("Failed to send message");
@@ -126,8 +173,7 @@ function Chat({
 
       } catch (error) {
         console.log(error.data);
-    }
-
+      }
     };
 
   return (

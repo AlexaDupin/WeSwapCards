@@ -53,16 +53,21 @@ router
     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findSwapOpportunities));
 
 router
+    .route('/conversation/:explorerId/:swapExplorerId/:swapCardName')
+    .get(userController.authMiddleware, controllerHandler(chatController.getConversation))
+    .post(userController.authMiddleware, controllerHandler(chatController.createConversation))
+
+router
     .route('/chat')
     .post(userController.authMiddleware, controllerHandler(chatController.insertNewMessage));
 
 router
-    .route('/chat/:explorerId/:swapExplorerId')
-    .get(userController.authMiddleware, controllerHandler(chatController.getAllMessages))
+    .route('/chat/:conversationId')
+    .get(userController.authMiddleware, controllerHandler(chatController.getAllMessagesInConversation))
 
-router
-    .route('/chat/:explorerId')
-    .get(userController.authMiddleware, controllerHandler(chatController.getAllConversations))
+// router
+//     .route('/chat/:explorerId')
+//     .get(userController.authMiddleware, controllerHandler(chatController.getAllConversations))
 
 // router
 //     .route('/opportunities/:explorerId/card/:cardId')

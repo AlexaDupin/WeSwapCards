@@ -194,55 +194,89 @@ module.exports = {
         // console.log(result.rows);
         return result.rows[0];
     },
+    async findConversation(cardName, explorerId, swapExplorerId) {
+        const preparedQuery = {
+            text: `
+            SELECT id FROM conversation
+            WHERE card_name = $1
+            AND creator_id = $2
+            AND recipient_id = $3
+            `,
+            values: [cardName, explorerId, swapExplorerId]
+        };
+        const result = await client.query(preparedQuery);
+        if (result.rowCount > 0) {
+            return result.rows[0];
+        }
+        return null;
+    },
+    async createConversation(cardName, explorerId, swapExplorerId) {
+        const preparedQuery = await client.query(
+            `
+            INSERT INTO "conversation"
+                (card_name, creator_id, recipient_id) 
+            VALUES ($1, $2, $3) 
+            RETURNING id
+            `,
+            [cardName, explorerId, swapExplorerId],
+            );
+            return preparedQuery.rows[0];
+    },
     async insertNewMessage(data) {
         const preparedQuery = await client.query(
             `
         INSERT INTO "message"
-        (content, timestamp, sender_id, recipient_id, card_name) VALUES
+        (content, timestamp, sender_id, recipient_id, conversation_id) VALUES
         ($1, $2, $3, $4, $5) RETURNING *
         `,
-            [data.content, data.timestamp, data.senderId, data.recipientId, data.swapCardName],
+            [data.content, data.timestamp, data.senderId, data.recipientId, data.conversationId],
         );
         return preparedQuery.rows[0];
     },
-    async getAllMessagesInAChat(explorerId, swapExplorerId) {
+    async getAllMessagesInAChat(conversationId) {
         console.log("GET ALL MESSAGES IN CHAT DTMP")
         const preparedQuery = {
             text: `SELECT * FROM "message"
-                WHERE sender_id = $1 AND recipient_id = $2
-                OR sender_id = $2 AND recipient_id = $1
+                WHERE conversation_id = $1
                 ORDER BY timestamp`,
-            values: [explorerId, swapExplorerId],
+            values: [conversationId],
         };
         const result = await client.query(preparedQuery);
         console.log(result.rows);
         return result.rows;
     },
-    async getAllConversationsOfExplorer(explorerId) {
-        const preparedQuery = {
-            text: `SELECT
-                ROW_NUMBER() OVER () AS id,
-                m.card_name,
-                CASE
-                  WHEN m.sender_id = $1 THEN e2.name
-                  WHEN m.recipient_id = $1 THEN e1.name
-                END AS swap_explorer,
-                CASE
-                  WHEN m.sender_id = $1 THEN e2.id
-                  WHEN m.recipient_id = $1 THEN e1.id
-                END AS swap_explorer_id
-            FROM message m
-            JOIN explorer e1 ON e1.id = m.sender_id
-            JOIN explorer e2 ON e2.id = m.recipient_id
-            WHERE m.sender_id = $1 OR m.recipient_id = $1
-            GROUP BY m.card_name, swap_explorer, m.sender_id, e2.id, m.recipient_id, e1.id
-            ORDER BY m.card_name;`,
-            values: [explorerId],
-        };
-        const result = await client.query(preparedQuery);
-        console.log(result.rows);
-        return result.rows;
-    },
+    // async getAllConversationsOfExplorer(explorerId) {
+    //     const preparedQuery = {
+    //         text: `
+    //         SELECT 
+    //             ROW_NUMBER() OVER (ORDER BY distinct_rows.card_name, distinct_rows.swap_explorer) AS id,
+    //             distinct_rows.card_name,
+    //             distinct_rows.swap_explorer,
+    //             distinct_rows.swap_explorer_id
+    //         FROM (
+    //             SELECT 
+    //               m.card_name,
+    //               CASE
+    //                 WHEN m.sender_id = $1 THEN e2.name
+    //                 WHEN m.recipient_id = $1 THEN e1.name
+    //               END AS swap_explorer,
+    //               CASE
+    //                 WHEN m.sender_id = $1 THEN e2.id
+    //                 WHEN m.recipient_id = $1 THEN e1.id
+    //               END AS swap_explorer_id
+    //             FROM message m
+    //             JOIN explorer e1 ON e1.id = m.sender_id
+    //             JOIN explorer e2 ON e2.id = m.recipient_id
+    //             WHERE m.sender_id = $1 OR m.recipient_id = $1
+    //             GROUP BY m.card_name, swap_explorer, swap_explorer_id
+    //         ) AS distinct_rows
+    //         ORDER BY distinct_rows.card_name, distinct_rows.swap_explorer;`,
+    //         values: [explorerId],
+    //     };
+    //     const result = await client.query(preparedQuery);
+    //     console.log(result.rows);
+    //     return result.rows;
+    // },
 
 //     async findExplorersForCardIdOpportunity(cardId, explorerId) {
 //         console.log("ENTERING DATAMAPPER");
