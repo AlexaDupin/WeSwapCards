@@ -58,6 +58,10 @@ router
     .post(userController.authMiddleware, controllerHandler(chatController.createConversation))
 
 router
+    .route('/conversation/:conversationId/:explorerId')
+    .put(userController.authMiddleware, controllerHandler(chatController.setMessagesToRead))
+
+router
     .route('/chat')
     .post(userController.authMiddleware, controllerHandler(chatController.insertNewMessage));
 

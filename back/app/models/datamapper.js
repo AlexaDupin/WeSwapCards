@@ -199,8 +199,8 @@ module.exports = {
             text: `
             SELECT id FROM conversation
             WHERE card_name = $1
-            AND creator_id = $2
-            AND recipient_id = $3
+            AND ((creator_id = $2 AND recipient_id = $3)
+            OR (creator_id = $3 AND recipient_id = $2)) 
             `,
             values: [cardName, explorerId, swapExplorerId]
         };
@@ -246,9 +246,28 @@ module.exports = {
             values: [conversationId],
         };
         const result = await client.query(preparedQuery);
-        console.log(result.rows);
+        // console.log(result.rows);
         return result.rows;
     },
+    async updateMessageStatus(conversationId, explorerId) {
+        const preparedQuery = {
+            text: `
+            UPDATE message SET read = true
+            WHERE conversation_id = $1
+            AND recipient_id = $2
+            AND read = false
+            `,
+            values: [conversationId, explorerId]
+        };
+        // return preparedQuery.rows[0];
+        const result = await client.query(preparedQuery);
+        // console.log("READ DTMP", result);
+        if (result.rowCount > 0) {
+            return true;
+        }
+        return 0;     
+    },
+
     // async getAllConversationsOfExplorer(explorerId) {
     //     const preparedQuery = {
     //         text: `

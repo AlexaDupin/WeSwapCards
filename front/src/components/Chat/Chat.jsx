@@ -5,7 +5,8 @@ import {
     Container,
     Button,
     Col,
-    InputGroup
+    InputGroup,
+    Spinner
 } from "react-bootstrap";
 
 import axios from 'axios';
@@ -27,6 +28,8 @@ function Chat({
     console.log("swapCardName", swapCardName);
     const [conversationId, setConversationId] = useState('');
     console.log("conversationId", conversationId);
+    const [loading, setLoading] = useState(true);
+    console.log("loading", loading);
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -42,6 +45,7 @@ function Chat({
           });
 
           console.log("fetchConversation response", response);
+          setLoading(false);
 
           if (!response.data) {
             return
@@ -85,6 +89,8 @@ function Chat({
           });
           console.log("allMessagesFormattedDate", allMessagesFormattedDate);
           setMessages(allMessagesFormattedDate);
+          setUnreadMessagestoRead();
+
         } catch (error) {
           console.log(error);
         }
@@ -94,7 +100,7 @@ function Chat({
       
     };
   
-    // // Scroll to the bottom of the chat after sending a new message
+    // Scroll to the bottom of the chat after sending a new message
     useEffect(() => {
       messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
@@ -142,6 +148,23 @@ function Chat({
       
     };
 
+    const setUnreadMessagestoRead = async () => {
+        try {
+          const response = await axios.put(
+            `${baseUrl}/conversation/${conversationId}/${explorerId}`,
+            {},
+          {
+            headers: {
+              authorization: token,
+            },
+          });
+          console.log(response.data);
+
+        } catch (error) {
+          console.log(error);
+        }          
+    };
+
     const sendMessage = async (conversationId) => {
       const input = {
         id: messages.length + 1,
@@ -175,44 +198,53 @@ function Chat({
       }
     };
 
-  return (
-    <Container fluid className="chat">
-      <Row className="message-list">
-        {messages.map((message) => (
-          <Col key={message.id} className={`message-bubble ${message.sender_id === explorerId ? 'sent' : 'received'}`}>
-            <div className="message-content">{message.content}</div>
-            <div className="message-timestamp">{message.timestamp.toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit' })}</div>
-          </Col>
-        ))}
-        <div ref={messageEndRef} />
-      </Row>
 
-      <Row className="message-input-container">
-        <Col xs={10}>
-          <InputGroup>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              className="message-input"
-              placeholder="Type a message..."
-            />
-          </InputGroup>
-        </Col>
-        <Col xs={2}>
-          <Button
-            onClick={handleSendMessage}
-            className="send-button w-100"
-          >
-            <span className="send-text">Send</span>
-            <span className="mobile-symbol"> &gt; </span>          
-          </Button>
-        </Col>
-      </Row>
-    </Container>
+  return (
+<div className='chat-container'>
+    {loading &&
+      <><Spinner
+          animation="border"
+          className="spinner" /><p>Loading the chat...</p></>
+    }
+
+    {!loading &&
+      <Container fluid className="chat">
+
+      <Row className="message-list">
+          {messages.map((message) => (
+            <Col key={message.id} className={`message-bubble ${message.sender_id === explorerId ? 'sent' : 'received'}`}>
+              <div className="message-content">{message.content}</div>
+              <div className="message-timestamp">{message.timestamp.toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit' })}</div>
+            </Col>
+          ))}
+          <div ref={messageEndRef} />
+        </Row><Row className="message-input-container">
+            <Col xs={10}>
+              <InputGroup>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  className="message-input"
+                  placeholder="Type a message..." />
+              </InputGroup>
+            </Col>
+            <Col xs={2}>
+              <Button
+                onClick={handleSendMessage}
+                className="send-button w-100"
+              >
+                <span className="send-text">Send</span>
+                <span className="mobile-symbol"> &gt; </span>
+              </Button>
+            </Col>
+          </Row>
+      </Container>
+    }
+</ div>  
   );
-};
+}
 
 Chat.propTypes = {
   explorerId: PropTypes.number.isRequired,

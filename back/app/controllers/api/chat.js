@@ -5,8 +5,8 @@ const chatController = {
         const explorerId = req.params.explorerId;
         const swapExplorerId = req.params.swapExplorerId;
         const swapCardName = req.params.swapCardName;
-
         console.log('getConversation CTRL', explorerId, swapExplorerId, swapCardName);
+
             try {
                 const conversation = await datamapper.findConversation(swapCardName, explorerId, swapExplorerId);
 
@@ -86,6 +86,22 @@ const chatController = {
                 return res.status(500).send({ message: 'An error occurred while retrieving messages.', error: error.message });            
             }
     },
+    async setMessagesToRead(req, res) {
+        const conversationId = req.params.conversationId;
+        const explorerId = req.params.explorerId;
+        console.log('CHAT CTRL read', conversationId, explorerId);
+
+            try {
+                const read = await datamapper.updateMessageStatus(conversationId, explorerId);
+                console.log("READ CTRL", read);
+                res.status(200).json({ read });
+            } catch (error) {
+                console.error("Error while retrieving messages:", error);
+                return res.status(500).send({ message: 'An error occurred while retrieving messages.', error: error.message });            
+            }
+    },
+
+    
     // async getAllConversations(req, res) {
     //     const explorerId = req.params.explorerId;
     //     console.log('CHAT CTRL', explorerId);

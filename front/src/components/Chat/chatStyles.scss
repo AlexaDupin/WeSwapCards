@@ -1,7 +1,15 @@
 @use 'src/styles/vars';
 
-.chat {
+.chat-container {
   padding-top: 7rem !important;
+
+}
+
+.spinner {
+  color: vars.$primary-color;
+}
+
+.chat {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
