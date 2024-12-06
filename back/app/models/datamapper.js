@@ -211,6 +211,8 @@ module.exports = {
         return null;
     },
     async createConversation(cardName, explorerId, swapExplorerId) {
+        console.log("CREATE CONV DTMP")
+
         const preparedQuery = await client.query(
             `
             INSERT INTO "conversation"
@@ -223,6 +225,8 @@ module.exports = {
             return preparedQuery.rows[0];
     },
     async insertNewMessage(data) {
+        console.log("INSERT MESSAGE DTMP")
+
         const preparedQuery = await client.query(
             `
         INSERT INTO "message"

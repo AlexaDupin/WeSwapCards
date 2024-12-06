@@ -126,7 +126,7 @@ function Chat({
   
           if (response.status === 201) {
             setConversationId(response.data.id);
-            sendMessage();
+            sendMessage(response.data.id);
           } else {
             console.error("Failed to create conversation");
             return
@@ -137,16 +137,15 @@ function Chat({
         }
   
       } else {
-        sendMessage();
+        sendMessage(conversationId);
       }
       
     };
 
-    const sendMessage = async () => {
+    const sendMessage = async (conversationId) => {
       const input = {
-        // id: messages.length + 1,
+        id: messages.length + 1,
         content: newMessage,
-        // timestamp: new Date().toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit' }),
         timestamp: new Date(),
         sender_id: explorerId,
         recipient_id: swapExplorerId,
