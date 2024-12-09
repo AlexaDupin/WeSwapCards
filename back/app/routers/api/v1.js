@@ -66,6 +66,10 @@ router
     .get(userController.authMiddleware, controllerHandler(chatController.getAllConversations))
 
 router
+    .route('/conversation/:conversationId')
+    .put(userController.authMiddleware, controllerHandler(chatController.editConversationStatus))
+
+router
     .route('/chat')
     .post(userController.authMiddleware, controllerHandler(chatController.insertNewMessage));
 

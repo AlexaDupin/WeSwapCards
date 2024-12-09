@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import {
     Container,
     Table,
-    Badge,
+    Dropdown,
+    DropdownButton,
     Spinner
 } from "react-bootstrap";
 import {Envelope} from "react-bootstrap-icons";
@@ -13,7 +14,6 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 
 import './requestsStyles.scss';
-import CustomButton from '../CustomButton/CustomButton';
 
 // import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
@@ -22,6 +22,8 @@ function Requests({
 }) {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  console.log('conversations', conversations);
 
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
@@ -49,6 +51,40 @@ function Requests({
       setSwapCardName(cardName);
       setSwapExplorerName(swapExplorerName);
       navigate('/swap/card/chat');
+  };
+
+  const handleStatusChange = async (conversationId, newStatus) => {
+    console.log("CHANGING STATUS", newStatus);
+    try {
+      await axios.put(
+        `${baseUrl}/conversation/${conversationId}`,
+        { status: newStatus }, 
+        {
+          headers: {
+            authorization: token,
+          },
+        });
+      setConversations(prevConversations =>
+        prevConversations.map(conversation =>
+          conversation.db_id === conversationId ? { ...conversation, status: newStatus } : conversation
+        )
+      );
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
+  };
+
+  const getDropdownVariant = (status) => {
+    switch (status) {
+      case 'In progress':
+        return 'secondary'; 
+      case 'Completed':
+        return 'success';
+      case 'Declined':
+        return 'danger'; 
+      default:
+        return 'secondary';
+    }
   };
 
   useEffect(
@@ -81,12 +117,10 @@ function Requests({
       </thead>
       <tbody>
         {conversations.map((conversation) => (
-        <tr 
-            key={conversation.id}
-        >
+        <tr key={conversation.row_id} >
             <td 
               className={conversation.unread > 0 ? 'requests-table-unread' : 'requests-table'}
-            >{conversation.id}</td>
+            >{conversation.row_id}</td>
             <td 
               className={conversation.unread > 0 ? 'requests-chat requests-table-unread' : 'requests-chat requests-table'}
               onClick={() => handleOpenChat(conversation.card_name, conversation.swap_explorer_id, conversation.swap_explorer)}
@@ -101,14 +135,16 @@ function Requests({
                 onClick={() => handleOpenChat(conversation.card_name, conversation.swap_explorer_id, conversation.swap_explorer)}
             >{conversation.swap_explorer}</td>
             <td className={conversation.unread > 0 ? 'requests-table-unread' : 'requests-table'}> 
-              <Badge 
-                bg={
-                  conversation.status === 'Declined' ? 'danger' :
-                  conversation.status === 'Completed' ? 'success' : 'secondary'
-                }
+              <DropdownButton 
+                id={`dropdown-status-${conversation.row_id}`} 
+                title={conversation.status}
+                variant={getDropdownVariant(conversation.status)}
+                onSelect={(selectedStatus) => handleStatusChange(conversation.db_id, selectedStatus)}
               >
-                {conversation.status}
-              </Badge>
+                <Dropdown.Item eventKey="Completed">Completed</Dropdown.Item>
+                <Dropdown.Item eventKey="In progress">In progress</Dropdown.Item>
+                <Dropdown.Item eventKey="Declined">Declined</Dropdown.Item>
+              </DropdownButton>
             </td>
         </tr>
         ))}

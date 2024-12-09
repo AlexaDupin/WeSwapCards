@@ -112,6 +112,20 @@ const chatController = {
                 return res.status(500).send({ message: 'An error occurred while retrieving conversations.', error: error.message });            
             }
     },
+    async editConversationStatus(req, res) {
+        const conversationId = req.params.conversationId;
+        const status = req.body.status;
+        console.log('CHAT CTRL status', conversationId, status);
+
+            try {
+                const updatedStatus = await datamapper.editConversationStatus(conversationId, status);
+                console.log("STATUS CTRL", updatedStatus );
+                res.status(200).json({ updatedStatus });
+            } catch (error) {
+                console.error("Error while updating conversation status:", error);
+                return res.status(500).send({ message: 'An error occurred while updating conversation status.', error: error.message });            
+            }
+    },
 };
 
 module.exports = chatController;

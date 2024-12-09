@@ -272,6 +272,7 @@ module.exports = {
             text: `
             WITH ranked_conversations AS (
                 SELECT 
+                    cv.id AS db_id,
                     cv.card_name,
                     CASE
                         WHEN cv.creator_id = $1 THEN e2.name
@@ -292,7 +293,8 @@ module.exports = {
                 GROUP BY cv.id, e2.name, e1.name, e2.id, e1.id
             )
             SELECT 
-                ROW_NUMBER() OVER (ORDER BY unread DESC, card_name, swap_explorer) AS id,
+                ROW_NUMBER() OVER (ORDER BY unread DESC, card_name, swap_explorer) AS row_id,
+                db_id,
                 card_name,
                 swap_explorer,
                 swap_explorer_id,
@@ -306,7 +308,20 @@ module.exports = {
         console.log(result.rows);
         return result.rows;
     },
+    async editConversationStatus(conversationId, status) {
+        console.log("editConversationStatus DTMP")
 
+        const preparedQuery = {
+            text: `
+            UPDATE conversation
+            SET status = $2
+            WHERE id = $1
+            `,
+            values: [conversationId, status]
+        };
+        const result = await client.query(preparedQuery);
+        console.log(result);
+    },
 //     async findExplorersForCardIdOpportunity(cardId, explorerId) {
 //         console.log("ENTERING DATAMAPPER");
 
