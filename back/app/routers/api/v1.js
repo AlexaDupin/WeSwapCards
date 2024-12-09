@@ -62,6 +62,10 @@ router
     .put(userController.authMiddleware, controllerHandler(chatController.setMessagesToRead))
 
 router
+    .route('/conversation/:explorerId')
+    .get(userController.authMiddleware, controllerHandler(chatController.getAllConversations))
+
+router
     .route('/chat')
     .post(userController.authMiddleware, controllerHandler(chatController.insertNewMessage));
 
@@ -69,9 +73,6 @@ router
     .route('/chat/:conversationId')
     .get(userController.authMiddleware, controllerHandler(chatController.getAllMessagesInConversation))
 
-// router
-//     .route('/chat/:explorerId')
-//     .get(userController.authMiddleware, controllerHandler(chatController.getAllConversations))
 
 // router
 //     .route('/opportunities/:explorerId/card/:cardId')

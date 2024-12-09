@@ -17,7 +17,7 @@ import CustomButton from '../CustomButton/CustomButton';
 // import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 function Requests({
-  explorerId, name, token, setSwapExplorerId, setSwapCardName, setSwapExplorerName
+  explorerId, name, token, setSwapExplorerId, setSwapCardName, setSwapExplorerName, setConversationId
 }) {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,7 +28,7 @@ function Requests({
   const fetchAllConversations = async () => {
     try {
       const response = await axios.get(
-          `${baseUrl}/chat/${explorerId}`
+          `${baseUrl}/conversation/${explorerId}`
           , {
             headers: {
               authorization: token,
@@ -43,6 +43,7 @@ function Requests({
   };
 
   const handleExplorerClick = async (cardName, swapExplorerId, swapExplorerName) => {
+      setConversationId('');
       setSwapExplorerId(swapExplorerId);
       setSwapCardName(cardName);
       setSwapExplorerName(swapExplorerName);
@@ -87,7 +88,7 @@ function Requests({
                 className='requests-swapexplorer'
                 onClick={() => handleExplorerClick(conversation.card_name, conversation.swap_explorer_id, conversation.swap_explorer)}
             >{conversation.swap_explorer}</td>
-            <td><Badge bg="success">Completed</Badge></td>
+            <td><Badge bg="success">{conversation.status}</Badge></td>
         </tr>
         ))}
       </tbody>

@@ -267,39 +267,32 @@ module.exports = {
         }
         return 0;     
     },
-
-    // async getAllConversationsOfExplorer(explorerId) {
-    //     const preparedQuery = {
-    //         text: `
-    //         SELECT 
-    //             ROW_NUMBER() OVER (ORDER BY distinct_rows.card_name, distinct_rows.swap_explorer) AS id,
-    //             distinct_rows.card_name,
-    //             distinct_rows.swap_explorer,
-    //             distinct_rows.swap_explorer_id
-    //         FROM (
-    //             SELECT 
-    //               m.card_name,
-    //               CASE
-    //                 WHEN m.sender_id = $1 THEN e2.name
-    //                 WHEN m.recipient_id = $1 THEN e1.name
-    //               END AS swap_explorer,
-    //               CASE
-    //                 WHEN m.sender_id = $1 THEN e2.id
-    //                 WHEN m.recipient_id = $1 THEN e1.id
-    //               END AS swap_explorer_id
-    //             FROM message m
-    //             JOIN explorer e1 ON e1.id = m.sender_id
-    //             JOIN explorer e2 ON e2.id = m.recipient_id
-    //             WHERE m.sender_id = $1 OR m.recipient_id = $1
-    //             GROUP BY m.card_name, swap_explorer, swap_explorer_id
-    //         ) AS distinct_rows
-    //         ORDER BY distinct_rows.card_name, distinct_rows.swap_explorer;`,
-    //         values: [explorerId],
-    //     };
-    //     const result = await client.query(preparedQuery);
-    //     console.log(result.rows);
-    //     return result.rows;
-    // },
+    async getAllConversationsOfExplorer(explorerId) {
+        const preparedQuery = {
+            text: `
+            SELECT 
+	            ROW_NUMBER() OVER (ORDER BY cv.card_name) AS id,
+	            cv.card_name,
+	            CASE
+                 WHEN cv.creator_id = $1 THEN e2.name
+                 WHEN cv.recipient_id = $1 THEN e1.name
+                END AS swap_explorer,
+                CASE
+                 WHEN cv.creator_id = $1 THEN e2.id
+                 WHEN cv.recipient_id = $1 THEN e1.id
+                END AS swap_explorer_id,
+                cv.status
+            FROM conversation cv
+            JOIN explorer e1 ON e1.id = cv.creator_id
+            JOIN explorer e2 ON e2.id = cv.recipient_id
+            WHERE creator_id = $1
+            OR recipient_id = $1`,
+            values: [explorerId],
+        };
+        const result = await client.query(preparedQuery);
+        console.log(result.rows);
+        return result.rows;
+    },
 
 //     async findExplorersForCardIdOpportunity(cardId, explorerId) {
 //         console.log("ENTERING DATAMAPPER");

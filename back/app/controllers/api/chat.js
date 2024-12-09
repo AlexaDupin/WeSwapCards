@@ -100,20 +100,18 @@ const chatController = {
                 return res.status(500).send({ message: 'An error occurred while retrieving messages.', error: error.message });            
             }
     },
+    async getAllConversations(req, res) {
+        const explorerId = req.params.explorerId;
+        console.log('CHAT CTRL', explorerId);
 
-    
-    // async getAllConversations(req, res) {
-    //     const explorerId = req.params.explorerId;
-    //     console.log('CHAT CTRL', explorerId);
-
-    //         try {
-    //             const allConversations = await datamapper.getAllConversationsOfExplorer(explorerId);
-    //             res.status(200).json({ allConversations });
-    //         } catch (error) {
-    //             console.error("Error while retrieving conversations:", error);
-    //             return res.status(500).send({ message: 'An error occurred while retrieving conversations.', error: error.message });            
-    //         }
-    // },
+            try {
+                const allConversations = await datamapper.getAllConversationsOfExplorer(explorerId);
+                res.status(200).json({ allConversations });
+            } catch (error) {
+                console.error("Error while retrieving conversations:", error);
+                return res.status(500).send({ message: 'An error occurred while retrieving conversations.', error: error.message });            
+            }
+    },
 };
 
 module.exports = chatController;

@@ -166,16 +166,6 @@ console.log("APP conversationId", conversationId);
               ) : <Navigate replace to="/login" />}
           />
           <Route
-              path="/swap/opportunities"
-              element={isLogged && name ? (
-                <Opportunities
-                  token={token}
-                  name={name}
-                  explorerId={explorerId}
-                />
-              ) : <Navigate replace to="/login" />}
-          />
-          <Route
               path="/swap/requests"
               element={isLogged && name ? (
                 <Requests
@@ -185,6 +175,17 @@ console.log("APP conversationId", conversationId);
                   setSwapCardName={setSwapCardName}
                   setSwapExplorerId={setSwapExplorerId}
                   setSwapExplorerName={setSwapExplorerName}
+                  setConversationId={setConversationId}
+                />
+              ) : <Navigate replace to="/login" />}
+          />
+          <Route
+              path="/swap/opportunities"
+              element={isLogged && name ? (
+                <Opportunities
+                  token={token}
+                  name={name}
+                  explorerId={explorerId}
                 />
               ) : <Navigate replace to="/login" />}
           />
