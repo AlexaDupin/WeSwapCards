@@ -88,7 +88,17 @@ function Requests({
                 className='requests-swapexplorer'
                 onClick={() => handleExplorerClick(conversation.card_name, conversation.swap_explorer_id, conversation.swap_explorer)}
             >{conversation.swap_explorer}</td>
-            <td><Badge bg="success">{conversation.status}</Badge></td>
+            <td>
+              <Badge 
+                bg={
+                  conversation.status === 'Declined' ? 'danger' :
+                  conversation.status === 'Completed' ? 'success' :
+                  'secondary'
+                }
+              >
+                {conversation.status}
+              </Badge>
+            </td>
         </tr>
         ))}
       </tbody>
