@@ -39,6 +39,7 @@ function App() {
   const [swapExplorerId, setSwapExplorerId] = useState('');
   const [swapCardName, setSwapCardName] = useState();
   const [swapExplorerName, setSwapExplorerName] = useState();
+  const [conversationId, setConversationId] = useState('');
 
   useEffect(() => {
     setName(name);
@@ -51,6 +52,7 @@ console.log("APP name", name);
 console.log("APP explorerId", explorerId);
 console.log("isLogged", isLogged);
 console.log("APP swapExplorerId", swapExplorerId);
+console.log("APP conversationId", conversationId);
 
   return (
     <div className="App">
@@ -146,6 +148,7 @@ console.log("APP swapExplorerId", swapExplorerId);
                   swapCardName={swapCardName}
                   setSwapCardName={setSwapCardName}
                   setSwapExplorerName={setSwapExplorerName}
+                  setConversationId={setConversationId}
                 />
               ) : <Navigate replace to="/login" />}
           />
@@ -157,6 +160,8 @@ console.log("APP swapExplorerId", swapExplorerId);
                   explorerId={explorerId}
                   swapExplorerId={swapExplorerId}
                   swapCardName={swapCardName}
+                  setConversationId={setConversationId}
+                  conversationId={conversationId}
                 />
               ) : <Navigate replace to="/login" />}
           />

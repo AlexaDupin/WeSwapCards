@@ -19,7 +19,7 @@ import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 import './swapCardStyles.scss';
 
 function SwapCard({
-    explorerId, name, token, setSwapExplorerId, setSwapCardName, swapCardName, setSwapExplorerName
+    explorerId, name, token, setSwapExplorerId, setSwapCardName, swapCardName, setSwapExplorerName, setConversationId
   }) {
     const [places, setPlaces] = useState([]);
     const [cards, setCards] = useState([]);
@@ -28,7 +28,7 @@ function SwapCard({
     const [swapOpportunities, setSwapOpportunities] = useState([]);
     const [selectedCardId, setSelectedCardId] = useState();
 
-    console.log(selectedCardId);
+    console.log('selectedCardId', selectedCardId);
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
@@ -54,6 +54,7 @@ function SwapCard({
         setHidden(false);
         setHiddenSwapOpportunities(true);
         setSwapExplorerId('');
+        setConversationId('');
 
       } catch (error) {
         console.log(error);

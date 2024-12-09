@@ -17,18 +17,18 @@ import PropTypes from 'prop-types';
 import './chatStyles.scss';
 
 function Chat({
-    explorerId, token, swapExplorerId, swapCardName
+    explorerId, token, swapExplorerId, swapCardName, setConversationId, conversationId
   }) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [loading, setLoading] = useState(true);
     const messageEndRef = useRef(null);
+
     console.log("explorerId", explorerId);
     console.log("CHAT JSX swapExplorerId", swapExplorerId);
     console.log("messages", messages);
     console.log("swapCardName", swapCardName);
-    const [conversationId, setConversationId] = useState('');
     console.log("conversationId", conversationId);
-    const [loading, setLoading] = useState(true);
     console.log("loading", loading);
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -48,9 +48,9 @@ function Chat({
           setLoading(false);
 
           if (!response.data) {
-            return
+            setConversationId('');
           } else {
-          setConversationId(response.data.id);
+            setConversationId(response.data.id);
           // fetchMessages();
           }
 
@@ -107,7 +107,7 @@ function Chat({
 
     useEffect(() => {
       fetchMessages();
-    }, [conversationId]);
+    }, [conversationId, setMessages]);
   
     const handleSendMessage = async () => {
       if (newMessage.trim() === '') return;
@@ -187,7 +187,8 @@ function Chat({
         console.log("RESPONSE", response);
 
         if (response.status === 201) {
-          setMessages((prevMessages) => [...prevMessages, input]);
+          // setMessages((prevMessages) => [...prevMessages, input]);
+          fetchMessages();
           setNewMessage('');
         } else {
           console.error("Failed to send message");
@@ -226,6 +227,10 @@ function Chat({
                   rows={3}
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyDown={(e) => { 
+                    if (e.key === "Enter") 
+                      handleSendMessage(); 
+                    }} 
                   className="message-input"
                   placeholder="Type a message..." />
               </InputGroup>
