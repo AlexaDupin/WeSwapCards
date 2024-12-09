@@ -210,8 +210,8 @@ function Chat({
 
     {!loading &&
       <Container fluid className="chat">
-
-      <Row className="message-list">
+        <div>
+        <Row className="message-list">
           {messages.map((message) => (
             <Col key={message.id} className={`message-bubble ${message.sender_id === explorerId ? 'sent' : 'received'}`}>
               <div className="message-content">{message.content}</div>
@@ -219,7 +219,29 @@ function Chat({
             </Col>
           ))}
           <div ref={messageEndRef} />
-        </Row><Row className="message-input-container">
+        </Row>
+        </div>
+        <div>
+        <Row className="message-status">
+          <Col xs={4}>
+            <Button
+              // onClick={handleSendMessage}
+              variant='success'
+              // className="send-button w-100"
+            >
+              <span className="send-text">Complete</span>
+            </Button>
+          </Col>
+          <Col xs={4}>
+            <Button
+              // onClick={handleSendMessage}
+              variant='danger'
+            >
+              <span className="send-text">Decline</span>
+            </Button>
+          </Col>
+        </Row>
+        <Row className="message-input-container">
             <Col xs={10}>
               <InputGroup>
                 <Form.Control
@@ -244,7 +266,8 @@ function Chat({
                 <span className="mobile-symbol"> &gt; </span>
               </Button>
             </Col>
-          </Row>
+        </Row>
+        </div>
       </Container>
     }
 </ div>  
