@@ -3,8 +3,18 @@
 .requests {
     padding-top: 7rem !important;
 
-    &-swapexplorer {
+    &-chat {
         cursor: pointer;
     }
+
+    &-table {
+        background-color: #f1f1f1 !important;
+
+        &-unread {
+            background-color: #ffffff !important;
+        }
+    }
+    
 }
+
 

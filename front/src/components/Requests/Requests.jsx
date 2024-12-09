@@ -5,6 +5,7 @@ import {
     Badge,
     Spinner
 } from "react-bootstrap";
+import {Envelope} from "react-bootstrap-icons";
 import { useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
@@ -42,7 +43,7 @@ function Requests({
     }
   };
 
-  const handleExplorerClick = async (cardName, swapExplorerId, swapExplorerName) => {
+  const handleOpenChat = async (cardName, swapExplorerId, swapExplorerName) => {
       setConversationId('');
       setSwapExplorerId(swapExplorerId);
       setSwapCardName(cardName);
@@ -68,13 +69,14 @@ function Requests({
 
     {!loading &&
 
-    <Table striped>
+    <Table>
       <thead>
         <tr>
-          <th>#</th>
-          <th>Card</th>
-          <th>User</th>
-          <th>Status</th>
+          <th style={{ width: '10%' }}>#</th>
+          <th style={{ width: '10%' }}></th>
+          <th style={{ width: '30%' }}>Card</th>
+          <th style={{ width: '25%' }}>User</th>
+          <th style={{ width: '25%' }}>Status</th>
         </tr>
       </thead>
       <tbody>
@@ -82,18 +84,27 @@ function Requests({
         <tr 
             key={conversation.id}
         >
-            <td>{conversation.id}</td>
-            <td>{conversation.card_name}</td>
+            <td 
+              className={conversation.unread > 0 ? 'requests-table-unread' : 'requests-table'}
+            >{conversation.id}</td>
+            <td 
+              className={conversation.unread > 0 ? 'requests-chat requests-table-unread' : 'requests-chat requests-table'}
+              onClick={() => handleOpenChat(conversation.card_name, conversation.swap_explorer_id, conversation.swap_explorer)}
+            >
+              {conversation.unread > 0 &&
+                <Envelope />
+              }
+            </td>
+            <td className={conversation.unread > 0 ? 'requests-table-unread' : 'requests-table'}>{conversation.card_name}</td>
             <td
-                className='requests-swapexplorer'
-                onClick={() => handleExplorerClick(conversation.card_name, conversation.swap_explorer_id, conversation.swap_explorer)}
+                className={conversation.unread > 0 ? 'requests-chat requests-table-unread' : 'requests-chat requests-table'}
+                onClick={() => handleOpenChat(conversation.card_name, conversation.swap_explorer_id, conversation.swap_explorer)}
             >{conversation.swap_explorer}</td>
-            <td>
+            <td className={conversation.unread > 0 ? 'requests-table-unread' : 'requests-table'}> 
               <Badge 
                 bg={
                   conversation.status === 'Declined' ? 'danger' :
-                  conversation.status === 'Completed' ? 'success' :
-                  'secondary'
+                  conversation.status === 'Completed' ? 'success' : 'secondary'
                 }
               >
                 {conversation.status}

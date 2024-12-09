@@ -270,23 +270,36 @@ module.exports = {
     async getAllConversationsOfExplorer(explorerId) {
         const preparedQuery = {
             text: `
+            WITH ranked_conversations AS (
+                SELECT 
+                    cv.card_name,
+                    CASE
+                        WHEN cv.creator_id = $1 THEN e2.name
+                        WHEN cv.recipient_id = $1 THEN e1.name
+                    END AS swap_explorer,
+                    CASE
+                        WHEN cv.creator_id = $1 THEN e2.id
+                        WHEN cv.recipient_id = $1 THEN e1.id
+                    END AS swap_explorer_id,
+                    cv.status,
+                    COUNT(m.id) FILTER (WHERE m.read = false AND m.recipient_id = $1) AS unread
+                FROM conversation cv
+                JOIN explorer e1 ON e1.id = cv.creator_id
+                JOIN explorer e2 ON e2.id = cv.recipient_id
+                LEFT JOIN message m ON m.conversation_id = cv.id
+                WHERE cv.creator_id = $1
+                   OR cv.recipient_id = $1
+                GROUP BY cv.id, e2.name, e1.name, e2.id, e1.id
+            )
             SELECT 
-	            ROW_NUMBER() OVER (ORDER BY cv.card_name) AS id,
-	            cv.card_name,
-	            CASE
-                 WHEN cv.creator_id = $1 THEN e2.name
-                 WHEN cv.recipient_id = $1 THEN e1.name
-                END AS swap_explorer,
-                CASE
-                 WHEN cv.creator_id = $1 THEN e2.id
-                 WHEN cv.recipient_id = $1 THEN e1.id
-                END AS swap_explorer_id,
-                cv.status
-            FROM conversation cv
-            JOIN explorer e1 ON e1.id = cv.creator_id
-            JOIN explorer e2 ON e2.id = cv.recipient_id
-            WHERE creator_id = $1
-            OR recipient_id = $1`,
+                ROW_NUMBER() OVER (ORDER BY unread DESC, card_name, swap_explorer) AS id,
+                card_name,
+                swap_explorer,
+                swap_explorer_id,
+                status,
+                unread
+            FROM ranked_conversations
+            ORDER BY unread DESC, card_name, swap_explorer;`,
             values: [explorerId],
         };
         const result = await client.query(preparedQuery);
