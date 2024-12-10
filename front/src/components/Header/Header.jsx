@@ -1,16 +1,25 @@
 import React from 'react';
 import {
-  NavLink, useLocation
+  NavLink, useLocation, useNavigate
 } from 'react-router-dom';
+import {
+  NavDropdown
+} from "react-bootstrap";
+import {
+  PersonCircle
+} from "react-bootstrap-icons";
 import PropTypes from 'prop-types';
+import axios from 'axios';
 
 import './headerStyles.scss';
 
 function Header({
-  swapCardName, swapExplorerName
+  swapCardName, swapExplorerName,
 }) {
   const location = useLocation();
   const hiddenPaths = ['/menu', '/login', '/register', '/register/user']; 
+  const navigate = useNavigate();
+  const baseUrl = process.env.REACT_APP_BASE_URL;
 
   // Managing back button
   let btnClassName;
@@ -59,6 +68,12 @@ function Header({
       break;
   }
 
+  const handleSignOut = () => {
+    localStorage.clear();
+    axios.get(`${baseUrl}/signout`);
+    navigate('/login');    
+  }
+
   return (
     <header className="header text-center p-3 border-bottom fixed-top">
         <div 
@@ -81,6 +96,29 @@ function Header({
             : <h1 className="header-title m-0">{pageTitle}</h1>
           }
         </div>
+        {/* <div className="header-profile">
+          {token ? 
+            <NavLink to="/" style={{ textDecoration: 'none' }}>
+              <PersonCircle className="header-profile" />
+            </NavLink>
+            : <div></div>
+          }
+        </div> */}
+          {location.pathname === "/register/user" || location.pathname === "/register" || location.pathname === "/login" ? 
+          <div style={{ textDecoration: 'none' }}>
+          </div>
+            : 
+            <div  className="header-profile">
+            <PersonCircle className="header-profile" />
+              <NavDropdown title="" className="header-dropdown">
+                <NavDropdown.Item 
+                  href="#action/3.1" 
+                  onClick={handleSignOut}
+                >Sign out</NavDropdown.Item>
+              </NavDropdown>  
+          </div>
+          }
+
     </header>     
   );
 }
