@@ -1,7 +1,15 @@
 @use 'src/styles/vars';
 
+.chat-container {
+  padding-top: 3rem !important;
+  margin-bottom: -45px;
+}
+
+.spinner {
+  color: vars.$primary-color;
+}
+
 .chat {
-  padding-top: 7rem !important;
   display: flex;
   justify-content: space-between;
   flex-direction: column;
@@ -12,6 +20,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 10%);
   overflow: scroll;
+  position: relative;
 }
 
   .message-list {
@@ -29,6 +38,7 @@
     padding: 10px 15px;
     border-radius: 20px;
     position: relative;
+    text-align: left;
     // word-wrap: break-word; /* Ensure long words break and wrap to the next line */
     margin-bottom: 20px; /* Optional: Add space between message bubbles */
     // word-break: break-word; /* Break words that don't fit */
@@ -46,10 +56,6 @@
     align-self: flex-start;
   }
 
-  .message-bubble {
-    text-align: left;
-  }
-
   .message-timestamp {
     font-size: 0.8em;
     color: #888;
@@ -58,9 +64,42 @@
     right: 10px;
   }
 
+
+  // .message-status {
+  //   padding: 10px;
+  //   border-top: 1px solid #ddd;
+  //   // align-self:;
+  //   display: flex;
+  //   justify-content: space-between;
+  //   position: fixed;
+  //   bottom: 70px;  /* Adjust this to the height of your message input container */
+  //   left: 0;
+  //   width: 100%;
+  // }
+
+  .message-status {
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    display: flex !important;
+    justify-content: center;
+  }
+
+  // .message-input-container {
+  //   padding: 10px;
+  //   border-top: 1px solid #ddd;
+  //   position: fixed;
+  //   bottom: 0;   /* Keep the input container fixed at the bottom */
+  //   left: 0;
+  //   width: 100%;
+  // }
   .message-input-container {
     padding: 10px;
     border-top: 1px solid #ddd;
+    position: static;
+    bottom: 0;
+    // left: auto;
+    width: 100%;
+    z-index: 5 !important;  
   }
 
   .message-input {
@@ -98,4 +137,6 @@
     .send-button .mobile-symbol {
       display: inline-block; /* Show the '>' symbol on mobile */
     }
+
+    
   }

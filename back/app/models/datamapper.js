@@ -194,31 +194,134 @@ module.exports = {
         // console.log(result.rows);
         return result.rows[0];
     },
+    async findConversation(cardName, explorerId, swapExplorerId) {
+        const preparedQuery = {
+            text: `
+            SELECT id FROM conversation
+            WHERE card_name = $1
+            AND ((creator_id = $2 AND recipient_id = $3)
+            OR (creator_id = $3 AND recipient_id = $2)) 
+            `,
+            values: [cardName, explorerId, swapExplorerId]
+        };
+        const result = await client.query(preparedQuery);
+        if (result.rowCount > 0) {
+            return result.rows[0];
+        }
+        return null;
+    },
+    async createConversation(cardName, explorerId, swapExplorerId) {
+        console.log("CREATE CONV DTMP")
+
+        const preparedQuery = await client.query(
+            `
+            INSERT INTO "conversation"
+                (card_name, creator_id, recipient_id) 
+            VALUES ($1, $2, $3) 
+            RETURNING id
+            `,
+            [cardName, explorerId, swapExplorerId],
+            );
+            return preparedQuery.rows[0];
+    },
     async insertNewMessage(data) {
+        console.log("INSERT MESSAGE DTMP")
+
         const preparedQuery = await client.query(
             `
         INSERT INTO "message"
-        (content, timestamp, sender_id, recipient_id, card_name) VALUES
+        (content, timestamp, sender_id, recipient_id, conversation_id) VALUES
         ($1, $2, $3, $4, $5) RETURNING *
         `,
-            [data.content, data.timestamp, data.senderId, data.recipientId, data.swapCardName],
+            [data.content, data.timestamp, data.senderId, data.recipientId, data.conversationId],
         );
         return preparedQuery.rows[0];
     },
-    async getAllMessagesInAChat(explorerId, swapExplorerId) {
+    async getAllMessagesInAChat(conversationId) {
         console.log("GET ALL MESSAGES IN CHAT DTMP")
         const preparedQuery = {
             text: `SELECT * FROM "message"
-                WHERE sender_id = $1 AND recipient_id = $2
-                OR sender_id = $2 AND recipient_id = $1
+                WHERE conversation_id = $1
                 ORDER BY timestamp`,
-            values: [explorerId, swapExplorerId],
+            values: [conversationId],
+        };
+        const result = await client.query(preparedQuery);
+        // console.log(result.rows);
+        return result.rows;
+    },
+    async updateMessageStatus(conversationId, explorerId) {
+        const preparedQuery = {
+            text: `
+            UPDATE message SET read = true
+            WHERE conversation_id = $1
+            AND recipient_id = $2
+            AND read = false
+            `,
+            values: [conversationId, explorerId]
+        };
+        // return preparedQuery.rows[0];
+        const result = await client.query(preparedQuery);
+        // console.log("READ DTMP", result);
+        if (result.rowCount > 0) {
+            return true;
+        }
+        return 0;     
+    },
+    async getAllConversationsOfExplorer(explorerId) {
+        const preparedQuery = {
+            text: `
+            WITH ranked_conversations AS (
+                SELECT 
+                    cv.id AS db_id,
+                    cv.card_name,
+                    CASE
+                        WHEN cv.creator_id = $1 THEN e2.name
+                        WHEN cv.recipient_id = $1 THEN e1.name
+                    END AS swap_explorer,
+                    CASE
+                        WHEN cv.creator_id = $1 THEN e2.id
+                        WHEN cv.recipient_id = $1 THEN e1.id
+                    END AS swap_explorer_id,
+                    cv.status,
+                    COUNT(m.id) FILTER (WHERE m.read = false AND m.recipient_id = $1) AS unread
+                FROM conversation cv
+                JOIN explorer e1 ON e1.id = cv.creator_id
+                JOIN explorer e2 ON e2.id = cv.recipient_id
+                LEFT JOIN message m ON m.conversation_id = cv.id
+                WHERE cv.creator_id = $1
+                   OR cv.recipient_id = $1
+                GROUP BY cv.id, e2.name, e1.name, e2.id, e1.id
+            )
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY unread DESC, card_name, swap_explorer) AS row_id,
+                db_id,
+                card_name,
+                swap_explorer,
+                swap_explorer_id,
+                status,
+                unread
+            FROM ranked_conversations
+            ORDER BY unread DESC, card_name, swap_explorer;`,
+            values: [explorerId],
         };
         const result = await client.query(preparedQuery);
         console.log(result.rows);
         return result.rows;
     },
+    async editConversationStatus(conversationId, status) {
+        console.log("editConversationStatus DTMP")
 
+        const preparedQuery = {
+            text: `
+            UPDATE conversation
+            SET status = $2
+            WHERE id = $1
+            `,
+            values: [conversationId, status]
+        };
+        const result = await client.query(preparedQuery);
+        console.log(result);
+    },
 //     async findExplorersForCardIdOpportunity(cardId, explorerId) {
 //         console.log("ENTERING DATAMAPPER");
 

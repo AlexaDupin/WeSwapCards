@@ -5,7 +5,8 @@ import {
     Container,
     Button,
     Col,
-    InputGroup
+    InputGroup,
+    Spinner
 } from "react-bootstrap";
 
 import axios from 'axios';
@@ -16,23 +17,61 @@ import PropTypes from 'prop-types';
 import './chatStyles.scss';
 
 function Chat({
-    explorerId, token, swapExplorerId, swapCardName
+    explorerId, token, swapExplorerId, swapCardName, setConversationId, conversationId
   }) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [loading, setLoading] = useState(true);
     const messageEndRef = useRef(null);
+
     console.log("explorerId", explorerId);
     console.log("CHAT JSX swapExplorerId", swapExplorerId);
     console.log("messages", messages);
     console.log("swapCardName", swapCardName);
+    console.log("conversationId", conversationId);
+    console.log("loading", loading);
 
     const baseUrl = process.env.REACT_APP_BASE_URL;
 
     useEffect(() => {
-      const fetchMessages = async () => {
+      const fetchConversation = async () => {
         try {
           const response = await axios.get(
-            `${baseUrl}/chat/${explorerId}/${swapExplorerId}`
+            `${baseUrl}/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`
+          , {
+            headers: {
+              authorization: token,
+            },
+          });
+
+          console.log("fetchConversation response", response);
+          setLoading(false);
+
+          if (!response.data) {
+            setConversationId('');
+          } else {
+            setConversationId(response.data.id);
+          // fetchMessages();
+          }
+
+        } catch (error) {
+          console.log(error);
+        }
+      
+      };
+      fetchConversation();
+    }, []);
+
+
+    const fetchMessages = async () => {
+      console.log("FETCHING MESSAGES");
+
+      if (conversationId) {
+        try {
+          console.log("FETCHING MESSAGES conversationId", conversationId);
+  
+          const response = await axios.get(
+            `${baseUrl}/chat/${conversationId}`
           , {
             headers: {
               authorization: token,
@@ -50,62 +89,92 @@ function Chat({
           });
           console.log("allMessagesFormattedDate", allMessagesFormattedDate);
           setMessages(allMessagesFormattedDate);
+          setUnreadMessagestoRead();
+
         } catch (error) {
           console.log(error);
         }
+      } else {
+        return
+      }
       
-
-        // const fetchedMessages = [
-        //   { id: 1, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-        //   { id: 2, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-        //   { id: 3, senderId: explorerId, 
-        //     content: "I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you?", 
-        //     timestamp: "10:02 AM" },
-        //   { id: 4, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-        //   { id: 5, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-        //   { id: 6, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-        //   { id: 7, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-        //   { id: 8, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-        //   { id: 9, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-        //   { id: 10, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-        //   { id: 11, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-        //   { id: 12, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-        //   { id: 3, senderId: explorerId, 
-        //     content: "I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you? I'm good, thanks! And you?", 
-        //     timestamp: "10:02 AM" },
-        //   { id: 4, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-        //   { id: 5, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-        //   { id: 6, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-        //   { id: 7, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-        //   { id: 8, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-        //   { id: 9, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-        //   { id: 10, senderId: explorerId, content: "Hello!", timestamp: "10:00 AM" },
-        //   { id: 11, senderId: swapExplorerId, content: "Hi, how are you?", timestamp: "10:01 AM" },
-        //   { id: 12, senderId: explorerId, content: "I'm good, thanks! And you?", timestamp: "10:02 AM" },
-        // ];
-        // setMessages(fetchedMessages);
-      };
-      fetchMessages();
-    }, [setNewMessage]);
+    };
   
     // Scroll to the bottom of the chat after sending a new message
     useEffect(() => {
       messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
+
+    useEffect(() => {
+      fetchMessages();
+    }, [conversationId, setMessages]);
   
     const handleSendMessage = async () => {
       if (newMessage.trim() === '') return;
+
+      if (!conversationId) {
+        const conversation = {
+          card_name: swapCardName,
+          creator_id: explorerId,
+          recipient_id: swapExplorerId,
+        }
+
+        try {
+          const response = await axios.post(
+            `${baseUrl}/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`,
+            conversation
+          , {
+            headers: {
+              authorization: token,
+            },
+          });
+          console.log("RESPONSE", response);
   
+          if (response.status === 201) {
+            setConversationId(response.data.id);
+            sendMessage(response.data.id);
+          } else {
+            console.error("Failed to create conversation");
+            return
+          }
+  
+        } catch (error) {
+          console.log(error.data);
+        }
+  
+      } else {
+        sendMessage(conversationId);
+      }
+      
+    };
+
+    const setUnreadMessagestoRead = async () => {
+        try {
+          const response = await axios.put(
+            `${baseUrl}/conversation/${conversationId}/${explorerId}`,
+            {},
+          {
+            headers: {
+              authorization: token,
+            },
+          });
+          console.log(response.data);
+
+        } catch (error) {
+          console.log(error);
+        }          
+    };
+
+    const sendMessage = async (conversationId) => {
       const input = {
-        // id: messages.length + 1,
+        id: messages.length + 1,
         content: newMessage,
-        // timestamp: new Date().toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit' }),
         timestamp: new Date(),
         sender_id: explorerId,
         recipient_id: swapExplorerId,
-        card_name: swapCardName,
+        conversation_id: conversationId,
       };
-  
+
       try {
         const response = await axios.post(
           `${baseUrl}/chat`,
@@ -118,7 +187,8 @@ function Chat({
         console.log("RESPONSE", response);
 
         if (response.status === 201) {
-          setMessages((prevMessages) => [...prevMessages, input]);
+          // setMessages((prevMessages) => [...prevMessages, input]);
+          fetchMessages();
           setNewMessage('');
         } else {
           console.error("Failed to send message");
@@ -126,48 +196,98 @@ function Chat({
 
       } catch (error) {
         console.log(error.data);
-    }
+      }
+    };
 
+    const handleConversationStatus = async (conversationId, newStatus) => {
+        console.log("CHANGING STATUS", newStatus);
+        try {
+          await axios.put(
+            `${baseUrl}/conversation/${conversationId}`,
+            { status: newStatus }, 
+            {
+              headers: {
+                authorization: token,
+              },
+            });
+
+        } catch (error) {
+          console.error('Error updating status:', error);
+        }
     };
 
   return (
-    <Container fluid className="chat">
-      <Row className="message-list">
-        {messages.map((message) => (
-          <Col key={message.id} className={`message-bubble ${message.sender_id === explorerId ? 'sent' : 'received'}`}>
-            <div className="message-content">{message.content}</div>
-            <div className="message-timestamp">{message.timestamp.toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit' })}</div>
-          </Col>
-        ))}
-        <div ref={messageEndRef} />
-      </Row>
+  <div className='chat-container'>
+    {loading &&
+      <><Spinner
+          animation="border"
+          className="spinner" /><p>Loading the chat...</p></>
+    }
 
-      <Row className="message-input-container">
-        <Col xs={10}>
-          <InputGroup>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              className="message-input"
-              placeholder="Type a message..."
-            />
-          </InputGroup>
-        </Col>
-        <Col xs={2}>
-          <Button
-            onClick={handleSendMessage}
-            className="send-button w-100"
-          >
-            <span className="send-text">Send</span>
-            <span className="mobile-symbol"> &gt; </span>          
-          </Button>
-        </Col>
-      </Row>
-    </Container>
+    {!loading &&
+      <Container fluid className="chat">
+        <div>
+        <Row className="message-list">
+          {messages.map((message) => (
+            <Col key={message.id} className={`message-bubble ${message.sender_id === explorerId ? 'sent' : 'received'}`}>
+              <div className="message-content">{message.content}</div>
+              <div className="message-timestamp">{message.timestamp.toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit' })}</div>
+            </Col>
+          ))}
+          <div ref={messageEndRef} />
+        </Row>
+        </div>
+        <div>
+        <Row className="message-status">
+          <Col xs={4}>
+            <Button
+              onClick={() => handleConversationStatus(conversationId, 'Completed')}
+              variant='success'
+            >
+              <span className="send-text">Complete</span>
+            </Button>
+          </Col>
+          <Col xs={4}>
+            <Button
+              onClick={() => handleConversationStatus(conversationId, 'Declined')}
+              variant='danger'
+            >
+              <span className="send-text">Decline</span>
+            </Button>
+          </Col>
+        </Row>
+        <Row className="message-input-container">
+            <Col xs={10}>
+              <InputGroup>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyDown={(e) => { 
+                    if (e.key === "Enter") 
+                      handleSendMessage(); 
+                    }} 
+                  className="message-input"
+                  placeholder="Type a message..." />
+              </InputGroup>
+            </Col>
+            <Col xs={2}>
+              <Button
+                onClick={handleSendMessage}
+                className="send-button w-100"
+              >
+                <span className="send-text">Send</span>
+                <span className="mobile-symbol"> &gt; </span>
+              </Button>
+            </Col>
+        </Row>
+        </div>
+      </Container>
+    }
+</ div>  
   );
-};
+}
 
 Chat.propTypes = {
   explorerId: PropTypes.number.isRequired,

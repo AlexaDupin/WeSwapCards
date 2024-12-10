@@ -53,13 +53,31 @@ router
     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findSwapOpportunities));
 
 router
+    .route('/conversation/:explorerId/:swapExplorerId/:swapCardName')
+    .get(userController.authMiddleware, controllerHandler(chatController.getConversation))
+    .post(userController.authMiddleware, controllerHandler(chatController.createConversation))
+
+router
+    .route('/conversation/:conversationId/:explorerId')
+    .put(userController.authMiddleware, controllerHandler(chatController.setMessagesToRead))
+
+router
+    .route('/conversation/:explorerId')
+    .get(userController.authMiddleware, controllerHandler(chatController.getAllConversations))
+
+router
+    .route('/conversation/:conversationId')
+    .put(userController.authMiddleware, controllerHandler(chatController.editConversationStatus))
+
+router
     .route('/chat')
     .post(userController.authMiddleware, controllerHandler(chatController.insertNewMessage));
 
 router
-    .route('/chat/:explorerId/:swapExplorerId')
-    .get(userController.authMiddleware, controllerHandler(chatController.getAllMessages))
-    
+    .route('/chat/:conversationId')
+    .get(userController.authMiddleware, controllerHandler(chatController.getAllMessagesInConversation))
+
+
 // router
 //     .route('/opportunities/:explorerId/card/:cardId')
 //     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findExplorerForswapCard));
