@@ -13,6 +13,7 @@ import Opportunities from './components/Swap/Opportunities/Opportunities';
 import CheckPage from './components/CheckPage/CheckPage';
 import Requests from './components/Requests/Requests';
 import NotFound from './components/NotFound/NotFound';
+import Footer from './components/Footer/Footer';
 
 import usePersistState from './hooks/usePersistState';
 import useToken from './hooks/useToken';
@@ -204,6 +205,7 @@ console.log("APP conversationId", conversationId);
               element={<NotFound />}
           />                 
       </Routes>
+      <Footer />
     </div>
   );
 }

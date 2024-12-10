@@ -2,11 +2,17 @@ import React from 'react';
 import {
   NavLink, useLocation
 } from 'react-router-dom';
+import {
+	Pencil,
+	Eyeglasses,
+	Search,
+	CardList,
+} from "react-bootstrap-icons";
 import PropTypes from 'prop-types';
 
-import './headerStyles.scss';
+import './footerStyles.scss';
 
-function Header({
+function Footer({
   swapCardName, swapExplorerName
 }) {
   const location = useLocation();
@@ -60,33 +66,29 @@ function Header({
   }
 
   return (
-    <header className="header text-center p-3 border-bottom fixed-top">
-        <div 
-          className={btnClassName}
-        >
-                {location.pathname === "/swap/card" || location.pathname === "/swap/card/chat" || location.pathname === "/swap/requests" || location.pathname === "/swap/opportunities" ? 
-                  <NavLink to="/swap">
-                  <i className="header-icon bi bi-chevron-left"></i>
-                  </NavLink>
-                : <NavLink to="/menu">
-                  <i className="header-icon bi bi-chevron-left"></i>
-                  </NavLink>
-                }
-        </div>
-        <div>
-          {location.pathname === "/register/user" ? 
-            <NavLink to="/" style={{ textDecoration: 'none' }}>
-            <h1 className="header-title m-0 header-title-link">{pageTitle}</h1>
-            </NavLink>
-            : <h1 className="header-title m-0">{pageTitle}</h1>
-          }
-        </div>
-    </header>     
+    <footer className="footer text-center border-top fixed-bottom">
+        <NavLink to="/swap/card" className="footer-link">
+            <Search />
+            <p className="footer-caption">Find a card</p>
+        </NavLink>
+        <NavLink to="/swap/requests" className="footer-link">
+            <CardList />
+            <p className="footer-caption">Dashboard</p>
+        </NavLink>
+        <NavLink to="/report" className="footer-link">
+            <Pencil />
+            <p className="footer-caption">Report</p>
+        </NavLink>
+        <NavLink to="/check" className="footer-link">
+            <Eyeglasses />
+            <p className="footer-caption">My cards</p>
+        </NavLink>
+    </footer>     
   );
 }
 
-Header.propTypes = {
+Footer.propTypes = {
     title: PropTypes.string,
 };
 
-export default React.memo(Header);
+export default React.memo(Footer);
