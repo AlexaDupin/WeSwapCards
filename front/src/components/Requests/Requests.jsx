@@ -129,7 +129,12 @@ function Requests({
                 <Envelope />
               }
             </td>
-            <td className={conversation.unread > 0 ? 'requests-table-unread' : 'requests-table'}>{conversation.card_name}</td>
+            <td 
+              className={conversation.unread > 0 ? 'requests-chat requests-table-unread' : 'requests-chat requests-table'}
+              onClick={() => handleOpenChat(conversation.card_name, conversation.swap_explorer_id, conversation.swap_explorer)}
+            >
+              {conversation.card_name}
+            </td>
             <td
                 className={conversation.unread > 0 ? 'requests-chat requests-table-unread' : 'requests-chat requests-table'}
                 onClick={() => handleOpenChat(conversation.card_name, conversation.swap_explorer_id, conversation.swap_explorer)}

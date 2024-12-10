@@ -199,9 +199,25 @@ function Chat({
       }
     };
 
+    const handleConversationStatus = async (conversationId, newStatus) => {
+        console.log("CHANGING STATUS", newStatus);
+        try {
+          await axios.put(
+            `${baseUrl}/conversation/${conversationId}`,
+            { status: newStatus }, 
+            {
+              headers: {
+                authorization: token,
+              },
+            });
+
+        } catch (error) {
+          console.error('Error updating status:', error);
+        }
+    };
 
   return (
-<div className='chat-container'>
+  <div className='chat-container'>
     {loading &&
       <><Spinner
           animation="border"
@@ -225,16 +241,15 @@ function Chat({
         <Row className="message-status">
           <Col xs={4}>
             <Button
-              // onClick={handleSendMessage}
+              onClick={() => handleConversationStatus(conversationId, 'Completed')}
               variant='success'
-              // className="send-button w-100"
             >
               <span className="send-text">Complete</span>
             </Button>
           </Col>
           <Col xs={4}>
             <Button
-              // onClick={handleSendMessage}
+              onClick={() => handleConversationStatus(conversationId, 'Declined')}
               variant='danger'
             >
               <span className="send-text">Decline</span>
