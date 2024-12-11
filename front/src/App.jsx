@@ -13,11 +13,13 @@ import Opportunities from './components/Swap/Opportunities/Opportunities';
 import CheckPage from './components/CheckPage/CheckPage';
 import Requests from './components/Requests/Requests';
 import NotFound from './components/NotFound/NotFound';
+import Footer from './components/Footer/Footer';
+import NavBar from './components/NavBar/NavBar';
 
 import usePersistState from './hooks/usePersistState';
 import useToken from './hooks/useToken';
 
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -40,6 +42,7 @@ function App() {
   const [swapCardName, setSwapCardName] = useState();
   const [swapExplorerName, setSwapExplorerName] = useState();
   const [conversationId, setConversationId] = useState('');
+  const location = useLocation();
 
   useEffect(() => {
     setName(name);
@@ -59,7 +62,13 @@ console.log("APP conversationId", conversationId);
       <Header 
         swapCardName={swapCardName}
         swapExplorerName={swapExplorerName}
+        setName={setName}
       />
+      {isLogged && name && location.pathname !== "/menu" ? (
+      <NavBar 
+        setName={setName}
+      />
+      ) : ''}
       <Routes>
           <Route
               path="/"
@@ -204,6 +213,9 @@ console.log("APP conversationId", conversationId);
               element={<NotFound />}
           />                 
       </Routes>
+      {isLogged && name ? (
+      <Footer />
+      ) : ''}
     </div>
   );
 }

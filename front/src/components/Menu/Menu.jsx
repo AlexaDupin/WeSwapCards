@@ -45,7 +45,7 @@ function Menu({
 
   return (
     <Container className="menu">
-    <h1 className="menu-title pb-5">Welcome {name}!</h1>
+    <h1 className="menu-title pb-5" style={{fontSize: '1.2rem'}}>Welcome {name}!</h1>
     <Container>
         <Row className="g-5">
             <Col sm={12}>

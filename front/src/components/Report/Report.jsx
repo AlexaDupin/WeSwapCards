@@ -203,7 +203,7 @@ function Report({
     <Form onSubmit={handleSubmit}>
               
       <Form.Group className="mb-5" controlId="formGroupPlace">
-        <Form.Label className="report-label">Select a place, {name}</Form.Label>
+        <Form.Label className="report-label">Select a chapter, {name}</Form.Label>
         <Form.Select 
           aria-label="Select a place" 
           onChange={(e) => {

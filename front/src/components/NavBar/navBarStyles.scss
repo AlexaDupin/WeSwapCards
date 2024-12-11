@@ -1,0 +1,14 @@
+@use 'src/styles/vars';
+
+.navbar {
+    padding-top: 5.5rem !important;
+    // background-color: #ff9b49;
+    background-color: #f5f5f5;
+}
+
+
+@media (max-width: 767px) { /* This targets below the md breakpoint */
+    .navbar {
+        display: none !important;
+    }
+}
