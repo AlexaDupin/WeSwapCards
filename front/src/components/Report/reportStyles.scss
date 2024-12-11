@@ -1,7 +1,7 @@
 @use 'src/styles/vars';
 
 .report {
-    padding-top: 7rem !important;
+    padding-top: 5rem !important;
 }
 
 .report-label {
@@ -91,7 +91,7 @@
 
 @media (min-width: 768px) and (max-width: 1200px) { /* This targets medium screens */
     .report {
-        width: 50% !important; 
+        // width: 50% !important; 
 
         &-card, &-card-selected {
             width: 80%;   
@@ -101,7 +101,7 @@
 
 @media (min-width: 1200px) { /* This targets large screens */
     .report {
-        width: 40% !important;
+        // width: 40% !important;
 
         &-card, &-card-selected {
             width: 60%;   

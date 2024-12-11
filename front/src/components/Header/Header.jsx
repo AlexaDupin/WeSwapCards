@@ -75,7 +75,7 @@ function Header({
   }
 
   return (
-    <header className="header text-center p-3 border-bottom fixed-top">
+    <header className="header text-center border-bottom fixed-top">
         <div 
           className={btnClassName}
         >

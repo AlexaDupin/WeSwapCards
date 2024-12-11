@@ -1,6 +1,7 @@
 
 .App {
   text-align: center;
+  /* height: 100vh; */
   margin-bottom: 3rem; /* Added to see on dev tool TO BE REMOVED */
 }
 

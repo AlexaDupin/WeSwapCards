@@ -1,5 +1,6 @@
 .header {
     background-color: #efefef;
+    padding: 1rem;
 
     &-title {
         font-weight: bold;
@@ -34,7 +35,16 @@
 
 
 @media (min-width: 768px) { /* This targets below the md breakpoint */
-    .header-profile {
+    .header {
+        padding: 2rem;
+    
+    &-title {
+        font-weight: bold;
+        font-size: 1.3rem;
+    }
+
+    &-profile {
         display: none;
+    }
     }
 }
