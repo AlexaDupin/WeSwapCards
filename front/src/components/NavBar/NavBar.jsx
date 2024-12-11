@@ -17,13 +17,14 @@ import axios from 'axios';
 import './navBarStyles.scss';
 
 function NavBar({
-  swapCardName, swapExplorerName,
+    setName
 }) {
   const navigate = useNavigate();
   const baseUrl = process.env.REACT_APP_BASE_URL;
 
   const handleSignOut = () => {
     localStorage.clear();
+    setName('');
     axios.get(`${baseUrl}/signout`);
     navigate('/login');    
   }

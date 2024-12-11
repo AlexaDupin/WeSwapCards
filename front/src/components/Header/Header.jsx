@@ -14,7 +14,7 @@ import axios from 'axios';
 import './headerStyles.scss';
 
 function Header({
-  swapCardName, swapExplorerName,
+  swapCardName, swapExplorerName, setName
 }) {
   const location = useLocation();
   const hiddenPaths = ['/menu', '/login', '/register', '/register/user']; 
@@ -70,6 +70,7 @@ function Header({
 
   const handleSignOut = () => {
     localStorage.clear();
+    setName('');
     axios.get(`${baseUrl}/signout`);
     navigate('/login');    
   }
