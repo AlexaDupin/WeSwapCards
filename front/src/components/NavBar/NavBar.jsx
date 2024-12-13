@@ -1,32 +1,37 @@
 import React from 'react';
 import {
-  NavLink, useLocation, useNavigate
+  Link, useNavigate
 } from 'react-router-dom';
 import {
-  Container,
   Nav,
   Navbar,
   NavDropdown
 } from "react-bootstrap";
-import {
-  PersonCircle
-} from "react-bootstrap-icons";
 import PropTypes from 'prop-types';
-import axios from 'axios';
 
 import './navBarStyles.scss';
+import supabase from '../../helpers/Supabase';
 
 function NavBar({
-    setName
+    setName, setIsLogged
 }) {
   const navigate = useNavigate();
-  const baseUrl = process.env.REACT_APP_BASE_URL;
 
-  const handleSignOut = () => {
-    localStorage.clear();
-    setName('');
-    axios.get(`${baseUrl}/signout`);
-    navigate('/login');    
+  const handleSignOut = async() => {
+    console.log("SUPA SIGNOUT");
+
+    try {
+      const {error} = await supabase.auth.signOut();
+      console.log("SIGNOUT response", {error});
+      localStorage.clear();
+      setName('');
+      setIsLogged(false);
+      navigate('/login');
+
+    } catch (error) {
+      console.error("Error during sign out:", error);
+    }
+    
   }
 
   return (
@@ -35,20 +40,20 @@ function NavBar({
         {/* <Navbar.Collapse id="justify-content-center" style={{width: '100%'}}> */}
           <Nav className="me-auto">
             <NavDropdown title="Swap" id="basic-nav-dropdown">
-              <NavDropdown.Item href="/swap/card">Find a card</NavDropdown.Item>
-              <NavDropdown.Item href="/swap/requests">
+              <NavDropdown.Item as={Link} to="/swap/card">Find a card</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/swap/requests">
                 Check all requests
               </NavDropdown.Item>
-              <NavDropdown.Item href="/swap/opportunities">All opportunities</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/swap/opportunities">All opportunities</NavDropdown.Item>
             </NavDropdown>
             <NavDropdown title="My cards" id="basic-nav-dropdown">
-              <NavDropdown.Item href="/report">Report my cards</NavDropdown.Item>
-              <NavDropdown.Item href="/check">
+              <NavDropdown.Item as={Link} to="/report">Report my cards</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/check">
                 Check all my cards
               </NavDropdown.Item>
             </NavDropdown>
             <NavDropdown title="Profile" id="basic-nav-dropdown">
-              <NavDropdown.Item href="/swap/card">My account</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/swap/card">My account</NavDropdown.Item>
               <NavDropdown.Item onClick={handleSignOut}>
                 Sign out
               </NavDropdown.Item>

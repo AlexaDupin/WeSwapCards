@@ -19,7 +19,6 @@ import {KeyFill, Eye, EyeSlash, At} from "react-bootstrap-icons";
 import PropTypes from 'prop-types';
 
 import './registerStyles.scss';
-import supabase from '../../helpers/Supabase';
 
 function Register({
   setUserUID,
@@ -44,25 +43,24 @@ function Register({
     const onSubmit = async (data) => {
 
       try {
-        const response = await supabase.auth.signUp({
-          email: data.email,
-          password: data.password,
-        })
-        
+        const response = await axios.post(
+          `${baseUrl}/register`,
+          data,
+        )
           console.log(response.data);
 
-          // // Error if undefined is returned meaning that we don't have credentials in database
-          // if (response.data.user === null) {
-          // // setErrMsg('There was an issue during registration.');
-          // setHiddenAlert(false);
-          // localStorage.clear();
-          // // navigate('/register');
-          // return;
-          // }
+          // Error if undefined is returned meaning that we don't have credentials in database
+          if (response.data.user === null) {
+          // setErrMsg('There was an issue during registration.');
+          setHiddenAlert(false);
+          localStorage.clear();
+          // navigate('/register');
+          return;
+          }
 
           // Retrieve token from response and store it in local storage
-          // const token = response.data.session.access_token;
-          // setToken(token);
+          const token = response.data.session.access_token;
+          setToken(token);
           // Setting userUID from auth at App level
           setUserUID(response.data.user.id); 
           setName('');
