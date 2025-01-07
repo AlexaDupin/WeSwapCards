@@ -126,7 +126,7 @@ function Login({
 
   return (
     <Container className="login">
-    <h1 className="login-title pb-5">Welcome to WeSwapCards!</h1>
+    <h1 className="login-title pb-5">Login to access your account and swap cards!</h1>
 
     <Alert 
       variant="danger"

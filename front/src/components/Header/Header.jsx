@@ -34,7 +34,7 @@ function Header({
               <h1 className="header-title m-0 header-title-link">WeSwapCards</h1>
             </NavLink>
         </div>
-        {location.pathname === "/register/user" || location.pathname === "/register" || location.pathname === "/login" ? 
+        {location.pathname === "/" || location.pathname === "/register/user" || location.pathname === "/register" || location.pathname === "/login" ? 
         <nav></nav>
         :
         <nav className="header-nav">
@@ -59,7 +59,7 @@ function Header({
             </NavDropdown>
         </nav>
         }
-        {location.pathname === "/register/user" || location.pathname === "/register" || location.pathname === "/login" ? 
+        {location.pathname === "/home" || location.pathname === "/register/user" || location.pathname === "/register" || location.pathname === "/login" ? 
           <div style={{ textDecoration: 'none' }}>
           </div>
             : 
@@ -67,9 +67,9 @@ function Header({
             <PersonCircle className="header-profile" />
               <NavDropdown title="" className="header-dropdown">
                 <NavDropdown.Item 
-                  href="#action/3.1" 
                   onClick={handleSignOut}
-                >Sign out</NavDropdown.Item>
+                >Sign out
+                </NavDropdown.Item>
               </NavDropdown>  
           </div>
           }

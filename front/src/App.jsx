@@ -4,6 +4,7 @@ import Header from './components/Header/Header';
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
 import User from './components/Register/User/User';
+import Home from './components/Home/Home';
 import Menu from './components/Menu/Menu';
 import Report from './components/Report/Report';
 import SwapCard from './components/Swap/SwapCard/SwapCard';
@@ -137,14 +138,7 @@ if (loading) {
       <Routes>
           <Route
               path="/"
-              element={isLogged && name ? (
-                <Menu 
-                  name={name}
-                  explorerId={explorerId}
-                  setName={setName}
-                  setExplorerId={setExplorerId}
-                />
-              ) : <Navigate replace to="/login" />}
+              element={(<Home/>)}
           />   
           <Route
               path="/login"
