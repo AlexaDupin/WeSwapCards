@@ -293,7 +293,7 @@ module.exports = {
                 GROUP BY cv.id, e2.name, e1.name, e2.id, e1.id
             )
             SELECT 
-                ROW_NUMBER() OVER (ORDER BY unread DESC, card_name, swap_explorer) AS row_id,
+                ROW_NUMBER() OVER (ORDER BY unread DESC, status = 'In progress' DESC, card_name, swap_explorer) AS row_id,
                 db_id,
                 card_name,
                 swap_explorer,
@@ -301,7 +301,7 @@ module.exports = {
                 status,
                 unread
             FROM ranked_conversations
-            ORDER BY unread DESC, card_name, swap_explorer;`,
+            ORDER BY unread DESC, status = 'In progress' DESC, card_name, swap_explorer;`,
             values: [explorerId],
         };
         const result = await client.query(preparedQuery);

@@ -10,9 +10,9 @@ const controllerHandler = require('../../helpers/controllerHandler');
 const router = express.Router();
 
 // router.post('/register', controllerHandler(userController.signUp));
-router.post('/register/user', userController.createUser);
+router.post('/register/user', controllerHandler(userController.createUser));
 // router.post('/login', userController.login);
-router.post('/login/user', userController.getUserByUID);
+router.post('/login/user', controllerHandler(userController.getUserByUID));
 
 // router.get('/signout', userController.signOut);
 

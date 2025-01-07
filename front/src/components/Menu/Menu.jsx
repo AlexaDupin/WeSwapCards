@@ -5,7 +5,7 @@ import {
     Col,
 } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import supabase from '../../helpers/Supabase';
 
 import CustomButton from '../CustomButton/CustomButton';
 
@@ -24,11 +24,12 @@ function Menu({
 
     console.log("MENU explorerId", explorerId);
     
-    const handleSignOut = () => {
+    const handleSignOut = async () => {
+        const { error } = await supabase.auth.signOut()
         localStorage.clear();
-        axios.get(`${baseUrl}/signout`);
+        setName('');
         navigate('/login');    
-    }
+      }
 
     // If user quitted after registering without entering username
     // const checkUsername = () => {
@@ -57,7 +58,7 @@ function Menu({
             <Col sm={12}>
                     <CustomButton
                     text="Swap my cards"
-                    onClick={() => navigate('/swap')}
+                    onClick={() => navigate('/swap/card')}
                     />
             </Col>
             <Col sm={12}>

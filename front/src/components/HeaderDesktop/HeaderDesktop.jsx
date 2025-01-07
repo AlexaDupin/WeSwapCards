@@ -36,7 +36,7 @@ function HeaderDesktop({
               <NavDropdown.Item as={Link} to="/swap/requests">
                 Check all requests
               </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/swap/opportunities">All opportunities</NavDropdown.Item>
+              {/* <NavDropdown.Item as={Link} to="/swap/opportunities">All opportunities</NavDropdown.Item> */}
             </NavDropdown>
             <NavDropdown title="My cards" id="basic-nav-dropdown" className="header-nav-item">
               <NavDropdown.Item as={Link} to="/report">Report my cards</NavDropdown.Item>
