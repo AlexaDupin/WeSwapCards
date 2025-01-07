@@ -123,7 +123,7 @@ function SwapCard({
     console.log("SWAP OPP", swapOpportunities);
 
   return (
-    <Container className="opportunities">
+    <Container className="page-container">
     <h1 className="swap-title">Find a card</h1>
       <Form>
               

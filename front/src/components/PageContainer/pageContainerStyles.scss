@@ -1,0 +1,15 @@
+@use 'src/styles/vars';
+
+.page-container {
+    padding-top: 7rem !important;
+}
+
+.spinner {
+    color: vars.$primary-color;
+}
+
+@media (min-width: 768px) { /* This targets medium screens */
+    .page-container {
+        width: 50% !important; 
+    }
+}

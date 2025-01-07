@@ -81,7 +81,7 @@ function Opportunities({
     }, []);
 
   return (
-    <Container className="opportunities">
+    <Container className="page-container">
 
     {loading &&
       <><Spinner

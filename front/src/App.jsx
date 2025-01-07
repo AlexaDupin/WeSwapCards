@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
-// import HeaderMobile from './components/HeaderMobile/HeaderMobile';
-import HeaderDesktop from './components/HeaderDesktop/HeaderDesktop';
+import Header from './components/Header/Header';
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
 import User from './components/Register/User/User';
 import Menu from './components/Menu/Menu';
 import Report from './components/Report/Report';
-import Swap from './components/Swap/Swap';
 import SwapCard from './components/Swap/SwapCard/SwapCard';
 import Chat from './components/Chat/Chat';
 import Opportunities from './components/Swap/Opportunities/Opportunities';
@@ -15,7 +13,7 @@ import CheckPage from './components/CheckPage/CheckPage';
 import Requests from './components/Requests/Requests';
 import NotFound from './components/NotFound/NotFound';
 import Footer from './components/Footer/Footer';
-import NavBar from './components/NavBar/NavBar';
+import pageContainer from './components/PageContainer/pageContainer';
 
 import {
   Spinner
@@ -24,7 +22,7 @@ import {
 import usePersistState from './hooks/usePersistState';
 import useToken from './hooks/useToken';
 
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -42,12 +40,6 @@ function App() {
 
   console.log('APP user', user);
   console.log('APP session', session);
-  // const token = session.access_token;
-  // console.log('APP token', token);
-  // if (user.aud === 'authenticated') {
-  //   setAuthenticated(true);
-  // }
-  // console.log('APP authenticated', authenticated);
 
   const [name, setName] = usePersistState('', 'name');
   const [explorerId, setExplorerId] = usePersistState('', 'explorerId');
@@ -56,22 +48,11 @@ function App() {
   const [isLogged, setIsLogged] = useState(false);
   const [loading, setLoading] = useState(true);  // Track loading state to prevent route redirects
 
-    // // To maintain login state to true on refresh
-    // useEffect(
-    //   () => {
-    //     if (token) {
-    //       setIsLogged(true);
-    //     }
-    //   },
-    //   [],
-    // );
-  // const isLogged = token !== undefined;
   // Swap feature
   const [swapExplorerId, setSwapExplorerId] = useState('');
   const [swapCardName, setSwapCardName] = useState();
   const [swapExplorerName, setSwapExplorerName] = useState();
   const [conversationId, setConversationId] = useState('');
-  const location = useLocation();
 
 console.log("APP userUID", userUID);
 console.log("APP name", name);
@@ -94,41 +75,16 @@ useEffect(() => {
     setSession(parsedSession);
     setUser(parsedUser);
     setIsLogged(true);
-    // Optionally you can sync it with Supabase
-    // supabase.auth.setSession(parsedSession.access_token);  // Optionally set access token
   }
 
-  // Optional: Listen for changes in authentication state
-  // const authListener = supabase.auth.onAuthStateChange((_event, newSession) => {
-  //   if (newSession) {
-  //     setSession(newSession);
-  //     setUser(newSession.user);
-  //   } else {
-  //     setSession(null);
-  //     setUser(null);
-  //   }
-  // });
-
-  // // Cleanup listener on component unmount
-  // return () => {
-  //   authListener?.subscription.unsubscribe();
-  // };
-  setLoading(false);  // Set loading to false after checking session
+  setLoading(false);
 
 }, []);
 
 useEffect(() => {
   // If there is a session, check if it's expired and update state accordingly
   if (token) {
-    // if (!isSessionExpired(session)) {
-      setIsLogged(true); // If session is valid, mark as logged in
-  //   } else {
-  //     setIsLogged(false);  // Mark as logged out if session is expired
-  //     setSession(null);
-  //     setUser(null);
-  //   }
-  // } else {
-  //   setIsLogged(false);  // No session found, mark as logged out
+      setIsLogged(true); 
   }
 }, [session]);
 
@@ -143,31 +99,7 @@ const getSessionFromLocalStorage = () => {
   return null;
 };
 
-// // Function to store session in localStorage
-// const storeSessionInLocalStorage = (session) => {
-//   localStorage.setItem('supabase_session', JSON.stringify(session));
-// };
-
 useEffect(() => {
-  // Initially load session from localStorage
-  // const storedSession = getSessionFromLocalStorage();
-  // if (storedSession) {
-  //   setSession(storedSession);
-  //   setUser(storedSession.user);
-  // }
-
-  // // Check for session and refresh if needed
-  // const refreshSession = async () => {
-  //   console.log("refreshSession");
-
-  //   const currentSession = await supabase.auth.getSession();
-  //   console.log("currentSession", currentSession);
-  //   if (currentSession.data) {
-  //     setSession(currentSession.data);
-  //     setUser(currentSession.data.user);
-  //   }
-  // };
-
   // Call session refresh if token is expired or on first load
   if (!session || isSessionExpired(session)) {
     getSessionFromLocalStorage();  // Try to refresh session if expired
@@ -184,40 +116,24 @@ const isSessionExpired = (session) => {
 
 if (loading) {
   return <div className="loading">
-    <HeaderDesktop 
+    <Header 
         swapCardName={swapCardName}
         swapExplorerName={swapExplorerName}
         setName={setName}
     />
-    {/* <HeaderMobile 
-      swapCardName={swapCardName}
-      swapExplorerName={swapExplorerName}
-      setName={setName}
-    />   */}
     <Spinner
           animation="border"
           className="spinner" />
-    </div>;  // Show a loading indicator while session is being checked
+    </div>;
 }
 
   return (
     <div className="App">
-      <HeaderDesktop 
+      <Header 
         swapCardName={swapCardName}
         swapExplorerName={swapExplorerName}
         setName={setName}
       />
-      {/* <HeaderMobile 
-        swapCardName={swapCardName}
-        swapExplorerName={swapExplorerName}
-        setName={setName}
-      /> */}
-      {/* {isLogged && name && location.pathname !== "/menu" ? (
-      <NavBar 
-        setName={setName}
-        setIsLogged={setIsLogged}
-      />
-      ) : ''}  */}
       <Routes>
           <Route
               path="/"
@@ -277,17 +193,6 @@ if (loading) {
                 />
               ) : <Navigate replace to="/login" />}
           />
-          {/* <Route
-              path="/menu"
-              element={(
-                <Menu 
-                  name={name}
-                  explorerId={explorerId}
-                  setName={setName}
-                  setExplorerId={setExplorerId}
-                />
-                )}
-          /> */}
           <Route
               path="/report"
               title="Report my cards"
@@ -299,37 +204,6 @@ if (loading) {
                 />
               ) : <Navigate replace to="/login" />}
           />
-          {/* <Route
-              path="/report"
-              title="Report my cards"
-              element={(
-                <Report 
-                  // token={token}
-                  name={name}
-                  explorerId={explorerId}
-                />
-                )}
-          /> */}
-          {/* <Route
-              path="/swap"
-              element={session && name ? (
-                <Swap
-                  // token={token}
-                  name={name}
-                  explorerId={explorerId}
-                />
-              ) : <Navigate replace to="/login" />}
-          /> */}
-          {/* <Route
-              path="/swap"
-              element={(
-                <Swap
-                  // token={token}
-                  name={name}
-                  explorerId={explorerId}
-                />
-                )}
-          /> */}
           <Route
               path="/swap/card"
               element={isLogged && name ? (
@@ -345,21 +219,6 @@ if (loading) {
                 />
               ) : <Navigate replace to="/login" />}
           />
-          {/* <Route
-              path="/swap/card"
-              element={(
-                <SwapCard
-                // token={token}
-                name={name}
-                explorerId={explorerId}
-                setSwapExplorerId={setSwapExplorerId}
-                swapCardName={swapCardName}
-                setSwapCardName={setSwapCardName}
-                setSwapExplorerName={setSwapExplorerName}
-                setConversationId={setConversationId}
-              />
-                )}
-          /> */}
           <Route
               path="/swap/card/chat"
               element={isLogged && name ? (
@@ -374,19 +233,6 @@ if (loading) {
                 />
               ) : <Navigate replace to="/login" />}
           />
-           {/* <Route
-              path="/swap/card/chat"
-              element={(
-                <Chat
-                  // token={token}
-                  explorerId={explorerId}
-                  swapExplorerId={swapExplorerId}
-                  swapCardName={swapCardName}
-                  setConversationId={setConversationId}
-                  conversationId={conversationId}
-                />
-                )}
-          /> */}
           <Route
               path="/swap/requests"
               element={isLogged && name ? (
@@ -401,20 +247,6 @@ if (loading) {
                 />
               ) : <Navigate replace to="/login" />}
           />
-          {/* <Route
-              path="/swap/requests"
-              element={(
-                <Requests
-                  // token={token}
-                  name={name}
-                  explorerId={explorerId}
-                  setSwapCardName={setSwapCardName}
-                  setSwapExplorerId={setSwapExplorerId}
-                  setSwapExplorerName={setSwapExplorerName}
-                  setConversationId={setConversationId}
-                />
-                )}
-          /> */}
           <Route
               path="/swap/opportunities"
               element={isLogged && name ? (
@@ -425,16 +257,6 @@ if (loading) {
                 />
               ) : <Navigate replace to="/login" />}
           />
-          {/* <Route
-              path="/swap/opportunities"
-              element={(
-                <Opportunities
-                  // token={token}
-                  name={name}
-                  explorerId={explorerId}
-                />
-                )}
-          /> */}
           <Route
               path="/check"
               element={isLogged && name ? (
@@ -445,16 +267,6 @@ if (loading) {
                 />
               ) : <Navigate replace to="/login" />}
           />
-            {/* <Route
-              path="/check"
-              element={(
-                <CheckPage
-                // token={token}
-                name={name}
-                explorerId={explorerId}
-                />
-              )}
-          /> */}
           <Route
               path="*"
               element={<NotFound />}

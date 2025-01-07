@@ -95,7 +95,7 @@ function Requests({
   );
 
   return (
-    <Container className="opportunities">
+    <Container className="page-container">
     <h1 className="swap-title">Requests dashboard</h1>
 
     {loading &&

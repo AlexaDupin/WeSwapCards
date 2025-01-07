@@ -199,7 +199,7 @@ function Report({
 
 
   return (
-    <Container className="report">
+    <Container className="page-container">
     <h1 className="swap-title">Report my cards</h1>
 
     <Form onSubmit={handleSubmit}>

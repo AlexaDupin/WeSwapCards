@@ -48,7 +48,7 @@ function CheckPage({
     );
 
     if (loading) {
-      return <Container className="opportunities">
+      return <Container className="page-container">
        <Spinner 
         animation="border"
         className="spinner" 
@@ -56,7 +56,7 @@ function CheckPage({
       </Container>
     }
   return (
-    <Container className="opportunities">
+    <Container className="page-container">
     <h1 className="swap-title">All my cards</h1>
 
         {cardsByPlace && cardsByPlace.length > 0 ? (
