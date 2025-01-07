@@ -124,7 +124,7 @@ function SwapCard({
 
   return (
     <Container className="opportunities">
-
+    <h1 className="swap-title">Find a card</h1>
       <Form>
               
       <Form.Group className="mb-5" controlId="formGroupPlace">

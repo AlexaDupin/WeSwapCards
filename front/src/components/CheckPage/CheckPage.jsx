@@ -56,7 +56,8 @@ function CheckPage({
       </Container>
     }
   return (
-    <Container className="checkpage">
+    <Container className="opportunities">
+    <h1 className="swap-title">All my cards</h1>
 
         {cardsByPlace && cardsByPlace.length > 0 ? (
           cardsByPlace.map((place) => (

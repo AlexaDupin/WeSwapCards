@@ -18,6 +18,15 @@
     overflow-y: auto;
 }
 
+.swap-title {
+    font-weight: bold;
+    font-style: italic;        
+    color: vars.$primary-color !important;
+    font-size: 1.3rem !important;
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
 .swap-tag {
     font-weight: 500;
     color: #fff;

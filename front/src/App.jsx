@@ -368,6 +368,7 @@ if (loading) {
                   explorerId={explorerId}
                   swapExplorerId={swapExplorerId}
                   swapCardName={swapCardName}
+                  swapExplorerName={swapExplorerName}
                   setConversationId={setConversationId}
                   conversationId={conversationId}
                 />

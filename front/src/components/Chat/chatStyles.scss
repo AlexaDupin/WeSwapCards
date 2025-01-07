@@ -1,7 +1,7 @@
 @use 'src/styles/vars';
 
 .chat-container {
-  padding-top: 7rem !important;
+  // padding-top: 7rem !important;
   margin-bottom: -45px;
 }
 
@@ -21,6 +21,15 @@
   box-shadow: 0 4px 10px rgb(0 0 0 / 10%);
   overflow: scroll;
   position: relative;
+
+  &-title {
+    font-weight: bold;
+    font-style: italic;        
+    color: vars.$primary-color !important;
+    font-size: 1.3rem !important;
+    text-align: left;
+    margin-bottom: 2rem;
+  }
 }
 
   .message-list {

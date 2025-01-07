@@ -1,17 +1,13 @@
 import React from 'react';
 import {
-  NavLink, useLocation, useNavigate, Link
+  NavLink, useNavigate, Link
 } from 'react-router-dom';
-import {
-  PersonCircle
-} from "react-bootstrap-icons";
 import PropTypes from 'prop-types';
-import axios from 'axios';
 import {
-  Nav,
-  Navbar,
   NavDropdown
 } from "react-bootstrap";
+
+import supabase from '../../helpers/Supabase';
 
 import './headerStyles.scss';
 
@@ -19,12 +15,11 @@ function HeaderDesktop({
   swapCardName, swapExplorerName, setName
 }) {
   const navigate = useNavigate();
-  const baseUrl = process.env.REACT_APP_BASE_URL;
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut()
     localStorage.clear();
     setName('');
-    axios.get(`${baseUrl}/signout`);
     navigate('/login');    
   }
 

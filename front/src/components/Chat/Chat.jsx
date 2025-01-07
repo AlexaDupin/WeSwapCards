@@ -8,7 +8,9 @@ import {
     InputGroup,
     Spinner
 } from "react-bootstrap";
-
+import {
+  useNavigate
+} from 'react-router-dom';
 import axios from 'axios';
 
 import PropTypes from 'prop-types';
@@ -17,12 +19,13 @@ import PropTypes from 'prop-types';
 import './chatStyles.scss';
 
 function Chat({
-    explorerId, token, swapExplorerId, swapCardName, setConversationId, conversationId
+    explorerId, token, swapExplorerId, swapExplorerName, swapCardName, setConversationId, conversationId
   }) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
     const messageEndRef = useRef(null);
+    const navigate = useNavigate();
 
     console.log("explorerId", explorerId);
     console.log("CHAT JSX swapExplorerId", swapExplorerId);
@@ -211,81 +214,85 @@ function Chat({
               },
             });
 
+            navigate('/swap/requests');    
+
         } catch (error) {
           console.error('Error updating status:', error);
         }
     };
 
   return (
-  <div className='chat-container'>
-    {loading &&
-      <><Spinner
-          animation="border"
-          className="spinner" /><p>Loading the chat...</p></>
-    }
+    <Container className="opportunities">
 
-    {!loading &&
-      <Container fluid className="chat">
-        <div>
-        <Row className="message-list">
-          {messages.map((message) => (
-            <Col key={message.id} className={`message-bubble ${message.sender_id === explorerId ? 'sent' : 'received'}`}>
-              <div className="message-content">{message.content}</div>
-              <div className="message-timestamp">{message.timestamp.toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit' })}</div>
-            </Col>
-          ))}
-          <div ref={messageEndRef} />
-        </Row>
-        </div>
-        <div>
-        <Row className="message-status">
-          <Col xs={4}>
-            <Button
-              onClick={() => handleConversationStatus(conversationId, 'Completed')}
-              variant='success'
-            >
-              <span className="send-text">Complete</span>
-            </Button>
-          </Col>
-          <Col xs={4}>
-            <Button
-              onClick={() => handleConversationStatus(conversationId, 'Declined')}
-              variant='danger'
-            >
-              <span className="send-text">Decline</span>
-            </Button>
-          </Col>
-        </Row>
-        <Row className="message-input-container">
-            <Col xs={10}>
-              <InputGroup>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyDown={(e) => { 
-                    if (e.key === "Enter") 
-                      handleSendMessage(); 
-                    }} 
-                  className="message-input"
-                  placeholder="Type a message..." />
-              </InputGroup>
-            </Col>
-            <Col xs={2}>
-              <Button
-                onClick={handleSendMessage}
-                className="send-button w-100"
-              >
-                <span className="send-text">Send</span>
-                <span className="mobile-symbol"> &gt; </span>
-              </Button>
-            </Col>
-        </Row>
-        </div>
-      </Container>
-    }
-</ div>  
+      <h1 className="chat-title">Chat with {swapExplorerName} - {swapCardName}</h1><div className='chat-container'>
+      {loading &&
+        <><Spinner
+          animation="border"
+          className="spinner" /><p>Loading the chat...</p></>}
+
+      {!loading &&
+        <Container fluid className="chat">
+          <div>
+            <Row className="message-list">
+              {messages.map((message) => (
+                <Col key={message.id} className={`message-bubble ${message.sender_id === explorerId ? 'sent' : 'received'}`}>
+                  <div className="message-content">{message.content}</div>
+                  <div className="message-timestamp">{message.timestamp.toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit' })}</div>
+                </Col>
+              ))}
+              <div ref={messageEndRef} />
+            </Row>
+          </div>
+          <div>
+            <Row className="message-status">
+              <Col xs={4}>
+                <Button
+                  onClick={() => handleConversationStatus(conversationId, 'Completed')}
+                  variant='success'
+                >
+                  <span className="send-text">Complete</span>
+                </Button>
+              </Col>
+              <Col xs={4}>
+                <Button
+                  onClick={() => handleConversationStatus(conversationId, 'Declined')}
+                  variant='danger'
+                >
+                  <span className="send-text">Decline</span>
+                </Button>
+              </Col>
+            </Row>
+            <Row className="message-input-container">
+              <Col xs={10}>
+                <InputGroup>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter")
+                        handleSendMessage();
+                    } }
+                    className="message-input"
+                    placeholder="Type a message..." />
+                </InputGroup>
+              </Col>
+              <Col xs={2}>
+                <Button
+                  onClick={handleSendMessage}
+                  className="send-button w-100"
+                >
+                  <span className="send-text">Send</span>
+                  <span className="mobile-symbol"> &gt; </span>
+                </Button>
+              </Col>
+            </Row>
+          </div>
+        </Container>}
+    </div>
+    </Container>
+
   );
 }
 
