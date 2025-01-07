@@ -13,7 +13,7 @@ import axios from 'axios';
 
 import './headerStyles.scss';
 
-function Header({
+function HeaderMobile({
   swapCardName, swapExplorerName, setName
 }) {
   const location = useLocation();
@@ -124,8 +124,8 @@ function Header({
   );
 }
 
-Header.propTypes = {
+HeaderMobile.propTypes = {
     title: PropTypes.string,
 };
 
-export default React.memo(Header);
+export default React.memo(HeaderMobile);

@@ -1,0 +1,84 @@
+@use 'src/styles/vars';
+
+.header {
+    background-color: vars.$primary-color !important;
+    color: #fff !important;
+    padding: 1rem;
+    display: flex;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    justify-content: space-between;
+
+    &-title {
+        font-weight: bold;
+        font-style: italic;        
+        color: #fff !important;
+        font-size: 1.5rem !important;
+        padding-left: 3rem !important;
+
+        &-link {
+            font-weight: bold;
+            font-size: 1rem;
+            color: #000;
+        }
+    }
+
+    &-nav {    
+      display: flex;
+      padding-right: 3rem !important;
+
+      &-item {
+        margin-left: 1.5rem !important;
+        }
+    }
+    // &-icon {
+    //     color: #000;
+    // }
+
+    // &-profile {
+    //     color: #000;
+    //     position: fixed;
+    //     right: 20px;
+    //     top: 15px;
+    //     font-size: 1.3rem;  
+    // }
+
+
+    // &-dropdown {
+    //     color: #efefef;
+    //     font-size: 0.3rem;
+    // }
+
+}
+
+
+// @media (min-width: 768px) { /* This targets below the md breakpoint */
+//     .header {
+//         padding: 2rem;
+    
+//     &-title {
+//         font-weight: bold;
+//         font-size: 1.3rem;
+//     }
+
+//     &-profile {
+//         display: none;
+//     }
+//     }
+// }
+
+@media (max-width: 767px) { /* This targets below the md breakpoint */
+    .header {
+        display: block;
+        text-align: center;
+
+        &-nav {
+            display: none !important;
+        }
+
+        &-title {
+            padding: 0 !important;
+        }
+    }
+    
+}

@@ -2,7 +2,7 @@
 .App {
   text-align: center;
   /* height: 100vh; */
-  margin-bottom: 3rem; /* Added to see on dev tool TO BE REMOVED */
+  margin-bottom: 4rem; /* Added to see on dev tool TO BE REMOVED */
 }
 
 @media (min-width: 1200px) {

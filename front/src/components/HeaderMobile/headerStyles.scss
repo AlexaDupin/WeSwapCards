@@ -37,6 +37,8 @@
 @media (min-width: 768px) { /* This targets below the md breakpoint */
     .header {
         padding: 2rem;
+        display: none !important;
+
     
     &-title {
         font-weight: bold;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-import Header from './components/Header/Header';
+// import HeaderMobile from './components/HeaderMobile/HeaderMobile';
+import HeaderDesktop from './components/HeaderDesktop/HeaderDesktop';
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
 import User from './components/Register/User/User';
@@ -24,8 +25,6 @@ import usePersistState from './hooks/usePersistState';
 import useToken from './hooks/useToken';
 
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-
-import supabase from './helpers/Supabase';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -185,11 +184,16 @@ const isSessionExpired = (session) => {
 
 if (loading) {
   return <div className="loading">
-    <Header 
+    <HeaderDesktop 
+        swapCardName={swapCardName}
+        swapExplorerName={swapExplorerName}
+        setName={setName}
+    />
+    {/* <HeaderMobile 
       swapCardName={swapCardName}
       swapExplorerName={swapExplorerName}
       setName={setName}
-    />  
+    />   */}
     <Spinner
           animation="border"
           className="spinner" />
@@ -198,17 +202,22 @@ if (loading) {
 
   return (
     <div className="App">
-      <Header 
+      <HeaderDesktop 
         swapCardName={swapCardName}
         swapExplorerName={swapExplorerName}
         setName={setName}
       />
-      {isLogged && name && location.pathname !== "/menu" ? (
+      {/* <HeaderMobile 
+        swapCardName={swapCardName}
+        swapExplorerName={swapExplorerName}
+        setName={setName}
+      /> */}
+      {/* {isLogged && name && location.pathname !== "/menu" ? (
       <NavBar 
         setName={setName}
         setIsLogged={setIsLogged}
       />
-      ) : ''} 
+      ) : ''}  */}
       <Routes>
           <Route
               path="/"
