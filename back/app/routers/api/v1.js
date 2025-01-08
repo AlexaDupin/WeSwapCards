@@ -9,12 +9,12 @@ const controllerHandler = require('../../helpers/controllerHandler');
 
 const router = express.Router();
 
-router.post('/register', controllerHandler(userController.signUp));
-router.post('/register/user', userController.authMiddleware, userController.createUser);
-router.post('/login', userController.login);
-router.post('/login/user', userController.authMiddleware, userController.getUserByUID);
+// router.post('/register', controllerHandler(userController.signUp));
+router.post('/register/user', controllerHandler(userController.createUser));
+// router.post('/login', userController.login);
+router.post('/login/user', controllerHandler(userController.getUserByUID));
 
-router.get('/signout', userController.signOut);
+// router.get('/signout', userController.signOut);
 
 router
     .route('/places')
@@ -38,44 +38,44 @@ router
 
 router
     .route('/report/:explorerId')
-    .post(userController.authMiddleware, controllerHandler(reportController.addCardsToExplorer));
+    .post(controllerHandler(reportController.addCardsToExplorer));
 
 router
     .route('/opportunities/:explorerId')
-    .get(userController.authMiddleware, controllerHandler(opportunitiesController.getOpportunities));
+    .get(controllerHandler(opportunitiesController.getOpportunities));
 
 router
     .route('/opportunities/:explorerId/:placeId')
-    .get(userController.authMiddleware, controllerHandler(opportunitiesController.getCountForOnePlaceForOneExplorer));
+    .get(controllerHandler(opportunitiesController.getCountForOnePlaceForOneExplorer));
 
 router
     .route('/opportunities/:explorerId/card/:cardId')
-    .get(userController.authMiddleware, controllerHandler(opportunitiesController.findSwapOpportunities));
+    .get(controllerHandler(opportunitiesController.findSwapOpportunities));
 
 router
     .route('/conversation/:explorerId/:swapExplorerId/:swapCardName')
-    .get(userController.authMiddleware, controllerHandler(chatController.getConversation))
-    .post(userController.authMiddleware, controllerHandler(chatController.createConversation))
+    .get(controllerHandler(chatController.getConversation))
+    .post(controllerHandler(chatController.createConversation))
 
 router
     .route('/conversation/:conversationId/:explorerId')
-    .put(userController.authMiddleware, controllerHandler(chatController.setMessagesToRead))
+    .put(controllerHandler(chatController.setMessagesToRead))
 
 router
     .route('/conversation/:explorerId')
-    .get(userController.authMiddleware, controllerHandler(chatController.getAllConversations))
+    .get(controllerHandler(chatController.getAllConversations))
 
 router
     .route('/conversation/:conversationId')
-    .put(userController.authMiddleware, controllerHandler(chatController.editConversationStatus))
+    .put(controllerHandler(chatController.editConversationStatus))
 
 router
     .route('/chat')
-    .post(userController.authMiddleware, controllerHandler(chatController.insertNewMessage));
+    .post(controllerHandler(chatController.insertNewMessage));
 
 router
     .route('/chat/:conversationId')
-    .get(userController.authMiddleware, controllerHandler(chatController.getAllMessagesInConversation))
+    .get(controllerHandler(chatController.getAllMessagesInConversation))
 
 
 // router
@@ -88,10 +88,10 @@ router
 
 router
     .route('/explorercards/:explorerId')
-    .get(userController.authMiddleware, controllerHandler(explorerCardsController.getExplorerCardsByPlace));
+    .get(controllerHandler(explorerCardsController.getExplorerCardsByPlace));
 
 router
     .route('/explorercards/:explorerId/cards/:cardId/duplicate')
-    .patch(userController.authMiddleware, controllerHandler(explorerCardsController.editDuplicateStatus));
+    .patch(controllerHandler(explorerCardsController.editDuplicateStatus));
 
 module.exports = router;

@@ -123,8 +123,8 @@ function SwapCard({
     console.log("SWAP OPP", swapOpportunities);
 
   return (
-    <Container className="opportunities">
-
+    <Container className="page-container">
+    <h1 className="swap-title">Find a card</h1>
       <Form>
               
       <Form.Group className="mb-5" controlId="formGroupPlace">
@@ -226,6 +226,7 @@ function SwapCard({
           ) : (
             <>
             <div>No opportunities available for <span className='swap-cardName'>{swapCardName}</span>, try another one!</div>
+            <div className="swap-disclaimer"><em>Remember that only users that need cards you have in duplicates will be shown. So log all your cards!</em></div>
             <Lock className='lock-icon'/>
             </>
           )}

@@ -10,6 +10,7 @@ import {
 } from "react-bootstrap";
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import axios from 'axios';
 
 import CustomButton from '../CustomButton/CustomButton';
 
@@ -18,7 +19,6 @@ import {KeyFill, Eye, EyeSlash, At} from "react-bootstrap-icons";
 import PropTypes from 'prop-types';
 
 import './registerStyles.scss';
-import supabase from '../../helpers/Supabase';
 
 function Register({
   setUserUID,
@@ -37,33 +37,30 @@ function Register({
     const [hiddenAlert, setHiddenAlert] = useState(true);
     const [message, setMessage] = useState('This email address is already linked to an account. Please log in.');
 
+    const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
 
     const onSubmit = async (data) => {
 
       try {
-        const response = await supabase.auth.signUp({
-          email: data.email,
-          password: data.password,
-        })
-        
-          console.log(response.data, response.error);
+        const response = await axios.post(
+          `${baseUrl}/register`,
+          data,
+        )
+          console.log(response.data);
 
-          if (response.error) {
-            setHiddenAlert(false);
+          // Error if undefined is returned meaning that we don't have credentials in database
+          if (response.data.user === null) {
+          // setErrMsg('There was an issue during registration.');
+          setHiddenAlert(false);
+          localStorage.clear();
+          // navigate('/register');
+          return;
           }
-          // // Error if undefined is returned meaning that we don't have credentials in database
-          // if (response.data.user === null) {
-          // // setErrMsg('There was an issue during registration.');
-          // setHiddenAlert(false);
-          // localStorage.clear();
-          // // navigate('/register');
-          // return;
-          // }
 
           // Retrieve token from response and store it in local storage
-          // const token = response.data.session.access_token;
-          // setToken(token);
+          const token = response.data.session.access_token;
+          setToken(token);
           // Setting userUID from auth at App level
           setUserUID(response.data.user.id); 
           setName('');

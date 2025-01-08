@@ -102,7 +102,7 @@ function User({
                           aria-label="Explorer's username"
                           aria-describedby="basic-addon1"
                           {...register('username', {
-                            required: 'This field is required',
+                            required: 'Please enter a username.',
                             pattern: {
                               value: /^[a-zA-Z0-9]{2,}$/,
                               message: 'The format is invalid. Your username must contain at least 2 letters or numbers.',

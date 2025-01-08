@@ -27,21 +27,83 @@ function Login({
   setExplorerId,
   setToken,
   setUser,
-  setSession,
-  setIsLogged
+  setSession
 }) {
-  const baseUrl = process.env.REACT_APP_BASE_URL;
-  const navigate = useNavigate();
-  const [errMsg, setErrMsg] = useState('');
-  const [hiddenAlert, setHiddenAlert] = useState(true);
-  const [message, setMessage] = useState('');
+    const { register, handleSubmit, formState: { errors } } = useForm({
+      defaultValues: {
+        email: "",
+        password: "",
+      },
+    }); 
+  
+    const baseUrl = process.env.REACT_APP_BASE_URL;
+    const navigate = useNavigate();
+    const [errMsg, setErrMsg] = useState('');
+    const [hiddenAlert, setHiddenAlert] = useState(true);
+    const [message, setMessage] = useState('');
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  }); 
+  // const onSubmit = async (data) => {
+
+  //   try {
+  //     const response = await axios.post(
+  //       `${baseUrl}/login`,
+  //       data,
+  //     )
+  //     console.log(response.data.session);
+  //     const token = response.data.session.access_token;
+
+  //     // Error if undefined is returned meaning that we don't have credentials in database
+  //     if (token === undefined) {
+  //       setErrMsg('Your logins do not exist.');
+  //       localStorage.clear();
+  //       navigate('/login');
+  //       return;
+  //     }
+
+  //     // Error if undefined is returned meaning that we don't have credentials in database
+  //     if (response.data.user === null) {
+  //       setErrMsg('Your logins do not exist.');
+  //       localStorage.clear();
+  //       navigate('/login');
+  //       return;
+  //     }
+
+  //     // If OK, set token and other user infos in props
+  //     setToken(token);
+  //     const userUID = response.data.user.id;
+  //     setUserUID(userUID);
+  //     setName('');
+  //     setExplorerId('');
+  //     // Retrieving explorer info from database
+  //     const user = await axios.post(
+  //       `${baseUrl}/login/user`,
+  //       userUID,
+  //       {headers: {
+  //         authorization: token,
+  //       },
+  //       withCredentials: true,  // Ensure credentials (cookies) are sent
+  //     })
+  //     console.log("DM login response", user);
+  //     setName(user.data.name);
+  //     setExplorerId(user.data.id);
+  //     localStorage.setItem('name', user.data.name);
+  //     localStorage.setItem('explorerId', user.data.id);
+  //     navigate('/menu');
+
+  //   } catch (error) {
+  //     if (!error?.response) {
+  //       setMessage("The serveur did not respond.");
+  //       setHiddenAlert(false);        
+  //       console.log(message);
+  //     }
+  //     else {
+  //       setMessage("Looks like you don't have an account or your password is not correct. Please try again.");
+  //       setHiddenAlert(false);
+  //       console.log("401 Unauthorized");      
+  //     }
+  //   }
+    
+  // };
 
   const onSubmit = async (data) => {
     console.log('DATA', data.email, data.password);
@@ -55,27 +117,24 @@ function Login({
       console.log('AUTH user session', response.data.user, response.data.session);
 
       if (response.error) {
-        // setErrMsg('Login failed: ' + response.error.message);
-        setErrMsg('');
-        setMessage('We could not log you in. Please check your email address and password.');
-        setHiddenAlert(false);        
+        setErrMsg('Login failed: ' + response.error.message);
         return;
       }
-
-      const { user, session } = response.data;
-
-      // Store the session in localStorage manually
-      if (session) {
-        localStorage.setItem('supabase_session', JSON.stringify(session));
-      }
-
-      // Store other user-related data if needed
-      localStorage.setItem('user', JSON.stringify(user));
-      const token = session.access_token;
-      setToken(token);
-      setIsLogged(true);
-      setUser(user);
-      setSession(session);
+  
+      // if (response.data.user === null) {
+      //   setErrMsg('Your logins do not exist.');
+      //   // localStorage.clear();
+      //   navigate('/login');
+      //   return;
+      // }
+      // Store the session in localStorage (for persistence across reloads)
+      // This is optional if you want to persist session manually, otherwise use Supabase to manage it in memory
+      // localStorage.setItem('access_token', session.access_token);
+  
+  
+      // Store user info (in app state or context)
+      setUser(response.data.user);
+      setSession(response.data.session);
   
       const userUID = response.data.user.id;
       setUserUID(userUID);
@@ -83,39 +142,35 @@ function Login({
       setExplorerId('');
 
       // Retrieving explorer info from database
-      const userInfo = await axios.post(
+      const user = await axios.post(
         `${baseUrl}/login/user`,
-        {userUID},
+        userUID,
         {headers: {
           authorization: response.data.session.access_token,
         },
         withCredentials: true,  // Ensure credentials (cookies) are sent
       })
       console.log("DM login response", user);
-      setName(userInfo.data.name);
-      setExplorerId(userInfo.data.id);
-      localStorage.setItem('name', userInfo.data.name);
-      localStorage.setItem('explorerId', userInfo.data.id);
+      setName(user.data.name);
+      setExplorerId(user.data.id);
+      localStorage.setItem('name', user.data.name);
+      localStorage.setItem('explorerId', user.data.id);
 
       // After successful login, redirect to the menu or dashboard
       navigate('/menu');
   
   
     } catch (error) {
-        if (!error?.response) {
-          setMessage("The serveur did not respond.");
-          setErrMsg('An error occurred during login: ' + error.message);
-          setHiddenAlert(false);        
-          console.log(message);
-        }
-        else {
-          setMessage("Looks like you don't have an account or your password is not correct. Please try again.");
-          setHiddenAlert(false);
-          console.log("401 Unauthorized");      
-        }
+      setErrMsg('An error occurred during login: ' + error.message);
     }
   };
   
+  // const { data, error } = await supabase.auth.signUp({
+  //   email: 'example@email.com',
+  //   password: 'example-password',
+  // })
+  
+
   // Show password feature with Eye icon
   const [showPassword, setShowPassword] = useState(false)
 
@@ -129,7 +184,7 @@ function Login({
 
   return (
     <Container className="login">
-    <h1 className="login-title pb-5">Login to access your account and swap cards!</h1>
+    <h1 className="login-title pb-5">Welcome to WeSwapCards!</h1>
 
     <Alert 
       variant="danger"
@@ -152,7 +207,7 @@ function Login({
                           aria-label="Explorer's email"
                           aria-describedby="basic-addon1" 
                           {...register('email', {
-                            required: 'Please enter an email address.',
+                            required: 'Required field',
                             pattern: {
                               value: /(.+)@(.+){2,}\.(.+){2,}/,
                               message: 'Invalid email format',
@@ -191,7 +246,7 @@ function Login({
                           aria-label="Explorer's password"
                           aria-describedby="basic-addon2"
                         {...register('password', {
-                          required: 'Please enter your password.',
+                          required: 'Password required',
                           pattern: {
                             // value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,16}$/,
                             message: 'The format is invalid. Your password must contain at least 1 lowercase, 1 uppercase, 1 number and 1 special character.',
