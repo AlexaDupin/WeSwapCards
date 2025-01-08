@@ -4,6 +4,15 @@
     padding-top: 7rem !important;
 }
 
+.page-title {
+    font-weight: bold;
+    font-style: italic;        
+    color: vars.$primary-color !important;
+    font-size: 1.3rem !important;
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
 .spinner {
     color: vars.$primary-color;
 }

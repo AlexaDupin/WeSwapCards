@@ -14,6 +14,8 @@ import CheckPage from './components/CheckPage/CheckPage';
 import Requests from './components/Requests/Requests';
 import NotFound from './components/NotFound/NotFound';
 import Footer from './components/Footer/Footer';
+import Account from './components/Account/Account';
+
 import pageContainer from './components/PageContainer/pageContainer';
 
 import {
@@ -256,6 +258,16 @@ if (loading) {
                   token={token}
                   name={name}
                   explorerId={explorerId}
+                />
+              ) : <Navigate replace to="/login" />}
+          />
+          <Route
+              path="/account"
+              element={isLogged && name ? (
+                <Account
+                  user={user}
+                  name={name}
+                  token={token}
                 />
               ) : <Navigate replace to="/login" />}
           />
