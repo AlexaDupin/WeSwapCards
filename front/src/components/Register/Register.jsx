@@ -47,8 +47,11 @@ function Register({
           password: data.password,
         })
         
-          console.log(response.data);
+          console.log(response.data, response.error);
 
+          if (response.error) {
+            setHiddenAlert(false);
+          }
           // // Error if undefined is returned meaning that we don't have credentials in database
           // if (response.data.user === null) {
           // // setErrMsg('There was an issue during registration.');

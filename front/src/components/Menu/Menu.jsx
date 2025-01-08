@@ -32,17 +32,16 @@ function Menu({
       }
 
     // If user quitted after registering without entering username
-    // const checkUsername = () => {
-    //     if (name === undefined || !name) {
-    //         setName("");
-    //         setExplorerId("");
-    //         navigate('/register/user');
-    //     }    
-    // }
+    const checkUsername = () => {
+        if (name === undefined || !name) {
+            setName("");
+            navigate('/register/user');
+        }    
+    }
 
-    // useEffect(() => {
-    //     checkUsername();
-    // }, []);
+    useEffect(() => {
+        checkUsername();
+    }, []);
 
   return (
     <Container className="menu">

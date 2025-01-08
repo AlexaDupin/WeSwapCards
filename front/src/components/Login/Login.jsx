@@ -55,7 +55,10 @@ function Login({
       console.log('AUTH user session', response.data.user, response.data.session);
 
       if (response.error) {
-        setErrMsg('Login failed: ' + response.error.message);
+        // setErrMsg('Login failed: ' + response.error.message);
+        setErrMsg('');
+        setMessage('We could not log you in. Please check your email address and password.');
+        setHiddenAlert(false);        
         return;
       }
 
@@ -149,7 +152,7 @@ function Login({
                           aria-label="Explorer's email"
                           aria-describedby="basic-addon1" 
                           {...register('email', {
-                            required: 'Required field',
+                            required: 'Please enter an email address.',
                             pattern: {
                               value: /(.+)@(.+){2,}\.(.+){2,}/,
                               message: 'Invalid email format',
@@ -188,7 +191,7 @@ function Login({
                           aria-label="Explorer's password"
                           aria-describedby="basic-addon2"
                         {...register('password', {
-                          required: 'Password required',
+                          required: 'Please enter your password.',
                           pattern: {
                             // value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,16}$/,
                             message: 'The format is invalid. Your password must contain at least 1 lowercase, 1 uppercase, 1 number and 1 special character.',
