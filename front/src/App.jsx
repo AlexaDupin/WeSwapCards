@@ -117,9 +117,7 @@ const isSessionExpired = (session) => {
 
 if (loading) {
   return <div className="loading">
-    <Header 
-        swapCardName={swapCardName}
-        swapExplorerName={swapExplorerName}
+    <Header
         setName={setName}
     />
     <Spinner

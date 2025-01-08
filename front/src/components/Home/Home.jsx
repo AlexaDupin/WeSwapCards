@@ -27,6 +27,8 @@ function Home() {
         text="Create an account"
         onClick={() => navigate('/register')}
     /><br /><br /><br />
+    
+    <h1 className="home-title">How it works?</h1><br />
     <p>Once you are logged in, follow these steps:</p>
 
         <ol>
@@ -54,6 +56,11 @@ function Home() {
 
     <p>You will also be able to keep track of all your requests in a dashboard, so register now to start swapping!</p>
     
+    <CustomButton 
+        text="Create an account"
+        onClick={() => navigate('/register')}
+    /><br />
+
     <ScrollToTop />
 
     </Container>

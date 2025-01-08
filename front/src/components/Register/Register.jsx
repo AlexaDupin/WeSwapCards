@@ -10,7 +10,6 @@ import {
 } from "react-bootstrap";
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
 
 import CustomButton from '../CustomButton/CustomButton';
 
@@ -38,7 +37,6 @@ function Register({
     const [hiddenAlert, setHiddenAlert] = useState(true);
     const [message, setMessage] = useState('This email address is already linked to an account. Please log in.');
 
-    const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
 
     const onSubmit = async (data) => {

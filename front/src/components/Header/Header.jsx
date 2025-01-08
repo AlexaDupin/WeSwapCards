@@ -15,7 +15,7 @@ import supabase from '../../helpers/Supabase';
 import './headerStyles.scss';
 
 function Header({
-  swapCardName, swapExplorerName, setName
+  setName
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,15 +28,28 @@ function Header({
   }
 
   return (
-    <header className="header text-center border-bottom fixed-top">
+    <header className="header border-bottom fixed-top">
         <div>
             <NavLink to="/" style={{ textDecoration: 'none' }}>
               <h1 className="header-title m-0 header-title-link">WeSwapCards</h1>
             </NavLink>
         </div>
-        {location.pathname === "/" || location.pathname === "/register/user" || location.pathname === "/register" || location.pathname === "/login" ? 
-        <nav></nav>
+
+        {location.pathname === "/" || location.pathname === "/register/user" || location.pathname === "/register" ? 
+        <nav 
+          className="header-nav"
+          id="header-nav-login"
+          onClick={() => navigate('/login')}
+        >
+          Login
+        </nav> 
         :
+
+        location.pathname === "/login" ? 
+        <nav>     
+        </nav>
+        :
+
         <nav className="header-nav">
             <NavDropdown title="Swap" id="basic-nav-dropdown" className="header-nav-item">
               <NavDropdown.Item as={Link} to="/swap/card">Find a card</NavDropdown.Item>
@@ -59,10 +72,24 @@ function Header({
             </NavDropdown>
         </nav>
         }
-        {location.pathname === "/home" || location.pathname === "/register/user" || location.pathname === "/register" || location.pathname === "/login" ? 
-          <div style={{ textDecoration: 'none' }}>
-          </div>
-            : 
+        
+        {/* For mobile screens */}
+
+        {location.pathname === "/home" || location.pathname === "/register/user" || location.pathname === "/register" ? 
+          <div className="header-profile" style={{ textDecoration: 'none' }}>
+            <PersonCircle className="header-profile" />
+              <NavDropdown title="" className="header-dropdown">
+                <NavDropdown.Item 
+                  onClick={handleSignOut}
+                >Login
+                </NavDropdown.Item>
+              </NavDropdown>            </div>
+            :
+
+        location.pathname === "/login" ?
+        <div className="header-profile" style={{ textDecoration: 'none' }}>
+        </div> :
+
             <div className="header-profile">
             <PersonCircle className="header-profile" />
               <NavDropdown title="" className="header-dropdown">
