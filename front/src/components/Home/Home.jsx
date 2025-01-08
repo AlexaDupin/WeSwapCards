@@ -17,53 +17,50 @@ function Home() {
     const navigate = useNavigate();
 
   return (
-    <Container className="page-container">
-    <h1 className="home-title">Welcome to WeSwapCards!</h1><br />
-    <p>This website aims to facilitate exchange of cards between users of the WeWard app. </p>
-    <p>It is <strong>not</strong> linked in any way to the official WeWard app.</p>
+  <Container className="page-container">
+    <section>
+      <h1 className="home-title">Welcome to WeSwapCards!</h1><br />
+      <p>This platform aims to facilitate exchange of cards between users of the WeWard app. </p>
+      <p>It is <strong>not</strong> linked in any way to the official WeWard app.</p>
 
-    <p>You first need to create an account. This will enable you to find other users and keep track of all your requests.</p><br />
-    <CustomButton 
-        text="Create an account"
-        onClick={() => navigate('/register')}
-    /><br /><br /><br />
-    
-    <h1 className="home-title">How it works?</h1><br />
-    <p>Once you are logged in, follow these steps:</p>
+      <p>You first need to create an account. Then you can start searching for the cards you need!</p><br />
+      <CustomButton 
+          text="Create an account"
+          onClick={() => navigate('/register')}
+      /><br /><br /><br />
+    </section>
 
-        <ol>
-          <li>
-            <h2 className="home-subtitle">1. Log all the cards you have</h2>
-            <p>This website is based on exchange, so you need to first enter your own cards to find a match.</p>
-            <img src={step1} alt="" />
-          </li><br />
-          <li>
-            <h2 className="home-subtitle">2. Find a card</h2>
-            <p>You will then be able to search for a specific card.</p>
-            <img src={step2} alt="" />
-          </li><br />
-          <li>
-            <h2 className="home-subtitle">3. Browse users</h2>
-            <p>Only users that need cards you have will be shown so you can help them as well.</p>   
-            <img src={step3} alt="" />
-          </li><br /><br />
-          <li>
-            <h2 className="home-subtitle">4. Chat with users</h2>
-            <p>You can now chat with users to find an agreement.</p>
-            <img src={step4} alt="" />
-          </li><br />
-    </ol>    
+    <section>
+      <h1 className="home-title">How it works?</h1><br />
+      <p>Once you are logged in, follow these steps:</p>
+      <div>
 
-    <p>You will also be able to keep track of all your requests in a dashboard, so register now to start swapping!</p>
-    
-    <CustomButton 
-        text="Create an account"
-        onClick={() => navigate('/register')}
-    /><br />
+      <ul className="home-list">
+        <li>
+          <h2 className="home-subtitle">1. Log all the cards you have</h2>
+          <p>This platform is based on exchange, so you need to first enter your own cards to find a match.</p>
+        </li>
+        <li>
+          <h2 className="home-subtitle">2. Find a card</h2>
+          <p>You will then be able to search for a specific card.</p>
+        </li>
+        <li>
+          <h2 className="home-subtitle">3. Browse users</h2>
+          <p>Only users that need cards you have will be shown so you can help them as well.</p>   
+        </li>
+        <li>
+          <h2 className="home-subtitle">4. Chat with users</h2>
+          <p>You will then be able to chat with users to find an agreement on cards to swap.</p>
+        </li>
+      </ul>
+      <p>You will also be able to keep track of all your swap requests in a practical dashboard so register to start swapping!</p>
+
+      </div>
+    </section>
 
     <ScrollToTop />
-
-    </Container>
+  
+  </Container>
 )
 }
 

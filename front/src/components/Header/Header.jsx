@@ -15,22 +15,24 @@ import supabase from '../../helpers/Supabase';
 import './headerStyles.scss';
 
 function Header({
-  setName
+  setName, setIsLogged
 }) {
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    localStorage.clear();
+    console.log("SIGN OUT");
     setName('');
-    navigate('/login');    
+    setIsLogged(false);
+    const { error } = await supabase.auth.signOut();
+    localStorage.clear();
+    navigate('/');    
   }
 
   return (
     <header className="header border-bottom fixed-top">
         <div>
-            <NavLink to="/" style={{ textDecoration: 'none' }}>
+            <NavLink to="/menu" style={{ textDecoration: 'none' }}>
               <h1 className="header-title m-0 header-title-link">WeSwapCards</h1>
             </NavLink>
         </div>
@@ -75,7 +77,7 @@ function Header({
         
         {/* For mobile screens */}
 
-        {location.pathname === "/home" || location.pathname === "/register/user" || location.pathname === "/register" ? 
+        {location.pathname === "/" || location.pathname === "/register/user" || location.pathname === "/register" ? 
           <div className="header-profile" style={{ textDecoration: 'none' }}>
             <PersonCircle className="header-profile" />
               <NavDropdown title="" className="header-dropdown">

@@ -17,18 +17,18 @@ function Menu({
     name,
     explorerId,
     setName,
-    setExplorerId
+    setIsLogged
 }) {
     const navigate = useNavigate();
-    const baseUrl = process.env.REACT_APP_BASE_URL;
 
     console.log("MENU explorerId", explorerId);
     
     const handleSignOut = async () => {
+        setName('');
+        setIsLogged(false);
         const { error } = await supabase.auth.signOut()
         localStorage.clear();
-        setName('');
-        navigate('/login');    
+        navigate('/');    
       }
 
     // If user quitted after registering without entering username

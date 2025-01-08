@@ -226,6 +226,7 @@ function SwapCard({
           ) : (
             <>
             <div>No opportunities available for <span className='swap-cardName'>{swapCardName}</span>, try another one!</div>
+            <div className="swap-disclaimer"><em>Remember that only users that need cards you have in duplicates will be shown. So log all your cards!</em></div>
             <Lock className='lock-icon'/>
             </>
           )}

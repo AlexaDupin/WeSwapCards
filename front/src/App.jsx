@@ -65,7 +65,7 @@ console.log("APP swapExplorerId", swapExplorerId);
 console.log("APP conversationId", conversationId);
 
 useEffect(() => {
-  // Try to get session from localStorage
+  // Get session from localStorage
   console.log('STORING SESSION');
   const storedSession = localStorage.getItem('supabase_session');
   const storedUser = localStorage.getItem('user');
@@ -119,6 +119,7 @@ if (loading) {
   return <div className="loading">
     <Header
         setName={setName}
+        setIsLogged={setIsLogged}
     />
     <Spinner
           animation="border"
@@ -129,9 +130,8 @@ if (loading) {
   return (
     <div className="App">
       <Header 
-        swapCardName={swapCardName}
-        swapExplorerName={swapExplorerName}
         setName={setName}
+        setIsLogged={setIsLogged}
       />
       <Routes>
           <Route
@@ -181,9 +181,9 @@ if (loading) {
                   name={name}
                   explorerId={explorerId}
                   setName={setName}
-                  setExplorerId={setExplorerId}
+                  setIsLogged={setIsLogged}
                 />
-              ) : <Navigate replace to="/login" />}
+              ) : <Navigate replace to="/" />}
           />
           <Route
               path="/report"
