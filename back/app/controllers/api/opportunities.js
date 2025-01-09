@@ -16,36 +16,6 @@ const opportunitiesController = {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     },
-    // async findExplorerForswapCard(req, res) {
-    //     const explorerId = req.params.explorerId;
-    //     const cardId = req.params.cardId;
-
-    //     console.log("swapCard", cardId);
-        
-    //     try {
-    //         const explorers = await datamapper.findExplorersForCardIdOpportunity(cardId, explorerId);
-    //         console.log("explorers", explorers);
-    //         res.status(200).json(explorers);
-    //     } catch (error) {
-    //         console.error('Error fetching opportunities:', error);
-    //         res.status(500).json({ error: 'Internal Server Error' });
-    //     }
-    // },
-    // async findSwapOpportunities(req, res) {
-    //     const explorerId = req.params.explorerId;
-    //     const swapExplorerId = req.params.swapExplorerId;
-
-    //     console.log("swapExplorerId", swapExplorerId);
-        
-    //     try {
-    //         const swapOpportunities = await datamapper.findSwapOpportunities(explorerId, swapExplorerId);
-    //         console.log("swapOpportunities", swapOpportunities);
-    //         res.status(200).json(swapOpportunities);
-    //     } catch (error) {
-    //         console.error('Error fetching opportunities:', error);
-    //         res.status(500).json({ error: 'Internal Server Error' });
-    //     }
-    // },
     // Get all opportunities ////
     async getOpportunities(req, res) {
         const explorerId = req.params.explorerId;
@@ -59,26 +29,6 @@ const opportunitiesController = {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     },
-    //// Infinite scroll ////
-    // async getOpportunities(req, res) {
-    //     const explorerId = req.params.explorerId;
-    //     const limit = parseInt(req.query.limit) || 30;
-    //     const offset = parseInt(req.query.offset) || 0;
-    //     console.log("ENTERING getOpportunities", limit, offset);
-
-    //     try {
-    //         const opportunities = await datamapper.getOpportunitiesForOneExplorer(
-    //             explorerId,
-    //             limit,
-    //             offset
-    //             );
-    //         // console.log(opportunities);
-    //         res.status(200).json(opportunities);
-    //     } catch (error) {
-    //         console.error('Error fetching opportunities:', error);
-    //         res.status(500).json({ error: 'Internal Server Error' });
-    //     }
-    // },
     async getCountForOnePlaceForOneExplorer(req, res) {
         const explorerId = Number(req.params.explorerId);
         const placeId = Number(req.params.placeId);

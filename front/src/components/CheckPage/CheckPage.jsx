@@ -58,6 +58,8 @@ function CheckPage({
   return (
     <Container className="page-container">
     <h1 className="swap-title">All my cards</h1>
+    <p>Here is an overview of all the cards you logged and their duplicate status.</p>
+    <p>Tap on a card number to easily update its duplicate status.</p>< br/>
 
         {cardsByPlace && cardsByPlace.length > 0 ? (
           cardsByPlace.map((place) => (

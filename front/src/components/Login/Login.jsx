@@ -225,6 +225,8 @@ function Login({
           </Card>
     </Form>
 
+    <p className="register-disclaimer">By signing in or creating an account, you agree with the use of the information provided to log you in on the platform. Only the username provided during registration will be shown to other users.</p>
+
     </Container>
 )
 }
