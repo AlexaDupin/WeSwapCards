@@ -1,4 +1,6 @@
-.footer {
+@use 'src/styles/vars';
+
+.footer-mobile {
     background-color: #efefef;
     display: flex;
     justify-content: space-around;
@@ -16,8 +18,32 @@
     }
 }
 
-@media (min-width: 768px) { /* This targets below the md breakpoint */
-    .footer {
+.footer-desktop {
+    background-color: #fff;
+    display: flex;
+    justify-content: space-around;
+    padding: 1rem !important;
+
+    &-caption {
+        font-size: 1rem;
+        margin: 0 !important;
+    }
+
+    &-link {
+        color: vars.$primary-color !important;
+        text-decoration: none;
+        cursor: pointer;
+    }
+}
+
+@media (min-width: 768px) { /* This targets larger screens */
+    .footer-mobile {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) { /* This targets mobile screens */
+    .footer-desktop {
         display: none;
     }
 }

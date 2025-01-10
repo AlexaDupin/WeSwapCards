@@ -38,7 +38,7 @@ function Home() {
       <ul className="home-list">
         <li>
           <h2 className="home-subtitle">1. Log all the cards you have</h2>
-          <p>This platform is based on exchange, so you need to first enter your own cards to find a match.</p>
+          <p>Start by reporting your own cards.</p>
         </li>
         <li>
           <h2 className="home-subtitle">2. Find a card</h2>
@@ -46,11 +46,11 @@ function Home() {
         </li>
         <li>
           <h2 className="home-subtitle">3. Browse users</h2>
-          <p>Only users that need cards you have will be shown so you can help them as well.</p>   
+          <p>You will see a list of all users who have this card as a duplicate.</p>   
         </li>
         <li>
           <h2 className="home-subtitle">4. Chat with users</h2>
-          <p>You will then be able to chat with users to find an agreement on cards to swap.</p>
+          <p>Chat with any user in the list to find an agreement on cards to swap.</p>
         </li>
       </ul>
       <p>You will also be able to keep track of all your swap requests in a practical dashboard so register to start swapping!</p>

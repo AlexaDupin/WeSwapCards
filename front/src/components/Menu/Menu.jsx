@@ -44,7 +44,7 @@ function Menu({
     }, []);
 
   return (
-    <Container className="menu">
+    <Container className="page-container">
     <h1 className="menu-title pb-5" style={{fontSize: '1.2rem'}}>Welcome {name}!</h1>
     <Container>
         <Row className="g-5">

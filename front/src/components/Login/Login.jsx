@@ -128,7 +128,7 @@ function Login({
   }
 
   return (
-    <Container className="login">
+    <Container className="page-container">
     <h1 className="login-title pb-5">Login to access your account and swap cards!</h1>
 
     <Alert 
@@ -225,7 +225,7 @@ function Login({
           </Card>
     </Form>
 
-    <p className="register-disclaimer">By signing in or creating an account, you agree with the use of the information provided to log you in on the platform. Only the username provided during registration will be shown to other users.</p>
+    <p className="register-disclaimer">By signing in or creating an account, you agree with the use of the information provided as explained in our <a href="/privacy" target="_blank">Privacy Policy</a> and our <a href="/terms" target="_blank">Terms and Conditions</a>. Only the username provided during registration will be shown to other users.</p>
 
     </Container>
 )
