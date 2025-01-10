@@ -75,7 +75,7 @@ function User({
     };
    
   return (
-    <Container className="user">
+    <Container className="page-container">
     <h1 className="user-title pb-1">Enter a username</h1>
     <p className="user-subtitle pb-3">It will be shown to other users when you have a card they are interested in.
     You can use the username you use on the WeWard app to make things easier.

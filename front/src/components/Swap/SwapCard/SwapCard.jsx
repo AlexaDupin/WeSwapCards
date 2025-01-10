@@ -201,8 +201,11 @@ function SwapCard({
             <Card.Text
               className="opportunity-text"
             >
-              In exchange, here are the cards you can offer them: <br />
-              {opportunity.opportunities.map((exchange) => (
+              {opportunity.opportunities.length > 0 ? (
+                <>
+                <div>In exchange, here are the cards you can offer them:</div>
+                <br />
+                {opportunity.opportunities.map((exchange) => (
                 <button 
                   key={exchange.card.id}
                   className="swap-tag"
@@ -210,6 +213,10 @@ function SwapCard({
                   {exchange.card.name}
                 </button>
               ))}
+                </>
+              ) : (
+                <div>You do not have any card they don't already have but you can still contact them.</div>
+              )}
             </Card.Text>
 
             <button 

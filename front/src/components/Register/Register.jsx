@@ -95,7 +95,7 @@ function Register({
     }
 
   return (
-    <Container className="register">
+    <Container className="page-container">
     <h1 className="login-title pb-5">To start swapping cards, create an account</h1>
 
     <Alert 
@@ -225,6 +225,7 @@ function Register({
           </Card>
     </Form>
 
+    <p className="register-disclaimer">By signing in or creating an account, you agree with the use of the information provided as explained in our <a href="/privacy" target="_blank">Privacy Policy</a> and our <a href="/terms" target="_blank">Terms and Conditions</a>. Only the username provided on the following page will be shown to other users.</p>
     </Container>
 )
 }

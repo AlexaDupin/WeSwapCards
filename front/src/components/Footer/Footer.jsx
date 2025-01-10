@@ -11,27 +11,42 @@ import {
 import PropTypes from 'prop-types';
 
 import './footerStyles.scss';
+import PrivacyPolicy from '../Legal/PrivacyPolicy/PrivacyPolicy';
 
 function Footer() {
 
   return (
-    <footer className="footer text-center border-top fixed-bottom">
-        <NavLink to="/swap/card" className="footer-link">
+    <footer className="footer text-center ">
+       <div className="footer-desktop border-top">
+        <NavLink to="/privacy" className="footer-desktop-link">
+            <p className="footer-desktop-caption">Privacy Policy</p>
+        </NavLink>
+        <NavLink to="/terms" className="footer-desktop-link">
+            <p className="footer-desktop-caption">Terms and Conditions</p>
+        </NavLink>
+        <NavLink to="/contact" className="footer-desktop-link">
+            <p className="footer-desktop-caption">Contact us</p>
+        </NavLink>
+      </div>
+
+      <div className="footer-mobile border-top fixed-bottom">
+        <NavLink to="/swap/card" className="footer-mobile-link">
             <Search />
-            <p className="footer-caption">Find a card</p>
+            <p className="footer-mobile-caption">Find a card</p>
         </NavLink>
-        <NavLink to="/swap/requests" className="footer-link">
+        <NavLink to="/swap/requests" className="footer-mobile-link">
             <CardList />
-            <p className="footer-caption">Dashboard</p>
+            <p className="footer-mobile-caption">Dashboard</p>
         </NavLink>
-        <NavLink to="/report" className="footer-link">
+        <NavLink to="/report" className="footer-mobile-link">
             <Pencil />
-            <p className="footer-caption">Report</p>
+            <p className="footer-mobile-caption">Report</p>
         </NavLink>
-        <NavLink to="/check" className="footer-link">
+        <NavLink to="/check" className="footer-mobile-link">
             <Eyeglasses />
-            <p className="footer-caption">My cards</p>
+            <p className="footer-mobile-caption">My cards</p>
         </NavLink>
+      </div>
     </footer>     
   );
 }

@@ -14,6 +14,11 @@ import CheckPage from './components/CheckPage/CheckPage';
 import Requests from './components/Requests/Requests';
 import NotFound from './components/NotFound/NotFound';
 import Footer from './components/Footer/Footer';
+import Account from './components/Account/Account';
+import PrivacyPolicy from './components/Legal/PrivacyPolicy/PrivacyPolicy';
+import Terms from './components/Legal/Terms/Terms';
+import Contact from './components/Legal/Contact/Contact';
+
 import pageContainer from './components/PageContainer/pageContainer';
 
 import {
@@ -260,13 +265,33 @@ if (loading) {
               ) : <Navigate replace to="/login" />}
           />
           <Route
+              path="/account"
+              element={isLogged && name ? (
+                <Account
+                  user={user}
+                  name={name}
+                  token={token}
+                />
+              ) : <Navigate replace to="/login" />}
+          />
+          <Route
               path="*"
               element={<NotFound />}
-          />                 
+          />
+          <Route
+              path="/privacy"
+              element={<PrivacyPolicy />}
+          />
+          <Route
+              path="/terms"
+              element={<Terms />}
+          />
+          <Route
+              path="/contact"
+              element={<Contact />}
+          />                           
       </Routes>
-      {isLogged && name ? (
       <Footer />
-      ) : ''}
     </div>
   );
 }

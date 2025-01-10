@@ -67,7 +67,7 @@ function Header({
               </NavDropdown.Item>
             </NavDropdown>
             <NavDropdown title="Profile" id="basic-nav-dropdown" className="header-nav-item">
-              <NavDropdown.Item as={Link} to="/swap/card">My account</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/account">My account</NavDropdown.Item>
               <NavDropdown.Item onClick={handleSignOut}>
                 Sign out
               </NavDropdown.Item>

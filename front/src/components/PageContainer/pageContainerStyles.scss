@@ -2,6 +2,16 @@
 
 .page-container {
     padding-top: 7rem !important;
+    flex: 1;
+}
+
+.page-title {
+    font-weight: bold;
+    font-style: italic;        
+    color: vars.$primary-color !important;
+    font-size: 1.3rem !important;
+    text-align: left;
+    margin-bottom: 2rem;
 }
 
 .spinner {
@@ -13,3 +23,9 @@
         width: 50% !important; 
     }
 }
+
+@media (max-width: 767px) { /* This targets mobile screens */
+    .page-container {
+      padding-bottom: 4rem !important;
+    } 
+  }
