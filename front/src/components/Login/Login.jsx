@@ -103,8 +103,8 @@ function Login({
   
     } catch (error) {
         if (!error?.response) {
-          setMessage("The serveur did not respond.");
-          setErrMsg('An error occurred during login: ' + error.message);
+          setMessage("The server did not respond.");
+          // setErrMsg('An error occurred during login: ' + error.message);
           setHiddenAlert(false);        
           console.log(message);
         }

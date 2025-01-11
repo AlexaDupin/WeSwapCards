@@ -31,11 +31,19 @@ function Header({
 
   return (
     <header className="header border-bottom fixed-top">
+        {location.pathname === "/" || location.pathname === "/register/user" || location.pathname === "/register" || location.pathname === "/login" ? 
         <div>
-            <NavLink to="/menu" style={{ textDecoration: 'none' }}>
+            <NavLink to="/" style={{ textDecoration: 'none' }}>
               <h1 className="header-title m-0 header-title-link">WeSwapCards</h1>
             </NavLink>
         </div>
+        :
+        <div>
+          <NavLink to="/menu" style={{ textDecoration: 'none' }}>
+            <h1 className="header-title m-0 header-title-link">WeSwapCards</h1>
+          </NavLink>
+        </div>
+        }
 
         {location.pathname === "/" || location.pathname === "/register/user" || location.pathname === "/register" ? 
         <nav 
