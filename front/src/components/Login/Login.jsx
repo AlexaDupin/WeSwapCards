@@ -87,7 +87,7 @@ function Login({
         `${baseUrl}/login/user`,
         {userUID},
         {headers: {
-          authorization: response.data.session.access_token,
+          authorization: `Bearer ${response.data.session.access_token}`
         },
         withCredentials: true,  // Ensure credentials (cookies) are sent
       })
