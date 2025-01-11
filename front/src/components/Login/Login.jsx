@@ -87,7 +87,7 @@ function Login({
         `${baseUrl}/login/user`,
         {userUID},
         {headers: {
-          authorization: `Bearer ${response.data.session.access_token}`
+          Authorization: `Bearer ${response.data.session.access_token}`,
         },
         withCredentials: true,  // Ensure credentials (cookies) are sent
       })
@@ -111,7 +111,7 @@ function Login({
         else {
           setMessage("Looks like you don't have an account or your password is not correct. Please try again.");
           setHiddenAlert(false);
-          console.log("401 Unauthorized");      
+          console.log("401 Unauthorized", error.message);      
         }
     }
   };
