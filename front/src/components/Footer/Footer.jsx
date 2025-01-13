@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  NavLink
+  NavLink, useLocation
 } from 'react-router-dom';
 import {
 	Pencil,
@@ -14,6 +14,7 @@ import './footerStyles.scss';
 import PrivacyPolicy from '../Legal/PrivacyPolicy/PrivacyPolicy';
 
 function Footer() {
+  const location = useLocation();
 
   return (
     <footer className="footer text-center ">
@@ -29,6 +30,9 @@ function Footer() {
         </NavLink>
       </div>
 
+      {location.pathname === "/" || location.pathname === "/register/user" || location.pathname === "/register" || location.pathname === "/login" ?
+      <div></div>
+      :
       <div className="footer-mobile border-top fixed-bottom">
         <NavLink to="/swap/card" className="footer-mobile-link">
             <Search />
@@ -47,6 +51,8 @@ function Footer() {
             <p className="footer-mobile-caption">My cards</p>
         </NavLink>
       </div>
+      }
+        
     </footer>     
   );
 }
