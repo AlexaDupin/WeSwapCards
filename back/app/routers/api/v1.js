@@ -13,7 +13,7 @@ const router = express.Router();
 router.post('/register/user', controllerHandler(userController.createUser));
 // router.post('/login', userController.login);
 // router.post('/login/user', controllerHandler(userController.getUserByUID));
-router.get('/login/user', controllerHandler(reportController.getAllPlaces));
+router.get('/api/v1/login/user', controllerHandler(reportController.getAllPlaces));
 
 // router.get('/signout', userController.signOut);
 
