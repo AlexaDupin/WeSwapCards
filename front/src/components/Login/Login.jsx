@@ -83,22 +83,24 @@ function Login({
       setExplorerId('');
 
       // Retrieving explorer info from database
-      const userInfo = await axios.post(
-        `${baseUrl}/login/user`,
-        {userUID},
-        {headers: {
-          Authorization: `Bearer ${response.data.session.access_token}`,
-        },
-        withCredentials: true,  // Ensure credentials (cookies) are sent
-      })
-      console.log("DM login response", user);
-      setName(userInfo.data.name);
-      setExplorerId(userInfo.data.id);
-      localStorage.setItem('name', userInfo.data.name);
-      localStorage.setItem('explorerId', userInfo.data.id);
+      // const userInfo = await axios.post(
+      //   `${baseUrl}/login/user`,
+      //   {userUID},
+      //   {headers: {
+      //     Authorization: `Bearer ${response.data.session.access_token}`,
+      //   },
+      //   withCredentials: true,  // Ensure credentials (cookies) are sent
+      // })
+      const userInfo = await axios.get(
+        `${baseUrl}/login/user`)
+      console.log("DM login response", userInfo.data.places);
+      // setName(userInfo.data.name);
+      // setExplorerId(userInfo.data.id);
+      // localStorage.setItem('name', userInfo.data.name);
+      // localStorage.setItem('explorerId', userInfo.data.id);
 
       // After successful login, redirect to the menu or dashboard
-      navigate('/menu');
+      // navigate('/menu');
   
   
     } catch (error) {
