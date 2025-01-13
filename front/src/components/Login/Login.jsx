@@ -92,7 +92,7 @@ function Login({
       //   withCredentials: true,  // Ensure credentials (cookies) are sent
       // })
       const userInfo = await axios.get(
-        `${baseUrl}/login/user`)
+        `${baseUrl}/api/v1/login/user`)
       console.log("DM login response", userInfo.data.places);
       // setName(userInfo.data.name);
       // setExplorerId(userInfo.data.id);
