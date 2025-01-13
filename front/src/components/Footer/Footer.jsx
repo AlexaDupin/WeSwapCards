@@ -18,20 +18,34 @@ function Footer() {
 
   return (
     <footer className="footer text-center ">
+
+        {/* For desktop screens */}
        <div className="footer-desktop border-top">
-        <NavLink to="/privacy" className="footer-desktop-link">
-            <p className="footer-desktop-caption">Privacy Policy</p>
-        </NavLink>
-        <NavLink to="/terms" className="footer-desktop-link">
-            <p className="footer-desktop-caption">Terms and Conditions</p>
-        </NavLink>
-        <NavLink to="/contact" className="footer-desktop-link">
-            <p className="footer-desktop-caption">Contact us</p>
-        </NavLink>
+          <a href="/privacy" target="_blank" className="footer-desktop-link" rel="noopener noreferrer">
+                <p className="footer-desktop-caption">Privacy Policy</p>
+          </a>
+          <a href="/terms" target="_blank" className="footer-desktop-link" rel="noopener noreferrer">
+                <p className="footer-desktop-caption">Terms and Conditions</p>
+          </a>
+          <a href="/contact" target="_blank" className="footer-desktop-link" rel="noopener noreferrer">
+                <p className="footer-desktop-caption">Contact us</p>
+          </a>
       </div>
 
-      {location.pathname === "/" || location.pathname === "/register/user" || location.pathname === "/register" || location.pathname === "/login" ?
-      <div></div>
+      
+      {/* For mobile screens */}
+      {location.pathname === "/" || location.pathname === "/register/user" || location.pathname === "/register" || location.pathname === "/login" || location.pathname === "/privacy" || location.pathname === "/terms" || location.pathname === "/contact" ?
+            <div className="footer-general border-top">
+             <a href="/privacy" target="_blank" className="footer-general-link" rel="noopener noreferrer">
+                <p className="footer-general-caption">Privacy</p>
+             </a>
+             <a href="/terms" target="_blank" className="footer-general-link" rel="noopener noreferrer">
+                <p className="footer-general-caption">Terms</p>
+             </a>
+             <a href="/contact" target="_blank" className="footer-general-link" rel="noopener noreferrer">
+                <p className="footer-general-caption">Contact</p>
+             </a>
+           </div>
       :
       <div className="footer-mobile border-top fixed-bottom">
         <NavLink to="/swap/card" className="footer-mobile-link">

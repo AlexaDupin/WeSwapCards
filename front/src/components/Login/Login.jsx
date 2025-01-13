@@ -213,8 +213,8 @@ function Login({
                 {<p className="errors">{errMsg}</p>}
 
                 <Card.Text className="">
-                    <Link to="#" className="link">Forgot Password?</Link>
-						    &nbsp;&nbsp;
+                    {/* <Link to="#" className="link">Forgot Password?</Link>
+						    &nbsp;&nbsp; */}
                     <Link to="/register" className="link">Don't have an account?</Link>
 				        </Card.Text>
 

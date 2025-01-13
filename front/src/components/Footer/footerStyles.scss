@@ -36,8 +36,30 @@
     }
 }
 
+.footer-general {
+    background-color: #fff;
+    display: flex;
+    justify-content: space-around;
+    padding: 1rem !important;
+
+    &-caption {
+        font-size: 1rem;
+        margin: 0 !important;
+    }
+
+    &-link {
+        color: vars.$primary-color !important;
+        text-decoration: none;
+        cursor: pointer;
+    }
+}
+
 @media (min-width: 768px) { /* This targets larger screens */
     .footer-mobile {
+        display: none;
+    }
+
+    .footer-general {
         display: none;
     }
 }

@@ -55,7 +55,7 @@ function Header({
         </nav> 
         :
 
-        location.pathname === "/login" ? 
+        location.pathname === "/login" || location.pathname === "/privacy" || location.pathname === "/terms" || location.pathname === "/contact" ? 
         <nav>     
         </nav>
         :
@@ -90,13 +90,14 @@ function Header({
             <PersonCircle className="header-profile" />
               <NavDropdown title="" className="header-dropdown">
                 <NavDropdown.Item 
-                  onClick={handleSignOut}
+                  onClick={() => navigate('/login')}
                 >Login
                 </NavDropdown.Item>
-              </NavDropdown>            </div>
+              </NavDropdown>          
+          </div>
             :
 
-        location.pathname === "/login" ?
+        location.pathname === "/login" || location.pathname === "/privacy" || location.pathname === "/terms" || location.pathname === "/contact" ?
         <div className="header-profile" style={{ textDecoration: 'none' }}>
         </div> :
 
