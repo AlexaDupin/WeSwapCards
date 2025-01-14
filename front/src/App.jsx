@@ -18,6 +18,7 @@ import Account from './components/Account/Account';
 import PrivacyPolicy from './components/Legal/PrivacyPolicy/PrivacyPolicy';
 import Terms from './components/Legal/Terms/Terms';
 import Contact from './components/Legal/Contact/Contact';
+import Legal from './components/Legal/Legal';
 
 import pageContainer from './components/PageContainer/pageContainer';
 
@@ -289,6 +290,10 @@ if (loading) {
           <Route
               path="/contact"
               element={<Contact />}
+          />
+          <Route
+              path="/legal"
+              element={<Legal />}
           />                           
       </Routes>
       <Footer />

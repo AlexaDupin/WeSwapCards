@@ -47,7 +47,7 @@ function Menu({
     <Container className="page-container">
     <h1 className="menu-title pb-5" style={{fontSize: '1.2rem'}}>Welcome {name}!</h1>
     <Container>
-        <Row className="g-5">
+        <Row className="g-4">
             <Col sm={12}>
                 <CustomButton
                     text="Report my cards"
@@ -67,6 +67,18 @@ function Menu({
                     />
             </Col>
             <Col sm={12}>
+                    <CustomButton
+                    text="Check all swap requests"
+                    onClick={() => navigate('/swap/requests')}
+                    />
+            </Col>
+            <Col sm={12}>
+                    <CustomButton
+                    text="Legal"
+                    onClick={() => navigate('/legal')}
+                    />
+            </Col>
+            <Col sm={12} id="btn-signout">
                     <CustomButton
                     text="Sign out"
                     onClick={handleSignOut}
