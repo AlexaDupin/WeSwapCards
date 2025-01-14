@@ -47,22 +47,25 @@ function CheckPage({
       [],
     );
 
-    if (loading) {
-      return <Container className="page-container">
+  if (loading) {
+    return <Container className="page-container">
+        <h1 className="swap-title">All my cards</h1>
+
        <Spinner 
         animation="border"
         className="spinner" 
        />
+       <p>Loading your cards...</p>
       </Container>
     }
+
   return (
     <Container className="page-container">
     <h1 className="swap-title">All my cards</h1>
-    <p>Here is an overview of all the cards you logged and their duplicate status.</p>
-    <p>Tap on a card number to easily update its duplicate status.</p>< br/>
 
         {cardsByPlace && cardsByPlace.length > 0 ? (
-          cardsByPlace.map((place) => (
+          <><p>Here is an overview of all the cards you logged and their duplicate status.</p><p>Tap on a card number to easily update its duplicate status.</p><br />
+          {cardsByPlace.map((place) => (
             <Place
               key={place.place_name}
               place={place}
@@ -70,7 +73,8 @@ function CheckPage({
               token={token}
             />
             ))
-            ) : (
+          }</>)  
+           : (
               <div>You don't have any logged cards for the moment, {name}.</div>
         )}
 

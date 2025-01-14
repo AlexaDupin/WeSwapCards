@@ -52,7 +52,7 @@ function User({
             setExplorerId(response.data.id);
             setName(response.data.name);
             
-            navigate('/menu');
+            navigate('/login');
 
         } catch (error) {
           if (error.response) {
