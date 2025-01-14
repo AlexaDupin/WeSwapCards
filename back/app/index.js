@@ -15,8 +15,8 @@ app.use(express.json());
 // On active le middleware pour parser le payload urlencoded
 app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
-    origin: 'http://localhost:3000',
-    // origin: 'https://weswapcards.onrender.com',
+    // origin: 'http://localhost:3000',
+    origin: 'https://weswapcards.onrender.com',
     // origin: '*',
     optionsSuccessStatus: 200,
     credentials: true,
