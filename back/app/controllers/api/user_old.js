@@ -130,7 +130,7 @@ const userController  = {
         httpOnly: true,
         secure: true,
         // secure:false,
-        sameSite: 'Lax',  // CSRF protection
+        sameSite: 'None',  // CSRF protection
         maxAge: 30 * 24 * 60 * 60,  // Refresh token expiry (e.g., 30 days)
         path: '/',  // Available to all paths
       }));
@@ -208,7 +208,7 @@ const userController  = {
 
   // Middleware to refresh session using refresh token
   async refreshSession(req, res, next) {
-    const cookies = cookie.parse(req.headers.cookie || '');  // Parse cookies from the request
+    const cookies = req.cookies;  // This will be an object of all cookies
     const refreshToken = cookies.refresh_token;  // Get refresh token from cookies
     console.log("CTRL COOKIES", cookies, refreshToken);
 
