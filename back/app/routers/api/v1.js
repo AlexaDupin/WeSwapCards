@@ -1,5 +1,5 @@
 const express = require('express');
-const userController = require('../../controllers/api/user');
+const userController = require('../../controllers/api/user_old');
 const reportController = require('../../controllers/api/report');
 const opportunitiesController = require('../../controllers/api/opportunities');
 const explorerCardsController = require('../../controllers/api/explorerCards');
@@ -11,7 +11,7 @@ const router = express.Router();
 
 // router.post('/register', controllerHandler(userController.signUp));
 router.post('/register/user', controllerHandler(userController.createUser));
-// router.post('/login', userController.login);
+router.post('/login', userController.login);
 router.post('/login/user', controllerHandler(userController.getUserByUID));
 
 // router.get('/signout', userController.signOut);
