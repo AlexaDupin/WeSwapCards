@@ -206,6 +206,33 @@ const userController  = {
     }
    },
 
+  // Middleware to refresh session using refresh token
+  async refreshSession(req, res, next) {
+    const cookies = cookie.parse(req.headers.cookie || '');  // Parse cookies from the request
+    const refreshToken = cookies.refresh_token;  // Get refresh token from cookies
+    console.log("CTRL COOKIES", cookies, refreshToken);
+
+    if (!refreshToken) {
+      return res.status(401).json({ message: 'No refresh token provided' });
+    }
+
+    try {
+      // Use Supabase's API to refresh the access token using the refresh token
+      const { data, error } = await supabase.auth.api.refreshAccessToken(refreshToken);
+
+      if (error) {
+        return res.status(401).json({ message: 'Invalid refresh token' });
+      }
+
+      // If successful, add the session data to the request object for further use
+      req.session = data;  // Store the session (access token and user info) in the request object
+
+      // Move to the next handler in the request cycle
+      next();
+    } catch (error) {
+      return res.status(500).json({ message: 'Failed to refresh session', error: error.message });
+    }
+  },
    
   // // GetUserData
   // async getUser(req, res) {

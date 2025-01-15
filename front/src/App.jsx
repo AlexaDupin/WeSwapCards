@@ -29,6 +29,7 @@ import {
 
 import usePersistState from './hooks/usePersistState';
 import useToken from './hooks/useToken';
+import axios from 'axios';
 
 import { Routes, Route, Navigate } from 'react-router-dom';
 
@@ -61,6 +62,7 @@ function App() {
   const [swapCardName, setSwapCardName] = useState();
   const [swapExplorerName, setSwapExplorerName] = useState();
   const [conversationId, setConversationId] = useState('');
+  const baseUrl = process.env.REACT_APP_BASE_URL;
 
 console.log("APP userUID", userUID);
 console.log("APP name", name);
@@ -70,6 +72,30 @@ console.log("APP explorerId", explorerId);
 console.log("isLogged", isLogged);
 console.log("APP swapExplorerId", swapExplorerId);
 console.log("APP conversationId", conversationId);
+
+useEffect(() => {
+  // Check if there's a valid session when the page loads or refreshes
+  const checkSession = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/session`, {
+        withCredentials: true,  // Ensure cookies are sent with the request
+      });
+
+      if (response.status === 200) {
+        setSession(response.data.session);  // Save session data (access token, user, etc.)
+      } else {
+        setSession(null);  // No valid session
+      }
+    } catch (error) {
+      console.error('Error fetching session:', error);
+      setSession(null);  // Handle error, no session
+    } finally {
+      setLoading(false);  // Set loading state to false
+    }
+  };
+
+  checkSession();  // Call the function to check for session
+}, []);
 
 // useEffect(() => {
 //   // Get session from localStorage
