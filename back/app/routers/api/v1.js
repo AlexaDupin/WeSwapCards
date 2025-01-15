@@ -14,6 +14,17 @@ router.post('/register/user', controllerHandler(userController.createUser));
 router.post('/login', userController.login);
 router.post('/login/user', controllerHandler(userController.getUserByUID));
 
+router.get('/session', userController.refreshSession, (req, res) => {
+    if (!req.session) {
+      return res.status(401).json({ message: 'No valid session found' });
+    }
+  
+    // Send the session data (e.g., access token and user details) back to the client
+    res.status(200).json({
+      user: req.session.user,  // Send user info (you can customize this)
+      session: req.session,     // Send full session details
+    });
+  });
 // router.get('/signout', userController.signOut);
 
 router
