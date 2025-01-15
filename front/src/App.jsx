@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import Header from './components/Header/Header';
-import Login from './components/Login/Login';
+import Login from './components/Login/Login_old';
 import Register from './components/Register/Register';
 import User from './components/Register/User/User';
 import Home from './components/Home/Home';
@@ -19,6 +19,7 @@ import PrivacyPolicy from './components/Legal/PrivacyPolicy/PrivacyPolicy';
 import Terms from './components/Legal/Terms/Terms';
 import Contact from './components/Legal/Contact/Contact';
 import Legal from './components/Legal/Legal';
+import Wrapper from './components/Wrapper/Wrapper';
 
 import pageContainer from './components/PageContainer/pageContainer';
 
@@ -70,68 +71,68 @@ console.log("isLogged", isLogged);
 console.log("APP swapExplorerId", swapExplorerId);
 console.log("APP conversationId", conversationId);
 
-useEffect(() => {
-  // Get session from localStorage
-  console.log('STORING SESSION');
-  const storedSession = localStorage.getItem('supabase_session');
-  const storedUser = localStorage.getItem('user');
+// useEffect(() => {
+//   // Get session from localStorage
+//   console.log('STORING SESSION');
+//   const storedSession = localStorage.getItem('supabase_session');
+//   const storedUser = localStorage.getItem('user');
 
-  if (storedSession && storedUser) {
-    const parsedSession = JSON.parse(storedSession);
-    const parsedUser = JSON.parse(storedUser);
-    setSession(parsedSession);
-    setUser(parsedUser);
-    setIsLogged(true);
-  }
+//   if (storedSession && storedUser) {
+//     const parsedSession = JSON.parse(storedSession);
+//     const parsedUser = JSON.parse(storedUser);
+//     setSession(parsedSession);
+//     setUser(parsedUser);
+//     setIsLogged(true);
+//   }
 
-  setLoading(false);
+//   setLoading(false);
 
-}, []);
+// }, []);
 
-useEffect(() => {
-  // If there is a session, check if it's expired and update state accordingly
-  if (token) {
-      setIsLogged(true); 
-  }
-}, [session]);
+// useEffect(() => {
+//   // If there is a session, check if it's expired and update state accordingly
+//   if (token) {
+//       setIsLogged(true); 
+//   }
+// }, [session]);
 
-// Function to retrieve session from localStorage
-const getSessionFromLocalStorage = () => {
-  console.log("getSessionFromLocalStorage");
-  const storedSession = localStorage.getItem('supabase_session');
-  console.log("storedSession", JSON.parse(storedSession));
-  if (storedSession) {
-    return JSON.parse(storedSession);
-  }
-  return null;
-};
+// // Function to retrieve session from localStorage
+// const getSessionFromLocalStorage = () => {
+//   console.log("getSessionFromLocalStorage");
+//   const storedSession = localStorage.getItem('supabase_session');
+//   console.log("storedSession", JSON.parse(storedSession));
+//   if (storedSession) {
+//     return JSON.parse(storedSession);
+//   }
+//   return null;
+// };
 
-useEffect(() => {
-  // Call session refresh if token is expired or on first load
-  if (!session || isSessionExpired(session)) {
-    getSessionFromLocalStorage();  // Try to refresh session if expired
-  }
+// useEffect(() => {
+//   // Call session refresh if token is expired or on first load
+//   if (!session || isSessionExpired(session)) {
+//     getSessionFromLocalStorage();  // Try to refresh session if expired
+//   }
 
-}, []);
+// }, []);
 
-// Function to check if the session is expired
-const isSessionExpired = (session) => {
-  const currentTime = Date.now() / 1000; // Get current time in seconds
-  const expirationTime = session.expires_at;
-  return expirationTime < currentTime; // Returns true if the session has expired
-};
+// // Function to check if the session is expired
+// const isSessionExpired = (session) => {
+//   const currentTime = Date.now() / 1000; // Get current time in seconds
+//   const expirationTime = session.expires_at;
+//   return expirationTime < currentTime; // Returns true if the session has expired
+// };
 
-if (loading) {
-  return <div className="loading">
-    <Header
-        setName={setName}
-        setIsLogged={setIsLogged}
-    />
-    <Spinner
-          animation="border"
-          className="spinner" />
-    </div>;
-}
+// if (loading) {
+//   return <div className="loading">
+//     <Header
+//         setName={setName}
+//         setIsLogged={setIsLogged}
+//     />
+//     <Spinner
+//           animation="border"
+//           className="spinner" />
+//     </div>;
+// }
 
   return (
     <div className="App">
@@ -188,8 +189,9 @@ if (loading) {
                   explorerId={explorerId}
                   setName={setName}
                   setIsLogged={setIsLogged}
-                />
-              ) : <Navigate replace to="/" />}
+                  />
+                  ) : <Navigate replace to="/login" />
+                }
           />
           <Route
               path="/report"

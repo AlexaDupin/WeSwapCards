@@ -9,90 +9,143 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const datamapper = require("../../models/user");
 
 const userController  = {
-//   // Sign up
-//   async signUp(req, res) {
-//     const { email, password} = req.body;
-//     console.log({email, password});
+  // Sign up
+  async signUp(req, res) {
+    const { email, password} = req.body;
+    console.log({email, password});
 
-//     try {
-//       const response = await supabase.auth.signUp({
-//         email,
-//         password,
-//       })
+    try {
+      const response = await supabase.auth.signUp({
+        email,
+        password,
+      })
 
-//       // console.log('Supabase response:', response); // Log the entire response
-//       const { user, session, error } = response.data;
-//       console.log('SIGN UP data', response.data);
+      // console.log('Supabase response:', response); // Log the entire response
+      const { user, session, error } = response.data;
+      console.log('SIGN UP data', response.data);
 
-//       if (error) {
-//         console.error('Supabase error:', error.message);
-//         res.status(401).json({ message: error.message });
-//       } else {
-//         res.status(200).json({ user, session });
-//       }
+      if (error) {
+        console.error('Supabase error:', error.message);
+        res.status(401).json({ message: error.message });
+      } else {
+        res.status(200).json({ user, session });
+      }
 
-//     } catch (error) {
-//       console.error("Error during registration:", error);
-//       return res.status(500).send({ message: 'An error occurred during registration.', error: error.message });
-//     }
-// },
-//   // Create new user after retrieving username
-//   async createUser(req, res) {
-//     // const userUID = req.body.userUID;
-//     // const name = req.body.username;
-//     const { userUID, username } = req.body;
-//     console.log("CTRL req.body", req.body);
+    } catch (error) {
+      console.error("Error during registration:", error);
+      return res.status(500).send({ message: 'An error occurred during registration.', error: error.message });
+    }
+},
+  // Create new user after retrieving username
+  async createUser(req, res) {
+    // const userUID = req.body.userUID;
+    // const name = req.body.username;
+    const { userUID, username } = req.body;
+    console.log("CTRL req.body", req.body);
 
-//     try {
-//       const user = await datamapper.createExplorer(userUID, username);
+    try {
+      const user = await datamapper.createExplorer(userUID, username);
 
-//       console.log("CTRL user", user);
-//       res.json(user);
+      console.log("CTRL user", user);
+      res.json(user);
 
-//     } catch (error) {
-//       console.error("Error in creating user:", error);
+    } catch (error) {
+      console.error("Error in creating user:", error);
 
-//         // Check if the error is due to a unique constraint violation
-//         if (error.code === '23505') {
-//             // Unique constraint violation
-//             return res.status(400).send({ message: 'Username must be unique' });
-//         } else {
-//             return res.status(500).send({ message: 'An error occurred while creating the user', error: error.message });
-//         }
-//     }
-//   },
-//   // Sign in
-//   async login(req, res) {
-//     const { email, password } = req.body;
-//     console.log(email, password);
-//     if (!email || !password) {
-//       return res.status(400).json({ message: 'Email and password are required.' });
-//     }
+        // Check if the error is due to a unique constraint violation
+        if (error.code === '23505') {
+            // Unique constraint violation
+            return res.status(400).send({ message: 'Username must be unique' });
+        } else {
+            return res.status(500).send({ message: 'An error occurred while creating the user', error: error.message });
+        }
+    }
+  },
+  // // Sign in without cookies
+  // async login(req, res) {
+  //   const { email, password } = req.body;
+  //   console.log(email, password);
+  //   if (!email || !password) {
+  //     return res.status(400).json({ message: 'Email and password are required.' });
+  //   }
 
-//     try {
-//       const response = await supabase.auth.signInWithPassword({
-//         email,
-//         password,
-//       });
-//       const { user, session, error } = response.data;
-//       console.log('LOGIN data', response.data);
+  //   try {
+  //     const response = await supabase.auth.signInWithPassword({
+  //       email,
+  //       password,
+  //     });
+  //     const { user, session, error } = response.data;
+  //     console.log('LOGIN data', response.data);
 
-//       if (error) {
-//         console.error('Supabase error:', error.message);
-//         return res.status(401).json({ message: 'Wrong credentials', error: error.message });
-//       }
+  //     if (error) {
+  //       console.error('Supabase error:', error.message);
+  //       return res.status(401).json({ message: 'Wrong credentials', error: error.message });
+  //     }
 
-//       if (!user) {
-//         res.status(401).json({message: "Wrong logins", user, session});
-//       }
+  //     if (!user) {
+  //       res.status(401).json({message: "Wrong logins", user, session});
+  //     }
 
-//       res.status(200).json({ user, session });
+  //     res.status(200).json({ user, session });
 
-//     } catch (error) {
-//       console.error("Error during login:", error);
-//       return res.status(500).send({ message: 'An error occurred during login.', error: error.message });
-//     }
-//   },
+  //   } catch (error) {
+  //     console.error("Error during login:", error);
+  //     return res.status(500).send({ message: 'An error occurred during login.', error: error.message });
+  //   }
+  // },
+  // Sign in with cookies
+  async login(req, res) {
+    const { email, password } = req.body;
+    console.log(email, password);
+  
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required.' });
+    }
+  
+    try { 
+      const response = await supabase.auth.signInWithPassword({ 
+        email,
+        password,
+      });
+ 
+      const { user, session, error } = response.data;
+ 
+      console.log('LOGIN data', response.data);
+ 
+      if (error) {
+        console.error('Supabase error:', error.message);
+        throw error;
+      }
+ 
+      if (!user) {
+        res.status(401).json({message: "Wrong logins", user, session});
+      }
+ 
+      // Successfully authenticated, set the refresh token in an HTTP-only cookie
+      const refreshToken = session.refresh_token;
+      console.log('refreshToken', refreshToken); // OK
+ 
+      // Set the refresh token cookie (HTTP-only, Secure, SameSite=Strict for protection)
+      res.setHeader('Set-Cookie', cookie.serialize('refresh_token', refreshToken, {
+        httpOnly: true,
+        secure: true,
+        // secure:false,
+        sameSite: 'Lax',  // CSRF protection
+        maxAge: 30 * 24 * 60 * 60,  // Refresh token expiry (e.g., 30 days)
+        path: '/',  // Available to all paths
+      }));
+ 
+      console.log("Login getHeaders", res.getHeaders());
+ 
+      // Send back user and session data (Access token is not necessary since it's in the Authorization header)
+      res.status(200).json({ user, session });
+ 
+    } catch (error) {
+      console.error("Error during login:", error);
+      return res.status(500).send({ message: 'An error occurred during login.', error: error.message });
+    }
+  },
+
   // Sign out
   async signOut(req, res) {
       console.log("SUPA SIGNOUT");
@@ -141,8 +194,8 @@ const userController  = {
   //   next();
   // },
   async getUserByUID(req, res) {
-    const userUID = req.body.id;
-    console.log("CTRL getUserByUID req.user", req.user);
+    const userUID = req.body.userUID;
+    console.log("CTRL getUserByUID req.user", req.body);
 
     try {
       const user = await datamapper.getExplorerInfo(userUID);

@@ -19,97 +19,96 @@ import {KeyFill, Eye, EyeSlash, At} from "react-bootstrap-icons";
 import PropTypes from 'prop-types';
 
 import './loginStyles.scss';
+import supabase from '../../helpers/Supabase';
 
 function Login({
   setUserUID,
   setName,
   setExplorerId,
   setToken,
-  setIsLogged,
   setUser,
-  setSession
+  setSession,
+  setIsLogged
 }) {
-    const { register, handleSubmit, formState: { errors } } = useForm({
-      defaultValues: {
-        email: "",
-        password: "",
-      },
-    }); 
-  
-    const baseUrl = process.env.REACT_APP_BASE_URL;
-    const navigate = useNavigate();
-    const [errMsg, setErrMsg] = useState('');
-    const [hiddenAlert, setHiddenAlert] = useState(true);
-    const [message, setMessage] = useState('');
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+  const navigate = useNavigate();
+  const [errMsg, setErrMsg] = useState('');
+  const [hiddenAlert, setHiddenAlert] = useState(true);
+  const [message, setMessage] = useState('');
+
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  }); 
 
   const onSubmit = async (data) => {
-
+    console.log('DATA', data.email, data.password);
     try {
-      const response = await axios.post(
-        `${baseUrl}/login`,
-        data,
-      )
-      console.log(response.data.session);
-      const token = response.data.session.access_token;
+      const response = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+  
+      console.log('AUTH response', response);
+      console.log('AUTH user session', response.data.user, response.data.session);
 
-      // Error if undefined is returned meaning that we don't have credentials in database
-      if (token === undefined) {
-        setErrMsg('Your logins do not exist.');
-        localStorage.clear();
-        navigate('/login');
+      if (response.error) {
+        // setErrMsg('Login failed: ' + response.error.message);
+        setErrMsg('');
+        setMessage('We could not log you in. Please check your email address and password.');
+        setHiddenAlert(false);        
         return;
       }
 
-      // Error if undefined is returned meaning that we don't have credentials in database
-      if (response.data.user === null) {
-        setErrMsg('Your logins do not exist.');
-        localStorage.clear();
-        navigate('/login');
-        return;
-      }
+      const { user, session } = response.data;
 
-      // If OK, set token and other user infos in props
+      const token = session.access_token;
       setToken(token);
+      setIsLogged(true);
+      setUser(user);
+      setSession(session);
+  
       const userUID = response.data.user.id;
       setUserUID(userUID);
       setName('');
       setExplorerId('');
-      setIsLogged(true);
 
-        // Retrieving explorer info from database
-        console.log("LOGIN userUID", userUID);
-        const user = await axios.post(
-          `${baseUrl}/login/user`,
-          {userUID}
-          , {
-            headers: {
-            authorization: token,
-          },
-          withCredentials: true,  // Ensure credentials (cookies) are sent
-        });
-        console.log("DM login response", user);
-        setName(user.data.name);
-        setExplorerId(user.data.id);
-        // localStorage.setItem('name', user.data.name);
-        // localStorage.setItem('explorerId', user.data.id);
-        navigate('/menu');
+      // Retrieving explorer info from database
+      const userInfo = await axios.post(
+        `${baseUrl}/login/user`,
+        {userUID},
+        {headers: {
+          Authorization: `Bearer ${response.data.session.access_token}`,
+        },
+        withCredentials: true,  // Ensure credentials (cookies) are sent
+      })
+      console.log("DM login response", user);
+      setName(userInfo.data.name);
+      setExplorerId(userInfo.data.id);
+      localStorage.setItem('name', userInfo.data.name);
+      localStorage.setItem('explorerId', userInfo.data.id);
 
+      // After successful login, redirect to the menu or dashboard
+      navigate('/menu');
+  
+  
     } catch (error) {
-      if (!error?.response) {
-        setMessage("The serveur did not respond.");
-        setHiddenAlert(false);        
-        console.log(message);
-      }
-      else {
-        setMessage("Looks like you don't have an account or your password is not correct. Please try again.");
-        setHiddenAlert(false);
-        console.log("401 Unauthorized");      
-      }
+        if (!error?.response) {
+          setMessage("The server did not respond.");
+          // setErrMsg('An error occurred during login: ' + error.message);
+          setHiddenAlert(false);        
+          console.log(message);
+        }
+        else {
+          setMessage("Looks like you don't have an account or your password is not correct. Please try again.");
+          setHiddenAlert(false);
+          console.log("401 Unauthorized", error.message);      
+        }
     }
-    
-    
   };
-
+  
   // Show password feature with Eye icon
   const [showPassword, setShowPassword] = useState(false)
 
@@ -122,8 +121,8 @@ function Login({
   }
 
   return (
-    <Container className="login">
-    <h1 className="login-title pb-5">Welcome to WeSwapCards!</h1>
+    <Container className="page-container">
+    <h1 className="login-title pb-5">Login to access your account and swap cards!</h1>
 
     <Alert 
       variant="danger"
@@ -146,7 +145,7 @@ function Login({
                           aria-label="Explorer's email"
                           aria-describedby="basic-addon1" 
                           {...register('email', {
-                            required: 'Required field',
+                            required: 'Please enter an email address.',
                             pattern: {
                               value: /(.+)@(.+){2,}\.(.+){2,}/,
                               message: 'Invalid email format',
@@ -185,7 +184,7 @@ function Login({
                           aria-label="Explorer's password"
                           aria-describedby="basic-addon2"
                         {...register('password', {
-                          required: 'Password required',
+                          required: 'Please enter your password.',
                           pattern: {
                             // value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,16}$/,
                             message: 'The format is invalid. Your password must contain at least 1 lowercase, 1 uppercase, 1 number and 1 special character.',
@@ -207,8 +206,8 @@ function Login({
                 {<p className="errors">{errMsg}</p>}
 
                 <Card.Text className="">
-                    <Link to="#" className="link">Forgot Password?</Link>
-						    &nbsp;&nbsp;
+                    {/* <Link to="#" className="link">Forgot Password?</Link>
+						    &nbsp;&nbsp; */}
                     <Link to="/register" className="link">Don't have an account?</Link>
 				        </Card.Text>
 
@@ -218,6 +217,8 @@ function Login({
               </Card.Body>
           </Card>
     </Form>
+
+    <p className="register-disclaimer">By signing in or creating an account, you agree with the use of the information provided as explained in our <a href="/privacy" target="_blank">Privacy Policy</a> and our <a href="/terms" target="_blank">Terms and Conditions</a>. Only the username provided during registration will be shown to other users.</p>
 
     </Container>
 )
