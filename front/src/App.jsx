@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import Header from './components/Header/Header';
-import Login from './components/Login/Login_old';
+import Login from './components/Login/Login';
 import Register from './components/Register/Register';
 import User from './components/Register/User/User';
 import Home from './components/Home/Home';
@@ -74,91 +74,98 @@ console.log("APP swapExplorerId", swapExplorerId);
 console.log("APP conversationId", conversationId);
 
 useEffect(() => {
-  // Check if there's a valid session when the page loads or refreshes
-  const checkSession = async () => {
-    try {
-      const response = await axios.get(`${baseUrl}/session`, {
-        withCredentials: true,  // Ensure cookies are sent with the request
-      });
+  // Get session from localStorage
+  console.log('STORING SESSION');
+  const storedSession = localStorage.getItem('supabase_session');
+  // const storedUser = localStorage.getItem('sb-kqjjsmkzogtldqpzpdkf-auth-token.user');
 
-      if (response.status === 200) {
-        setSession(response.data.session);  // Save session data (access token, user, etc.)
-      } else {
-        setSession(null);  // No valid session
-      }
-    } catch (error) {
-      console.error('Error fetching session:', error);
-      setSession(null);  // Handle error, no session
-    } finally {
-      setLoading(false);  // Set loading state to false
-    }
-  };
+  if (storedSession) {
+    const parsedSession = JSON.parse(storedSession);
+    // const parsedUser = JSON.parse(storedUser);
+    setSession(parsedSession);
+    // setUser(parsedUser);
+    setToken(parsedSession.access_token);
+    setIsLogged(true);
+  }
 
-  checkSession();  // Call the function to check for session
+  setLoading(false);
+
 }, []);
 
+useEffect(() => {
+  // If there is a session, check if it's expired and update state accordingly
+  if (token) {
+      setIsLogged(true); 
+  }
+}, [session]);
+
+// Function to retrieve session from localStorage
+const getSessionFromLocalStorage = () => {
+  console.log("getSessionFromLocalStorage");
+  const storedSession = localStorage.getItem('supabase_session');
+  console.log("storedSession", JSON.parse(storedSession));
+  if (storedSession) {
+    return JSON.parse(storedSession);
+  }
+  return null;
+};
+
+useEffect(() => {
+  // Call session refresh if token is expired or on first load
+  if (!session || isSessionExpired(session)) {
+    getSessionFromLocalStorage();  // Try to refresh session if expired
+  }
+
+}, []);
+
+// Function to check if the session is expired
+const isSessionExpired = (session) => {
+  const currentTime = Date.now() / 1000; // Get current time in seconds
+  const expirationTime = session.expires_at;
+  return expirationTime < currentTime; // Returns true if the session has expired
+};
+
+if (loading) {
+  return <div className="loading">
+    <Header
+        setName={setName}
+        setIsLogged={setIsLogged}
+    />
+    <Spinner
+          animation="border"
+          className="spinner" />
+    </div>;
+
+// Persist with cookies
 // useEffect(() => {
-//   // Get session from localStorage
-//   console.log('STORING SESSION');
-//   const storedSession = localStorage.getItem('supabase_session');
-//   const storedUser = localStorage.getItem('user');
+//   // Check if there's a valid session when the page loads or refreshes
+//   const checkSession = async () => {
+//     try {
+//       const refreshToken = localStorage.getItem('refresh');
 
-//   if (storedSession && storedUser) {
-//     const parsedSession = JSON.parse(storedSession);
-//     const parsedUser = JSON.parse(storedUser);
-//     setSession(parsedSession);
-//     setUser(parsedUser);
-//     setIsLogged(true);
-//   }
+//       const response = await axios.post(`${baseUrl}/session`, {
+//         refreshToken,  // Send refreshToken in the request body
+//       }, {
+//         withCredentials: true,  // Ensure cookies are sent with the request
+//       });
 
-//   setLoading(false);
+//       if (response.status === 200) {
+//         setSession(response.data.session);  // Save session data (access token, user, etc.)
+//       } else {
+//         setSession(null);  // No valid session
+//       }
+//     } catch (error) {
+//       console.error('Error fetching session:', error);
+//       setSession(null);  // Handle error, no session
+//     } finally {
+//       setLoading(false);  // Set loading state to false
+//     }
+//   };
 
+//   checkSession();  // Call the function to check for session
 // }, []);
 
-// useEffect(() => {
-//   // If there is a session, check if it's expired and update state accordingly
-//   if (token) {
-//       setIsLogged(true); 
-//   }
-// }, [session]);
-
-// // Function to retrieve session from localStorage
-// const getSessionFromLocalStorage = () => {
-//   console.log("getSessionFromLocalStorage");
-//   const storedSession = localStorage.getItem('supabase_session');
-//   console.log("storedSession", JSON.parse(storedSession));
-//   if (storedSession) {
-//     return JSON.parse(storedSession);
-//   }
-//   return null;
-// };
-
-// useEffect(() => {
-//   // Call session refresh if token is expired or on first load
-//   if (!session || isSessionExpired(session)) {
-//     getSessionFromLocalStorage();  // Try to refresh session if expired
-//   }
-
-// }, []);
-
-// // Function to check if the session is expired
-// const isSessionExpired = (session) => {
-//   const currentTime = Date.now() / 1000; // Get current time in seconds
-//   const expirationTime = session.expires_at;
-//   return expirationTime < currentTime; // Returns true if the session has expired
-// };
-
-// if (loading) {
-//   return <div className="loading">
-//     <Header
-//         setName={setName}
-//         setIsLogged={setIsLogged}
-//     />
-//     <Spinner
-//           animation="border"
-//           className="spinner" />
-//     </div>;
-// }
+}
 
   return (
     <div className="App">

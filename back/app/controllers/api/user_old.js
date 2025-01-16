@@ -128,8 +128,8 @@ const userController  = {
       // Set the refresh token cookie (HTTP-only, Secure, SameSite=Strict for protection)
       res.setHeader('Set-Cookie', cookie.serialize('refresh_token', refreshToken, {
         httpOnly: true,
-        secure: true,
-        // secure:false,
+        // secure: true,
+        secure:false,
         sameSite: 'None',  // CSRF protection
         maxAge: 30 * 24 * 60 * 60,  // Refresh token expiry (e.g., 30 days)
         path: '/',  // Available to all paths
@@ -208,17 +208,22 @@ const userController  = {
 
   // Middleware to refresh session using refresh token
   async refreshSession(req, res, next) {
-    const cookies = req.cookies;  // This will be an object of all cookies
-    const refreshToken = cookies.refresh_token;  // Get refresh token from cookies
-    console.log("CTRL COOKIES", cookies, refreshToken);
+    // const cookies = req.cookies;  // This will be an object of all cookies
+    // const refreshToken = cookies.refresh_token;  // Get refresh token from cookies
+    // console.log("CTRL COOKIES", cookies, refreshToken);
+    refreshToken = req.body.refreshToken;
+    console.log("CTRL refreshToken", req.body, refreshToken);
 
     if (!refreshToken) {
       return res.status(401).json({ message: 'No refresh token provided' });
     }
 
     try {
+      console.log("REFRESH SEND SUPA");
       // Use Supabase's API to refresh the access token using the refresh token
-      const { data, error } = await supabase.auth.api.refreshAccessToken(refreshToken);
+      const response = await supabase.auth.refreshSession({refreshToken});
+      // const { session, user } = data
+      console.log("REFRESH RESP", response);
 
       if (error) {
         return res.status(401).json({ message: 'Invalid refresh token' });
@@ -226,7 +231,6 @@ const userController  = {
 
       // If successful, add the session data to the request object for further use
       req.session = data;  // Store the session (access token and user info) in the request object
-
       // Move to the next handler in the request cycle
       next();
     } catch (error) {

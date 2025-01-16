@@ -69,8 +69,8 @@ function Login({
         localStorage.setItem('supabase_session', JSON.stringify(session));
       }
 
-      // Store other user-related data if needed
-      localStorage.setItem('user', JSON.stringify(user));
+      // // Store other user-related data if needed
+      // localStorage.setItem('user', JSON.stringify(user));
       const token = session.access_token;
       setToken(token);
       setIsLogged(true);
@@ -94,8 +94,8 @@ function Login({
       console.log("DM login response", user);
       setName(userInfo.data.name);
       setExplorerId(userInfo.data.id);
-      localStorage.setItem('name', userInfo.data.name);
-      localStorage.setItem('explorerId', userInfo.data.id);
+      // localStorage.setItem('name', userInfo.data.name);
+      // localStorage.setItem('explorerId', userInfo.data.id);
 
       // After successful login, redirect to the menu or dashboard
       navigate('/menu');
