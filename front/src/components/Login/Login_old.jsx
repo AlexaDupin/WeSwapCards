@@ -75,6 +75,8 @@ function Login({
       setName('');
       setExplorerId('');
       setIsLogged(true);
+      const refresh = response.data.session.refresh_token;
+      localStorage.setItem('refresh', JSON.stringify(refresh));
 
         // Retrieving explorer info from database
         console.log("LOGIN userUID", userUID);

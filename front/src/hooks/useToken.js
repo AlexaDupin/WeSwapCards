@@ -3,7 +3,7 @@ import { useState } from 'react';
 export default function useToken() {
   // Get token from localStorage
   const getToken = () => {
-    const tokenString = localStorage.getItem('token');
+    const tokenString = localStorage.getItem('sb-kqjjsmkzogtldqpzpdkf-auth-token.access_token' || 'sb-kqjjsmkzogtldqpzpdkf-auth-token2.access_token');
     const userToken = JSON.parse(tokenString);
     return userToken;
   };
@@ -15,7 +15,7 @@ export default function useToken() {
     if (!retrievedToken) {
       return;
     }
-    localStorage.setItem('token', JSON.stringify(retrievedToken));
+    // localStorage.setItem('token', JSON.stringify(retrievedToken));
     setToken(retrievedToken);
   };
 
