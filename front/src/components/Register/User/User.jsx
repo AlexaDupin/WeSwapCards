@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SignUp, useClerk, useUser } from '@clerk/clerk-react'; // Import Clerk's SignUp component
+import { useUser } from '@clerk/clerk-react'; // Import Clerk's SignUp component
 
 import {
 	Form,
@@ -24,7 +24,6 @@ function User({
     setUserUID,
     setName,
     setExplorerId,
-    
 }) {
     const { register, handleSubmit, formState: { errors } } = useForm({
       defaultValues: {
@@ -39,9 +38,9 @@ function User({
     const navigate = useNavigate();
 
     // Get the current user object from Clerk
-    const { user, isLoaded, isSignedIn } = useUser();
-    const userUID = user.id;  // This is the user ID
-    console.log('User ID:', userUID);  // You can now use the user ID in your app
+    const { user } = useUser();
+    const userUID = user.id;  
+    console.log('User ID:', userUID);
     setUserUID(userUID);
 
     const onSubmit = async (data) => {
@@ -50,7 +49,7 @@ function User({
               `${baseUrl}/register/user`,
               { userUID, ...data },
               // {headers: {
-              //   Authorization: `Bearer ${token}`, // Token sent in the Authorization header
+              //   Authorization: `Bearer ${token}`, 
               // },}
             )
             
@@ -139,7 +138,7 @@ function User({
 }
 
 User.propTypes = {
-    userUID: PropTypes.string,
+    setUserUID: PropTypes.func,
     setName: PropTypes.func,
     setExplorerId: PropTypes.func,
 };

@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useUser } from '@clerk/clerk-react';
+
 import {
   Container
 } from "react-bootstrap";
@@ -6,15 +8,19 @@ import { useNavigate } from 'react-router-dom';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 import CustomButton from '../CustomButton/CustomButton';
-import step1 from '../../images/1step.png';
-import step2 from '../../images/2step.png';
-import step3 from '../../images/3step.png';
-import step4 from '../../images/4step.png';
 
 import './homeStyles.scss';
 
 function Home() {
     const navigate = useNavigate();
+    const { isSignedIn } = useUser(); // Get user's sign-in status from Clerk
+
+    useEffect(() => {
+      if (!isSignedIn) {
+        localStorage.clear();
+      }
+    }, [isSignedIn]);
+
 
   return (
   <Container className="page-container">
@@ -27,6 +33,10 @@ function Home() {
       <CustomButton 
           text="Create an account"
           onClick={() => navigate('/register')}
+      /><br />
+      <CustomButton 
+          text="Login"
+          onClick={() => navigate('/login')}
       /><br /><br /><br />
     </section>
 

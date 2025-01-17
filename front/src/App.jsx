@@ -3,8 +3,9 @@ import { UserButton, useUser, SignedIn, SignedOut, SignInButton } from "@clerk/c
 // import { SignedIn, SignedOut, SignInButton } from '@clerk/react-router'
 
 import Header from './components/Header/Header';
-import Login from './components/Login/SignIn';
+import SignInPage from './components/Login/SignInPage';
 import SignUpPage from './components/Register/SignUpPage';
+import LoginRedirect from './components/Login/LoginRedirect/LoginRedirect';
 import User from './components/Register/User/User';
 import Home from './components/Home/Home';
 import Menu from './components/Menu/Menu';
@@ -115,14 +116,17 @@ if (!isLoaded) {
           <Route
               path="/login"
               element={(
-                <Login 
-                  setUserUID={setUserUID}
+                <SignInPage />
+              )}
+          />            
+          <Route
+              path="/login/redirect"
+              element={(
+                <LoginRedirect 
                   setName={setName}
                   setExplorerId={setExplorerId}
-                  setToken={setToken}
-                  setIsLogged={setIsLogged}
                 />
-              )}
+          )}
           />  
           <Route
               path="/register"
@@ -137,7 +141,6 @@ if (!isLoaded) {
                   setUserUID={setUserUID}
                   setName={setName}
                   setExplorerId={setExplorerId}
-                  token={token}
                 />
               )}
           />
@@ -147,10 +150,8 @@ if (!isLoaded) {
                 <Menu 
                   name={name}
                   explorerId={explorerId}
-                  setName={setName}
-                  setIsLogged={setIsLogged}
-                  />
-                }
+                />
+              }
           />
           <Route
               path="/report"

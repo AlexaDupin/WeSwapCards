@@ -18,7 +18,7 @@ module.exports = {
         console.log("ENTERING DATAMAPPER");
         const preparedQuery = {
             text: `
-            SELECT * FROM explorer 
+            SELECT id, name FROM explorer 
             WHERE userid = $1
             `,
             values: [userUID],
