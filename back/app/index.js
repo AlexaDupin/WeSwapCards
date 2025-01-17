@@ -1,11 +1,15 @@
 const path = require('path');
 const express = require('express');
+const { clerkMiddleware } = require('@clerk/express');
+
 const cookieParser = require('cookie-parser');
 
 const router = require('./routers');
 const cors = require('cors');
 
 const app = express();
+
+// app.use(clerkMiddleware())
 
 // app.set('views', path.join(__dirname, 'views'));
 // app.set('view engine', 'ejs');
@@ -18,8 +22,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());  // This allows access to cookies in `req.cookies`
 
 const corsOptions = {
-    // origin: 'http://localhost:3000',
-    origin: 'https://weswapcards.onrender.com',
+    origin: 'http://localhost:3000',
+    // origin: 'https://weswapcards.onrender.com',
     // origin: '*',
     optionsSuccessStatus: 200,
     credentials: true,

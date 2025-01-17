@@ -13,6 +13,7 @@ const router = express.Router();
 router.post('/register/user', controllerHandler(userController.createUser));
 // router.post('/login', userController.login);
 router.post('/login/user', controllerHandler(userController.getUserByUID));
+// router.post('/signup', controllerHandler(userController.createUser));
 
 // router.post('/session', userController.refreshSession, (req, res) => {
 //     if (!req.session) {

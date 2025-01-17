@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { SignUp, useClerk, useUser } from '@clerk/clerk-react'; // Import Clerk's SignUp component
+
 import {
 	Form,
 	Card,
@@ -19,10 +21,10 @@ import CustomButton from '../../CustomButton/CustomButton';
 import './userStyles.scss';
 
 function User({
-    userUID,
+    setUserUID,
     setName,
     setExplorerId,
-    token
+    
 }) {
     const { register, handleSubmit, formState: { errors } } = useForm({
       defaultValues: {
@@ -36,14 +38,20 @@ function User({
     const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
 
+    // Get the current user object from Clerk
+    const { user, isLoaded, isSignedIn } = useUser();
+    const userUID = user.id;  // This is the user ID
+    console.log('User ID:', userUID);  // You can now use the user ID in your app
+    setUserUID(userUID);
+
     const onSubmit = async (data) => {
         try {
             const response = await axios.post(
               `${baseUrl}/register/user`,
               { userUID, ...data },
-              {headers: {
-                authorization: token,
-              },}
+              // {headers: {
+              //   Authorization: `Bearer ${token}`, // Token sent in the Authorization header
+              // },}
             )
             
             console.log("DM user response", response.data);
@@ -58,7 +66,7 @@ function User({
           if (error.response) {
             // If the backend returned an error with a message (e.g., 400 or 500 status)
             console.log("ERROR", error);
-            console.log("Error from backend:", error.response.data.message);
+            console.log("Error from backend:", error.response.data.error);
             setExplorerId('');
             setName('');
             setMessage("This username is already taken. Please try another one.");

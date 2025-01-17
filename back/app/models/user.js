@@ -1,16 +1,17 @@
 const client = require('./client');
 
 module.exports = {
-    async createExplorer(userUID, name) {
-        console.log('DATAMAPPER');
+    async createExplorer(userUID, username) {
+        console.log('DATAMAPPER', userUID, username);
         const preparedQuery = await client.query(
             `
         INSERT INTO "explorer"
         (userId, name) VALUES
         ($1, $2) RETURNING *
         `,
-            [userUID, name],
+            [userUID, username],
         );
+        console.log(preparedQuery.rows);
         return preparedQuery.rows[0];
     },
     async getExplorerInfo(userUID) {
