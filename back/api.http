@@ -9,3 +9,13 @@ Content-Type: application/json
 
 ###
 
+### test register/user page
+POST http://localhost:3001/api/v1/register/user
+Content-Type: application/json
+
+{ 
+    "userUID" : "user_2rl9XsWJUAb5OvlufKAxUJat4zg2",
+    "username" : "apitest2"
+}
+
+###

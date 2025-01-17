@@ -23,25 +23,21 @@ const userController  = {
     console.log("CTRL userUID", userUID);
     console.log("CTRL name", username);
 
-    // if (!user) {
-    //   return res.status(401).json({ error: 'Unauthorized user' });
-    // }
+    if (!userUID || !username) {
+      return res.status(400).json({ error: 'UserUID and username are required' });
+    }
   
     try {
       // Insert user data into Supabase
-      console.log("CTRL entering request");
+      console.log("CTRL Attempting to insert user into Supabase...");
 
       const user = await datamapper.createExplorer(userUID, username);
-      console.log("CTRL user", user);
-
-      if (error) {
-        return res.status(500).json({ error: error.message });
-      }
+      console.log("CTRL User created successfully:", user);
   
       return res.status(200).json({ message: 'User successfully registered!', user });
     } catch (err) {
-      return res.status(500).json({ error: 'Error during sign-up: ' + err.message });
-    }
+      console.error("Error during user creation:", err); // Log the full error object
+      return res.status(500).json({ error: 'Error during sign-up: ' + err.message });    }
   }
 //         // const userUID = req.body.userUID;
 //         // const name = req.body.username;

@@ -31,17 +31,17 @@ function Menu({
         navigate('/');    
       }
 
-    // If user quitted after registering without entering username
-    const checkUsername = () => {
-        if (name === undefined || !name) {
-            setName("");
-            navigate('/register/user');
-        }    
-    }
+    // // If user quitted after registering without entering username
+    // const checkUsername = () => {
+    //     if (name === undefined || !name) {
+    //         setName("");
+    //         navigate('/register/user');
+    //     }    
+    // }
 
-    useEffect(() => {
-        checkUsername();
-    }, []);
+    // useEffect(() => {
+    //     checkUsername();
+    // }, []);
 
   return (
     <Container className="page-container">

@@ -57,16 +57,16 @@ function User({
             console.log("DM user response", response.data);
 
             // Setting name and explorerId at App level
-            setExplorerId(response.data.id);
-            setName(response.data.name);
+            setExplorerId(response.data.user.id);
+            setName(response.data.user.name);
             
-            navigate('/login');
+            navigate('/menu');
 
         } catch (error) {
           if (error.response) {
             // If the backend returned an error with a message (e.g., 400 or 500 status)
             console.log("ERROR", error);
-            console.log("Error from backend:", error.response.data.error);
+            console.log("Error from backend:", error, error.response.data.error);
             setExplorerId('');
             setName('');
             setMessage("This username is already taken. Please try another one.");
