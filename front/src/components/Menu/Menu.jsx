@@ -23,13 +23,13 @@ function Menu({
 
     console.log("MENU explorerId", explorerId);
     
-    const handleSignOut = async () => {
-        setName('');
-        setIsLogged(false);
-        const { error } = await supabase.auth.signOut()
-        localStorage.clear();
-        navigate('/');    
-      }
+    // const handleSignOut = async () => {
+    //     setName('');
+    //     setIsLogged(false);
+    //     const { error } = await supabase.auth.signOut()
+    //     localStorage.clear();
+    //     navigate('/');    
+    //   }
 
     // // If user quitted after registering without entering username
     // const checkUsername = () => {
@@ -72,18 +72,18 @@ function Menu({
                     onClick={() => navigate('/swap/requests')}
                     />
             </Col>
-            <Col sm={12}>
+            <Col sm={12} id="btn-legal">
                     <CustomButton
                     text="Legal"
                     onClick={() => navigate('/legal')}
                     />
             </Col>
-            <Col sm={12} id="btn-signout">
+            {/* <Col sm={12} id="btn-signout">
                     <CustomButton
                     text="Sign out"
                     onClick={handleSignOut}
                     />
-            </Col>
+            </Col> */}
         </Row> 
                
     </Container>

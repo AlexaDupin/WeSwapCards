@@ -11,7 +11,7 @@
 
     &-title {
         font-weight: bold;
-        font-style: italic;        
+        font-style: italic;
         color: #fff !important;
         font-size: 1.5rem !important;
         padding-left: 3rem !important;
@@ -23,12 +23,13 @@
         }
     }
 
-    &-nav {    
+    &-nav {
       display: flex;
       padding-right: 3rem !important;
 
       &-item {
-        margin-left: 1.5rem !important;
+        // margin-left: 1.5rem !important;
+        margin-right: 1.5rem !important;
         }
     }
 
@@ -37,7 +38,7 @@
         position: fixed;
         right: 20px;
         top: 35px;
-        font-size: 1.3rem;  
+        font-size: 1.3rem;
     }
 
 
@@ -60,7 +61,7 @@
 @media (min-width: 768px) { /* This targets larger screens */
     .header {
         padding: 2rem;
-    
+
     &-title {
         font-weight: bold;
         font-size: 1.3rem;
@@ -77,13 +78,18 @@
         display: block;
         text-align: center;
 
-        &-nav {
+        &-nav-item {
             display: none !important;
         }
 
         &-title {
             padding: 0 !important;
         }
+    }
+
+    #header-nav-login {
+        margin: 0 !important;
+        padding: 0 !important;
     }
     
 }
