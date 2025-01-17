@@ -33,10 +33,6 @@ function Home() {
       <CustomButton 
           text="Create an account"
           onClick={() => navigate('/register')}
-      /><br />
-      <CustomButton 
-          text="Login"
-          onClick={() => navigate('/login')}
       /><br /><br /><br />
     </section>
 

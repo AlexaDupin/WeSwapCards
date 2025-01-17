@@ -1,28 +1,37 @@
 import React from 'react';
-import { UserButton } from "@clerk/clerk-react";
+import { UserButton, useUser, SignInButton } from "@clerk/clerk-react";
 
 import {
-  NavLink, Link, 
+  NavLink, Link, useNavigate
 } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import {
   NavDropdown
 } from "react-bootstrap";
 
 import './headerStyles.scss';
 
-function Header({
-  setName, setIsLogged
-}) {
+function Header() {
+  const { isSignedIn } = useUser(); // Get user's sign-in status from Clerk
+  const navigate = useNavigate();
 
   return (
     <header className="header border-bottom fixed-top">
         
+        {isSignedIn ?
         <div>
           <NavLink to="/menu" style={{ textDecoration: 'none' }}>
             <h1 className="header-title m-0 header-title-link">WeSwapCards</h1>
           </NavLink>
         </div>
+        :
+        <div>
+          <NavLink to="/" style={{ textDecoration: 'none' }}>
+            <h1 className="header-title m-0 header-title-link">WeSwapCards</h1>
+          </NavLink>
+        </div>
+        }
+
+        {isSignedIn ? 
         <nav 
           className="header-nav"
           id="header-nav-login"
@@ -42,14 +51,19 @@ function Header({
             </NavDropdown>
             <UserButton />
         </nav>
+        : 
+        <nav 
+          className="header-nav"
+          id="header-nav-login"
+          onClick={() => navigate('/login')}
+        >
+          Sign in
+        </nav> 
+      }
 
     </header> 
 
   );
 }
-
-Header.propTypes = {
-    title: PropTypes.string,
-};
 
 export default React.memo(Header);

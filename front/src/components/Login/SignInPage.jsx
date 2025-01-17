@@ -11,7 +11,7 @@ const SignInPage = () => {
 
   return (
   <Container className="page-container">
-    <h1 className="page-title">Login</h1>
+    <h1 className="page-title">Sign in</h1>
     <div className="signup-container">
       <SignIn 
         forceRedirectUrl="/login/redirect"
