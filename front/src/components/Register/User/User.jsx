@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useUser } from '@clerk/clerk-react'; // Import Clerk's SignUp component
+import { useUser } from '@clerk/clerk-react';
 
 import {
 	Form,

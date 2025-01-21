@@ -13,7 +13,7 @@ import './homeStyles.scss';
 
 function Home() {
     const navigate = useNavigate();
-    const { isSignedIn } = useUser(); // Get user's sign-in status from Clerk
+    const { isSignedIn } = useUser();
 
     useEffect(() => {
       if (!isSignedIn) {
