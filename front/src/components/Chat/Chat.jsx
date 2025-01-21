@@ -80,14 +80,33 @@ function Chat({
           });
           console.log(response.data.allMessages);
           const allFetchedMessages = response.data.allMessages;
+
           const allMessagesFormattedDate = allFetchedMessages.map((message) => {
+            const messageDate = new Date(message.timestamp);
+            const today = new Date();
+            const daysDifference = (today - messageDate) / (1000 * 3600 * 24); // difference in days
+          
+            // Define a formatting function for messages older than 7 days
+            const formattedDate = daysDifference > 7
+              ? messageDate.toLocaleString(undefined, { 
+                  weekday: 'long', 
+                  day: '2-digit', 
+                  month: 'long',
+                  hour: '2-digit', 
+                  minute: '2-digit',
+                }) // For older than 7 days: Weekday, Day, Month, Hour, Minute
+              : messageDate.toLocaleString(undefined, { 
+                  weekday: 'long', 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                }); // For messages within 7 days: Weekday, Hour, Minute
+          
             return {
-            ...message, 
-              timestamp: new Date(message.timestamp).toLocaleString(undefined, { 
-                weekday: 'long', hour: '2-digit', minute: '2-digit' 
-              }),
+              ...message, 
+              timestamp: formattedDate,
             };
           });
+
           console.log("allMessagesFormattedDate", allMessagesFormattedDate);
           setMessages(allMessagesFormattedDate);
           setUnreadMessagestoRead();
