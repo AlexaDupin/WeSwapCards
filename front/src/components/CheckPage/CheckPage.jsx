@@ -63,7 +63,7 @@ function CheckPage({
 
         {cardsByPlace && cardsByPlace.length > 0 ? (
           <><p>Here is an overview of all the cards you logged and their duplicate status.</p><p>Tap on a card number to easily update its duplicate status.</p><br />
-          {cardsByPlace.map((place) => (
+          {cardsByPlace?.map((place) => (
             <Place
               key={place.place_name}
               place={place}

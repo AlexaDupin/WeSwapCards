@@ -166,7 +166,7 @@ function SwapCard({
 
         <Row className="g-3">
         {cards && cards.length > 0 ? (
-          cards.map((card) => (
+          cards?.map((card) => (
             <PlaceCard
               key={card.id}
               card={card}
@@ -190,7 +190,7 @@ function SwapCard({
             <p>Here are the users that can give you this card: <br /><br />
             <span className='swap-cardName'>{swapCardName}</span></p>
 
-            {swapOpportunities.map((opportunity) => (
+            {swapOpportunities?.map((opportunity) => (
           <Col xs={12} 
             key={opportunity.explorer_id}
             className="column"
@@ -211,7 +211,7 @@ function SwapCard({
                 <>
                 <div>In exchange, here are the cards you can offer them:</div>
                 <br />
-                {opportunity.opportunities.map((exchange) => (
+                {opportunity.opportunities?.map((exchange) => (
                 <button 
                   key={exchange.card.id}
                   className="swap-tag"

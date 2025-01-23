@@ -295,7 +295,7 @@ function Report({
 
         <Row className="g-3">
         {cards && cards.length > 0 ? (
-          cards.map((card) => (
+          cards?.map((card) => (
             <PlaceCard
               key={card.id}
               card={card}

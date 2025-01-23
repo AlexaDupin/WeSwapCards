@@ -83,7 +83,7 @@ function Place({
 
     <div className="explorerCard-numbers" id="">
     {placeCards && placeCards.length > 0 ? (
-          placeCards.map((card) => (
+          placeCards?.map((card) => (
             <CardPreview
               key={card.card.id}
               card={card.card}

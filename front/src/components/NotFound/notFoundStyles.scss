@@ -1,5 +1,9 @@
 @use 'src/styles/vars';
 
 .notfound {
-    padding-top: 7rem !important;
+    height: 200px;
+    width: 200px;
+    color: vars.$primary-color;
+    padding-top: 4rem;
+    padding-bottom: 1rem;
 }

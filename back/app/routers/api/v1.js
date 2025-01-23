@@ -85,7 +85,6 @@ router
     .route('/explorercards/:explorerId/cards/:cardId/duplicate')
     .patch(requireAuth(), controllerHandler(explorerCardsController.editDuplicateStatus));
 
-
 // router
 //     .route('/opportunities/:explorerId/card/:cardId')
 //     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findExplorerForswapCard));

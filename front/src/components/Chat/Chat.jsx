@@ -254,7 +254,7 @@ function Chat({
         <Container fluid className="chat">
             <div>
               <Row className="message-list">
-                {messages.map((message) => (
+                {messages?.map((message) => (
                   <Col key={message.id} className={`message-bubble ${message.sender_id === explorerId ? 'sent' : 'received'}`}>
                     <div className="message-content">{message.content}</div>
                     <div className="message-timestamp">{message.timestamp.toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit' })}</div>

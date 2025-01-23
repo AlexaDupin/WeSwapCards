@@ -126,7 +126,7 @@ function Opportunities({
       <><OpportunitiesModal /><p>{message}</p>
 
         {opportunities && opportunities.length > 0 ? (
-          opportunities.map((opportunity) => (
+          opportunities?.map((opportunity) => (
             <Opportunity
               key={opportunity.id}
               opportunity={opportunity}

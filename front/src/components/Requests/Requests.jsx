@@ -118,7 +118,7 @@ function Requests({
         </tr>
       </thead>
       <tbody>
-        {conversations.map((conversation) => (
+        {conversations?.map((conversation) => (
         <tr key={conversation.row_id} >
             <td 
               className={conversation.unread > 0 ? 'requests-table-unread' : 'requests-table'}
