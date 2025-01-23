@@ -1,13 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { ClerkProvider, RedirectToSignIn } from "@clerk/clerk-react";
+import { ClerkProvider } from "@clerk/clerk-react";
 
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 const PUBLISHABLE_KEY = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
-// const PUBLISHABLE_KEY = 'pk_test_Z3Jvd2luZy1kYW5lLTM4LmNsZXJrLmFjY291bnRzLmRldiQ'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

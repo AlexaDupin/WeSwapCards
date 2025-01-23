@@ -11,14 +11,15 @@ import {
 import {
   useNavigate
 } from 'react-router-dom';
-import axios from 'axios';
+import { axiosInstance } from '../../helpers/axiosInstance';
+import { useAuth } from '@clerk/clerk-react';
 
 import PropTypes from 'prop-types';
 
 import './chatStyles.scss';
 
 function Chat({
-    explorerId, token, swapExplorerId, swapExplorerName, swapCardName, setConversationId, conversationId
+    explorerId, swapExplorerId, swapExplorerName, swapCardName, setConversationId, conversationId
   }) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
@@ -33,16 +34,16 @@ function Chat({
     console.log("conversationId", conversationId);
     console.log("loading", loading);
 
-    const baseUrl = process.env.REACT_APP_BASE_URL;
+    const { getToken } = useAuth()
 
     useEffect(() => {
       const fetchConversation = async () => {
         try {
-          const response = await axios.get(
-            `${baseUrl}/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`
+          const response = await axiosInstance.get(
+            `/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`
           , {
             headers: {
-              authorization: token,
+              Authorization: `Bearer ${await getToken()}`,
             },
           });
 
@@ -71,11 +72,11 @@ function Chat({
         try {
           console.log("FETCHING MESSAGES conversationId", conversationId);
   
-          const response = await axios.get(
-            `${baseUrl}/chat/${conversationId}`
+          const response = await axiosInstance.get(
+            `/chat/${conversationId}`
           , {
             headers: {
-              authorization: token,
+              Authorization: `Bearer ${await getToken()}`,
             },
           });
           console.log(response.data.allMessages);
@@ -140,12 +141,12 @@ function Chat({
         }
 
         try {
-          const response = await axios.post(
-            `${baseUrl}/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`,
+          const response = await axiosInstance.post(
+            `/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`,
             conversation
           , {
             headers: {
-              authorization: token,
+              Authorization: `Bearer ${await getToken()}`,
             },
           });
           console.log("RESPONSE", response);
@@ -170,12 +171,12 @@ function Chat({
 
     const setUnreadMessagestoRead = async () => {
         try {
-          const response = await axios.put(
-            `${baseUrl}/conversation/${conversationId}/${explorerId}`,
+          const response = await axiosInstance.put(
+            `/conversation/${conversationId}/${explorerId}`,
             {},
           {
             headers: {
-              authorization: token,
+              Authorization: `Bearer ${await getToken()}`,
             },
           });
           console.log(response.data);
@@ -196,12 +197,12 @@ function Chat({
       };
 
       try {
-        const response = await axios.post(
-          `${baseUrl}/chat`,
+        const response = await axiosInstance.post(
+          `/chat`,
           input
         , {
           headers: {
-            authorization: token,
+            Authorization: `Bearer ${await getToken()}`,
           },
         });
         console.log("RESPONSE", response);
@@ -221,12 +222,12 @@ function Chat({
     const handleConversationStatus = async (conversationId, newStatus) => {
         console.log("CHANGING STATUS", newStatus);
         try {
-          await axios.put(
-            `${baseUrl}/conversation/${conversationId}`,
+          await axiosInstance.put(
+            `/conversation/${conversationId}`,
             { status: newStatus }, 
             {
               headers: {
-                authorization: token,
+                Authorization: `Bearer ${await getToken()}`,
               },
             });
 

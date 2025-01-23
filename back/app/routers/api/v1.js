@@ -1,4 +1,6 @@
 const express = require('express');
+const { requireAuth } = require('@clerk/express');
+
 const userController = require('../../controllers/api/user');
 const reportController = require('../../controllers/api/report');
 const opportunitiesController = require('../../controllers/api/opportunities');
@@ -17,64 +19,64 @@ router.post('/login/user', controllerHandler(userController.getUserByUID));
 
 router
     .route('/places')
-    .get(controllerHandler(reportController.getAllPlaces))
+    .get(requireAuth(), controllerHandler(reportController.getAllPlaces))
 
 router
     .route('/cards/:placeId')
-    .get(controllerHandler(reportController.getCardsFromPlace));
+    .get(requireAuth(), controllerHandler(reportController.getCardsFromPlace));
 
 router
     .route('/cards/:placeId/:explorerId')
-    .get(controllerHandler(reportController.getExplorerCardsFromOnePlace));
+    .get(requireAuth(), controllerHandler(reportController.getExplorerCardsFromOnePlace));
 
 router
     .route('/cards/:placeId/:explorerId/duplicates')
-    .get(controllerHandler(reportController.getDuplicateCards));
-
-router
-    .route('/card/:cardId')
-    .get(controllerHandler(opportunitiesController.getCardName));
+    .get(requireAuth(), controllerHandler(reportController.getDuplicateCards));
 
 router
     .route('/report/:explorerId')
-    .post(controllerHandler(reportController.addCardsToExplorer));
+    .post(requireAuth(), controllerHandler(reportController.addCardsToExplorer));
 
 router
     .route('/opportunities/:explorerId')
-    .get(controllerHandler(opportunitiesController.getOpportunities));
+    .get(requireAuth(), controllerHandler(opportunitiesController.getOpportunities));
 
 router
     .route('/opportunities/:explorerId/:placeId')
-    .get(controllerHandler(opportunitiesController.getCountForOnePlaceForOneExplorer));
+    .get(requireAuth(), controllerHandler(opportunitiesController.getCountForOnePlaceForOneExplorer));
 
 router
     .route('/opportunities/:explorerId/card/:cardId')
-    .get(controllerHandler(opportunitiesController.findSwapOpportunities));
+    .get(requireAuth(), controllerHandler(opportunitiesController.findSwapOpportunities));
+
+router
+    .route('/card/:cardId')
+    .get(requireAuth(), controllerHandler(opportunitiesController.getCardName));
 
 router
     .route('/conversation/:explorerId/:swapExplorerId/:swapCardName')
-    .get(controllerHandler(chatController.getConversation))
-    .post(controllerHandler(chatController.createConversation))
+    .get(requireAuth(), controllerHandler(chatController.getConversation))
+    .post(requireAuth(), controllerHandler(chatController.createConversation))
 
 router
     .route('/conversation/:conversationId/:explorerId')
-    .put(controllerHandler(chatController.setMessagesToRead))
+    .put(requireAuth(), controllerHandler(chatController.setMessagesToRead))
 
 router
     .route('/conversation/:explorerId')
-    .get(controllerHandler(chatController.getAllConversations))
+    .get(requireAuth(), controllerHandler(chatController.getAllConversations))
 
 router
     .route('/conversation/:conversationId')
-    .put(controllerHandler(chatController.editConversationStatus))
+    .put(requireAuth(), controllerHandler(chatController.editConversationStatus))
 
 router
     .route('/chat')
-    .post(controllerHandler(chatController.insertNewMessage));
+    .post(requireAuth(), controllerHandler(chatController.insertNewMessage));
 
 router
     .route('/chat/:conversationId')
-    .get(controllerHandler(chatController.getAllMessagesInConversation))
+    .get(requireAuth(), controllerHandler(chatController.getAllMessagesInConversation))
 
 
 // router
@@ -87,10 +89,10 @@ router
 
 router
     .route('/explorercards/:explorerId')
-    .get(controllerHandler(explorerCardsController.getExplorerCardsByPlace));
+    .get(requireAuth(), controllerHandler(explorerCardsController.getExplorerCardsByPlace));
 
 router
     .route('/explorercards/:explorerId/cards/:cardId/duplicate')
-    .patch(controllerHandler(explorerCardsController.editDuplicateStatus));
+    .patch(requireAuth(), controllerHandler(explorerCardsController.editDuplicateStatus));
 
 module.exports = router;

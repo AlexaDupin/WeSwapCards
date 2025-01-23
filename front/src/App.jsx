@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { TokenProvider } from "./helpers/TokenContext";
 import { Routes, Route } from 'react-router-dom';
 import { Spinner } from "react-bootstrap";
 import { useUser } from "@clerk/clerk-react";
@@ -57,7 +58,6 @@ function App() {
   console.log("APP swapExplorerId", swapExplorerId);
   console.log("APP conversationId", conversationId);
 
-
 if (!isLoaded) {
   return <div className="loading">
     <Header />
@@ -65,10 +65,10 @@ if (!isLoaded) {
           animation="border"
           className="spinner" />
     </div>;
-
 }
 
   return (
+    // <TokenProvider>
     <div className="App">
       <Header />
       <Routes>
@@ -214,6 +214,7 @@ if (!isLoaded) {
       </Routes>
       <Footer />
     </div>
+    // </TokenProvider>
   );
 }
 

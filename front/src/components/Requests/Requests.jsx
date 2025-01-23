@@ -9,7 +9,8 @@ import {
 import {Envelope} from "react-bootstrap-icons";
 import { useNavigate } from 'react-router-dom';
 
-import axios from 'axios';
+import { axiosInstance } from '../../helpers/axiosInstance';
+import { useAuth } from '@clerk/clerk-react';
 
 import PropTypes from 'prop-types';
 
@@ -18,23 +19,23 @@ import './requestsStyles.scss';
 // import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 function Requests({
-  explorerId, name, token, setSwapExplorerId, setSwapCardName, setSwapExplorerName, setConversationId
+  explorerId, name, setSwapExplorerId, setSwapCardName, setSwapExplorerName, setConversationId
 }) {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   console.log('conversations', conversations);
 
-  const baseUrl = process.env.REACT_APP_BASE_URL;
+  const { getToken } = useAuth()
   const navigate = useNavigate();
 
   const fetchAllConversations = async () => {
     try {
-      const response = await axios.get(
-          `${baseUrl}/conversation/${explorerId}`
+      const response = await axiosInstance.get(
+          `/conversation/${explorerId}`
           , {
             headers: {
-              authorization: token,
+              Authorization: `Bearer ${await getToken()}`,
             },
           });
       setConversations(response.data.allConversations);
@@ -56,12 +57,12 @@ function Requests({
   const handleStatusChange = async (conversationId, newStatus) => {
     console.log("CHANGING STATUS", newStatus);
     try {
-      await axios.put(
-        `${baseUrl}/conversation/${conversationId}`,
+      await axiosInstance.put(
+        `/conversation/${conversationId}`,
         { status: newStatus }, 
         {
           headers: {
-            authorization: token,
+            Authorization: `Bearer ${await getToken()}`,
           },
         });
       setConversations(prevConversations =>

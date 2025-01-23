@@ -4,7 +4,8 @@ import {
     Spinner
 } from "react-bootstrap";
 
-import axios from 'axios';
+import { axiosInstance } from '../../helpers/axiosInstance';
+import { useAuth } from '@clerk/clerk-react'
 
 import PropTypes from 'prop-types';
 
@@ -13,23 +14,20 @@ import Place from '../CheckPage/Place/Place';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 function CheckPage({
-    explorerId, name, token
+    explorerId, name
   }) {
     const [cardsByPlace, setCardsByPlace] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    const baseUrl = process.env.REACT_APP_BASE_URL;
+    const { getToken } = useAuth()
 
     const fetchExplorerCardsByPlace = async () => {
         try {
-          const response = await axios.get(
-            `${baseUrl}/explorercards/${explorerId}`
-            , {
+          const response = await axiosInstance.get(
+            `/explorercards/${explorerId}`, {
               headers: {
-                authorization: token,
+                Authorization: `Bearer ${await getToken()}`,
               },
-              withCredentials: true,  // Ensure credentials (cookies) are sent
-            });
+            })
           const fetchedCardsByPlace = response.data;
           console.log("fetchedCardsByPlace", fetchedCardsByPlace);
           setCardsByPlace(fetchedCardsByPlace);
@@ -70,7 +68,6 @@ function CheckPage({
               key={place.place_name}
               place={place}
               explorerId={explorerId}
-              token={token}
             />
             ))
           }</>)  

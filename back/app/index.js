@@ -2,24 +2,19 @@ const path = require('path');
 const express = require('express');
 const { clerkMiddleware } = require('@clerk/express');
 
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
 
 const router = require('./routers');
 const cors = require('cors');
 
 const app = express();
 
-// app.use(clerkMiddleware())
-
-// app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'ejs');
-// app.use('/assets', express.static(path.join(__dirname,'assets')));
-
-// On active le middleware pour parser le payload JSON
+// Payload JSON
 app.use(express.json());
-// On active le middleware pour parser le payload urlencoded
+// Payload urlencoded
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());  // This allows access to cookies in `req.cookies`
+// app.use(cookieParser());  // This allows access to cookies in `req.cookies`
+app.use(clerkMiddleware());
 
 const corsOptions = {
     origin: 'http://localhost:3000',

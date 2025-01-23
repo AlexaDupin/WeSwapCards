@@ -11,7 +11,8 @@ import { useNavigate } from 'react-router-dom';
 
 import PlaceCard from './PlaceCard/PlaceCard';
 
-import axios from 'axios';
+import { axiosInstance } from '../../../helpers/axiosInstance';
+import { useAuth } from '@clerk/clerk-react';
 
 import PropTypes from 'prop-types';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
@@ -19,7 +20,7 @@ import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 import './swapCardStyles.scss';
 
 function SwapCard({
-    explorerId, name, token, setSwapExplorerId, setSwapCardName, swapCardName, setSwapExplorerName, setConversationId
+    explorerId, name, setSwapExplorerId, setSwapCardName, swapCardName, setSwapExplorerName, setConversationId
   }) {
     const [places, setPlaces] = useState([]);
     const [cards, setCards] = useState([]);
@@ -27,16 +28,19 @@ function SwapCard({
     const [hiddenSwapOpportunities, setHiddenSwapOpportunities] = useState(true);
     const [swapOpportunities, setSwapOpportunities] = useState([]);
     const [selectedCardId, setSelectedCardId] = useState();
+    const { getToken } = useAuth()
+    const navigate = useNavigate();
 
     console.log('selectedCardId', selectedCardId);
-
-    const baseUrl = process.env.REACT_APP_BASE_URL;
-    const navigate = useNavigate();
 
     // Fetch all places to show in dropdown
     const fetchAllPlaces = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/places`);
+        const response = await axiosInstance.get(`/places`, {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        });
         setPlaces(response.data.places);
       } catch (error) {
         console.log(error);
@@ -47,7 +51,11 @@ function SwapCard({
     // + cards and duplicates already logged for this explorer in the db so they are highlighted
     const handleSelectPlace = async (placeId) => {
       try {
-        const allCards = await axios.get(`${baseUrl}/cards/${placeId}`);
+        const allCards = await axiosInstance.get(`/cards/${placeId}`, {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        });
         // console.log("allCards", allCards);
 
         setCards(allCards.data.cards);
@@ -63,11 +71,10 @@ function SwapCard({
 
     const fetchSearchedCardName = async (cardId) => {
       try {
-        const response = await axios.get(
-        `${baseUrl}/card/${cardId}`
-        , {
+        const response = await axiosInstance.get(
+        `/card/${cardId}`, {
           headers: {
-            authorization: token,
+            Authorization: `Bearer ${await getToken()}`,
           },
         });
 
@@ -88,11 +95,10 @@ function SwapCard({
       fetchSearchedCardName(cardId);
 
       try {
-          const response = await axios.get(
-          `${baseUrl}/opportunities/${explorerId}/card/${cardId}`
-          , {
+          const response = await axiosInstance.get(
+          `/opportunities/${explorerId}/card/${cardId}`, {
             headers: {
-              authorization: token,
+              Authorization: `Bearer ${await getToken()}`,
             },
           });
 
@@ -141,7 +147,7 @@ function SwapCard({
           }}
         >
           <option value="">Select</option>
-          {places.map((place) => (
+          {places?.map((place) => (
             <option 
               key={place.id}
               value={place.id}>

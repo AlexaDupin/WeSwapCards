@@ -2,8 +2,11 @@ const datamapper = require("../../models/datamapper");
 
 const reportController = {
     async getAllPlaces(req, res) {
+            console.log("ENTERING PLACES", req.headers);
             try {
                 const places = await datamapper.getAllPlaces();
+                console.log("RESPONSE PLACES", places);
+
                 res.json({places});
             } catch (error) {
                 res.status(500).send(error);
