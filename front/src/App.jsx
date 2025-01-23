@@ -24,6 +24,7 @@ import Footer from './components/Footer/Footer';
 
 import PrivacyPolicy from './components/Legal/PrivacyPolicy/PrivacyPolicy';
 import Terms from './components/Legal/Terms/Terms';
+import CookiePolicy from './components/Legal/CookiePolicy/CookiePolicy';
 import Contact from './components/Legal/Contact/Contact';
 import Legal from './components/Legal/Legal';
 
@@ -202,6 +203,10 @@ if (!isLoaded) {
           <Route
               path="/terms"
               element={<Terms />}
+          />
+          <Route
+              path="/cookies"
+              element={<CookiePolicy />}
           />
           <Route
               path="/contact"
