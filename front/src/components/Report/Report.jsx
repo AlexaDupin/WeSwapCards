@@ -235,14 +235,14 @@ function Report({
     [selectedCards],
   );
 
-    // Render loading state or content
-    if (loadingPlaces) {
-      return <Container className="page-container">
-        <Spinner
-          animation="border"
-          className="spinner" /> 
-      </Container>
-    }
+  // Render loading state or content
+  if (loadingPlaces) {
+    return <Container className="page-container">
+      <Spinner
+        animation="border"
+        className="spinner" /> 
+    </Container>
+  }
 
   return (
     <Container className="page-container">
@@ -253,9 +253,6 @@ function Report({
       <Form.Group className="mb-5" controlId="formGroupPlace">
         <Form.Label className="report-label">Select a chapter, {name}</Form.Label>
 
-        {loadingPlaces ? ( // Show loading state if places are still being fetched
-            <div>Loading places...</div> // Display a loading message or spinner here
-          ) : (
         <Form.Select
           aria-label="Select a place"
           onChange={(e) => {
@@ -274,7 +271,6 @@ function Report({
             </option>
           ))}
         </Form.Select>
-        )}
       </Form.Group>
 
       <Alert

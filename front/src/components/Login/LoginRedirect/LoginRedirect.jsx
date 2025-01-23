@@ -6,7 +6,8 @@ import {
   Spinner
   } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { axiosInstance } from '../../../helpers/axiosInstance';
+import { useAuth } from '@clerk/clerk-react';
 
 import PropTypes from 'prop-types';
 
@@ -18,15 +19,19 @@ const LoginRedirect = ({
 }) => {
   const { user } = useUser();
   const navigate = useNavigate();
-  const baseUrl = process.env.REACT_APP_BASE_URL;
+  const { getToken } = useAuth()
 
   useEffect(() => {
    const fetchUserData = async (userUID) => {
     try {
-      const userInfo = await axios.post(
-        `${baseUrl}/login/user`,
-        { userUID }
-      );
+      const userInfo = await axiosInstance.post(
+        `/login/user`,
+        { userUID },
+         {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        });
       console.log("User data received:", userInfo.data);
       setName(userInfo.data.name);
       setExplorerId(userInfo.data.id);

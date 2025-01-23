@@ -13,7 +13,8 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { PersonFill } from "react-bootstrap-icons";
 
-import axios from 'axios';
+import { axiosInstance } from '../../../helpers/axiosInstance';
+import { useAuth } from '@clerk/clerk-react';
 import PropTypes from 'prop-types';
 
 import CustomButton from '../../CustomButton/CustomButton';
@@ -34,7 +35,7 @@ function User({
     const [hiddenAlert, setHiddenAlert] = useState(true);
     const [message, setMessage] = useState('You already have an account. Please log in.');
 
-    const baseUrl = process.env.REACT_APP_BASE_URL;
+    const { getToken } = useAuth()
     const navigate = useNavigate();
 
     // Get the current user object from Clerk
@@ -45,13 +46,14 @@ function User({
 
     const onSubmit = async (data) => {
         try {
-            const response = await axios.post(
-              `${baseUrl}/register/user`,
+            const response = await axiosInstance.post(
+              `/register/user`,
               { userUID, ...data },
-              // {headers: {
-              //   Authorization: `Bearer ${token}`, 
-              // },}
-            )
+              {
+                headers: {
+                  Authorization: `Bearer ${await getToken()}`,
+                },
+              });
             
             console.log("DM user response", response.data);
 

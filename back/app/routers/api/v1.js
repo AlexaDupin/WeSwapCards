@@ -11,11 +11,10 @@ const controllerHandler = require('../../helpers/controllerHandler');
 
 const router = express.Router();
 
-// router.post('/register', controllerHandler(userController.signUp));
-router.post('/register/user', controllerHandler(userController.createUser));
-// router.post('/login', userController.login);
-router.post('/login/user', controllerHandler(userController.getUserByUID));
-// router.post('/signup', controllerHandler(userController.createUser));
+router.post('/register/user',
+ requireAuth(), controllerHandler(userController.createUser));
+router.post('/login/user',
+ requireAuth(), controllerHandler(userController.getUserByUID));
 
 router
     .route('/places')
@@ -78,6 +77,14 @@ router
     .route('/chat/:conversationId')
     .get(requireAuth(), controllerHandler(chatController.getAllMessagesInConversation))
 
+router
+    .route('/explorercards/:explorerId')
+    .get(requireAuth(), controllerHandler(explorerCardsController.getExplorerCardsByPlace));
+
+router
+    .route('/explorercards/:explorerId/cards/:cardId/duplicate')
+    .patch(requireAuth(), controllerHandler(explorerCardsController.editDuplicateStatus));
+
 
 // router
 //     .route('/opportunities/:explorerId/card/:cardId')
@@ -86,13 +93,5 @@ router
 // router
 //     .route('/opportunities/:explorerId/swapexplorer/:swapExplorerId')
 //     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findSwapOpportunities));
-
-router
-    .route('/explorercards/:explorerId')
-    .get(requireAuth(), controllerHandler(explorerCardsController.getExplorerCardsByPlace));
-
-router
-    .route('/explorercards/:explorerId/cards/:cardId/duplicate')
-    .patch(requireAuth(), controllerHandler(explorerCardsController.editDuplicateStatus));
 
 module.exports = router;
