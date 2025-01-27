@@ -60,8 +60,10 @@ function Chat({
           }
 
         } catch (error) {
-          console.log("NOT AUTHORIZED", error);
-          // navigate('/swap/requests');
+          setLoading(false);
+          setHiddenAlert(false);
+          setAlertMessage("There was an error while fetching the conversation");
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       
       };
@@ -168,6 +170,9 @@ function Chat({
           }
   
         } catch (error) {
+          setHiddenAlert(false);
+          setAlertMessage("There was an error while sending the message");
+          window.scrollTo({ top: 0, behavior: 'smooth' });
           console.log(error.data);
         }
   

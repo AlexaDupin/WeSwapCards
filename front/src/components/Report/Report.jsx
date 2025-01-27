@@ -98,6 +98,9 @@ function Report({
 
 
     } catch (error) {
+      setHiddenAlert(false);
+      setVariant('danger');
+      setMessage('There was an error while loading the cards');
       console.log(error);
     }
   };

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
     Container,
-    Spinner
+    Spinner,
+    Alert
 } from "react-bootstrap";
 
 import { axiosInstance } from '../../helpers/axiosInstance';
@@ -19,6 +20,8 @@ function CheckPage({
     const [cardsByPlace, setCardsByPlace] = useState([]);
     const [loading, setLoading] = useState(true);
     const { getToken } = useAuth()
+    const [hiddenAlert, setHiddenAlert] = useState(true);
+    const [alertMessage, setAlertMessage] = useState('');
 
     const fetchExplorerCardsByPlace = async () => {
         try {
@@ -34,6 +37,9 @@ function CheckPage({
           setLoading(false);
 
         } catch (error) {
+          setLoading(false);
+          setHiddenAlert(false);
+          setAlertMessage("There was an error while loading your cards");
           console.log(error);
         }
     };
@@ -60,6 +66,12 @@ function CheckPage({
   return (
     <Container className="page-container">
     <h1 className="swap-title">All my cards</h1>
+
+    <Alert
+        variant='danger'
+        className={hiddenAlert ? 'hidden-alert' : ''}>
+        {alertMessage}
+    </Alert>
 
         {cardsByPlace && cardsByPlace.length > 0 ? (
           <><p>Here is an overview of all the cards you logged and their duplicate status.</p><p>Tap on a card number to easily update its duplicate status.</p><br />
