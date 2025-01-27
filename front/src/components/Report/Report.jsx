@@ -51,7 +51,7 @@ function Report({
           Authorization: `Bearer ${await getToken()}`,
         },
       });
-      console.log("ENTERING PLACES RESPONSE", response);
+      // console.log("ENTERING PLACES RESPONSE", response);
 
       setPlaces(response.data.places);
       setLoadingPlaces(false); // Set loading to false after data is fetched
@@ -114,7 +114,7 @@ function Report({
 
   // Add card to selected cards if not in it
   const handleCardSelection = (card) => {
-    console.log("handleCardSelection", card);
+    // console.log("handleCardSelection", card);
 
     setSelectedCards((prevSelectedCards) => {
       // Check if the card is already selected (by matching the id)
@@ -122,7 +122,7 @@ function Report({
 
       if (isCardSelected) {
         // If already selected, remove the card from the array (deselect)
-        console.log("TO REMOVE IN DATABASE")
+        // console.log("TO REMOVE IN DATABASE")
         setToBeDeleted((prevToBeDeleted) => {
           return [...prevToBeDeleted, card]
         });
@@ -162,9 +162,9 @@ function Report({
     setDuplicates(cards)
   };
 
-  console.log("selectedCards", selectedCards);
-  console.log("duplicates", duplicates);
-  console.log("toBeDeleted", toBeDeleted);
+  // console.log("selectedCards", selectedCards);
+  // console.log("duplicates", duplicates);
+  // console.log("toBeDeleted", toBeDeleted);
 
   // On submit, log selected cards and duplicate selection into db
   const handleSubmit = async (event) => {
@@ -181,7 +181,7 @@ function Report({
         duplicatesIds,
         toBeDeletedIds
       };
-      console.log('SUBMIT payload', payload);
+      // console.log('SUBMIT payload', payload);
 
       try {
         // const response = await axiosInstance.post(
@@ -194,7 +194,6 @@ function Report({
                 Authorization: `Bearer ${await getToken()}`,
               },
             });
-        console.log("RESPONSE", response);
 
         if (response.status === 201) {
           setVariant("success");

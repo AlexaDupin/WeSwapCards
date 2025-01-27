@@ -16,7 +16,6 @@ module.exports = {
             values: [placeId],
         };
         const result = await client.query(preparedQuery);
-        console.log(result.rows);
         return result.rows;
     },
     async getCardsFromOneExplorerInOnePlace(placeId, explorerId) {
@@ -42,7 +41,7 @@ module.exports = {
             values: [explorerId, placeId]
         };
         const result = await client.query(preparedQuery);
-        console.log(result.rows);
+        // console.log(result.rows);
 
         return result.rows;
     },
@@ -275,23 +274,37 @@ module.exports = {
         }
         return null;
     },
-    async createConversation(cardName, explorerId, swapExplorerId) {
+    async getConversationParticipants(id) {
+        "ENTERING DATAMAPPER"
+        const preparedQuery = {
+            text: `
+            SELECT creator_id, recipient_id FROM conversation
+            WHERE id = $1 
+            `,
+            values: [id]
+        };
+        const result = await client.query(preparedQuery);
+        if (result.rowCount > 0) {
+            return result.rows[0];
+        }
+        return null;
+    },
+    async createConversation(cardName, explorerId, swapExplorerId, timestamp) {
         console.log("CREATE CONV DTMP")
 
         const preparedQuery = await client.query(
             `
             INSERT INTO "conversation"
-                (card_name, creator_id, recipient_id) 
-            VALUES ($1, $2, $3) 
+                (card_name, creator_id, recipient_id, timestamp) 
+            VALUES ($1, $2, $3, $4) 
             RETURNING id
             `,
-            [cardName, explorerId, swapExplorerId],
+            [cardName, explorerId, swapExplorerId, timestamp],
             );
             return preparedQuery.rows[0];
     },
     async insertNewMessage(data) {
-        console.log("INSERT MESSAGE DTMP")
-
+        // console.log("INSERT MESSAGE DTMP")
         const preparedQuery = await client.query(
             `
         INSERT INTO "message"
@@ -303,7 +316,6 @@ module.exports = {
         return preparedQuery.rows[0];
     },
     async getAllMessagesInAChat(conversationId) {
-        console.log("GET ALL MESSAGES IN CHAT DTMP")
         const preparedQuery = {
             text: `SELECT * FROM "message"
                 WHERE conversation_id = $1
@@ -370,7 +382,7 @@ module.exports = {
             values: [explorerId],
         };
         const result = await client.query(preparedQuery);
-        console.log(result.rows);
+        // console.log(result.rows);
         return result.rows;
     },
     async editConversationStatus(conversationId, status) {
@@ -385,7 +397,8 @@ module.exports = {
             values: [conversationId, status]
         };
         const result = await client.query(preparedQuery);
-        console.log(result);
+        // console.log(result);
+        return result.command;
     },
 //     async findExplorersForCardIdOpportunity(cardId, explorerId) {
 //         console.log("ENTERING DATAMAPPER");
@@ -514,41 +527,30 @@ module.exports = {
     //     return result.rows;
     // },
 
-
-
-
-
-
-
-
-
-
-
-
-    async getExplorerInfo(userUID) {
-        console.log("ENTERING DATAMAPPER");
-        const preparedQuery = {
-            text: `
-            SELECT * FROM explorer 
-            WHERE userid = $1
-            `,
-            values: [userUID],
-        };
-        const result = await client.query(preparedQuery);
-        console.log("result.rows DM", result.rows);
-        return result.rows;
-    },
-    async getExplorerInfoByExplorerId(explorerId) {
-        console.log("ENTERING DATAMAPPER");
-        const preparedQuery = {
-            text: `
-            SELECT * FROM explorer 
-            WHERE id = $1
-            `,
-            values: [explorerId],
-        };
-        const result = await client.query(preparedQuery);
-        console.log("result.rows DM", result.rows[0]);
-        return result.rows[0];
-    }
+    // async getExplorerInfo(userUID) {
+    //     console.log("ENTERING DATAMAPPER");
+    //     const preparedQuery = {
+    //         text: `
+    //         SELECT * FROM explorer 
+    //         WHERE userid = $1
+    //         `,
+    //         values: [userUID],
+    //     };
+    //     const result = await client.query(preparedQuery);
+    //     console.log("result.rows DM", result.rows);
+    //     return result.rows;
+    // },
+    // async getExplorerInfoByExplorerId(explorerId) {
+    //     console.log("ENTERING DATAMAPPER");
+    //     const preparedQuery = {
+    //         text: `
+    //         SELECT * FROM explorer 
+    //         WHERE id = $1
+    //         `,
+    //         values: [explorerId],
+    //     };
+    //     const result = await client.query(preparedQuery);
+    //     console.log("result.rows DM", result.rows[0]);
+    //     return result.rows[0];
+    // }
 };

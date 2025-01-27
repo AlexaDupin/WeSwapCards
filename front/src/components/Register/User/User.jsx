@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
 
 import {
@@ -7,7 +7,7 @@ import {
 	InputGroup,
 	FormControl,
   Container,
-  Alert
+  Alert,
 } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -21,34 +21,42 @@ import CustomButton from '../../CustomButton/CustomButton';
 
 import './userStyles.scss';
 
-function User({
+const User = ({
     setUserUID,
     setName,
     setExplorerId,
-}) {
+  }) => {
     const { register, handleSubmit, formState: { errors } } = useForm({
       defaultValues: {
         username: "",
       },
     }); 
 
+    const sanitizeUsername = (username) => {
+      return username.replace(/[^a-zA-Z0-9_]/g, ''); // Keep only alphanumeric and underscores
+    };
+
     const [hiddenAlert, setHiddenAlert] = useState(true);
     const [message, setMessage] = useState('You already have an account. Please log in.');
-
-    const { getToken } = useAuth()
     const navigate = useNavigate();
+    const { getToken } = useAuth()
 
     // Get the current user object from Clerk
     const { user } = useUser();
+    console.log("REGISTER USER", user);
     const userUID = user.id;  
+
     console.log('User ID:', userUID);
+
     setUserUID(userUID);
 
     const onSubmit = async (data) => {
+      const sanitizedUsername = sanitizeUsername(data.username);
+
         try {
             const response = await axiosInstance.post(
               `/register/user`,
-              { userUID, ...data },
+              { userUID, sanitizedUsername },
               {
                 headers: {
                   Authorization: `Bearer ${await getToken()}`,
@@ -113,12 +121,16 @@ function User({
                           {...register('username', {
                             required: 'Please enter a username.',
                             pattern: {
-                              value: /^[a-zA-Z0-9]{2,}$/,
+                              value: /^[a-zA-Z0-9_]{2,30}$/,
                               message: 'The format is invalid. Your username must contain at least 2 letters or numbers.',
                             },
                             minLength: {
                               value: 2,
                               message: 'Your username must contain at least 2 characters.',
+                            },
+                            maxLength: {
+                              value: 30,
+                              message: 'Your username must contain 30 characters max.',
                             },
                             },
                           )}
@@ -134,7 +146,6 @@ function User({
               </Card.Body>
           </Card>
     </Form>
-
     </Container>
 )
 }

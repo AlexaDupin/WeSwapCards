@@ -19,7 +19,7 @@ import './requestsStyles.scss';
 // import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 function Requests({
-  explorerId, name, setSwapExplorerId, setSwapCardName, setSwapExplorerName, setConversationId
+  explorerId, setSwapExplorerId, setSwapCardName, setSwapExplorerName, setConversationId
 }) {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);

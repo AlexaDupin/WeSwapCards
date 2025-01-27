@@ -2,11 +2,9 @@ const datamapper = require("../../models/datamapper");
 
 const reportController = {
     async getAllPlaces(req, res) {
-            console.log("ENTERING PLACES", req.headers);
+            console.log("ENTERING PLACES");
             try {
                 const places = await datamapper.getAllPlaces();
-                console.log("RESPONSE PLACES", places);
-
                 res.json({places});
             } catch (error) {
                 res.status(500).send(error);
@@ -50,9 +48,9 @@ const reportController = {
         const duplicatesIds = req.body.duplicatesIds;
         const toBeDeletedIds = req.body.toBeDeletedIds;
 
-        console.log("selectedCardsIds", selectedCardsIds);
-        console.log("duplicatesIds", duplicatesIds);
-        console.log("toBeDeletedIds", toBeDeletedIds);
+        // console.log("selectedCardsIds", selectedCardsIds);
+        // console.log("duplicatesIds", duplicatesIds);
+        // console.log("toBeDeletedIds", toBeDeletedIds);
 
         try {
             const results = [];
@@ -69,17 +67,17 @@ const reportController = {
                         cardId: selectedCardId,
                         duplicate: hasDuplicate,
                     });
-                    console.log("result", result);
+                    console.log("CARD LOGGED", result);
                     results.push(result)
                 } else if (alreadyLogged) {
                     const duplicateStatus = await datamapper.checkDuplicateStatus(explorerId, selectedCardId);
                     // console.log('duplicateStatus.duplicate', duplicateStatus.duplicate, cardId);
                     // console.log('hasDuplicate', hasDuplicate, cardId);
                     if (duplicateStatus?.duplicate === hasDuplicate) {
-                        console.log('Card already logged', selectedCardId);
+                        // console.log('Card already logged', selectedCardId);
                     } else if (duplicateStatus?.duplicate !== hasDuplicate) {
                         const result = await datamapper.editExplorerHasCard(hasDuplicate, explorerId, selectedCardId);
-                        console.log("Change in duplicate", selectedCardId);
+                        // console.log("Change in duplicate", selectedCardId);
                         results.push(result)
                     }
                 }

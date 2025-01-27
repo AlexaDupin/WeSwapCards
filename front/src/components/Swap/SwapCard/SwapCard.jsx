@@ -209,7 +209,7 @@ function SwapCard({
             >
               {opportunity.opportunities.length > 0 ? (
                 <>
-                <div>In exchange, here are the cards you can offer them:</div>
+                <span>In exchange, here are the cards you can offer them:</span>
                 <br />
                 {opportunity.opportunities?.map((exchange) => (
                 <button 
@@ -221,7 +221,7 @@ function SwapCard({
               ))}
                 </>
               ) : (
-                <div>You do not have any card they don't already have but you can still contact them.</div>
+                <span>You do not have any card they don't already have but you can still contact them.</span>
               )}
             </Card.Text>
 

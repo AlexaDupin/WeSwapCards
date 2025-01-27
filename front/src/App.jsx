@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TokenProvider } from "./helpers/TokenContext";
 import { Routes, Route } from 'react-router-dom';
 import { Spinner } from "react-bootstrap";
-import { useUser } from "@clerk/clerk-react";
+import { useUser, useAuth } from "@clerk/clerk-react";
 
 import Header from './components/Header/Header';
 import SignInPage from './components/Login/SignInPage';
@@ -21,6 +21,7 @@ import CheckPage from './components/CheckPage/CheckPage';
 import Requests from './components/Requests/Requests';
 import NotFound from './components/NotFound/NotFound';
 import Footer from './components/Footer/Footer';
+// import CustomProfile from './components/CustomProfile/CustomProfile';
 
 import PrivacyPolicy from './components/Legal/PrivacyPolicy/PrivacyPolicy';
 import Terms from './components/Legal/Terms/Terms';
@@ -42,6 +43,15 @@ import './App.scss';
 
 function App() {
   const { isLoaded } = useUser();
+  const { getToken } = useAuth()
+
+  useEffect(() => {
+    const fetchToken = async () => {
+       const token = await getToken()
+       console.log("APP TOKEN", token);
+    }
+    fetchToken();
+  }, []);
 
   const [userUID, setUserUID] = useState('');
   const [name, setName] = usePersistState('', 'name');
@@ -163,7 +173,6 @@ if (!isLoaded) {
               element={<ProtectedRoute 
                 element={
                   <Requests
-                    name={name}
                     explorerId={explorerId}
                     setSwapCardName={setSwapCardName}
                     setSwapExplorerId={setSwapExplorerId}
@@ -192,6 +201,10 @@ if (!isLoaded) {
                 />} 
               />}
           />
+          {/* <Route
+              path="/profile"
+              element={<CustomProfile />}
+          /> */}
           <Route
               path="*"
               element={<NotFound />}

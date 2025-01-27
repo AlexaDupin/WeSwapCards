@@ -6,7 +6,8 @@ import {
     Button,
     Col,
     InputGroup,
-    Spinner
+    Spinner,
+    Alert
 } from "react-bootstrap";
 import {
   useNavigate
@@ -26,6 +27,8 @@ function Chat({
     const [loading, setLoading] = useState(true);
     const messageEndRef = useRef(null);
     const navigate = useNavigate();
+    const [hiddenAlert, setHiddenAlert] = useState(true);
+    const [alertMessage, setAlertMessage] = useState('');
 
     console.log("explorerId", explorerId);
     console.log("CHAT JSX swapExplorerId", swapExplorerId);
@@ -57,7 +60,8 @@ function Chat({
           }
 
         } catch (error) {
-          console.log(error);
+          console.log("NOT AUTHORIZED", error);
+          // navigate('/swap/requests');
         }
       
       };
@@ -113,6 +117,9 @@ function Chat({
           setUnreadMessagestoRead();
 
         } catch (error) {
+          setHiddenAlert(false);
+          setAlertMessage("There was an error while retrieving the messages");
+          window.scrollTo({ top: 0, behavior: 'smooth' });
           console.log(error);
         }
       } else {
@@ -138,6 +145,7 @@ function Chat({
           card_name: swapCardName,
           creator_id: explorerId,
           recipient_id: swapExplorerId,
+          timestamp: new Date(),
         }
 
         try {
@@ -179,7 +187,6 @@ function Chat({
               Authorization: `Bearer ${await getToken()}`,
             },
           });
-          console.log(response.data);
 
         } catch (error) {
           console.log(error);
@@ -198,7 +205,7 @@ function Chat({
 
       try {
         const response = await axiosInstance.post(
-          `/chat`,
+          `/chat/${conversationId}`,
           input
         , {
           headers: {
@@ -215,7 +222,10 @@ function Chat({
         }
 
       } catch (error) {
-        console.log(error.data);
+        setHiddenAlert(false);
+        setAlertMessage("There was an error while sending the message");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        console.log(error);
       }
     };
 
@@ -251,6 +261,11 @@ function Chat({
 
       {!loading &&
         <><h1 className="chat-title">Chat with {swapExplorerName} - {swapCardName}</h1>
+        <Alert
+          variant='danger'
+          className={hiddenAlert ? 'hidden-alert' : ''}>
+          {alertMessage}
+        </Alert>
         <Container fluid className="chat">
             <div>
               <Row className="message-list">

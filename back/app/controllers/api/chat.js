@@ -7,31 +7,29 @@ const chatController = {
         const swapCardName = req.params.swapCardName;
         console.log('getConversation CTRL', explorerId, swapExplorerId, swapCardName);
 
-            try {
-                const conversation = await datamapper.findConversation(swapCardName, explorerId, swapExplorerId);
-
-                if (!conversation) {
-                    console.log("NO PREVIOUS CONVO");
-                    res.status(204).json({message: "NO PREVIOUS CONVO", conversation});
-
-                } else if (conversation) {
-                    console.log("CONVO FOUND");
-                    res.status(200).json(conversation);
-                }
-
-            } catch (error) {
-                console.error("Error while retrieving conversation:", error);
-                return res.status(500).send({ message: 'An error occurred while retrieving conversation.', error: error.message });            
+        try {
+            const conversation = await datamapper.findConversation(swapCardName, explorerId, swapExplorerId);
+            if (!conversation) {
+                console.log("NO PREVIOUS CONVO");
+                res.status(204).json({message: "NO PREVIOUS CONVO", conversation});
+            } else if (conversation) {
+                console.log("CONVO FOUND");
+                res.status(200).json(conversation);
             }
+        } catch (error) {
+            console.error("Error while retrieving conversation:", error);
+            return res.status(500).send({ message: 'An error occurred while retrieving conversation.', error: error.message });            
+        }
     },
     async createConversation(req, res) {
-        const explorerId = req.params.explorerId;
-        const swapExplorerId = req.params.swapExplorerId;
-        const swapCardName = req.params.swapCardName;
+        const explorerId = req.body.creator_id;
+        const swapExplorerId = req.body.recipient_id;
+        const swapCardName = req.body.card_name;
+        const timestamp = req.body.timestamp;
 
-        console.log('createConversation CTRL', explorerId, swapExplorerId, swapCardName);
+        console.log('createConversation CTRL', explorerId, swapExplorerId, swapCardName, timestamp);
             try {
-                const conversation = await datamapper.createConversation(swapCardName, explorerId, swapExplorerId);
+                const conversation = await datamapper.createConversation(swapCardName, explorerId, swapExplorerId, timestamp);
                 
                 if (!conversation) {
                     res.status(400).json({message: "Could not create conversation", conversation});
@@ -65,7 +63,7 @@ const chatController = {
                 recipientId: recipientId,
                 conversationId: conversationId,
             });
-            console.log("result", result);
+            // console.log("result", result);
               
             res.status(201).json(result);             
 
@@ -76,7 +74,7 @@ const chatController = {
     },
     async getAllMessagesInConversation(req, res) {
         const conversationId = req.params.conversationId;
-        console.log('CHAT CTRL convoId', conversationId);
+        // console.log('CHAT CTRL convoId', conversationId);
 
             try {
                 const allMessages = await datamapper.getAllMessagesInAChat(conversationId);
@@ -89,11 +87,11 @@ const chatController = {
     async setMessagesToRead(req, res) {
         const conversationId = req.params.conversationId;
         const explorerId = req.params.explorerId;
-        console.log('CHAT CTRL read', conversationId, explorerId);
+        // console.log('CHAT CTRL read', conversationId, explorerId);
 
             try {
                 const read = await datamapper.updateMessageStatus(conversationId, explorerId);
-                console.log("READ CTRL", read);
+                // console.log("READ CTRL", read);
                 res.status(200).json({ read });
             } catch (error) {
                 console.error("Error while retrieving messages:", error);
@@ -119,7 +117,7 @@ const chatController = {
 
             try {
                 const updatedStatus = await datamapper.editConversationStatus(conversationId, status);
-                console.log("STATUS CTRL", updatedStatus );
+                // console.log("STATUS CTRL", updatedStatus );
                 res.status(200).json({ updatedStatus });
             } catch (error) {
                 console.error("Error while updating conversation status:", error);
