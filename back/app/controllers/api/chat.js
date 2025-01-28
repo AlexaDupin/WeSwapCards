@@ -1,4 +1,5 @@
 const datamapper = require("../../models/datamapper");
+const validator = require('validator');
 
 const chatController = {
     async getConversation(req, res) {
@@ -48,6 +49,7 @@ const chatController = {
         const senderId = req.body.sender_id;
         const recipientId = req.body.recipient_id;
         const conversationId = req.body.conversation_id;
+        const sanitizedContent = validator.escape(content);
 
         console.log("content", content);
         console.log("timestamp", timestamp);
@@ -57,7 +59,7 @@ const chatController = {
 
         try {
             const result = await datamapper.insertNewMessage({
-                content: content,
+                content: sanitizedContent,
                 timestamp: timestamp,
                 senderId: senderId,
                 recipientId: recipientId,

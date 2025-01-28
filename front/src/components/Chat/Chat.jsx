@@ -14,6 +14,7 @@ import {
 } from 'react-router-dom';
 import { axiosInstance } from '../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
+import DOMPurify from 'dompurify';
 
 import PropTypes from 'prop-types';
 
@@ -199,9 +200,11 @@ function Chat({
     };
 
     const sendMessage = async (conversationId) => {
+      const sanitizedMessage = DOMPurify.sanitize(newMessage);
+
       const input = {
         id: messages.length + 1,
-        content: newMessage,
+        content: sanitizedMessage,
         timestamp: new Date(),
         sender_id: explorerId,
         recipient_id: swapExplorerId,
