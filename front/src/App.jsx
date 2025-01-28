@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { TokenProvider } from "./helpers/TokenContext";
 import { Routes, Route } from 'react-router-dom';
 import { Spinner } from "react-bootstrap";
 import { useUser, useAuth } from "@clerk/clerk-react";
