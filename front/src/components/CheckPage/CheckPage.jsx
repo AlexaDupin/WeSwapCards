@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
     Container,
-    Spinner
+    Spinner,
+    Alert
 } from "react-bootstrap";
 
-import axios from 'axios';
+import { axiosInstance } from '../../helpers/axiosInstance';
+import { useAuth } from '@clerk/clerk-react'
 
 import PropTypes from 'prop-types';
 
@@ -13,29 +15,31 @@ import Place from '../CheckPage/Place/Place';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 function CheckPage({
-    explorerId, name, token
+    explorerId, name
   }) {
     const [cardsByPlace, setCardsByPlace] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    const baseUrl = process.env.REACT_APP_BASE_URL;
+    const { getToken } = useAuth()
+    const [hiddenAlert, setHiddenAlert] = useState(true);
+    const [alertMessage, setAlertMessage] = useState('');
 
     const fetchExplorerCardsByPlace = async () => {
         try {
-          const response = await axios.get(
-            `${baseUrl}/explorercards/${explorerId}`
-            , {
+          const response = await axiosInstance.get(
+            `/explorercards/${explorerId}`, {
               headers: {
-                authorization: token,
+                Authorization: `Bearer ${await getToken()}`,
               },
-              withCredentials: true,  // Ensure credentials (cookies) are sent
-            });
+            })
           const fetchedCardsByPlace = response.data;
           console.log("fetchedCardsByPlace", fetchedCardsByPlace);
           setCardsByPlace(fetchedCardsByPlace);
           setLoading(false);
 
         } catch (error) {
+          setLoading(false);
+          setHiddenAlert(false);
+          setAlertMessage("There was an error while loading your cards");
           console.log(error);
         }
     };
@@ -63,14 +67,19 @@ function CheckPage({
     <Container className="page-container">
     <h1 className="swap-title">All my cards</h1>
 
+    <Alert
+        variant='danger'
+        className={hiddenAlert ? 'hidden-alert' : ''}>
+        {alertMessage}
+    </Alert>
+
         {cardsByPlace && cardsByPlace.length > 0 ? (
           <><p>Here is an overview of all the cards you logged and their duplicate status.</p><p>Tap on a card number to easily update its duplicate status.</p><br />
-          {cardsByPlace.map((place) => (
+          {cardsByPlace?.map((place) => (
             <Place
               key={place.place_name}
               place={place}
               explorerId={explorerId}
-              token={token}
             />
             ))
           }</>)  

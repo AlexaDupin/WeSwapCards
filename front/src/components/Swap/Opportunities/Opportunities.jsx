@@ -37,7 +37,7 @@ function Opportunities({
   
         // Fetch the count for each opportunity and determine the className
         const opportunitiesWithClassNames = await Promise.all(
-          fetchedOpportunities.map(async (opportunity) => {
+          fetchedOpportunities?.map(async (opportunity) => {
             const countResponse = await axios.get(
               `${baseUrl}/opportunities/${explorerId}/${opportunity.place_id}`
               , {
@@ -94,7 +94,7 @@ function Opportunities({
       {/* <OpportunitiesModal /><p>{message}</p> */}
 
         {opportunities && opportunities.length > 0 ? (
-          opportunities.map((opportunity) => (
+          opportunities?.map((opportunity) => (
             <Opportunity
               key={opportunity.id}
               opportunity={opportunity}

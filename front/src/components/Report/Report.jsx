@@ -3,25 +3,32 @@ import {
 	Form,
 	Row,
   Container,
-  Alert
+  Alert,
+  Spinner
 } from "react-bootstrap";
+import { axiosInstance } from '../../helpers/axiosInstance';
+import { useAuth } from '@clerk/clerk-react';
 
-import axios from 'axios';
+// import { useAxiosInterceptor } from '../../helpers/axiosInstance';
+// import { useToken } from '../../helpers/TokenContext'; // Import useToken
+
+import PlaceCard from './PlaceCard/PlaceCard';
+import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 import PropTypes from 'prop-types';
 
 import './reportStyles.scss';
-import PlaceCard from './PlaceCard/PlaceCard';
-import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 function Report({
-  explorerId, name, token
+  explorerId, name
 }) {
   const [places, setPlaces] = useState([]);
   const [cards, setCards] = useState([]);
   const [selectedCards, setSelectedCards] = useState([]);
   const [duplicates, setDuplicates] = useState([]);
   const [toBeDeleted, setToBeDeleted] = useState([]);
+  const [loadingPlaces, setLoadingPlaces] = useState(true); // Loading state for places
+  // const token = useToken();
 
   // Showing sections at a time
   const [hidden, setHidden] = useState(true);
@@ -30,27 +37,55 @@ function Report({
   const [hiddenAlert, setHiddenAlert] = useState(true);
   const [variant, setVariant] = useState('success');
   const [message, setMessage] = useState('');
+  const { getToken } = useAuth()
 
-  const baseUrl = process.env.REACT_APP_BASE_URL;
+  // useAxiosInterceptor();
 
   // Fetch all places to show in dropdown
   const fetchAllPlaces = async () => {
+
     try {
-      const response = await axios.get(`${baseUrl}/places`);
+      console.log("ENTERING PLACES TRY");
+      const response = await axiosInstance.get(`/places`, {
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
+      });
+      // console.log("ENTERING PLACES RESPONSE", response);
+
       setPlaces(response.data.places);
+      setLoadingPlaces(false); // Set loading to false after data is fetched
+
     } catch (error) {
       console.log(error);
+      setLoadingPlaces(false); // Set loading to false after data is fetched
     }
   };
 
   // When a place is selected, fetch all cards in that place
   // + cards and duplicates already logged for this explorer in the db so they are highlighted
   const handleSelectPlace = async (placeId) => {
+
     try {
       const [allCards, explorerCards, explorerDuplicates] = await Promise.all([
-        axios.get(`${baseUrl}/cards/${placeId}`), 
-        axios.get(`${baseUrl}/cards/${placeId}/${explorerId}`),
-        axios.get(`${baseUrl}/cards/${placeId}/${explorerId}/duplicates`),
+        // axiosInstance.get(`/cards/${placeId}`),
+        // axiosInstance.get(`/cards/${placeId}/${explorerId}`),
+        // axiosInstance.get(`/cards/${placeId}/${explorerId}/duplicates`)
+        axiosInstance.get(`/cards/${placeId}`, {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        }),
+        axiosInstance.get(`/cards/${placeId}/${explorerId}`, {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        }),
+        axiosInstance.get(`/cards/${placeId}/${explorerId}/duplicates`, {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        })
       ]);
       // console.log("allCards", allCards);
       // console.log('explorerCards', explorerCards);
@@ -61,8 +96,11 @@ function Report({
       setDuplicates(explorerDuplicates.data.cards);
       setHidden(false);
 
- 
+
     } catch (error) {
+      setHiddenAlert(false);
+      setVariant('danger');
+      setMessage('There was an error while loading the cards');
       console.log(error);
     }
   };
@@ -79,7 +117,7 @@ function Report({
 
   // Add card to selected cards if not in it
   const handleCardSelection = (card) => {
-    console.log("handleCardSelection", card);
+    // console.log("handleCardSelection", card);
 
     setSelectedCards((prevSelectedCards) => {
       // Check if the card is already selected (by matching the id)
@@ -87,8 +125,8 @@ function Report({
 
       if (isCardSelected) {
         // If already selected, remove the card from the array (deselect)
-        console.log("TO REMOVE IN DATABASE")
-        setToBeDeleted((prevToBeDeleted) => { 
+        // console.log("TO REMOVE IN DATABASE")
+        setToBeDeleted((prevToBeDeleted) => {
           return [...prevToBeDeleted, card]
         });
         return prevSelectedCards.filter(alreadySelectedCard => alreadySelectedCard.id !== card.id);
@@ -127,12 +165,13 @@ function Report({
     setDuplicates(cards)
   };
 
-  console.log("selectedCards", selectedCards);
-  console.log("duplicates", duplicates);
-  console.log("toBeDeleted", toBeDeleted);
+  // console.log("selectedCards", selectedCards);
+  // console.log("duplicates", duplicates);
+  // console.log("toBeDeleted", toBeDeleted);
 
   // On submit, log selected cards and duplicate selection into db
   const handleSubmit = async (event) => {
+
       event.preventDefault();
       // Extracting ids of selected cards and duplicates
       const selectedCardsIds = selectedCards.map(item => item.id);
@@ -143,20 +182,21 @@ function Report({
       const payload = {
         selectedCardsIds,
         duplicatesIds,
-        toBeDeletedIds     
+        toBeDeletedIds
       };
-      console.log('SUBMIT payload', payload);
+      // console.log('SUBMIT payload', payload);
 
       try {
-        const response = await axios.post(
-          `${baseUrl}/report/${explorerId}`,
-          payload
-        , {
-          headers: {
-            authorization: token,
-          },
-        });
-        console.log("RESPONSE", response);
+        // const response = await axiosInstance.post(
+        //   `/report/${explorerId}`,
+        //   payload);
+          const response = await axiosInstance.post(
+            `/report/${explorerId}`,
+            payload, {
+              headers: {
+                Authorization: `Bearer ${await getToken()}`,
+              },
+            });
 
         if (response.status === 201) {
           setVariant("success");
@@ -189,7 +229,7 @@ function Report({
       },
     [],
   );
-
+  
   useEffect(
     () => {
       showDuplicateSection();
@@ -197,17 +237,26 @@ function Report({
     [selectedCards],
   );
 
+  // Render loading state or content
+  if (loadingPlaces) {
+    return <Container className="page-container">
+      <Spinner
+        animation="border"
+        className="spinner" /> 
+    </Container>
+  }
 
   return (
     <Container className="page-container">
     <h1 className="swap-title">Report my cards</h1>
 
     <Form onSubmit={handleSubmit}>
-              
+
       <Form.Group className="mb-5" controlId="formGroupPlace">
         <Form.Label className="report-label">Select a chapter, {name}</Form.Label>
-        <Form.Select 
-          aria-label="Select a place" 
+
+        <Form.Select
+          aria-label="Select a place"
           onChange={(e) => {
             const selectedValue = e.target.value;
             if (selectedValue !== "") {
@@ -216,8 +265,8 @@ function Report({
           }}
         >
           <option value="">Select</option>
-          {places.map((place) => (
-            <option 
+          {places?.map((place) => (
+            <option
               key={place.id}
               value={place.id}>
               {place.name}
@@ -226,20 +275,20 @@ function Report({
         </Form.Select>
       </Form.Group>
 
-      <Alert 
+      <Alert
       variant={variant}
       className={hiddenAlert ? 'hidden-alert' : ''}>
-        {message}      
+        {message}
       </Alert>
 
-      <Form.Group 
-        className={hidden ? 'hidden' : 'mb-5'} 
+      <Form.Group
+        className={hidden ? 'hidden' : 'mb-5'}
         controlId="formGroupEmail">
         <Form.Label className="report-label">
           Click on the cards you have
         </Form.Label>
 
-        <button 
+        <button
           className={hidden ? 'hidden' : 'selectall-button mb-3'}
           onClick={handleSelectAllCards}
         >
@@ -248,28 +297,28 @@ function Report({
 
         <Row className="g-3">
         {cards && cards.length > 0 ? (
-          cards.map((card) => (
+          cards?.map((card) => (
             <PlaceCard
               key={card.id}
               card={card}
-              selectedCards={selectedCards} 
-              handleCardSelection={handleCardSelection} 
+              selectedCards={selectedCards}
+              handleCardSelection={handleCardSelection}
             />
             ))
             ) : (
-              <div>No cards available</div> 
+              <div>No cards available</div>
         )}
         </Row>
       </Form.Group>
 
-      <Form.Group 
-        className={hiddenDuplicates ? 'hidden' : 'mb-5'}  
+      <Form.Group
+        className={hiddenDuplicates ? 'hidden' : 'mb-5'}
         controlId="formGroupEmail">
         <Form.Label className="report-label">
           Click on the cards you have duplicates for (2 or more)
         </Form.Label>
-        
-        <button 
+
+        <button
           className={hidden ? 'hidden' : 'selectall-button mb-3'}
           onClick={handleSelectAllDuplicates}
         >
@@ -278,24 +327,24 @@ function Report({
 
         <Row className="d-flex g-3">
         {cards && cards.length > 0 ? (
-          cards.map((duplicateCard) => (            
+          cards.map((duplicateCard) => (
           <PlaceCard
               key={duplicateCard.id}
               card={duplicateCard}
-              selectedCards={selectedCards} 
+              selectedCards={selectedCards}
               handleCardSelection={handleCardSelection}
-              isDuplicateSection={true} 
+              isDuplicateSection={true}
               handleCardDuplicate={handleCardDuplicate}
               duplicates={duplicates}
             />
           ))
           ) : (
-            <div>No duplicates available</div> 
+            <div>No duplicates available</div>
         )}
         </Row>
       </Form.Group>
-    
-      <button 
+
+      <button
         className={hidden ? 'hidden' : 'custom-button' && hiddenDuplicates ? 'hidden' : 'custom-button'}>
         Submit these cards
       </button>

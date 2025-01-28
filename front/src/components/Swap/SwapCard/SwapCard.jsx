@@ -11,7 +11,8 @@ import { useNavigate } from 'react-router-dom';
 
 import PlaceCard from './PlaceCard/PlaceCard';
 
-import axios from 'axios';
+import { axiosInstance } from '../../../helpers/axiosInstance';
+import { useAuth } from '@clerk/clerk-react';
 
 import PropTypes from 'prop-types';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
@@ -19,7 +20,7 @@ import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 import './swapCardStyles.scss';
 
 function SwapCard({
-    explorerId, name, token, setSwapExplorerId, setSwapCardName, swapCardName, setSwapExplorerName, setConversationId
+    explorerId, name, setSwapExplorerId, setSwapCardName, swapCardName, setSwapExplorerName, setConversationId
   }) {
     const [places, setPlaces] = useState([]);
     const [cards, setCards] = useState([]);
@@ -27,16 +28,19 @@ function SwapCard({
     const [hiddenSwapOpportunities, setHiddenSwapOpportunities] = useState(true);
     const [swapOpportunities, setSwapOpportunities] = useState([]);
     const [selectedCardId, setSelectedCardId] = useState();
+    const { getToken } = useAuth()
+    const navigate = useNavigate();
 
     console.log('selectedCardId', selectedCardId);
-
-    const baseUrl = process.env.REACT_APP_BASE_URL;
-    const navigate = useNavigate();
 
     // Fetch all places to show in dropdown
     const fetchAllPlaces = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/places`);
+        const response = await axiosInstance.get(`/places`, {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        });
         setPlaces(response.data.places);
       } catch (error) {
         console.log(error);
@@ -47,7 +51,11 @@ function SwapCard({
     // + cards and duplicates already logged for this explorer in the db so they are highlighted
     const handleSelectPlace = async (placeId) => {
       try {
-        const allCards = await axios.get(`${baseUrl}/cards/${placeId}`);
+        const allCards = await axiosInstance.get(`/cards/${placeId}`, {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        });
         // console.log("allCards", allCards);
 
         setCards(allCards.data.cards);
@@ -63,11 +71,10 @@ function SwapCard({
 
     const fetchSearchedCardName = async (cardId) => {
       try {
-        const response = await axios.get(
-        `${baseUrl}/card/${cardId}`
-        , {
+        const response = await axiosInstance.get(
+        `/card/${cardId}`, {
           headers: {
-            authorization: token,
+            Authorization: `Bearer ${await getToken()}`,
           },
         });
 
@@ -88,11 +95,10 @@ function SwapCard({
       fetchSearchedCardName(cardId);
 
       try {
-          const response = await axios.get(
-          `${baseUrl}/opportunities/${explorerId}/card/${cardId}`
-          , {
+          const response = await axiosInstance.get(
+          `/opportunities/${explorerId}/card/${cardId}`, {
             headers: {
-              authorization: token,
+              Authorization: `Bearer ${await getToken()}`,
             },
           });
 
@@ -141,7 +147,7 @@ function SwapCard({
           }}
         >
           <option value="">Select</option>
-          {places.map((place) => (
+          {places?.map((place) => (
             <option 
               key={place.id}
               value={place.id}>
@@ -160,7 +166,7 @@ function SwapCard({
 
         <Row className="g-3">
         {cards && cards.length > 0 ? (
-          cards.map((card) => (
+          cards?.map((card) => (
             <PlaceCard
               key={card.id}
               card={card}
@@ -184,7 +190,7 @@ function SwapCard({
             <p>Here are the users that can give you this card: <br /><br />
             <span className='swap-cardName'>{swapCardName}</span></p>
 
-            {swapOpportunities.map((opportunity) => (
+            {swapOpportunities?.map((opportunity) => (
           <Col xs={12} 
             key={opportunity.explorer_id}
             className="column"
@@ -203,9 +209,9 @@ function SwapCard({
             >
               {opportunity.opportunities.length > 0 ? (
                 <>
-                <div>In exchange, here are the cards you can offer them:</div>
+                <span>In exchange, here are the cards you can offer them:</span>
                 <br />
-                {opportunity.opportunities.map((exchange) => (
+                {opportunity.opportunities?.map((exchange) => (
                 <button 
                   key={exchange.card.id}
                   className="swap-tag"
@@ -215,7 +221,7 @@ function SwapCard({
               ))}
                 </>
               ) : (
-                <div>You do not have any card they don't already have but you can still contact them.</div>
+                <span>You do not have any card they don't already have but you can still contact them.</span>
               )}
             </Card.Text>
 

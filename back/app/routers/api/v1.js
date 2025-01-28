@@ -1,4 +1,7 @@
 const express = require('express');
+const { requireAuth } = require('@clerk/express');
+const { checkConversationAuthorization, checkExplorerAuthorization } = require('../../middlewares/authorization');
+
 const userController = require('../../controllers/api/user');
 const reportController = require('../../controllers/api/report');
 const opportunitiesController = require('../../controllers/api/opportunities');
@@ -9,85 +12,76 @@ const controllerHandler = require('../../helpers/controllerHandler');
 
 const router = express.Router();
 
-// router.post('/register', controllerHandler(userController.signUp));
-router.post('/register/user', controllerHandler(userController.createUser));
-// router.post('/login', userController.login);
-router.post('/login/user', controllerHandler(userController.getUserByUID));
-
-// router.post('/session', userController.refreshSession, (req, res) => {
-//     if (!req.session) {
-//       return res.status(401).json({ message: 'No valid session found' });
-//     }
-  
-//     // Send the session data (e.g., access token and user details) back to the client
-//     res.status(200).json({
-//       user: req.session.user,  // Send user info (you can customize this)
-//       session: req.session,     // Send full session details
-//     });
-//   });
-// router.get('/signout', userController.signOut);
+router.post('/register/user',
+ requireAuth(), controllerHandler(userController.createUser));
+router.post('/login/user',
+ requireAuth(), controllerHandler(userController.getUserByUID));
 
 router
     .route('/places')
-    .get(controllerHandler(reportController.getAllPlaces))
+    .get(requireAuth(), controllerHandler(reportController.getAllPlaces))
 
 router
     .route('/cards/:placeId')
-    .get(controllerHandler(reportController.getCardsFromPlace));
+    .get(requireAuth(), controllerHandler(reportController.getCardsFromPlace));
 
 router
     .route('/cards/:placeId/:explorerId')
-    .get(controllerHandler(reportController.getExplorerCardsFromOnePlace));
+    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(reportController.getExplorerCardsFromOnePlace));
 
 router
     .route('/cards/:placeId/:explorerId/duplicates')
-    .get(controllerHandler(reportController.getDuplicateCards));
-
-router
-    .route('/card/:cardId')
-    .get(controllerHandler(opportunitiesController.getCardName));
+    .get(requireAuth(), controllerHandler(reportController.getDuplicateCards));
 
 router
     .route('/report/:explorerId')
-    .post(controllerHandler(reportController.addCardsToExplorer));
+    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(reportController.addCardsToExplorer));
 
 router
     .route('/opportunities/:explorerId')
-    .get(controllerHandler(opportunitiesController.getOpportunities));
+    .get(requireAuth(), controllerHandler(opportunitiesController.getOpportunities));
 
 router
     .route('/opportunities/:explorerId/:placeId')
-    .get(controllerHandler(opportunitiesController.getCountForOnePlaceForOneExplorer));
+    .get(requireAuth(), controllerHandler(opportunitiesController.getCountForOnePlaceForOneExplorer));
 
 router
     .route('/opportunities/:explorerId/card/:cardId')
-    .get(controllerHandler(opportunitiesController.findSwapOpportunities));
+    .get(requireAuth(), controllerHandler(opportunitiesController.findSwapOpportunities));
+
+router
+    .route('/card/:cardId')
+    .get(requireAuth(), controllerHandler(opportunitiesController.getCardName));
 
 router
     .route('/conversation/:explorerId/:swapExplorerId/:swapCardName')
-    .get(controllerHandler(chatController.getConversation))
-    .post(controllerHandler(chatController.createConversation))
+    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.getConversation))
+    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.createConversation))
 
 router
     .route('/conversation/:conversationId/:explorerId')
-    .put(controllerHandler(chatController.setMessagesToRead))
+    .put(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.setMessagesToRead))
 
 router
     .route('/conversation/:explorerId')
-    .get(controllerHandler(chatController.getAllConversations))
+    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.getAllConversations))
 
 router
     .route('/conversation/:conversationId')
-    .put(controllerHandler(chatController.editConversationStatus))
-
-router
-    .route('/chat')
-    .post(controllerHandler(chatController.insertNewMessage));
+    .put(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.editConversationStatus))
 
 router
     .route('/chat/:conversationId')
-    .get(controllerHandler(chatController.getAllMessagesInConversation))
+    .get(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.getAllMessagesInConversation))
+    .post(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.insertNewMessage));
 
+router
+    .route('/explorercards/:explorerId')
+    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.getExplorerCardsByPlace));
+
+router
+    .route('/explorercards/:explorerId/cards/:cardId/duplicate')
+    .patch(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.editDuplicateStatus));
 
 // router
 //     .route('/opportunities/:explorerId/card/:cardId')
@@ -96,13 +90,5 @@ router
 // router
 //     .route('/opportunities/:explorerId/swapexplorer/:swapExplorerId')
 //     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findSwapOpportunities));
-
-router
-    .route('/explorercards/:explorerId')
-    .get(controllerHandler(explorerCardsController.getExplorerCardsByPlace));
-
-router
-    .route('/explorercards/:explorerId/cards/:cardId/duplicate')
-    .patch(controllerHandler(explorerCardsController.editDuplicateStatus));
 
 module.exports = router;

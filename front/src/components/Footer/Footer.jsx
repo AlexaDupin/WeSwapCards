@@ -27,6 +27,9 @@ function Footer() {
           <a href="/terms" target="_blank" className="footer-desktop-link" rel="noopener noreferrer">
                 <p className="footer-desktop-caption">Terms and Conditions</p>
           </a>
+          <a href="/cookies" target="_blank" className="footer-general-link" rel="noopener noreferrer">
+                <p className="footer-general-caption">Cookie Policy</p>
+          </a>
           <a href="/contact" target="_blank" className="footer-desktop-link" rel="noopener noreferrer">
                 <p className="footer-desktop-caption">Contact us</p>
           </a>
@@ -41,6 +44,9 @@ function Footer() {
              </a>
              <a href="/terms" target="_blank" className="footer-general-link" rel="noopener noreferrer">
                 <p className="footer-general-caption">Terms</p>
+             </a>
+             <a href="/cookies" target="_blank" className="footer-general-link" rel="noopener noreferrer">
+                <p className="footer-general-caption">Cookies</p>
              </a>
              <a href="/contact" target="_blank" className="footer-general-link" rel="noopener noreferrer">
                 <p className="footer-general-caption">Contact</p>

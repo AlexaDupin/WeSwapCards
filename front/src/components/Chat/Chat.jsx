@@ -6,25 +6,30 @@ import {
     Button,
     Col,
     InputGroup,
-    Spinner
+    Spinner,
+    Alert
 } from "react-bootstrap";
 import {
   useNavigate
 } from 'react-router-dom';
-import axios from 'axios';
+import { axiosInstance } from '../../helpers/axiosInstance';
+import { useAuth } from '@clerk/clerk-react';
+import DOMPurify from 'dompurify';
 
 import PropTypes from 'prop-types';
 
 import './chatStyles.scss';
 
 function Chat({
-    explorerId, token, swapExplorerId, swapExplorerName, swapCardName, setConversationId, conversationId
+    explorerId, swapExplorerId, swapExplorerName, swapCardName, setConversationId, conversationId
   }) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
     const messageEndRef = useRef(null);
     const navigate = useNavigate();
+    const [hiddenAlert, setHiddenAlert] = useState(true);
+    const [alertMessage, setAlertMessage] = useState('');
 
     console.log("explorerId", explorerId);
     console.log("CHAT JSX swapExplorerId", swapExplorerId);
@@ -33,16 +38,16 @@ function Chat({
     console.log("conversationId", conversationId);
     console.log("loading", loading);
 
-    const baseUrl = process.env.REACT_APP_BASE_URL;
+    const { getToken } = useAuth()
 
     useEffect(() => {
       const fetchConversation = async () => {
         try {
-          const response = await axios.get(
-            `${baseUrl}/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`
+          const response = await axiosInstance.get(
+            `/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`
           , {
             headers: {
-              authorization: token,
+              Authorization: `Bearer ${await getToken()}`,
             },
           });
 
@@ -56,7 +61,10 @@ function Chat({
           }
 
         } catch (error) {
-          console.log(error);
+          setLoading(false);
+          setHiddenAlert(false);
+          setAlertMessage("There was an error while fetching the conversation");
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       
       };
@@ -71,28 +79,50 @@ function Chat({
         try {
           console.log("FETCHING MESSAGES conversationId", conversationId);
   
-          const response = await axios.get(
-            `${baseUrl}/chat/${conversationId}`
+          const response = await axiosInstance.get(
+            `/chat/${conversationId}`
           , {
             headers: {
-              authorization: token,
+              Authorization: `Bearer ${await getToken()}`,
             },
           });
           console.log(response.data.allMessages);
           const allFetchedMessages = response.data.allMessages;
+
           const allMessagesFormattedDate = allFetchedMessages.map((message) => {
+            const messageDate = new Date(message.timestamp);
+            const today = new Date();
+            const daysDifference = (today - messageDate) / (1000 * 3600 * 24); // difference in days
+          
+            // Define a formatting function for messages older than 7 days
+            const formattedDate = daysDifference > 7
+              ? messageDate.toLocaleString(undefined, { 
+                  weekday: 'long', 
+                  day: '2-digit', 
+                  month: 'long',
+                  hour: '2-digit', 
+                  minute: '2-digit',
+                }) // For older than 7 days: Weekday, Day, Month, Hour, Minute
+              : messageDate.toLocaleString(undefined, { 
+                  weekday: 'long', 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                }); // For messages within 7 days: Weekday, Hour, Minute
+          
             return {
-            ...message, 
-              timestamp: new Date(message.timestamp).toLocaleString(undefined, { 
-                weekday: 'long', hour: '2-digit', minute: '2-digit' 
-              }),
+              ...message, 
+              timestamp: formattedDate,
             };
           });
+
           console.log("allMessagesFormattedDate", allMessagesFormattedDate);
           setMessages(allMessagesFormattedDate);
           setUnreadMessagestoRead();
 
         } catch (error) {
+          setHiddenAlert(false);
+          setAlertMessage("There was an error while retrieving the messages");
+          window.scrollTo({ top: 0, behavior: 'smooth' });
           console.log(error);
         }
       } else {
@@ -118,15 +148,16 @@ function Chat({
           card_name: swapCardName,
           creator_id: explorerId,
           recipient_id: swapExplorerId,
+          timestamp: new Date(),
         }
 
         try {
-          const response = await axios.post(
-            `${baseUrl}/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`,
+          const response = await axiosInstance.post(
+            `/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`,
             conversation
           , {
             headers: {
-              authorization: token,
+              Authorization: `Bearer ${await getToken()}`,
             },
           });
           console.log("RESPONSE", response);
@@ -140,6 +171,9 @@ function Chat({
           }
   
         } catch (error) {
+          setHiddenAlert(false);
+          setAlertMessage("There was an error while sending the message");
+          window.scrollTo({ top: 0, behavior: 'smooth' });
           console.log(error.data);
         }
   
@@ -151,15 +185,14 @@ function Chat({
 
     const setUnreadMessagestoRead = async () => {
         try {
-          const response = await axios.put(
-            `${baseUrl}/conversation/${conversationId}/${explorerId}`,
+          const response = await axiosInstance.put(
+            `/conversation/${conversationId}/${explorerId}`,
             {},
           {
             headers: {
-              authorization: token,
+              Authorization: `Bearer ${await getToken()}`,
             },
           });
-          console.log(response.data);
 
         } catch (error) {
           console.log(error);
@@ -167,9 +200,11 @@ function Chat({
     };
 
     const sendMessage = async (conversationId) => {
+      const sanitizedMessage = DOMPurify.sanitize(newMessage);
+
       const input = {
         id: messages.length + 1,
-        content: newMessage,
+        content: sanitizedMessage,
         timestamp: new Date(),
         sender_id: explorerId,
         recipient_id: swapExplorerId,
@@ -177,12 +212,12 @@ function Chat({
       };
 
       try {
-        const response = await axios.post(
-          `${baseUrl}/chat`,
+        const response = await axiosInstance.post(
+          `/chat/${conversationId}`,
           input
         , {
           headers: {
-            authorization: token,
+            Authorization: `Bearer ${await getToken()}`,
           },
         });
         console.log("RESPONSE", response);
@@ -195,19 +230,22 @@ function Chat({
         }
 
       } catch (error) {
-        console.log(error.data);
+        setHiddenAlert(false);
+        setAlertMessage("There was an error while sending the message");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        console.log(error);
       }
     };
 
     const handleConversationStatus = async (conversationId, newStatus) => {
         console.log("CHANGING STATUS", newStatus);
         try {
-          await axios.put(
-            `${baseUrl}/conversation/${conversationId}`,
+          await axiosInstance.put(
+            `/conversation/${conversationId}`,
             { status: newStatus }, 
             {
               headers: {
-                authorization: token,
+                Authorization: `Bearer ${await getToken()}`,
               },
             });
 
@@ -231,10 +269,15 @@ function Chat({
 
       {!loading &&
         <><h1 className="chat-title">Chat with {swapExplorerName} - {swapCardName}</h1>
+        <Alert
+          variant='danger'
+          className={hiddenAlert ? 'hidden-alert' : ''}>
+          {alertMessage}
+        </Alert>
         <Container fluid className="chat">
             <div>
               <Row className="message-list">
-                {messages.map((message) => (
+                {messages?.map((message) => (
                   <Col key={message.id} className={`message-bubble ${message.sender_id === explorerId ? 'sent' : 'received'}`}>
                     <div className="message-content">{message.content}</div>
                     <div className="message-timestamp">{message.timestamp.toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit' })}</div>

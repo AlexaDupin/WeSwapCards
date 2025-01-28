@@ -12,7 +12,7 @@ function PrivacyPolicy() {
   <Container className="page-container privacy">
     <section>
       <h1 className="page-title">Privacy Policy</h1>
-      <p><strong>Effective Date:</strong> January 10, 2025</p>
+      <p><strong>Effective Date:</strong> January 23, 2025</p>
       <p>At WeSwapCards ("we," "us," or "our"), we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and protect your personal data when you use our website www.weswapcards.com (the "Site"). By using the Site, you consent to the collection and use of your data in accordance with this policy.</p>
     </section>
 
@@ -27,10 +27,10 @@ function PrivacyPolicy() {
           <p><strong>User Messages:</strong> When you communicate with other users via our chat feature, we collect the content of those messages.</p>
         </li>
         <li>
-        <p><strong>Usage Data:</strong> We may collect information about your interactions with the Site, such as pages visited and actions taken, though we do not currently use cookies or tracking technologies. We may implement Google Analytics in the future to analyze Site usage.</p>
-    </li>
-  </ul>
-</section>
+          <p><strong>Authentication Data:</strong> We use cookies to facilitate and secure your login process. These cookies help us recognize you once you’ve logged in and maintain your session while you navigate the Site.</p>
+        </li>
+      </ul>
+    </section>
 
 <section>
   <h2 className="privacy-title">2. How We Use Your Data</h2>
@@ -72,7 +72,7 @@ function PrivacyPolicy() {
       <p><strong>Account Information:</strong> We retain account information (email, username, password) as long as the account is active.</p>
     </li>
     <li>
-      <p><strong>Chat Messages:</strong> We plan to delete chat messages within 10 days after they are created to make space in the database. This feature has not yet been implemented but will be in the future.</p>
+      <p><strong>Chat Messages:</strong> We retain chat messages for a period of 15 days after they are created. After this period, chat messages will be permanently deleted from our systems.</p>
     </li>
   </ul>
 </section>
@@ -82,25 +82,25 @@ function PrivacyPolicy() {
   <p>As a user, you have the following rights regarding your personal data:</p>
   <ul className="privacy-list">
     <li>
-      <p><strong>Access:</strong> You can access the email address and username associated with your account.</p>
+      <p><strong>Access:</strong> You can access and view the email address, and other account details associated with your account by logging into your account.</p>
     </li>
     <li>
-      <p><strong>Update:</strong> You can update your email address and username by contacting us.</p>
+      <p><strong>Update:</strong> You can update your email address, and other account details directly through your account settings. To update your username, please contact us directly at weswapcards@gmail.com.</p>
     </li>
     <li>
-      <p><strong>Deletion:</strong> If you wish to delete your account, you can contact us at weswapcards@gmail.com to request deletion of your account and associated data.</p>
+      <p><strong>Deletion:</strong> If you wish to delete your account, you can do so directly through your account settings. Please follow the instructions provided within your account to request deletion of your account and associated data.</p>
     </li>
   </ul>
 </section>
 
 <section>
   <h2 className="privacy-title">6. Security Measures</h2>
-  <p>We implement reasonable security measures to protect your personal data, including using Supabase for authentication, which provides secure access management. However, please note that no method of transmission over the internet or electronic storage is 100% secure.</p>
+  <p>We implement reasonable security measures to protect your personal data, including using Clerk for authentication, which provides secure access management. Clerk uses industry-standard security practices to ensure the safety of your account and personal information. However, please note that no method of transmission over the internet or electronic storage is 100% secure.</p>
 </section>
 
 <section>
   <h2 className="privacy-title">7. Data Sharing</h2>
-  <p>We do not share your personal data with third parties. We do not sell, trade, or otherwise transfer your personal data to outside parties.</p>
+  <p>We do not sell, trade, or otherwise transfer your personal data to outside parties. However, we may share certain data with third-party service providers, such as Clerk, who help us manage authentication and ensure the security of your account. These third parties are required to handle your data in accordance with applicable privacy laws and our own privacy policies.</p>
 </section>
 
 <section>

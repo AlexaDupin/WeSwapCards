@@ -33,6 +33,12 @@ function Legal() {
             </Col>
             <Col sm={12}>
                     <CustomButton
+                    text="Cookie Policy"
+                    onClick={() => navigate('/cookies')}
+                    />
+            </Col>
+            <Col sm={12}>
+                    <CustomButton
                     text="Contact"
                     onClick={() => navigate('/contact')}
                     />

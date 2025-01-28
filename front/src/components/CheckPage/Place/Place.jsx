@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import CardPreview from '../Place/CardPreview/CardPreview';
 
-import axios from 'axios';
+import { axiosInstance } from '../../../helpers/axiosInstance';
+import { useAuth } from '@clerk/clerk-react'
 
 import PropTypes from 'prop-types';
 
@@ -10,12 +11,10 @@ import './placeStyles.scss';
 function Place({
     place,
     explorerId,
-    token
 }) {
     const [placeCards, setPlaceCards] = useState(place.cards);
     const [progressClassName, setProgressClassName] = useState('progress-bar');
-
-    const baseUrl = process.env.REACT_APP_BASE_URL;
+    const { getToken } = useAuth()
 
     const percentage = place.cards.length/9*100;
     const attributeProgressClassName = () => {
@@ -29,15 +28,13 @@ function Place({
     const handleDuplicateStatus = async (cardId, updatedDuplicateStatus) => {
         // Update duplicate status in database
         try {
-            const response = await axios.patch(
-              `${baseUrl}/explorercards/${explorerId}/cards/${cardId}/duplicate`, {
+            const response = await axiosInstance.patch(
+              `/explorercards/${explorerId}/cards/${cardId}/duplicate`, {
                 duplicate: updatedDuplicateStatus,
-              }
-              , {
-                headers: {
-                  authorization: token,
-                },
-                withCredentials: true,  // Ensure credentials (cookies) are sent
+              },
+              {headers: {
+                Authorization: `Bearer ${await getToken()}`,
+              },
               });
 
             if (response.status === 200) {
@@ -86,7 +83,7 @@ function Place({
 
     <div className="explorerCard-numbers" id="">
     {placeCards && placeCards.length > 0 ? (
-          placeCards.map((card) => (
+          placeCards?.map((card) => (
             <CardPreview
               key={card.card.id}
               card={card.card}

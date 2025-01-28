@@ -1,64 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useUser } from '@clerk/clerk-react';
+
 import {
 	Form,
 	Card,
 	InputGroup,
 	FormControl,
   Container,
-  Alert
+  Alert,
 } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { PersonFill } from "react-bootstrap-icons";
 
-import axios from 'axios';
+import { axiosInstance } from '../../../helpers/axiosInstance';
+import { useAuth } from '@clerk/clerk-react';
 import PropTypes from 'prop-types';
 
 import CustomButton from '../../CustomButton/CustomButton';
 
 import './userStyles.scss';
 
-function User({
-    userUID,
+const User = ({
+    setUserUID,
     setName,
     setExplorerId,
-    token
-}) {
+  }) => {
     const { register, handleSubmit, formState: { errors } } = useForm({
       defaultValues: {
         username: "",
       },
     }); 
 
+    const sanitizeUsername = (username) => {
+      return username.replace(/[^a-zA-Z0-9_]/g, ''); // Keep only alphanumeric and underscores
+    };
+
     const [hiddenAlert, setHiddenAlert] = useState(true);
     const [message, setMessage] = useState('You already have an account. Please log in.');
-
-    const baseUrl = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
+    const { getToken } = useAuth()
+
+    // Get the current user object from Clerk
+    const { user } = useUser();
+    console.log("REGISTER USER", user);
+    const userUID = user.id;  
+
+    console.log('User ID:', userUID);
+
+    setUserUID(userUID);
 
     const onSubmit = async (data) => {
+      const sanitizedUsername = sanitizeUsername(data.username);
+
         try {
-            const response = await axios.post(
-              `${baseUrl}/register/user`,
-              { userUID, ...data },
-              {headers: {
-                authorization: token,
-              },}
-            )
+            const response = await axiosInstance.post(
+              `/register/user`,
+              { userUID, sanitizedUsername },
+              {
+                headers: {
+                  Authorization: `Bearer ${await getToken()}`,
+                },
+              });
             
             console.log("DM user response", response.data);
 
             // Setting name and explorerId at App level
-            setExplorerId(response.data.id);
-            setName(response.data.name);
+            setExplorerId(response.data.user.id);
+            setName(response.data.user.name);
             
-            navigate('/login');
+            navigate('/menu');
 
         } catch (error) {
           if (error.response) {
             // If the backend returned an error with a message (e.g., 400 or 500 status)
             console.log("ERROR", error);
-            console.log("Error from backend:", error.response.data.message);
+            console.log("Error from backend:", error, error.response.data.error);
             setExplorerId('');
             setName('');
             setMessage("This username is already taken. Please try another one.");
@@ -104,12 +121,16 @@ function User({
                           {...register('username', {
                             required: 'Please enter a username.',
                             pattern: {
-                              value: /^[a-zA-Z0-9]{2,}$/,
+                              value: /^[a-zA-Z0-9_]{2,30}$/,
                               message: 'The format is invalid. Your username must contain at least 2 letters or numbers.',
                             },
                             minLength: {
                               value: 2,
                               message: 'Your username must contain at least 2 characters.',
+                            },
+                            maxLength: {
+                              value: 30,
+                              message: 'Your username must contain 30 characters max.',
                             },
                             },
                           )}
@@ -125,13 +146,12 @@ function User({
               </Card.Body>
           </Card>
     </Form>
-
     </Container>
 )
 }
 
 User.propTypes = {
-    userUID: PropTypes.string,
+    setUserUID: PropTypes.func,
     setName: PropTypes.func,
     setExplorerId: PropTypes.func,
 };

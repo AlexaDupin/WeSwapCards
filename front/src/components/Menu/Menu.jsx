@@ -1,51 +1,30 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+
 import {
     Container,
     Row,
     Col,
 } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
-import supabase from '../../helpers/Supabase';
 
 import CustomButton from '../CustomButton/CustomButton';
-
-import PropTypes from 'prop-types';
 
 import './menuStyles.scss';
 
 function Menu({
     name,
     explorerId,
-    setName,
-    setIsLogged
 }) {
     const navigate = useNavigate();
 
     console.log("MENU explorerId", explorerId);
     
-    const handleSignOut = async () => {
-        setName('');
-        setIsLogged(false);
-        const { error } = await supabase.auth.signOut()
-        localStorage.clear();
-        navigate('/');    
-      }
-
-    // If user quitted after registering without entering username
-    const checkUsername = () => {
-        if (name === undefined || !name) {
-            setName("");
-            navigate('/register/user');
-        }    
-    }
-
-    useEffect(() => {
-        checkUsername();
-    }, []);
 
   return (
     <Container className="page-container">
-    <h1 className="menu-title pb-5" style={{fontSize: '1.2rem'}}>Welcome {name}!</h1>
+    <h1 className="menu-title pb-5" style={{fontSize: '1.2rem'}}>
+        Welcome {name}!
+    </h1>
     <Container>
         <Row className="g-4">
             <Col sm={12}>
@@ -72,28 +51,23 @@ function Menu({
                     onClick={() => navigate('/swap/requests')}
                     />
             </Col>
-            <Col sm={12}>
+            <Col sm={12} id="btn-legal">
                     <CustomButton
                     text="Legal"
                     onClick={() => navigate('/legal')}
                     />
             </Col>
-            <Col sm={12} id="btn-signout">
+            {/* <Col sm={12} id="btn-signout">
                     <CustomButton
                     text="Sign out"
                     onClick={handleSignOut}
                     />
-            </Col>
+            </Col> */}
         </Row> 
                
     </Container>
     </Container>
 )
 }
-
-Menu.propTypes = {
-    name: PropTypes.string,
-    explorerId: PropTypes.number,
-};
 
 export default React.memo(Menu);

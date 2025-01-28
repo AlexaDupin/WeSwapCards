@@ -1,3 +1,10 @@
+const fetch = require('node-fetch');  // Import node-fetch version 2.x
+global.fetch = fetch;  // Set fetch globally
+
+// Polyfill global Request (used by Clerk)
+global.Request = fetch.Request;  // Set global Request to node-fetch's Request
+global.Headers = fetch.Headers;     // Expose Headers globally
+
 const http = require('http');
 require('dotenv').config();
 const debug = require('debug')('app:server');
