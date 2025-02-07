@@ -43,27 +43,27 @@ function Home() {
     </section>
 
     <section className="home-steps">     
-      <section className="image-section">
+      <section className="home-image-section">
         <img src={Report} alt="accueil" className="home-image" />
         <h2 className="home-subtitle">Log all the cards you have</h2>
       </section>
 
-      <section className="image-section">
+      <section className="home-image-section">
         <img src={Search} alt="accueil" className="home-image" />
         <h2 className="home-subtitle">Find the card you need</h2>
       </section>
 
-      <section className="image-section">
+      <section className="home-image-section">
         <img src={Users} alt="accueil" className="home-image" />
         <h2 className="home-subtitle">Browse users who have this card</h2>
       </section>
 
-      <section className="image-section">
+      <section className="home-image-section">
         <img src={Chat} alt="accueil" className="home-image" />
         <h2 className="home-subtitle">Chat with them and find a deal</h2>
       </section>
 
-      <section className="image-section" id="image-section-dashboard">
+      <section className="home-image-section">
         <img src={Dashboard} alt="accueil" className="home-image"/>
         <h2 className="home-subtitle">Keep track of your requests in a dashboard</h2>
       </section>

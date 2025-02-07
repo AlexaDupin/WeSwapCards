@@ -9,6 +9,8 @@ import {
 import { axiosInstance } from '../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react'
 
+import Bulb from '../../images/bulb.svg';
+
 import PropTypes from 'prop-types';
 
 import './checkPageStyles.scss';
@@ -75,7 +77,12 @@ function CheckPage({
     </Alert>
 
         {cardsByPlace && cardsByPlace.length > 0 ? (
-          <><p>Tap on a number to easily update a card's duplicate status.</p><br />
+          <>
+          <div className="check-tip">
+            {/* <img src={Bulb} alt="Bulb" className="check-tip-image"/> */}
+            <p className="check-tip-text"><img src={Bulb} alt="Bulb" className="check-tip-image"/>Tap on a number to easily update a card's duplicate status.</p><br />
+          </div>
+          
           {cardsByPlace?.map((place) => (
             <Place
               key={place.place_name}

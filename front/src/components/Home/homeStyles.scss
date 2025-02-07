@@ -25,7 +25,7 @@
 }
 
 
-@media (min-width: 768px) { /* This targets larger screens */
+@media (min-width: 600px) and (max-width: 899px) { /* This targets medium screens */
     .home-steps {
         display: flex !important;
         flex-direction: row !important;
@@ -34,14 +34,35 @@
     }
 
     .home-image {
-        width: 40%;
+        width: 50%;
         height: 60%;
         margin-top: 2rem;
         padding-bottom: 1rem;
     }
 
-    .image-section {
+    .home-image-section {
+        width: 40%;
+    }
+
+}
+
+@media (min-width: 900px) { /* This targets larger screens */
+    .home-steps {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+    }
+
+    .home-image {
         width: 50%;
+        height: 60%;
+        margin-top: 2rem;
+        padding-bottom: 1rem;
+    }
+
+    .home-image-section {
+        width: 30%;
     }
 
 }
