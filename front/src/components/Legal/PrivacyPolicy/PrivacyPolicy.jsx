@@ -12,7 +12,7 @@ function PrivacyPolicy() {
   <Container className="page-container privacy">
     <section>
       <h1 className="page-title">Privacy Policy</h1>
-      <p><strong>Effective Date:</strong> January 23, 2025</p>
+      <p><strong>Effective Date:</strong> February 3, 2025</p>
       <p>At WeSwapCards ("we," "us," or "our"), we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and protect your personal data when you use our website www.weswapcards.com (the "Site"). By using the Site, you consent to the collection and use of your data in accordance with this policy.</p>
     </section>
 
@@ -85,7 +85,7 @@ function PrivacyPolicy() {
       <p><strong>Access:</strong> You can access and view the email address, and other account details associated with your account by logging into your account.</p>
     </li>
     <li>
-      <p><strong>Update:</strong> You can update your email address, and other account details directly through your account settings. To update your username, please contact us directly at weswapcards@gmail.com.</p>
+      <p><strong>Update:</strong> You can update your email address, and other account details directly through your account settings. To update your username, please contact us directly at contact@weswapcards.com.</p>
     </li>
     <li>
       <p><strong>Deletion:</strong> If you wish to delete your account, you can do so directly through your account settings. Please follow the instructions provided within your account to request deletion of your account and associated data.</p>
@@ -113,7 +113,7 @@ function PrivacyPolicy() {
   <p>If you have any questions or concerns about this Privacy Policy, please contact us at:</p>
   <ul className="privacy-list">
     <li>
-      <p><strong>Email:</strong> weswapcards@gmail.com</p>
+      <p><strong>Email:</strong> contact@weswapcards.com</p>
     </li>
   </ul>
 </section>

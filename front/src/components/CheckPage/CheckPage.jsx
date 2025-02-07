@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Container,
     Spinner,
@@ -22,6 +23,7 @@ function CheckPage({
     const { getToken } = useAuth()
     const [hiddenAlert, setHiddenAlert] = useState(true);
     const [alertMessage, setAlertMessage] = useState('');
+    const navigate = useNavigate();
 
     const fetchExplorerCardsByPlace = async () => {
         try {
@@ -46,27 +48,26 @@ function CheckPage({
 
     useEffect(
       () => {
-      fetchExplorerCardsByPlace()
-      },
-      [],
+        if (!explorerId) {
+          navigate('/login/redirect', { state: { from: "/check" } });
+        } else {
+          fetchExplorerCardsByPlace()
+        }
+      }, [],
     );
-
-  if (loading) {
-    return <Container className="page-container">
-        <h1 className="swap-title">All my cards</h1>
-
-       <Spinner 
-        animation="border"
-        className="spinner" 
-       />
-       <p>Loading your cards...</p>
-      </Container>
-    }
 
   return (
     <Container className="page-container">
     <h1 className="swap-title">All my cards</h1>
 
+    {loading &&
+      <><Spinner
+          animation="border"
+          className="spinner" /><p>Loading your requests...</p></>
+    }
+
+    {!loading && (
+    <>
     <Alert
         variant='danger'
         className={hiddenAlert ? 'hidden-alert' : ''}>
@@ -74,7 +75,7 @@ function CheckPage({
     </Alert>
 
         {cardsByPlace && cardsByPlace.length > 0 ? (
-          <><p>Here is an overview of all the cards you logged and their duplicate status.</p><p>Tap on a card number to easily update its duplicate status.</p><br />
+          <><p>Here are all the cards you logged and their duplicate status.<br />Tap on a number to easily update its duplicate status.</p><br />
           {cardsByPlace?.map((place) => (
             <Place
               key={place.place_name}
@@ -86,7 +87,9 @@ function CheckPage({
            : (
               <div>You don't have any logged cards for the moment, {name}.</div>
         )}
-
+      </>
+      )}
+      
       <ScrollToTop />
     </Container>
 )

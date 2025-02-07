@@ -1,6 +1,7 @@
 {
   "name": "weswapcards",
   "version": "0.1.0",
+  "homepage":"/",
   "private": true,
   "dependencies": {
     "@clerk/clerk-react": "^5.21.3",

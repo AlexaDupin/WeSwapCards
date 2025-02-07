@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useUser } from '@clerk/clerk-react';
+import { useUser, useClerk } from '@clerk/clerk-react';
 
 import {
 	Form,
@@ -26,6 +26,18 @@ const User = ({
     setName,
     setExplorerId,
   }) => {
+    const [hiddenAlert, setHiddenAlert] = useState(true);
+    const [message, setMessage] = useState('You already have an account. Please log in.');
+    const navigate = useNavigate();
+    const { getToken } = useAuth()
+    const { signOut } = useClerk();
+
+    // Get the user info from Clerk
+    const { user } = useUser();
+    console.log("REGISTER USER", user);
+    const userUID = user.id;  
+    console.log('User ID:', userUID);
+
     const { register, handleSubmit, formState: { errors } } = useForm({
       defaultValues: {
         username: "",
@@ -36,20 +48,7 @@ const User = ({
       return username.replace(/[^a-zA-Z0-9_]/g, ''); // Keep only alphanumeric and underscores
     };
 
-    const [hiddenAlert, setHiddenAlert] = useState(true);
-    const [message, setMessage] = useState('You already have an account. Please log in.');
-    const navigate = useNavigate();
-    const { getToken } = useAuth()
-
-    // Get the current user object from Clerk
-    const { user } = useUser();
-    console.log("REGISTER USER", user);
-    const userUID = user.id;  
-
-    console.log('User ID:', userUID);
-
-    setUserUID(userUID);
-
+    // Insert user in database with username and Clerk id
     const onSubmit = async (data) => {
       const sanitizedUsername = sanitizeUsername(data.username);
 
@@ -61,7 +60,9 @@ const User = ({
                 headers: {
                   Authorization: `Bearer ${await getToken()}`,
                 },
-              });
+                withCredentials: true,
+              }
+            );
             
             console.log("DM user response", response.data);
 
@@ -90,6 +91,14 @@ const User = ({
           }
         }    
     };
+
+    useEffect(() => {
+      if (user) {
+        setUserUID(userUID);
+      } else {
+        signOut();
+      }
+    }, []);
    
   return (
     <Container className="page-container">

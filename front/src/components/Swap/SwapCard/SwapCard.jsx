@@ -30,7 +30,6 @@ function SwapCard({
     const [selectedCardId, setSelectedCardId] = useState();
     const { getToken } = useAuth()
     const navigate = useNavigate();
-
     console.log('selectedCardId', selectedCardId);
 
     // Fetch all places to show in dropdown
@@ -116,14 +115,17 @@ function SwapCard({
     const handleContactButton = (swapExplorerId, swapExplorerName) => {
       setSwapExplorerId(swapExplorerId);
       setSwapExplorerName(swapExplorerName);
-      navigate('/swap/card/chat');
+      navigate('/swap/card/chat', { state: { from: "/swap/card" } });
     }
   
     useEffect(
       () => {
+        if (!explorerId) {
+          navigate('/login/redirect', { state: { from: "/swap/card" } });
+        } else {
         fetchAllPlaces();
-        },
-      [],
+        }
+      }, [],
     );
 
     console.log("SWAP OPP", swapOpportunities);
@@ -187,7 +189,7 @@ function SwapCard({
         <Row className="g-3">
           {swapOpportunities && swapOpportunities.length > 0 ? (
             <>
-            <p>Here are the users that can give you this card: <br /><br />
+            <p>Here are the users that can give you this card: <br />
             <span className='swap-cardName'>{swapCardName}</span></p>
 
             {swapOpportunities?.map((opportunity) => (
@@ -204,10 +206,11 @@ function SwapCard({
             >
               {opportunity.explorer_name}
             </Card.Title>
+
+            {opportunity.opportunities.length > 0 ? (
             <Card.Text
               className="opportunity-text"
             >
-              {opportunity.opportunities.length > 0 ? (
                 <>
                 <span>In exchange, here are the cards you can offer them:</span>
                 <br />
@@ -220,10 +223,14 @@ function SwapCard({
                 </button>
               ))}
                 </>
-              ) : (
-                <span>You do not have any card they don't already have but you can still contact them.</span>
-              )}
             </Card.Text>
+              ) : (
+            <Card.Text
+                className="opportunity-text-empty"
+            >
+                <span>You do not have any cards this user doesn't already have but you can still contact them.</span>
+            </Card.Text>  
+            )}
 
             <button 
               className="contact-button"
@@ -239,7 +246,7 @@ function SwapCard({
           ) : (
             <>
             <div>No opportunities available for <span className='swap-cardName'>{swapCardName}</span>, try another one!</div>
-            <div className="swap-disclaimer"><em>Remember that only users that need cards you have in duplicates will be shown at a later stage. So log all your cards!</em></div>
+            <div className="swap-disclaimer"><em>Only users that need cards you have in duplicates will be shown at a later stage. So remember to log all your cards!</em></div>
             <Lock className='lock-icon'/>
             </>
           )}

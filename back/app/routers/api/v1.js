@@ -7,10 +7,14 @@ const reportController = require('../../controllers/api/report');
 const opportunitiesController = require('../../controllers/api/opportunities');
 const explorerCardsController = require('../../controllers/api/explorerCards');
 const chatController = require('../../controllers/api/chat');
+const apiController = require('../../controllers/api/index');
 
 const controllerHandler = require('../../helpers/controllerHandler');
 
 const router = express.Router();
+
+router.get('/', apiController.home);
+router.get('/country', apiController.country);
 
 router.post('/register/user',
  requireAuth(), controllerHandler(userController.createUser));
@@ -19,7 +23,7 @@ router.post('/login/user',
 
 router
     .route('/places')
-    .get(requireAuth(), controllerHandler(reportController.getAllPlaces))
+    .get(controllerHandler(reportController.getAllPlaces))
 
 router
     .route('/cards/:placeId')

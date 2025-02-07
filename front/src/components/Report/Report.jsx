@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import {
 	Form,
 	Row,
@@ -8,9 +10,6 @@ import {
 } from "react-bootstrap";
 import { axiosInstance } from '../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
-
-// import { useAxiosInterceptor } from '../../helpers/axiosInstance';
-// import { useToken } from '../../helpers/TokenContext'; // Import useToken
 
 import PlaceCard from './PlaceCard/PlaceCard';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
@@ -27,8 +26,7 @@ function Report({
   const [selectedCards, setSelectedCards] = useState([]);
   const [duplicates, setDuplicates] = useState([]);
   const [toBeDeleted, setToBeDeleted] = useState([]);
-  const [loadingPlaces, setLoadingPlaces] = useState(true); // Loading state for places
-  // const token = useToken();
+  const [loadingPlaces, setLoadingPlaces] = useState(true);
 
   // Showing sections at a time
   const [hidden, setHidden] = useState(true);
@@ -38,8 +36,7 @@ function Report({
   const [variant, setVariant] = useState('success');
   const [message, setMessage] = useState('');
   const { getToken } = useAuth()
-
-  // useAxiosInterceptor();
+  const navigate = useNavigate();
 
   // Fetch all places to show in dropdown
   const fetchAllPlaces = async () => {
@@ -54,11 +51,11 @@ function Report({
       // console.log("ENTERING PLACES RESPONSE", response);
 
       setPlaces(response.data.places);
-      setLoadingPlaces(false); // Set loading to false after data is fetched
+      setLoadingPlaces(false);
 
     } catch (error) {
       console.log(error);
-      setLoadingPlaces(false); // Set loading to false after data is fetched
+      setLoadingPlaces(false);
     }
   };
 
@@ -68,9 +65,6 @@ function Report({
 
     try {
       const [allCards, explorerCards, explorerDuplicates] = await Promise.all([
-        // axiosInstance.get(`/cards/${placeId}`),
-        // axiosInstance.get(`/cards/${placeId}/${explorerId}`),
-        // axiosInstance.get(`/cards/${placeId}/${explorerId}/duplicates`)
         axiosInstance.get(`/cards/${placeId}`, {
           headers: {
             Authorization: `Bearer ${await getToken()}`,
@@ -95,7 +89,6 @@ function Report({
       setSelectedCards(explorerCards.data.cards);
       setDuplicates(explorerDuplicates.data.cards);
       setHidden(false);
-
 
     } catch (error) {
       setHiddenAlert(false);
@@ -187,16 +180,15 @@ function Report({
       // console.log('SUBMIT payload', payload);
 
       try {
-        // const response = await axiosInstance.post(
-        //   `/report/${explorerId}`,
-        //   payload);
           const response = await axiosInstance.post(
             `/report/${explorerId}`,
             payload, {
               headers: {
                 Authorization: `Bearer ${await getToken()}`,
               },
-            });
+              withCredentials: true,
+            }
+          );
 
         if (response.status === 201) {
           setVariant("success");
@@ -224,10 +216,13 @@ function Report({
   };
 
   useEffect(
-    () => {
-      fetchAllPlaces();
-      },
-    [],
+    () => { 
+      if (!explorerId) {
+        navigate('/login/redirect', { state: { from: "/report" } });
+      } else {
+        fetchAllPlaces();
+      }
+    }, [],
   );
   
   useEffect(

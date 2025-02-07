@@ -9,9 +9,7 @@ import {
     Spinner,
     Alert
 } from "react-bootstrap";
-import {
-  useNavigate
-} from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { axiosInstance } from '../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
 import DOMPurify from 'dompurify';
@@ -31,6 +29,9 @@ function Chat({
     const [hiddenAlert, setHiddenAlert] = useState(true);
     const [alertMessage, setAlertMessage] = useState('');
 
+    const location = useLocation(); // Get the current URL
+    const previousUrl = location.state?.from;
+
     console.log("explorerId", explorerId);
     console.log("CHAT JSX swapExplorerId", swapExplorerId);
     console.log("messages", messages);
@@ -40,37 +41,32 @@ function Chat({
 
     const { getToken } = useAuth()
 
-    useEffect(() => {
-      const fetchConversation = async () => {
-        try {
-          const response = await axiosInstance.get(
-            `/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`
-          , {
-            headers: {
-              Authorization: `Bearer ${await getToken()}`,
-            },
-          });
+    const fetchConversation = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`
+        , {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        });
 
-          console.log("fetchConversation response", response);
-          setLoading(false);
+        console.log("fetchConversation response", response);
+        setLoading(false);
 
-          if (!response.data) {
-            setConversationId('');
-          } else {
-            setConversationId(response.data.id);
-          }
-
-        } catch (error) {
-          setLoading(false);
-          setHiddenAlert(false);
-          setAlertMessage("There was an error while fetching the conversation");
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (!response.data) {
+          setConversationId('');
+        } else {
+          setConversationId(response.data.id);
         }
-      
-      };
-      fetchConversation();
-    }, []);
 
+      } catch (error) {
+        setLoading(false);
+        setHiddenAlert(false);
+        setAlertMessage("There was an error while fetching the conversation");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
 
     const fetchMessages = async () => {
       console.log("FETCHING MESSAGES");
@@ -130,58 +126,6 @@ function Chat({
       }
       
     };
-  
-    // Scroll to the bottom of the chat after sending a new message
-    useEffect(() => {
-      messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
-
-    useEffect(() => {
-      fetchMessages();
-    }, [conversationId, setMessages]);
-  
-    const handleSendMessage = async () => {
-      if (newMessage.trim() === '') return;
-
-      if (!conversationId) {
-        const conversation = {
-          card_name: swapCardName,
-          creator_id: explorerId,
-          recipient_id: swapExplorerId,
-          timestamp: new Date(),
-        }
-
-        try {
-          const response = await axiosInstance.post(
-            `/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`,
-            conversation
-          , {
-            headers: {
-              Authorization: `Bearer ${await getToken()}`,
-            },
-          });
-          console.log("RESPONSE", response);
-  
-          if (response.status === 201) {
-            setConversationId(response.data.id);
-            sendMessage(response.data.id);
-          } else {
-            console.error("Failed to create conversation");
-            return
-          }
-  
-        } catch (error) {
-          setHiddenAlert(false);
-          setAlertMessage("There was an error while sending the message");
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          console.log(error.data);
-        }
-  
-      } else {
-        sendMessage(conversationId);
-      }
-      
-    };
 
     const setUnreadMessagestoRead = async () => {
         try {
@@ -219,7 +163,9 @@ function Chat({
           headers: {
             Authorization: `Bearer ${await getToken()}`,
           },
-        });
+          withCredentials: true,
+          } 
+        );
         console.log("RESPONSE", response);
 
         if (response.status === 201) {
@@ -256,6 +202,68 @@ function Chat({
         }
     };
 
+    const handleSendMessage = async () => {
+      if (newMessage.trim() === '') return;
+
+      if (!conversationId) {
+        const conversation = {
+          card_name: swapCardName,
+          creator_id: explorerId,
+          recipient_id: swapExplorerId,
+          timestamp: new Date(),
+        }
+
+        try {
+          const response = await axiosInstance.post(
+            `/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`,
+            conversation
+          , {
+            headers: {
+              Authorization: `Bearer ${await getToken()}`,
+            },
+            withCredentials: true,
+          }
+        );
+          console.log("RESPONSE", response);
+  
+          if (response.status === 201) {
+            setConversationId(response.data.id);
+            sendMessage(response.data.id);
+          } else {
+            console.error("Failed to create conversation");
+            return
+          }
+  
+        } catch (error) {
+          setHiddenAlert(false);
+          setAlertMessage("There was an error while sending the message");
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          console.log(error.data);
+        }
+  
+      } else {
+        sendMessage(conversationId);
+      }
+      
+    };
+
+    useEffect(() => {
+      if (!explorerId) {
+        navigate('/login/redirect', { state: { from: previousUrl } });
+      } else {
+        fetchConversation();    
+      };
+    }, []);
+    
+    // Scroll to the bottom of the chat after sending a new message
+    useEffect(() => {
+      messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
+
+    useEffect(() => {
+      fetchMessages();
+    }, [conversationId, setMessages]);
+  
   return (
     <Container className="page-container">
 

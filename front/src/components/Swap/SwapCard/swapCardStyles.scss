@@ -16,6 +16,10 @@
 .opportunity-text {
     height: 150px !important;
     overflow-y: auto;
+
+    &-empty {
+        overflow-y: auto;    
+    }
 }
 
 .swap-title {

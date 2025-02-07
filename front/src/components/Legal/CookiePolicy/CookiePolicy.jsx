@@ -12,7 +12,7 @@ function CookiePolicy() {
   <Container className="page-container cookie">
     <section>
       <h1 className="page-title">Cookie Policy</h1>
-      <p><strong>Effective Date:</strong> January 23, 2025</p>
+      <p><strong>Effective Date:</strong> February 3, 2025</p>
           <p>At WeSwapCards ("we," "us," or "our"), we are committed to protecting your privacy. This Cookie Policy explains how we use cookies when you visit our website www.weswapcards.com (the "Site"). By using the Site, you consent to the use of cookies as described in this policy.</p>
     </section>
 
@@ -64,7 +64,7 @@ function CookiePolicy() {
     <section>
       <h2 className="cookie-title">7. Contact Us</h2>
       <p>If you have any questions or concerns about this Cookie Policy, please contact us at:</p>
-      <p>weswapcards@gmail.com</p>
+      <p>contact@weswapcards.com</p>
     </section>
 
     <ScrollToTop />

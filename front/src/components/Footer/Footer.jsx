@@ -11,8 +11,6 @@ import {
 import PropTypes from 'prop-types';
 
 import './footerStyles.scss';
-import PrivacyPolicy from '../Legal/PrivacyPolicy/PrivacyPolicy';
-
 function Footer() {
   const location = useLocation();
 
@@ -37,7 +35,7 @@ function Footer() {
 
       
       {/* For mobile screens */}
-      {location.pathname === "/" || location.pathname === "/register/user" || location.pathname === "/register" || location.pathname === "/login" || location.pathname === "/privacy" || location.pathname === "/terms" || location.pathname === "/contact" ?
+      {location.pathname === "/" || location.pathname === "/register/user" || location.pathname === "/register" || location.pathname === "/login" || location.pathname === "/privacy" || location.pathname === "/cookies" || location.pathname === "/terms" || location.pathname === "/contact" ?
             <div className="footer-general border-top">
              <a href="/privacy" target="_blank" className="footer-general-link" rel="noopener noreferrer">
                 <p className="footer-general-caption">Privacy</p>

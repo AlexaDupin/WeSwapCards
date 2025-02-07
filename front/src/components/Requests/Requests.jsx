@@ -17,7 +17,7 @@ import PropTypes from 'prop-types';
 
 import './requestsStyles.scss';
 
-// import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
+import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 function Requests({
   explorerId, setSwapExplorerId, setSwapCardName, setSwapExplorerName, setConversationId
@@ -56,7 +56,7 @@ function Requests({
       setSwapExplorerId(swapExplorerId);
       setSwapCardName(cardName);
       setSwapExplorerName(swapExplorerName);
-      navigate('/swap/card/chat');
+      navigate('/swap/card/chat', { state: { from: "/swap/requests" } });
   };
 
   const handleStatusChange = async (conversationId, newStatus) => {
@@ -95,9 +95,12 @@ function Requests({
 
   useEffect(
     () => {
+      if (!explorerId) {
+        navigate('/login/redirect', { state: { from: "/swap/requests" } });
+      } else {
       fetchAllConversations();
-      },
-    [],
+      }
+    }, [],
   );
 
   return (
@@ -165,7 +168,8 @@ function Requests({
             </tbody>
           </Table></>
     }
-    
+
+    <ScrollToTop />
     </Container>
   );
 }

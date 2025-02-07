@@ -14,8 +14,8 @@ function SignUpPage() {
       <h1 className="page-title">Sign Up</h1>
       <div className="signup-container">
         <SignUp 
-          path="/register"
-          routing="path" 
+          routing="virtual"
+          // routing="path" 
           forceRedirectUrl="/register/user"
         />
       </div>

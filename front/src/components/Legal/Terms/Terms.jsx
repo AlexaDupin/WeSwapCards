@@ -12,7 +12,7 @@ function Terms() {
   <Container className="page-container privacy">
     <section>
   <h1 className="page-title">Terms and Conditions</h1>
-  <p><strong>Effective Date:</strong> January 10, 2025</p>
+  <p><strong>Effective Date:</strong> February 3, 2025</p>
   <p>Welcome to WeSwapCards ("we," "us," or "our"). By using our website www.weswapcards.com (the "Site"), you agree to comply with and be bound by these Terms and Conditions ("Terms"). If you do not agree to these Terms, please do not use the Site. These Terms apply to all users of the Site, including visitors, registered users, and those who access or use the Site's services.</p>
 </section>
 
@@ -134,7 +134,7 @@ function Terms() {
   <p>If you have any questions or concerns about these Terms, please contact us at:</p>
   <ul className="terms-list">
     <li>
-      <p><strong>Email:</strong> weswapcards@gmail.com</p>
+      <p><strong>Email:</strong> contact@weswapcards.com</p>
     </li>
   </ul>
 </section>

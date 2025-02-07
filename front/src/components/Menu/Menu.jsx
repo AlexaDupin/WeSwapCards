@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useClerk } from '@clerk/clerk-react';
 
 import {
     Container,
@@ -16,9 +17,25 @@ function Menu({
     explorerId,
 }) {
     const navigate = useNavigate();
-
+    const { signOut } = useClerk();
     console.log("MENU explorerId", explorerId);
     
+    const handleSignOut = async () => {
+        try {
+          await signOut();
+          console.log('Signed out successfully');
+        //   navigate('/login');
+        navigate('/login', { replace: true });
+        } catch (error) {
+          console.error('Error signing out:', error);
+        }
+      };
+
+    useEffect(() => {
+        if (!explorerId || !name || name === "") {
+            handleSignOut();
+        }
+     }, []);
 
   return (
     <Container className="page-container">
@@ -57,12 +74,6 @@ function Menu({
                     onClick={() => navigate('/legal')}
                     />
             </Col>
-            {/* <Col sm={12} id="btn-signout">
-                    <CustomButton
-                    text="Sign out"
-                    onClick={handleSignOut}
-                    />
-            </Col> */}
         </Row> 
                
     </Container>

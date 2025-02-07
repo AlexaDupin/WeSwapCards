@@ -48,6 +48,10 @@ const reportController = {
         const duplicatesIds = req.body.duplicatesIds;
         const toBeDeletedIds = req.body.toBeDeletedIds;
 
+        if (!explorerId) {
+            return res.status(400).json({ error: "Explorer ID is required" });
+          }
+
         // console.log("selectedCardsIds", selectedCardsIds);
         // console.log("duplicatesIds", duplicatesIds);
         // console.log("toBeDeletedIds", toBeDeletedIds);

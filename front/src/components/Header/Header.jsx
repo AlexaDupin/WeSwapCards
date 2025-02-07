@@ -49,7 +49,9 @@ function Header() {
                 Check all my cards
               </NavDropdown.Item>
             </NavDropdown>
-            <UserButton />
+            <UserButton 
+              afterSignOutUrl="/login" 
+            />
         </nav>
         : 
         <nav 

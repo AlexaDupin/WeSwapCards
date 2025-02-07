@@ -1,6 +1,13 @@
 const client = require('./client');
 
 module.exports = {
+    async getAllCountries() {
+        const preparedQuery = {
+            text: `SELECT * FROM country`,
+        };
+        const result = await client.query(preparedQuery);
+        return result.rows;
+    },
     async getAllPlaces() {
         const preparedQuery = {
             text: `SELECT * FROM place
