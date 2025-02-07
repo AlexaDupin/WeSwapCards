@@ -5,9 +5,15 @@ import {
   Container
 } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
-import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
+import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 import CustomButton from '../CustomButton/CustomButton';
+
+import Report from '../../images/report.svg';
+import Search from '../../images/search.svg';
+import Users from '../../images/users.svg';
+import Chat from '../../images/chatdeal.svg';
+import Dashboard from '../../images/dashboard.svg';
 
 import './homeStyles.scss';
 
@@ -26,42 +32,41 @@ function Home() {
   <Container className="page-container">
     <section>
       <h1 className="home-title">Welcome to WeSwapCards!</h1><br />
-      <p>This platform aims to facilitate exchange of cards between users of the WeWard app. </p>
-      <p>It is <strong>not</strong> linked in any way to the official WeWard app.</p>
+      <p>You use the WeWard app and want to exchange cards easily? This is the place for you!</p>
+      <p>Create an account and start searching for the cards you need!</p>
+      <p className="home-disclaimer">This platform is <strong>not</strong> affiliated in any way with the official WeWard app.</p><br />
 
-      <p>You first need to create an account. Then you can start searching for the cards you need!</p><br />
       <CustomButton 
           text="Create an account"
           onClick={() => navigate('/register')}
-      /><br /><br /><br />
+      /><br /><br />
     </section>
 
-    <section>
-      <h1 className="home-title">How it works?</h1><br />
-      <p>Once you are logged in, follow these steps:</p>
-      <div>
+    <section className="home-steps">     
+      <section className="image-section">
+        <img src={Report} alt="accueil" className="home-image" />
+        <h2 className="home-subtitle">Log all the cards you have</h2>
+      </section>
 
-      <ul className="home-list">
-        <li>
-          <h2 className="home-subtitle">1. Log all the cards you have</h2>
-          <p>Start by reporting your own cards.</p>
-        </li>
-        <li>
-          <h2 className="home-subtitle">2. Find a card</h2>
-          <p>You will then be able to search for a specific card.</p>
-        </li>
-        <li>
-          <h2 className="home-subtitle">3. Browse users</h2>
-          <p>You will see a list of all users who have this card as a duplicate.</p>   
-        </li>
-        <li>
-          <h2 className="home-subtitle">4. Chat with users</h2>
-          <p>Chat with any user in the list to find an agreement on cards to swap.</p>
-        </li>
-      </ul>
-      <p>You will also be able to keep track of all your swap requests in a practical dashboard so register to start swapping!</p>
+      <section className="image-section">
+        <img src={Search} alt="accueil" className="home-image" />
+        <h2 className="home-subtitle">Find the card you need</h2>
+      </section>
 
-      </div>
+      <section className="image-section">
+        <img src={Users} alt="accueil" className="home-image" />
+        <h2 className="home-subtitle">Browse users who have this card</h2>
+      </section>
+
+      <section className="image-section">
+        <img src={Chat} alt="accueil" className="home-image" />
+        <h2 className="home-subtitle">Chat with them and find a deal</h2>
+      </section>
+
+      <section className="image-section" id="image-section-dashboard">
+        <img src={Dashboard} alt="accueil" className="home-image"/>
+        <h2 className="home-subtitle">Keep track of your requests in a dashboard</h2>
+      </section>
     </section>
 
     <ScrollToTop />

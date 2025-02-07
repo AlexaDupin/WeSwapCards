@@ -5,11 +5,46 @@
     margin-top: 1rem;
 }
 
-.home-subtitle {
-    font-size: 1.2rem;
-    font-weight: bold;    
+.home-disclaimer {
+    font-size: 0.7rem; 
 }
 
-.home-list {
-    padding: 0;
+.home-steps {
+    display: flex;
+    flex-direction: column;
+}
+
+.home-subtitle {
+    font-size: 1rem;
+}
+
+.home-image {
+    width: 40%;
+    margin-top: 2rem;
+    padding-bottom: 1rem;
+}
+
+
+@media (min-width: 768px) { /* This targets larger screens */
+    .home-steps {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+    }
+
+    .home-image {
+        width: 40%;
+        height: 60%;
+        margin-top: 2rem;
+        padding-bottom: 1rem;
+    }
+
+    .image-section {
+        width: 50%;
+    }
+
+    #image-section-dashboard {
+        // align-self: center;
+    }
 }
