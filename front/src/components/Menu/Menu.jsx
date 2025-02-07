@@ -3,12 +3,14 @@ import { useClerk } from '@clerk/clerk-react';
 
 import {
     Container,
-    Row,
-    Col,
+    Button
 } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 
-import CustomButton from '../CustomButton/CustomButton';
+import Report from '../../images/report.svg';
+import Search from '../../images/search.svg';
+import Check from '../../images/check.svg';
+import Dashboard from '../../images/dashboard.svg';
 
 import './menuStyles.scss';
 
@@ -39,45 +41,59 @@ function Menu({
 
   return (
     <Container className="page-container">
-    <h1 className="menu-title pb-5" style={{fontSize: '1.2rem'}}>
+    <h1 className="menu-title" style={{fontSize: '1.2rem'}}>
         Welcome {name}!
     </h1>
-    <Container>
-        <Row className="g-4">
-            <Col sm={12}>
-                <CustomButton
-                    text="Report my cards"
-                    onClick={() => navigate('/report')}
-                    />
-            </Col>
-            <Col sm={12}>
-                    <CustomButton
-                    text="Swap my cards"
-                    onClick={() => navigate('/swap/card')}
-                    />
-            </Col>
-            <Col sm={12}>
-                    <CustomButton
-                    text="Check my cards"
-                    onClick={() => navigate('/check')}
-                    />
-            </Col>
-            <Col sm={12}>
-                    <CustomButton
-                    text="Check all swap requests"
-                    onClick={() => navigate('/swap/requests')}
-                    />
-            </Col>
-            <Col sm={12} id="btn-legal">
-                    <CustomButton
-                    text="Legal"
-                    onClick={() => navigate('/legal')}
-                    />
-            </Col>
-        </Row> 
-               
-    </Container>
-    </Container>
+
+    <section className="home-steps">     
+    <section className="image-section">
+        <img src={Report} alt="accueil" className="home-image" />
+        <Button
+            onClick={() => navigate('/report')}
+            className="menu-button"
+        >
+        Report my cards
+        </Button>
+    </section>
+    <section className="image-section">
+        <img src={Search} alt="accueil" className="home-image" />
+        <Button
+            onClick={() => navigate('/swap/card')}
+            className="menu-button"
+        >
+        Find a card
+        </Button>
+    </section>
+    <section className="image-section">
+        <img src={Check} alt="accueil" className="home-image" />
+        <Button
+            onClick={() => navigate('/check')}
+            className="menu-button"
+        >
+        Check my cards
+        </Button>
+    </section>
+    <section className="image-section">
+        <img src={Dashboard} alt="accueil" className="home-image" />
+        <Button
+            onClick={() => navigate('/swap/requests')}
+            className="menu-button"
+        >
+        View all requests
+        </Button>
+    </section>
+    <section className="btn-legal">
+        <Button
+            onClick={() => navigate('/legal')}
+            className="menu-button"
+        >
+        Legal
+        </Button>
+    </section>
+
+    </section>
+
+</Container>
 )
 }
 

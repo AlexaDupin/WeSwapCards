@@ -1,12 +1,60 @@
-.menu {
-    padding-top: 8rem !important;
+@use 'src/styles/vars';
 
+.menu {
     &-title {
         font-size: 1rem;
     }
 
+    &-button {
+        background-color: vars.$primary-color !important;
+        border-color: vars.$primary-color !important;        
+    }
+
 }
 
-#btn-legal {
+.home-image {
+    width: 40%;
+    margin-top: 4rem;
+    padding-bottom: 1rem;
+}
+
+.home-steps {
+    display: flex;
+    flex-direction: column;
+}
+
+.image-section {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.btn-legal {
     margin-top: 5rem !important;
+}
+
+@media (min-width: 768px) { /* This targets larger screens */
+    .home-steps {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+    }
+
+    .home-image {
+        width: 40%;
+        height: 60%;
+        margin-top: 2rem;
+        padding-bottom: 1rem;
+    }
+
+    .image-section {
+        width: 50%;
+    }
+
+    .btn-legal {
+        display: none;
+    }
 }

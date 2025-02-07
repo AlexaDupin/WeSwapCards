@@ -54,7 +54,7 @@
     }
 }
 
-@media (min-width: 768px) { /* This targets larger screens */
+@media (min-width: 768px) { /* This targets larger  */
     .footer-mobile {
         display: none;
     }
@@ -64,7 +64,7 @@
     }
 }
 
-@media (max-width: 768px) { /* This targets mobile screens */
+@media (max-width: 767px) { /* This targets mobile  */
     .footer-desktop {
         display: none;
     }

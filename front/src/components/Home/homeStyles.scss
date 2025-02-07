@@ -27,8 +27,8 @@
 
 @media (min-width: 768px) { /* This targets larger screens */
     .home-steps {
-        display: flex;
-        flex-direction: row;
+        display: flex !important;
+        flex-direction: row !important;
         flex-wrap: wrap;
         justify-content: space-evenly;
     }
@@ -44,7 +44,4 @@
         width: 50%;
     }
 
-    #image-section-dashboard {
-        // align-self: center;
-    }
 }
