@@ -76,7 +76,7 @@ function Menu({
     <section className="image-section">
         <img src={Dashboard} alt="accueil" className="home-image" />
         <Button
-            onClick={() => navigate('/swap/requests')}
+            onClick={() => navigate('/swap/dashboard')}
             className="menu-button"
         >
         View all requests

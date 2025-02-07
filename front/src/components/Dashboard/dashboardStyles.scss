@@ -1,0 +1,53 @@
+@use 'src/styles/vars';
+
+.requests {
+    padding-top: 7rem !important;
+
+    &-chat {
+        cursor: pointer;
+    }
+
+    &-table {
+        background-color: #f1f1f1 !important;
+
+        &-unread {
+            background-color: #ffffff !important;
+        }
+    }
+    
+}
+
+// Button color
+.declined .btn {
+    background-color: vars.$primary-color;
+    border-color: vars.$primary-color;   
+    color: white;      
+    
+    &:hover, :focus, :active {
+        background-color: vars.$primary-color !important;
+        border-color: vars.$primary-color !important;
+    }
+}
+
+.completed .btn {
+    background-color: vars.$secondary-color; 
+    border-color: vars.$secondary-color; 
+    color: white;   
+    
+    &:hover, :focus, :active {
+        background-color: vars.$secondary-color !important;
+        border-color: vars.$secondary-color !important;
+    }
+}
+
+.secondary .btn {
+    background-color: #6c757d; 
+    border-color: #6c757d; 
+    color: white;   
+    
+    &:hover, :focus, :active {
+        background-color: #6c757d !important;
+        border-color: #6c757d !important;
+    }
+}
+

@@ -38,7 +38,7 @@ function Header() {
         >
           <NavDropdown title="Swap" id="basic-nav-dropdown" className="header-nav-item">
               <NavDropdown.Item as={Link} to="/swap/card">Find a card</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/swap/requests">
+              <NavDropdown.Item as={Link} to="/swap/dashboard">
                 Check all requests
               </NavDropdown.Item>
               {/* <NavDropdown.Item as={Link} to="/swap/opportunities">All opportunities</NavDropdown.Item> */}

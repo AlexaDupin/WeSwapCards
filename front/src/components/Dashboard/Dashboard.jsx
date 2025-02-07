@@ -15,11 +15,11 @@ import { useAuth } from '@clerk/clerk-react';
 
 import PropTypes from 'prop-types';
 
-import './requestsStyles.scss';
+import './dashboardStyles.scss';
 
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
-function Requests({
+function Dashboard({
   explorerId, setSwapExplorerId, setSwapCardName, setSwapExplorerName, setConversationId
 }) {
   const [conversations, setConversations] = useState([]);
@@ -56,7 +56,7 @@ function Requests({
       setSwapExplorerId(swapExplorerId);
       setSwapCardName(cardName);
       setSwapExplorerName(swapExplorerName);
-      navigate('/swap/card/chat', { state: { from: "/swap/requests" } });
+      navigate('/swap/card/chat', { state: { from: "/swap/dashboard" } });
   };
 
   const handleStatusChange = async (conversationId, newStatus) => {
@@ -80,14 +80,14 @@ function Requests({
     }
   };
 
-  const getDropdownVariant = (status) => {
+  const getDropdownClass = (status) => {
     switch (status) {
       case 'In progress':
         return 'secondary'; 
       case 'Completed':
-        return 'success';
+        return 'completed';
       case 'Declined':
-        return 'danger'; 
+        return 'declined'; 
       default:
         return 'secondary';
     }
@@ -96,7 +96,7 @@ function Requests({
   useEffect(
     () => {
       if (!explorerId) {
-        navigate('/login/redirect', { state: { from: "/swap/requests" } });
+        navigate('/login/redirect', { state: { from: "/swap/dashboard" } });
       } else {
       fetchAllConversations();
       }
@@ -155,7 +155,7 @@ function Requests({
                     <DropdownButton
                       id={`dropdown-status-${conversation.row_id}`}
                       title={conversation.status}
-                      variant={getDropdownVariant(conversation.status)}
+                      className={getDropdownClass(conversation.status)}
                       onSelect={(selectedStatus) => handleStatusChange(conversation.db_id, selectedStatus)}
                     >
                       <Dropdown.Item eventKey="Completed">Completed</Dropdown.Item>
@@ -174,9 +174,9 @@ function Requests({
   );
 }
 
-Requests.propTypes = {
+Dashboard.propTypes = {
   explorerId: PropTypes.number.isRequired,
   name: PropTypes.string,
 };
 
-export default React.memo(Requests);
+export default React.memo(Dashboard);

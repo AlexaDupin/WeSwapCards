@@ -56,7 +56,7 @@ function Footer() {
             <Search />
             <p className="footer-mobile-caption">Find a card</p>
         </NavLink>
-        <NavLink to="/swap/requests" className="footer-mobile-link">
+        <NavLink to="/swap/dashboard" className="footer-mobile-link">
             <CardList />
             <p className="footer-mobile-caption">Dashboard</p>
         </NavLink>

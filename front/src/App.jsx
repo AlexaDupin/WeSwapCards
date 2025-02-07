@@ -17,7 +17,7 @@ import SwapCard from './components/Swap/SwapCard/SwapCard';
 import Chat from './components/Chat/Chat';
 import Opportunities from './components/Swap/Opportunities/Opportunities';
 import CheckPage from './components/CheckPage/CheckPage';
-import Requests from './components/Requests/Requests';
+import Dashboard from './components/Dashboard/Dashboard';
 import NotFound from './components/NotFound/NotFound';
 import Footer from './components/Footer/Footer';
 // import CustomProfile from './components/CustomProfile/CustomProfile';
@@ -168,10 +168,10 @@ if (!isLoaded) {
                 />}
             />
           <Route
-              path="/swap/requests"
+              path="/swap/dashboard"
               element={<ProtectedRoute 
                 element={
-                  <Requests
+                  <Dashboard
                     explorerId={explorerId}
                     setSwapCardName={setSwapCardName}
                     setSwapExplorerId={setSwapExplorerId}

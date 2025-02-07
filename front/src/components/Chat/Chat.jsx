@@ -195,7 +195,7 @@ function Chat({
               },
             });
 
-            navigate('/swap/requests');    
+            navigate('/swap/dashboard');    
 
         } catch (error) {
           console.error('Error updating status:', error);
