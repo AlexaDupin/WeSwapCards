@@ -19,33 +19,33 @@
 
 // Button color
 .declined .btn {
-    background-color: vars.$primary-color;
-    border-color: vars.$primary-color;   
+    background-color: vars.$primary-color !important;
+    border-color: vars.$primary-color !important;   
     color: white;      
     
-    &:hover, :focus, :active {
+    &:hover, :focus, :active, :disabled, :checked {
         background-color: vars.$primary-color !important;
         border-color: vars.$primary-color !important;
     }
 }
 
 .completed .btn {
-    background-color: vars.$secondary-color; 
-    border-color: vars.$secondary-color; 
+    background-color: vars.$secondary-color !important; 
+    border-color: vars.$secondary-color !important; 
     color: white;   
     
-    &:hover, :focus, :active {
+    &:hover, :focus, :active, :disabled {
         background-color: vars.$secondary-color !important;
         border-color: vars.$secondary-color !important;
     }
 }
 
 .secondary .btn {
-    background-color: #6c757d; 
-    border-color: #6c757d; 
+    background-color: #6c757d !important;
+    border-color: #6c757d !important; 
     color: white;   
     
-    &:hover, :focus, :active {
+    &:hover, :focus, :active, :disabled {
         background-color: #6c757d !important;
         border-color: #6c757d !important;
     }

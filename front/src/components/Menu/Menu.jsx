@@ -45,51 +45,60 @@ function Menu({
         Welcome {name}!
     </h1>
 
-    <section className="home-steps">     
-    <section className="image-section">
-        <img src={Report} alt="accueil" className="home-image" />
-        <Button
-            onClick={() => navigate('/report')}
-            className="menu-button"
-        >
-        Report my cards
-        </Button>
-    </section>
-    <section className="image-section">
-        <img src={Search} alt="accueil" className="home-image" />
-        <Button
-            onClick={() => navigate('/swap/card')}
-            className="menu-button"
-        >
-        Find a card
-        </Button>
-    </section>
-    <section className="image-section">
-        <img src={Check} alt="accueil" className="home-image" />
-        <Button
-            onClick={() => navigate('/check')}
-            className="menu-button"
-        >
-        Check my cards
-        </Button>
-    </section>
-    <section className="image-section">
-        <img src={Dashboard} alt="accueil" className="home-image" />
-        <Button
-            onClick={() => navigate('/swap/dashboard')}
-            className="menu-button"
-        >
-        View all requests
-        </Button>
-    </section>
-    <section className="btn-legal">
-        <Button
-            onClick={() => navigate('/legal')}
-            className="menu-button"
-        >
-        Legal
-        </Button>
-    </section>
+    <section className="menu-steps">    
+
+        <section className="menu-image-section">
+            <a href="/report" className="menu-link">
+                <img src={Report} alt="Report" className="menu-image"/>
+            </a>
+            <Button
+                onClick={() => navigate('/report')}
+                className="menu-button"
+            >
+            Report my cards
+            </Button>
+        </section>
+        <section className="menu-image-section">
+            <a href="/swap/card" className="menu-link">
+                <img src={Search} alt="Search" className="menu-image"/>
+            </a>
+            <Button
+                onClick={() => navigate('/swap/card')}
+                className="menu-button"
+            >
+            Find a card
+            </Button>
+        </section>
+        <section className="menu-image-section">
+            <a href="/check" className="menu-link">
+                <img src={Check} alt="Check" className="menu-image"/>
+            </a>
+            <Button
+                onClick={() => navigate('/check')}
+                className="menu-button"
+            >
+            Check my cards
+            </Button>
+        </section>
+        <section className="menu-image-section">
+            <a href="/swap/dashboard" className="menu-link">
+                <img src={Dashboard} alt="Dashboard" className="menu-image"/>
+            </a>
+            <Button
+                onClick={() => navigate('/swap/dashboard')}
+                className="menu-button"
+            >
+            View all requests
+            </Button>
+        </section>
+        <section className="btn-legal">
+            <Button
+                onClick={() => navigate('/legal')}
+                className="menu-button"
+            >
+            Legal
+            </Button>
+        </section>
 
     </section>
 

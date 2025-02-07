@@ -99,6 +99,17 @@
   .send-button .mobile-symbol {
     display: none;
   }
+
+  .chat-completed {
+    background-color: vars.$secondary-color !important;
+    border-color: vars.$secondary-color !important;
+    color: white;   
+    
+    &:hover, :focus, :active {
+        background-color: vars.$secondary-color !important;
+        border-color: vars.$secondary-color !important;
+    }
+  }
   
   /* Hide the "Send" text on mobile and show the symbol '>' */
   @media (max-width: 1100px) {

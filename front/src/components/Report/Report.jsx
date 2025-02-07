@@ -180,14 +180,30 @@ function Report({
       // console.log('SUBMIT payload', payload);
 
       try {
-          const response = await axiosInstance.post(
-            `/report/${explorerId}`,
-            payload, {
-              headers: {
-                Authorization: `Bearer ${await getToken()}`,
-              },
-              withCredentials: true,
+          // const response = await axiosInstance.post(
+          //   `/report/${explorerId}`,
+          //   payload, {
+          //     headers: {
+          //       Authorization: `Bearer ${await getToken()}`,
+          //     },
+          //     withCredentials: true,
+          //   }
+          // );
+
+          const token = await getToken();
+            if (!token) {
+                console.error("Token is not available!");
+                return;
             }
+
+          const response = await axiosInstance.post(
+              `/report/${explorerId}`,
+              payload, {
+                  headers: {
+                      Authorization: `Bearer ${token}`,
+                  },
+                  withCredentials: true,
+              }
           );
 
         if (response.status === 201) {

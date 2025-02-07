@@ -299,7 +299,8 @@ function Chat({
                 <Col xs={4}>
                   <Button
                     onClick={() => handleConversationStatus(conversationId, 'Completed')}
-                    variant='success'
+                    // variant='success'
+                    className="chat-completed"
                   >
                     <span className="send-text">Complete</span>
                   </Button>
