@@ -41,6 +41,7 @@ const checkConversationAuthorization = async (req, res, next) => {
 
   try {
     // Fetch the user from the database based on Clerk's `userId`
+    console.log("INTO CONV MDLW");
     const user = await userDatamapper.getExplorerIdByClerkId(clerkUserId);
 
     // If no user is found, return an error

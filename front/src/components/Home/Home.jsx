@@ -9,11 +9,11 @@ import { useNavigate } from 'react-router-dom';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 import CustomButton from '../CustomButton/CustomButton';
 
-import Report from '../../images/report.svg';
-import Search from '../../images/search.svg';
-import Users from '../../images/users.svg';
-import Chat from '../../images/chatdeal.svg';
-import Dashboard from '../../images/dashboard.svg';
+import Report from '../../images/reportPL.svg';
+import Search from '../../images/searchPL.svg';
+import Users from '../../images/usersPL.svg';
+import Chat from '../../images/chatdealPL.svg';
+import Dashboard from '../../images/dashboardPL.svg';
 
 import './homeStyles.scss';
 

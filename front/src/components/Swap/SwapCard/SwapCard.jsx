@@ -39,7 +39,9 @@ function SwapCard({
           headers: {
             Authorization: `Bearer ${await getToken()}`,
           },
-        });
+          withCredentials: true,
+          } 
+        );
         setPlaces(response.data.places);
       } catch (error) {
         console.log(error);
@@ -54,7 +56,9 @@ function SwapCard({
           headers: {
             Authorization: `Bearer ${await getToken()}`,
           },
-        });
+          withCredentials: true,
+          } 
+        );
         // console.log("allCards", allCards);
 
         setCards(allCards.data.cards);
@@ -75,7 +79,9 @@ function SwapCard({
           headers: {
             Authorization: `Bearer ${await getToken()}`,
           },
-        });
+          withCredentials: true,
+          } 
+        );
 
       const cardName = response.data.name;
       console.log("cardName", cardName);
@@ -99,7 +105,9 @@ function SwapCard({
             headers: {
               Authorization: `Bearer ${await getToken()}`,
             },
-          });
+            withCredentials: true,
+            } 
+          );
 
         const swapOpportunities = response.data;
         console.log("swapOpportunities", swapOpportunities);

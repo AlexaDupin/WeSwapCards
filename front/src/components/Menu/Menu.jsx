@@ -7,10 +7,10 @@ import {
 } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 
-import Report from '../../images/report.svg';
-import Search from '../../images/search.svg';
-import Check from '../../images/check.svg';
-import Dashboard from '../../images/dashboard.svg';
+import Report from '../../images/reportPL.svg';
+import Search from '../../images/searchPL.svg';
+import Check from '../../images/checkPL.svg';
+import Dashboard from '../../images/dashboardPL.svg';
 
 import './menuStyles.scss';
 

@@ -56,8 +56,10 @@ function Chat({
 
         if (!response.data) {
           setConversationId('');
+          console.log("CHAT NEW CONV: NO convID set");
         } else {
           setConversationId(response.data.id);
+          console.log("CHAT CONV FOUND: convID set");
         }
 
       } catch (error) {
@@ -144,6 +146,7 @@ function Chat({
     };
 
     const sendMessage = async (conversationId) => {
+      console.log("INTO CHAT SEND MESSAGE");
       const sanitizedMessage = DOMPurify.sanitize(newMessage);
 
       const input = {
@@ -154,32 +157,58 @@ function Chat({
         recipient_id: swapExplorerId,
         conversation_id: conversationId,
       };
+      console.log("CHAT SEND MESSAGE INPUT", input);
 
-      try {
-        const response = await axiosInstance.post(
-          `/chat/${conversationId}`,
-          input
-        , {
-          headers: {
-            Authorization: `Bearer ${await getToken()}`,
-          },
-          withCredentials: true,
-          } 
-        );
-        console.log("RESPONSE", response);
+      const maxRetries = 3;
+      const delayBetweenRetries = 1000;
 
-        if (response.status === 201) {
-          fetchMessages();
-          setNewMessage('');
-        } else {
-          console.error("Failed to send message");
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          const token = await getToken();
+          if (!token) {
+              console.error("Token is not available!");
+              return;
+          }
+
+          if (!conversationId) {
+            console.log("CHAT SEND MESSAGE NO CONV ID");
+            fetchConversation();
+          }
+
+          const response = await axiosInstance.post(
+            `/chat/${conversationId}`,
+            input
+          , {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+            } 
+          );
+          console.log("RESPONSE", response);
+
+          if (response.status === 201) {
+            fetchMessages();
+            setNewMessage('');
+            return;
+          } else {
+            console.error("Failed to send message");
+            return;
+          }
+
+        } catch (error) {
+          console.error(`Attempt ${attempt} to send failed:`, error);
+          if (attempt < maxRetries) {
+            console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
+            await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
+          } else {
+            setHiddenAlert(false);
+            setAlertMessage("There was an error while sending the message");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            console.log(error);
+            return;
+          }
         }
-
-      } catch (error) {
-        setHiddenAlert(false);
-        setAlertMessage("There was an error while sending the message");
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        console.log(error);
       }
     };
 
@@ -205,6 +234,7 @@ function Chat({
     const handleSendMessage = async () => {
       if (newMessage.trim() === '') return;
 
+      // If no previous conversation, create one and send message
       if (!conversationId) {
         const conversation = {
           card_name: swapCardName,
@@ -213,40 +243,61 @@ function Chat({
           timestamp: new Date(),
         }
 
-        try {
-          const response = await axiosInstance.post(
-            `/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`,
-            conversation
-          , {
-            headers: {
-              Authorization: `Bearer ${await getToken()}`,
-            },
-            withCredentials: true,
+        const maxRetries = 3;
+        const delayBetweenRetries = 1000;
+
+        // Retries in case of server inactivity
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+          try {
+            const token = await getToken();
+            if (!token) {
+                console.error("Token is not available!");
+                return;
+            }
+            const response = await axiosInstance.post(
+                `/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`,
+                conversation
+              , {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+                withCredentials: true,
+              }
+            );
+              console.log("RESPONSE", response);
+            
+              if (response.status === 201) {
+                setConversationId(response.data.id);
+                sendMessage(response.data.id);
+                return;
+              } else {
+                console.error("Failed to create conversation");
+                return;
+              }
+            
+          } catch (error) {
+            console.error(`Attempt ${attempt} to create conv failed:`, error);
+            if (attempt < maxRetries) {
+              console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
+              await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
+            } else {
+            setHiddenAlert(false);
+            setAlertMessage("There was an error while creating the conversation");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            console.log(error);
+            return;
+            }
           }
-        );
-          console.log("RESPONSE", response);
-  
-          if (response.status === 201) {
-            setConversationId(response.data.id);
-            sendMessage(response.data.id);
-          } else {
-            console.error("Failed to create conversation");
-            return
-          }
-  
-        } catch (error) {
-          setHiddenAlert(false);
-          setAlertMessage("There was an error while sending the message");
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          console.log(error.data);
-        }
-  
+        } 
+
+      // If existing conversation, just send message
       } else {
         sendMessage(conversationId);
       }
       
     };
 
+    // In case of missing explorerId in localStorage, retrieve it again
     useEffect(() => {
       if (!explorerId) {
         navigate('/login/redirect', { state: { from: previousUrl } });
