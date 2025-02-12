@@ -38,4 +38,16 @@ module.exports = {
         const result = await client.query(preparedQuery);
         return result.rows[0];
     },
+    async deleteExplorer(userUID) {
+        // console.log('DATAMAPPER', userUID, username);
+        const preparedQuery = await client.query(
+            `
+        DELETE FROM "explorer"
+        WHERE userid = $1
+        `,
+            [userUID],
+        );
+        console.log(preparedQuery);
+        return preparedQuery.rowCount;
+    },
 };
