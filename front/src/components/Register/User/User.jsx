@@ -52,6 +52,10 @@ const User = ({
     const onSubmit = async (data) => {
       const sanitizedUsername = sanitizeUsername(data.username);
 
+      const maxRetries = 3;
+      const delayBetweenRetries = 1000;
+
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             const response = await axiosInstance.post(
               `/register/user`,
@@ -66,33 +70,49 @@ const User = ({
             
             console.log("DM user response", response.data);
 
-            // Setting name and explorerId at App level
-            setExplorerId(response.data.user.id);
-            setName(response.data.user.name);
-            
-            navigate('/menu');
+            if (response.status === 201) {
+              // Setting name and explorerId at App level
+              setExplorerId(response.data.user.id);
+              setName(response.data.user.name);
+              navigate('/menu');
+              return;
+            } else {
+              console.error("Failed to create user");
+              return;
+            }
 
         } catch (error) {
           if (error.response) {
             // If the backend returned an error with a message (e.g., 400 or 500 status)
-            console.log("ERROR", error);
-            console.log("Error from backend:", error, error.response.data.error);
+            console.log("ERROR from backend:", error, error.response.data.error);
             setExplorerId('');
             setName('');
             setMessage("This username is already taken. Please try another one.");
             setHiddenAlert(false);
+            return;
           } else {
-            // If the error is not from the server (e.g., network error)
-            console.log("Network error or unexpected error:", error.message);
-            setExplorerId('');
-            setName('');
-            setMessage("An unexpected error occurred. Please try again later.");
-            setHiddenAlert(false);
+            console.error(`Attempt ${attempt} to create user:`, error);
+            if (attempt < maxRetries) {
+              console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
+              await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
+            } else {
+              // If the error is not from the server (e.g., network error)
+              console.log("Network error or unexpected error:", error.message);
+              setExplorerId('');
+              setName('');
+              setMessage("An unexpected error occurred. Please try again later.");
+              setHiddenAlert(false);
+              return;
+            }
           }
-        }    
+        }
+      }  
     };
 
     useEffect(() => {
+      setName("");
+      setExplorerId("");
+      
       if (user) {
         setUserUID(userUID);
       } else {

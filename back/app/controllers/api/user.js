@@ -9,7 +9,7 @@ const userController  = {
     try {
       const user = await datamapper.getExplorerInfo(userUID);
       console.log("CTRL user", user);
-      res.json(user);
+      return res.status(200).json(user);
     } catch (error) {
       res.status(500).send(error);
     }
@@ -34,11 +34,12 @@ const userController  = {
    if (!usernameRegex.test(sanitizedUsernameBack)) {
      return res.status(400).json({ error: 'Username format is invalid. It must be 2-30 characters and contain only letters, numbers, and underscores.' });
    }
+   
    try {
      const user = await datamapper.createExplorer(userUID, sanitizedUsernameBack);
      console.log("CTRL User created successfully:", user);
 
-     return res.status(200).json({ message: 'User successfully registered!', user });
+     return res.status(201).json({ message: 'User successfully registered!', user });
    } catch (err) {
      console.error("Error during user creation:", err); 
      return res.status(500).json({ error: 'Error during sign-up: ' + err.message });    }

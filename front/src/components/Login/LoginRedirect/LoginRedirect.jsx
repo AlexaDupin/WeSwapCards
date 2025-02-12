@@ -43,36 +43,51 @@ const LoginRedirect = ({
   };
 
   const fetchUserData = async (userUID) => {
-    try {
-      console.log('REDIRECT entering try');
-      const userInfo = await axiosInstance.post(
-        `/login/user`,
-        { userUID },
-         {
-          headers: {
-            Authorization: `Bearer ${await getToken()}`,
-          },
-          withCredentials: true,
+    const maxRetries = 3;
+    const delayBetweenRetries = 1000;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log('REDIRECT entering try');
+        const userInfo = await axiosInstance.post(
+          `/login/user`,
+          { userUID },
+          {
+            headers: {
+              Authorization: `Bearer ${await getToken()}`,
+            },
+            withCredentials: true,
+          }
+        );
+        console.log("User data received:", userInfo);
+
+        if (userInfo.data) {
+          setName(userInfo.data.name);
+          setExplorerId(userInfo.data.id);
+          navigate('/menu');
+          return;
         }
-      );
-      console.log("User data received:", userInfo.data);
-      setName(userInfo.data.name);
-      setExplorerId(userInfo.data.id);
 
-      if (!userInfo.data) {
-        navigate('/register/user');
-      } else if (!location.state?.from) {
-        navigate('/menu');
-      } else {
-        navigate(previousUrl); // Redirect them to the page they were on before
+        if (!userInfo.data) {
+          navigate('/register/user');
+        } else {
+          navigate(previousUrl); // Redirect user to page they were on before
+        }
+
+      } catch (error) {
+        console.error(`Attempt ${attempt} to fetch user:`, error);
+        if (attempt < maxRetries) {
+          console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
+          await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
+        } else {
+          setLoading(false);
+          setHiddenAlert(false);
+          setAlertMessage("There was an error during sign in");
+          console.error('Error fetching user data:', error);
+          handleSignOut();
+          return;
+        }
       }
-
-    } catch (error) {
-      setLoading(false);
-      setHiddenAlert(false);
-      setAlertMessage("There was an error during sign in");
-      console.error('Error fetching user data:', error);
-      handleSignOut();
     }
   };
 
@@ -81,6 +96,8 @@ const LoginRedirect = ({
   // Fetch Clerk userid on mount
   useEffect(() => {
    console.log('REDIRECT entering useffect');
+   setName("");
+   setExplorerId("");
 
    if (user) {
      const userUID = user.id;  // Clerk's userId

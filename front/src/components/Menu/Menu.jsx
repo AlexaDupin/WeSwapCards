@@ -34,9 +34,10 @@ function Menu({
       };
 
     useEffect(() => {
-        if (!explorerId || !name || name === "") {
-            handleSignOut();
-        }
+        if (!explorerId) {
+            navigate('/login/redirect', { state: { from: "/menu" } });
+            return;
+        } 
      }, []);
 
   return (
@@ -102,7 +103,7 @@ function Menu({
 
     </section>
 
-</Container>
+    </Container>
 )
 }
 

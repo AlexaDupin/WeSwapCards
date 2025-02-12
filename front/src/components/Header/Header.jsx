@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserButton, useUser, SignInButton } from "@clerk/clerk-react";
+import { UserButton, useUser } from "@clerk/clerk-react";
 
 import {
   NavLink, Link, useNavigate

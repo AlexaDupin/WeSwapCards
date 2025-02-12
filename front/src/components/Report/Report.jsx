@@ -179,56 +179,60 @@ function Report({
       };
       // console.log('SUBMIT payload', payload);
 
-      try {
-          // const response = await axiosInstance.post(
-          //   `/report/${explorerId}`,
-          //   payload, {
-          //     headers: {
-          //       Authorization: `Bearer ${await getToken()}`,
-          //     },
-          //     withCredentials: true,
-          //   }
-          // );
+      const maxRetries = 3;
+      const delayBetweenRetries = 1000;
 
-          const token = await getToken();
-            if (!token) {
-                console.error("Token is not available!");
-                return;
-            }
-
-          const response = await axiosInstance.post(
-              `/report/${explorerId}`,
-              payload, {
-                  headers: {
-                      Authorization: `Bearer ${token}`,
-                  },
-                  withCredentials: true,
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            const token = await getToken();
+              if (!token) {
+                  console.error("Token is not available!");
+                  return;
               }
-          );
 
-        if (response.status === 201) {
-          setVariant("success");
-          setMessage("Your cards have been logged!");
-          setHiddenAlert(false);
-          setHidden(true);
-          setHiddenDuplicates(true);
-        } else {
+            const response = await axiosInstance.post(
+                `/report/${explorerId}`,
+                payload, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                }
+            );
+
+          if (response.status === 201) {
+            setVariant("success");
+            setMessage("Your cards have been logged!");
+            setHiddenAlert(false);
+            setHidden(true);
+            setHiddenDuplicates(true);
+            return;
+          } else {
+            setVariant("danger");
+            setMessage("Oops, there was an issue and your cards haven't been logged");
+            setHiddenAlert(false);
+            setHidden(true);
+            setHiddenDuplicates(true);
+            console.error("Failed to submit cards");
+            return;
+          }
+
+        } catch (error) {
+          console.error(`Attempt ${attempt} to log cards:`, error);
+          if (attempt < maxRetries) {
+            console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
+            await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
+          } else {
           setVariant("danger");
           setMessage("Oops, there was an issue and your cards haven't been logged");
           setHiddenAlert(false);
           setHidden(true);
           setHiddenDuplicates(true);
-          console.error("Failed to submit cards");
+          console.log(error.data);
+          return;
+          }
         }
-
-      } catch (error) {
-        setVariant("danger");
-        setMessage("Oops, there was an issue and your cards haven't been logged");
-        setHiddenAlert(false);
-        setHidden(true);
-        setHiddenDuplicates(true);
-        console.log(error.data);
-    }
+      }
   };
 
   useEffect(

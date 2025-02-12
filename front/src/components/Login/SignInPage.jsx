@@ -1,5 +1,5 @@
-import React from 'react';
-import { SignIn } from '@clerk/clerk-react';
+import React, { useEffect } from 'react';
+import { SignIn, useUser } from '@clerk/clerk-react';
 
 import {
   Container,
@@ -8,6 +8,13 @@ import {
 import './loginStyles.scss';
 
 const SignInPage = () => {
+  const { isSignedIn } = useUser();
+
+  useEffect(() => {
+    if (!isSignedIn) {
+      localStorage.clear();
+    }
+  }, [isSignedIn]);
 
   return (
   <Container className="page-container">

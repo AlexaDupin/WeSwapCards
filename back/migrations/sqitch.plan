@@ -1,0 +1,11 @@
+%syntax-version=1.0.0
+%project=wecards
+
+wecards-schema 2024-09-13T13:52:00Z Alexa D <alexa.dupin@gmail.com> # Creation of tables
+functions 2024-10-05T23:49:03Z Alexa D <alexa.dupin@gmail.com> # Insertion of all cards
+mass-insertion-start 2024-10-08T17:23:41Z Alexa D <alexa.dupin@gmail.com> # Insertion of all cards and places
+new-place-rome 2024-10-16T19:02:49Z Alexa D <alexa.dupin@gmail.com> # Adding Rome
+add-cards-rome 2024-10-16T19:15:12Z Alexa D <alexa.dupin@gmail.com> # Adding cards for Rome
+new-place-portugal 2024-10-16T19:22:53Z Alexa D <alexa.dupin@gmail.com> # Adding Portugal and editing Egypte
+indexes 2024-10-18T14:19:14Z Alexa D <alexa.dupin@gmail.com> # Create card.name and place.name indexes
+jordan 2024-10-28T19:12:09Z Alexa D <alexa.dupin@gmail.com> # 8. Add Jordan
