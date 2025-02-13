@@ -7,6 +7,7 @@ import {
 import {
   NavDropdown
 } from "react-bootstrap";
+import Logo from '../../images/logo.png';
 
 import './headerStyles.scss';
 
@@ -21,6 +22,7 @@ function Header() {
         <div>
           <NavLink to="/menu" style={{ textDecoration: 'none' }}>
             <h1 className="header-title m-0 header-title-link">WeSwapCards</h1>
+            {/* <img src={Logo} alt="accueil" className="header-logo" /> */}
           </NavLink>
         </div>
         :
