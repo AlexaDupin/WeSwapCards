@@ -42,7 +42,7 @@ function Report({
   const fetchAllPlaces = async () => {
 
     try {
-      console.log("ENTERING PLACES TRY");
+      // console.log("ENTERING PLACES TRY");
       const response = await axiosInstance.get(`/places`, {
         headers: {
           Authorization: `Bearer ${await getToken()}`,
@@ -54,7 +54,7 @@ function Report({
       setLoadingPlaces(false);
 
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       setLoadingPlaces(false);
     }
   };
@@ -94,7 +94,7 @@ function Report({
       setHiddenAlert(false);
       setVariant('danger');
       setMessage('There was an error while loading the cards');
-      console.log(error);
+      // console.log(error);
     }
   };
 
@@ -186,7 +186,7 @@ function Report({
         try {
             const token = await getToken();
               if (!token) {
-                  console.error("Token is not available!");
+                  // console.error("Token is not available!");
                   return;
               }
 
@@ -213,14 +213,14 @@ function Report({
             setHiddenAlert(false);
             setHidden(true);
             setHiddenDuplicates(true);
-            console.error("Failed to submit cards");
+            // console.error("Failed to submit cards");
             return;
           }
 
         } catch (error) {
-          console.error(`Attempt ${attempt} to log cards:`, error);
+          // console.error(`Attempt ${attempt} to log cards:`, error);
           if (attempt < maxRetries) {
-            console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
+            // console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
             await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
           } else {
           setVariant("danger");
@@ -228,7 +228,7 @@ function Report({
           setHiddenAlert(false);
           setHidden(true);
           setHiddenDuplicates(true);
-          console.log(error.data);
+          // console.log(error.data);
           return;
           }
         }

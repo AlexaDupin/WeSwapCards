@@ -39,7 +39,7 @@ function Place({
 
             if (response.status === 200) {
                 const confirmation = response.data;
-                console.log("handleDuplicateStatus", confirmation);
+                // console.log("handleDuplicateStatus", confirmation);
 
                 // Update duplicate status in state
                 setPlaceCards((prevPlaceCards) => {
@@ -48,10 +48,10 @@ function Place({
                     );
                 });
             } else {
-              console.error('Failed to update duplicate status');
+              // console.error('Failed to update duplicate status');
             }
         } catch (error) {
-          console.log(error);
+          // console.log(error);
         }
     };
 

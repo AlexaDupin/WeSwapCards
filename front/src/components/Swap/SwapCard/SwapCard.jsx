@@ -30,7 +30,7 @@ function SwapCard({
     const [selectedCardId, setSelectedCardId] = useState();
     const { getToken } = useAuth()
     const navigate = useNavigate();
-    console.log('selectedCardId', selectedCardId);
+    // console.log('selectedCardId', selectedCardId);
 
     // Fetch all places to show in dropdown
     const fetchAllPlaces = async () => {
@@ -44,7 +44,7 @@ function SwapCard({
         );
         setPlaces(response.data.places);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 
@@ -68,7 +68,7 @@ function SwapCard({
         setConversationId('');
 
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 
@@ -84,16 +84,16 @@ function SwapCard({
         );
 
       const cardName = response.data.name;
-      console.log("cardName", cardName);
+      // console.log("cardName", cardName);
       setSwapCardName(cardName);
 
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
     }
 
     const fetchSwapOpportunities = async (cardId) => {
-      console.log("FETCH OPP");
+      // console.log("FETCH OPP");
       setSelectedCardId(cardId);
 
       // Fetch card name
@@ -110,13 +110,13 @@ function SwapCard({
           );
 
         const swapOpportunities = response.data;
-        console.log("swapOpportunities", swapOpportunities);
+        // console.log("swapOpportunities", swapOpportunities);
         setSwapOpportunities(swapOpportunities);
         setHidden(true);
         setHiddenSwapOpportunities(false);
 
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 
@@ -136,7 +136,7 @@ function SwapCard({
       }, [],
     );
 
-    console.log("SWAP OPP", swapOpportunities);
+    // console.log("SWAP OPP", swapOpportunities);
 
   return (
     <Container className="page-container">
@@ -149,7 +149,7 @@ function SwapCard({
           aria-label="Select a chapter" 
           onChange={(e) => {
             const selectedValue = e.target.value;
-            console.log(selectedValue);
+            // console.log(selectedValue);
 
             if (selectedValue !== "") {
               handleSelectPlace(selectedValue);

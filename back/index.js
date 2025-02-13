@@ -79,7 +79,6 @@ app.post('/api/webhooks',
         })
       }
   
-      // Do something with payload
       const { id } = evt.data
       const eventType = evt.type
       console.log(`Received webhook with ID ${id} and event type of ${eventType}`)
@@ -99,17 +98,8 @@ app.post('/api/webhooks',
             res.status(500).json({ error: 'Error while deleting user: ' + error.message });
           }
       }
-  
-    //   return void res.status(200).json({
-    //     success: true,
-    //     message: 'Webhook received',
-    //   })
     },
 );
-
-// app.listen(3000, () => {
-//     console.log("Server Listening on port 3000");
-// })
 
 // Payload JSON
 app.use(express.json());
@@ -136,5 +126,3 @@ if (typeof(PhusionPassenger) !== 'undefined') {
     app.listen(`${port}`);
     console.log(`Listening on ${port}`);
 }
-
-// module.exports = app;

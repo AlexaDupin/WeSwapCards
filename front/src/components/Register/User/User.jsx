@@ -34,9 +34,9 @@ const User = ({
 
     // Get the user info from Clerk
     const { user } = useUser();
-    console.log("REGISTER USER", user);
+    // console.log("REGISTER USER", user);
     const userUID = user.id;  
-    console.log('User ID:', userUID);
+    // console.log('User ID:', userUID);
 
     const { register, handleSubmit, formState: { errors } } = useForm({
       defaultValues: {
@@ -68,7 +68,7 @@ const User = ({
               }
             );
             
-            console.log("DM user response", response.data);
+            // console.log("DM user response", response.data);
 
             if (response.status === 201) {
               // Setting name and explorerId at App level
@@ -77,27 +77,27 @@ const User = ({
               navigate('/menu');
               return;
             } else {
-              console.error("Failed to create user");
+              // console.error("Failed to create user");
               return;
             }
 
         } catch (error) {
           if (error.response) {
             // If the backend returned an error with a message (e.g., 400 or 500 status)
-            console.log("ERROR from backend:", error, error.response.data.error);
+            // console.log("ERROR from backend:", error, error.response.data.error);
             setExplorerId('');
             setName('');
             setMessage("This username is already taken. Please try another one.");
             setHiddenAlert(false);
             return;
           } else {
-            console.error(`Attempt ${attempt} to create user:`, error);
+            // console.error(`Attempt ${attempt} to create user:`, error);
             if (attempt < maxRetries) {
-              console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
+              // console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
               await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
             } else {
               // If the error is not from the server (e.g., network error)
-              console.log("Network error or unexpected error:", error.message);
+              // console.log("Network error or unexpected error:", error.message);
               setExplorerId('');
               setName('');
               setMessage("An unexpected error occurred. Please try again later.");

@@ -26,7 +26,7 @@ function Dashboard({
   const [loading, setLoading] = useState(true);
   const [hiddenAlert, setHiddenAlert] = useState(true);
   const [alertMessage, setAlertMessage] = useState('');
-  console.log('conversations', conversations);
+  // console.log('conversations', conversations);
 
   const { getToken } = useAuth()
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ function Dashboard({
       setLoading(false);
       setHiddenAlert(false);
       setAlertMessage("There was an error while loading your requests");
-      console.log(error);
+      // console.log(error);
     }
   };
 
@@ -60,7 +60,7 @@ function Dashboard({
   };
 
   const handleStatusChange = async (conversationId, newStatus) => {
-    console.log("CHANGING STATUS", newStatus);
+    // console.log("CHANGING STATUS", newStatus);
     try {
       await axiosInstance.put(
         `/conversation/${conversationId}`,
@@ -76,7 +76,7 @@ function Dashboard({
         )
       );
     } catch (error) {
-      console.error('Error updating status:', error);
+      // console.error('Error updating status:', error);
     }
   };
 

@@ -20,19 +20,8 @@ function Menu({
 }) {
     const navigate = useNavigate();
     const { signOut } = useClerk();
-    console.log("MENU explorerId", explorerId);
+    // console.log("MENU explorerId", explorerId);
     
-    const handleSignOut = async () => {
-        try {
-          await signOut();
-          console.log('Signed out successfully');
-        //   navigate('/login');
-        navigate('/login', { replace: true });
-        } catch (error) {
-          console.error('Error signing out:', error);
-        }
-      };
-
     useEffect(() => {
         if (!explorerId) {
             navigate('/login/redirect', { state: { from: "/menu" } });

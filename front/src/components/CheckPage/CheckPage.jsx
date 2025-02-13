@@ -36,7 +36,7 @@ function CheckPage({
               },
             })
           const fetchedCardsByPlace = response.data;
-          console.log("fetchedCardsByPlace", fetchedCardsByPlace);
+          // console.log("fetchedCardsByPlace", fetchedCardsByPlace);
           setCardsByPlace(fetchedCardsByPlace);
           setLoading(false);
 
@@ -44,7 +44,7 @@ function CheckPage({
           setLoading(false);
           setHiddenAlert(false);
           setAlertMessage("There was an error while loading your cards");
-          console.log(error);
+          // console.log(error);
         }
     };
 

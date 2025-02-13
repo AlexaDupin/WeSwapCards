@@ -146,48 +146,12 @@ module.exports = {
         console.log("ENTERING DATAMAPPER");
 
         const preparedQuery = {
-            // text: `
-            // WITH explorers_with_duplicate AS (
-            //     SELECT ehc.explorer_id, explorer.name
-            //     FROM explorer_has_cards AS ehc
-            //     JOIN explorer ON explorer.id = ehc.explorer_id
-            //     WHERE card_id = $1 AND duplicate = true
-            //       AND explorer_id != $2
-            // ),
-            // explorer_duplicates AS (
-            //     SELECT card_id
-            //     FROM explorer_has_cards
-            //     WHERE explorer_id = $2 AND duplicate = true
-            // )
-            // SELECT 
-            // swapexp.explorer_id AS explorer_id,
-            // swapexp.name AS explorer_name,
-            // jsonb_agg(
-            //     jsonb_build_object(
-            //         'card', 
-            //         jsonb_build_object(
-            //             'id', c.id, 
-            //             'name', c.name)
-            //         )
-            //     ORDER BY c.name) AS opportunities
-            // FROM 
-            //     explorers_with_duplicate swapexp
-            // JOIN 
-            //     card c ON c.id IN (SELECT card_id FROM explorer_duplicates)
-            // LEFT JOIN 
-            //     explorer_has_cards ehc_all ON ehc_all.explorer_id = swapexp.explorer_id AND ehc_all.card_id = c.id
-            // WHERE 
-            //     ehc_all.explorer_id IS NULL
-            // GROUP BY 
-            //     swapexp.explorer_id, swapexp.name
-            // ORDER BY random()
-            // `,
             text: `WITH explorers_with_card AS (
                 SELECT ehc.explorer_id, explorer.name
                 FROM explorer_has_cards AS ehc
                 JOIN explorer ON explorer.id = ehc.explorer_id
                 WHERE ehc.card_id = $1
-                AND explorer.id != $2
+                AND explorer.id != $2 AND explorer.id != 1
             ),
             explorer_duplicates AS (
                 SELECT ehc.card_id

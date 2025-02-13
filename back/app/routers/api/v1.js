@@ -43,15 +43,15 @@ router
 
 router
     .route('/opportunities/:explorerId')
-    .get(requireAuth(), controllerHandler(opportunitiesController.getOpportunities));
+    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(opportunitiesController.getOpportunities));
 
 router
     .route('/opportunities/:explorerId/:placeId')
-    .get(requireAuth(), controllerHandler(opportunitiesController.getCountForOnePlaceForOneExplorer));
+    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(opportunitiesController.getCountForOnePlaceForOneExplorer));
 
 router
     .route('/opportunities/:explorerId/card/:cardId')
-    .get(requireAuth(), controllerHandler(opportunitiesController.findSwapOpportunities));
+    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(opportunitiesController.findSwapOpportunities));
 
 router
     .route('/card/:cardId')

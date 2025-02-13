@@ -32,12 +32,12 @@ function Chat({
     const location = useLocation(); // Get the current URL
     const previousUrl = location.state?.from;
 
-    console.log("explorerId", explorerId);
-    console.log("CHAT JSX swapExplorerId", swapExplorerId);
-    console.log("messages", messages);
-    console.log("swapCardName", swapCardName);
-    console.log("conversationId", conversationId);
-    console.log("loading", loading);
+    // console.log("explorerId", explorerId);
+    // console.log("CHAT JSX swapExplorerId", swapExplorerId);
+    // console.log("messages", messages);
+    // console.log("swapCardName", swapCardName);
+    // console.log("conversationId", conversationId);
+    // console.log("loading", loading);
 
     const { getToken } = useAuth()
 
@@ -51,15 +51,15 @@ function Chat({
           },
         });
 
-        console.log("fetchConversation response", response);
+        // console.log("fetchConversation response", response);
         setLoading(false);
 
         if (!response.data) {
           setConversationId('');
-          console.log("CHAT NEW CONV: NO convID set");
+          // console.log("CHAT NEW CONV: NO convID set");
         } else {
           setConversationId(response.data.id);
-          console.log("CHAT CONV FOUND: convID set");
+          // console.log("CHAT CONV FOUND: convID set");
         }
 
       } catch (error) {
@@ -71,11 +71,11 @@ function Chat({
     };
 
     const fetchMessages = async () => {
-      console.log("FETCHING MESSAGES");
+      // console.log("FETCHING MESSAGES");
 
       if (conversationId) {
         try {
-          console.log("FETCHING MESSAGES conversationId", conversationId);
+          // console.log("FETCHING MESSAGES conversationId", conversationId);
   
           const response = await axiosInstance.get(
             `/chat/${conversationId}`
@@ -84,7 +84,7 @@ function Chat({
               Authorization: `Bearer ${await getToken()}`,
             },
           });
-          console.log(response.data.allMessages);
+          // console.log(response.data.allMessages);
           const allFetchedMessages = response.data.allMessages;
 
           const allMessagesFormattedDate = allFetchedMessages.map((message) => {
@@ -113,7 +113,6 @@ function Chat({
             };
           });
 
-          console.log("allMessagesFormattedDate", allMessagesFormattedDate);
           setMessages(allMessagesFormattedDate);
           setUnreadMessagestoRead();
 
@@ -121,7 +120,7 @@ function Chat({
           setHiddenAlert(false);
           setAlertMessage("There was an error while retrieving the messages");
           window.scrollTo({ top: 0, behavior: 'smooth' });
-          console.log(error);
+          // console.log(error);
         }
       } else {
         return
@@ -141,12 +140,12 @@ function Chat({
           });
 
         } catch (error) {
-          console.log(error);
+          // console.log(error);
         }          
     };
 
     const sendMessage = async (conversationId) => {
-      console.log("INTO CHAT SEND MESSAGE");
+      // console.log("INTO CHAT SEND MESSAGE");
       const sanitizedMessage = DOMPurify.sanitize(newMessage);
 
       const input = {
@@ -157,7 +156,7 @@ function Chat({
         recipient_id: swapExplorerId,
         conversation_id: conversationId,
       };
-      console.log("CHAT SEND MESSAGE INPUT", input);
+      // console.log("CHAT SEND MESSAGE INPUT", input);
 
       const maxRetries = 3;
       const delayBetweenRetries = 1000;
@@ -166,12 +165,12 @@ function Chat({
         try {
           const token = await getToken();
           if (!token) {
-              console.error("Token is not available!");
+              // console.error("Token is not available!");
               return;
           }
 
           if (!conversationId) {
-            console.log("CHAT SEND MESSAGE NO CONV ID");
+            // console.log("CHAT SEND MESSAGE NO CONV ID");
             fetchConversation();
           }
 
@@ -185,27 +184,24 @@ function Chat({
             withCredentials: true,
             } 
           );
-          console.log("RESPONSE", response);
+          // console.log("RESPONSE", response);
 
           if (response.status === 201) {
             fetchMessages();
             setNewMessage('');
             return;
-          } else {
-            console.error("Failed to send message");
-            return;
           }
 
         } catch (error) {
-          console.error(`Attempt ${attempt} to send failed:`, error);
+          // console.error(`Attempt ${attempt} to send failed:`, error);
           if (attempt < maxRetries) {
-            console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
+            // console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
             await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
           } else {
             setHiddenAlert(false);
             setAlertMessage("There was an error while sending the message");
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            console.log(error);
+            // console.log(error);
             return;
           }
         }
@@ -213,7 +209,7 @@ function Chat({
     };
 
     const handleConversationStatus = async (conversationId, newStatus) => {
-        console.log("CHANGING STATUS", newStatus);
+        // console.log("CHANGING STATUS", newStatus);
         try {
           await axiosInstance.put(
             `/conversation/${conversationId}`,
@@ -227,7 +223,7 @@ function Chat({
             navigate('/swap/dashboard');    
 
         } catch (error) {
-          console.error('Error updating status:', error);
+          // console.error('Error updating status:', error);
         }
     };
 
@@ -251,7 +247,7 @@ function Chat({
           try {
             const token = await getToken();
             if (!token) {
-                console.error("Token is not available!");
+                // console.error("Token is not available!");
                 return;
             }
             const response = await axiosInstance.post(
@@ -264,27 +260,27 @@ function Chat({
                 withCredentials: true,
               }
             );
-              console.log("RESPONSE", response);
+              // console.log("RESPONSE", response);
             
               if (response.status === 201) {
                 setConversationId(response.data.id);
                 sendMessage(response.data.id);
                 return;
               } else {
-                console.error("Failed to create conversation");
+                // console.error("Failed to create conversation");
                 return;
               }
             
           } catch (error) {
-            console.error(`Attempt ${attempt} to create conv failed:`, error);
+            // console.error(`Attempt ${attempt} to create conv failed:`, error);
             if (attempt < maxRetries) {
-              console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
+              // console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
               await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
             } else {
             setHiddenAlert(false);
             setAlertMessage("There was an error while creating the conversation");
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            console.log(error);
+            // console.log(error);
             return;
             }
           }

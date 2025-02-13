@@ -16,7 +16,7 @@ function PlaceCard({
   fetchSwapOpportunities
 }) {
   if (!card) {
-    console.error('Missing card or selectedCards');
+    // console.error('Missing card or selectedCards');
     return null;
   }
 

@@ -47,7 +47,7 @@ function App() {
   useEffect(() => {
     const fetchToken = async () => {
        const token = await getToken()
-       console.log("APP TOKEN", token);
+      //  console.log("APP TOKEN", token);
     }
     fetchToken();
   }, []);
@@ -62,11 +62,11 @@ function App() {
   const [swapExplorerName, setSwapExplorerName] = useState();
   const [conversationId, setConversationId] = useState('');
 
-  console.log("APP userUID", userUID);
-  console.log("APP name", name);
-  console.log("APP explorerId", explorerId);
-  console.log("APP swapExplorerId", swapExplorerId);
-  console.log("APP conversationId", conversationId);
+  // console.log("APP userUID", userUID);
+  // console.log("APP name", name);
+  // console.log("APP explorerId", explorerId);
+  // console.log("APP swapExplorerId", swapExplorerId);
+  // console.log("APP conversationId", conversationId);
 
 if (!isLoaded) {
   return <div className="loading">

@@ -20,7 +20,7 @@ function PlaceCard({
   duplicates
 }) {
   if (!card) {
-    console.error('Missing card or selectedCards');
+    // console.error('Missing card or selectedCards');
     return null;
   }
   const isSelected = selectedCards.some(selectedCard => selectedCard.id === card.id);

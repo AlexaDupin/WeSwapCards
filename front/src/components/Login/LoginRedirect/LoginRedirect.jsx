@@ -23,7 +23,7 @@ const LoginRedirect = ({
   const navigate = useNavigate();
   const location = useLocation(); // Get the current URL
   const previousUrl = location.state?.from;
-  console.log(previousUrl);
+  // console.log(previousUrl);
 
   const { getToken } = useAuth()
   const { signOut } = useClerk();
@@ -35,10 +35,10 @@ const LoginRedirect = ({
   const handleSignOut = async () => {
     try {
       await signOut();
-      console.log('Signed out successfully');
+      // console.log('Signed out successfully');
       navigate('/login', { replace: true });
     } catch (error) {
-      console.error('Error signing out:', error);
+      // console.error('Error signing out:', error);
     }
   };
 
@@ -48,7 +48,7 @@ const LoginRedirect = ({
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        console.log('REDIRECT entering try');
+        // console.log('REDIRECT entering try');
         const userInfo = await axiosInstance.post(
           `/login/user`,
           { userUID },
@@ -59,7 +59,7 @@ const LoginRedirect = ({
             withCredentials: true,
           }
         );
-        console.log("User data received:", userInfo);
+        // console.log("User data received:", userInfo);
 
         if (userInfo.data) {
           setName(userInfo.data.name);
@@ -75,15 +75,15 @@ const LoginRedirect = ({
         }
 
       } catch (error) {
-        console.error(`Attempt ${attempt} to fetch user:`, error);
+        // console.error(`Attempt ${attempt} to fetch user:`, error);
         if (attempt < maxRetries) {
-          console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
+          // console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
           await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
         } else {
           setLoading(false);
           setHiddenAlert(false);
           setAlertMessage("There was an error during sign in");
-          console.error('Error fetching user data:', error);
+          // console.error('Error fetching user data:', error);
           handleSignOut();
           return;
         }
@@ -91,17 +91,17 @@ const LoginRedirect = ({
     }
   };
 
-  console.log('REDIRECT', user);
+  // console.log('REDIRECT', user);
 
   // Fetch Clerk userid on mount
   useEffect(() => {
-   console.log('REDIRECT entering useffect');
+  //  console.log('REDIRECT entering useffect');
    setName("");
    setExplorerId("");
 
    if (user) {
      const userUID = user.id;  // Clerk's userId
-     console.log("REDT user", user, user.id);
+    //  console.log("REDT user", user, user.id);
      fetchUserData(userUID);
    } else {
      handleSignOut();
