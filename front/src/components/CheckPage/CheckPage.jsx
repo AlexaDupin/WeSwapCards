@@ -80,7 +80,7 @@ function CheckPage({
           <>
           <div className="check-tip">
             {/* <img src={Bulb} alt="Bulb" className="check-tip-image"/> */}
-            <p className="check-tip-text"><img src={Bulb} alt="Bulb" className="check-tip-image"/>Tap on a number to easily update a card's duplicate status.</p><br />
+            <p className="check-tip-text"><img src={Bulb} alt="Bulb icon" className="check-tip-image"/>Tap on a number to easily update a card's duplicate status.</p><br />
           </div>
           
           {cardsByPlace?.map((place) => (

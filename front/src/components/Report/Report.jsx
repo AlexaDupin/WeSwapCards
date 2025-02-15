@@ -330,7 +330,7 @@ function Report({
         className={hiddenDuplicates ? 'hidden' : 'mb-5'}
         controlId="formGroupEmail">
         <Form.Label className="report-label">
-          Click on the cards you have duplicates for (2 or more)
+          Click on the cards for which you have duplicates
         </Form.Label>
 
         <button

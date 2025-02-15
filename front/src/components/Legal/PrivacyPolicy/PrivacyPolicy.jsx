@@ -12,7 +12,7 @@ function PrivacyPolicy() {
   <Container className="page-container privacy">
     <section>
       <h1 className="page-title">Privacy Policy</h1>
-      <p><strong>Effective Date:</strong> February 3, 2025</p>
+      <p><strong>Effective Date:</strong> February 14, 2025</p>
       <p>At WeSwapCards ("we," "us," or "our"), we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and protect your personal data when you use our website www.weswapcards.com (the "Site"). By using the Site, you consent to the collection and use of your data in accordance with this policy.</p>
     </section>
 
@@ -72,7 +72,7 @@ function PrivacyPolicy() {
       <p><strong>Account Information:</strong> We retain account information (email, username, password) as long as the account is active.</p>
     </li>
     <li>
-      <p><strong>Chat Messages:</strong> We retain chat messages for a period of 15 days after they are created. After this period, chat messages will be permanently deleted from our systems.</p>
+      <p><strong>Chat Messages:</strong> We retain chat messages for as long as necessary for the purposes for which they were collected.</p>    
     </li>
   </ul>
 </section>
@@ -85,10 +85,10 @@ function PrivacyPolicy() {
       <p><strong>Access:</strong> You can access and view the email address, and other account details associated with your account by logging into your account.</p>
     </li>
     <li>
-      <p><strong>Update:</strong> You can update your email address, and other account details directly through your account settings. To update your username, please contact us directly at contact@weswapcards.com.</p>
+      <p><strong>Update:</strong> You can update your email address and password directly through your account settings. Your username is unique to your account and cannot be changed frequently for security and consistency reasons. If you need to change your username due to exceptional circumstances, please contact us directly at contact@weswapcards.com. However, username changes are generally not permitted.</p>
     </li>
     <li>
-      <p><strong>Deletion:</strong> If you wish to delete your account, you can do so directly through your account settings. Please follow the instructions provided within your account to request deletion of your account and associated data.</p>
+      <p><strong>Deletion:</strong> If you wish to delete your account, you can do so directly through your account settings.</p>
     </li>
   </ul>
 </section>

@@ -30,9 +30,8 @@
     &-nav {
       display: flex;
       padding-right: 3rem !important;
-
+      
       &-item {
-        // margin-left: 1.5rem !important;
         margin-right: 1.5rem !important;
         }
     }
@@ -56,10 +55,13 @@
 
 }
 
-#header-nav-login {
+.header-nav-login {
     margin-right: 2rem;
     cursor: pointer;
     justify-self: right !important;
+    text-decoration: none !important;
+    color: #efefef;
+    font-size: 1.1rem;
 }
 
 @media (min-width: 768px) { /* This targets larger screens */
@@ -91,9 +93,14 @@
         }
     }
 
-    #header-nav-login {
+    .header-nav {
         margin: 0 !important;
         padding: 0 !important;
-    }
-    
+
+        &-login {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+    }    
 }

@@ -6,15 +6,25 @@ import './customButtonStyles.scss';
 
 function CustomButton({
   text, 
-  onClick = () => {}
+  onClick = () => {}, 
+  href
 }) {
+
+  if (href) {
+    return (
+      <a href={href} className="custom-button">
+        {text}
+      </a>
+    );
+  }
 
   return (
     <button 
-        className="custom-button"
-        onClick={onClick}>
+      className="custom-button" 
+      onClick={onClick}
+    >
       {text}
-    </button>     
+    </button>
   );
 }
 

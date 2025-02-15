@@ -39,7 +39,7 @@ function Menu({
 
         <section className="menu-image-section">
             <a href="/report" className="menu-link">
-                <img src={Report} alt="Report" className="menu-image"/>
+                <img src={Report} alt="Report icon" className="menu-image"/>
             </a>
             <Button
                 onClick={() => navigate('/report')}
@@ -50,7 +50,7 @@ function Menu({
         </section>
         <section className="menu-image-section">
             <a href="/swap/card" className="menu-link">
-                <img src={Search} alt="Search" className="menu-image"/>
+                <img src={Search} alt="Search icon" className="menu-image"/>
             </a>
             <Button
                 onClick={() => navigate('/swap/card')}
@@ -61,7 +61,7 @@ function Menu({
         </section>
         <section className="menu-image-section">
             <a href="/check" className="menu-link">
-                <img src={Check} alt="Check" className="menu-image"/>
+                <img src={Check} alt="Check icon" className="menu-image"/>
             </a>
             <Button
                 onClick={() => navigate('/check')}
@@ -72,7 +72,7 @@ function Menu({
         </section>
         <section className="menu-image-section">
             <a href="/swap/dashboard" className="menu-link">
-                <img src={Dashboard} alt="Dashboard" className="menu-image"/>
+                <img src={Dashboard} alt="Dashboard icon" className="menu-image"/>
             </a>
             <Button
                 onClick={() => navigate('/swap/dashboard')}

@@ -6,7 +6,8 @@ import {
     Card,
     Col
 } from "react-bootstrap";
-import {Lock} from "react-bootstrap-icons";
+import {XOctagon} from "react-bootstrap-icons";
+
 import { useNavigate } from 'react-router-dom';
 
 import PlaceCard from './PlaceCard/PlaceCard';
@@ -197,7 +198,7 @@ function SwapCard({
         <Row className="g-3">
           {swapOpportunities && swapOpportunities.length > 0 ? (
             <>
-            <p>Here are the users that can give you this card: <br />
+            <p>Here are the users who can give you this card: <br />
             <span className='swap-cardName'>{swapCardName}</span></p>
 
             {swapOpportunities?.map((opportunity) => (
@@ -236,7 +237,7 @@ function SwapCard({
             <Card.Text
                 className="opportunity-text-empty"
             >
-                <span>You do not have any cards this user doesn't already have but you can still contact them.</span>
+                <span>You do not have any new cards for this user, but you can still contact them.</span>
             </Card.Text>  
             )}
 
@@ -253,9 +254,9 @@ function SwapCard({
           </>
           ) : (
             <>
-            <div>No opportunities available for <span className='swap-cardName'>{swapCardName}</span>, try another one!</div>
-            <div className="swap-disclaimer"><em>Only users that need cards you have in duplicates will be shown at a later stage. So remember to log all your cards!</em></div>
-            <Lock className='lock-icon'/>
+            <div>No opportunities available for <span className='swap-cardName'>{swapCardName}</span>, try another card!</div>
+            {/* <div className="swap-disclaimer"><em>Only users that need cards you have in duplicates will be shown at a later stage. So remember to log all your cards!</em></div> */}
+            <XOctagon className='lock-icon'/>
             </>
           )}
         </Row>

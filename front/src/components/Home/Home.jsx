@@ -38,33 +38,33 @@ function Home() {
 
       <CustomButton 
           text="Create an account"
-          onClick={() => navigate('/register')}
+          href="/register"
       /><br /><br />
     </section>
 
     <section className="home-steps">     
       <section className="home-image-section">
-        <img src={Report} alt="accueil" className="home-image" />
+        <img src={Report} alt="Report icon" className="home-image" />
         <h2 className="home-subtitle">Log all the cards you have</h2>
       </section>
 
       <section className="home-image-section">
-        <img src={Search} alt="accueil" className="home-image" />
+        <img src={Search} alt="Find icon" className="home-image" />
         <h2 className="home-subtitle">Find the card you need</h2>
       </section>
 
       <section className="home-image-section">
-        <img src={Users} alt="accueil" className="home-image" />
+        <img src={Users} alt="Users icon" className="home-image" />
         <h2 className="home-subtitle">Browse users who have this card</h2>
       </section>
 
       <section className="home-image-section">
-        <img src={Chat} alt="accueil" className="home-image" />
+        <img src={Chat} alt="Chat icon" className="home-image" />
         <h2 className="home-subtitle">Chat with them and find a deal</h2>
       </section>
 
       <section className="home-image-section">
-        <img src={Dashboard} alt="accueil" className="home-image"/>
+        <img src={Dashboard} alt="Dashboard icon" className="home-image"/>
         <h2 className="home-subtitle">Keep track of your requests in a dashboard</h2>
       </section>
     </section>

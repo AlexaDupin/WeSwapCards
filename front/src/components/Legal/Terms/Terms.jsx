@@ -12,7 +12,7 @@ function Terms() {
   <Container className="page-container privacy">
     <section>
   <h1 className="page-title">Terms and Conditions</h1>
-  <p><strong>Effective Date:</strong> February 3, 2025</p>
+  <p><strong>Effective Date:</strong> February 14, 2025</p>
   <p>Welcome to WeSwapCards ("we," "us," or "our"). By using our website www.weswapcards.com (the "Site"), you agree to comply with and be bound by these Terms and Conditions ("Terms"). If you do not agree to these Terms, please do not use the Site. These Terms apply to all users of the Site, including visitors, registered users, and those who access or use the Site's services.</p>
 </section>
 
@@ -22,9 +22,6 @@ function Terms() {
   <ul className="terms-list">
     <li>
       <p><strong>Account Security:</strong> You are responsible for maintaining the confidentiality of your account information, including your username and password. You agree to immediately notify us of any unauthorized use of your account.</p>
-    </li>
-    <li>
-      <p><strong>Eligibility:</strong> You must be at least 13 years of age to create an account on the Site. By using the Site, you confirm that you meet this age requirement.</p>
     </li>
   </ul>
 </section>
@@ -120,23 +117,10 @@ function Terms() {
 </section>
 
 <section>
-  <h2 className="terms-title">11. Governing Law</h2>
-  <p>These Terms are governed by and construed in accordance with the laws of the State of New York, USA, without regard to its conflict of law principles. If you are located in the European Union, you agree that the laws of the United States shall apply to any dispute arising from your use of the Site.</p>
-</section>
-
-<section>
-  <h2 className="terms-title">12. Dispute Resolution</h2>
-  <p>If any disputes arise out of or in connection with these Terms, we encourage you to first contact us to attempt to resolve the matter amicably. If the dispute cannot be resolved informally, it shall be resolved through binding arbitration in New York, USA, in accordance with the rules of the American Arbitration Association.</p>
-</section>
-
-<section>
-  <h2 className="terms-title">13. Contact Information</h2>
+  <h2 className="terms-title">11. Contact Information</h2>
   <p>If you have any questions or concerns about these Terms, please contact us at:</p>
-  <ul className="terms-list">
-    <li>
-      <p><strong>Email:</strong> contact@weswapcards.com</p>
-    </li>
-  </ul>
+  <p>contact@weswapcards.com</p>
+
 </section>
 
     <ScrollToTop />
