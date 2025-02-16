@@ -24,6 +24,8 @@ function Home() {
     useEffect(() => {
       if (!isSignedIn) {
         localStorage.clear();
+      } else {
+        navigate('/menu');
       }
     }, [isSignedIn]);
 
