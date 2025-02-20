@@ -151,7 +151,8 @@ module.exports = {
                 FROM explorer_has_cards AS ehc
                 JOIN explorer ON explorer.id = ehc.explorer_id
                 WHERE ehc.card_id = $1
-                AND explorer.id != $2 AND explorer.id != 1
+                AND explorer.id != $2
+                AND ehc.duplicate = true
             ),
             explorer_duplicates AS (
                 SELECT ehc.card_id
