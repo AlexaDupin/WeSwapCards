@@ -18,6 +18,7 @@ import { useAuth } from '@clerk/clerk-react';
 import PropTypes from 'prop-types';
 
 import CustomButton from '../../CustomButton/CustomButton';
+import DOMPurify from 'dompurify';
 
 import './userStyles.scss';
 
@@ -44,13 +45,9 @@ const User = ({
       },
     }); 
 
-    const sanitizeUsername = (username) => {
-      return username.replace(/[^a-zA-Z0-9_]/g, ''); // Keep only alphanumeric and underscores
-    };
-
     // Insert user in database with username and Clerk id
     const onSubmit = async (data) => {
-      const sanitizedUsername = sanitizeUsername(data.username);
+      const sanitizedUsername = DOMPurify.sanitize(data.username);
 
       const maxRetries = 3;
       const delayBetweenRetries = 1000;
@@ -151,7 +148,7 @@ const User = ({
                             required: 'Please enter a username.',
                             pattern: {
                               value: /^[a-zA-Z0-9_]{2,30}$/,
-                              message: 'The format is invalid. Your username must contain at least 2 letters or numbers.',
+                              message: 'The format is invalid. Your username must contain at least 2 letters or numbers, and no special characters.',
                             },
                             minLength: {
                               value: 2,

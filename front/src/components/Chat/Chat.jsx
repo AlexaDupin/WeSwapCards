@@ -189,6 +189,7 @@ function Chat({
           if (response.status === 201) {
             fetchMessages();
             setNewMessage('');
+            setHiddenAlert(true);
             return;
           }
 
@@ -198,6 +199,11 @@ function Chat({
             // console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
             await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
           } else {
+            if (error.status === 400) {
+              setHiddenAlert(false);
+              setAlertMessage("There was an error with the format of your message. Review it and retry.");
+              return;
+            }
             setHiddenAlert(false);
             setAlertMessage("There was an error while sending the message");
             window.scrollTo({ top: 0, behavior: 'smooth' });

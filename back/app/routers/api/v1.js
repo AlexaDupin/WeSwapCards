@@ -1,6 +1,7 @@
 const express = require('express');
 const { requireAuth } = require('@clerk/express');
 const { checkConversationAuthorization, checkExplorerAuthorization } = require('../../middlewares/authorization');
+const validateNewMessage = require('../../middlewares/validation');
 
 const userController = require('../../controllers/api/user');
 const reportController = require('../../controllers/api/report');
@@ -77,8 +78,8 @@ router
 router
     .route('/chat/:conversationId')
     .get(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.getAllMessagesInConversation))
-    .post(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.insertNewMessage));
-
+    .post(requireAuth(), checkConversationAuthorization, validateNewMessage, controllerHandler(chatController.insertNewMessage));
+    
 router
     .route('/explorercards/:explorerId')
     .get(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.getExplorerCardsByPlace));

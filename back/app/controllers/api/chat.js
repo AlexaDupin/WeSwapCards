@@ -1,5 +1,6 @@
 const datamapper = require("../../models/datamapper");
-const validator = require('validator');
+// const validator = require('validator');
+// const { body, validationResult } = require('express-validator');
 
 const chatController = {
     async getConversation(req, res) {
@@ -49,17 +50,17 @@ const chatController = {
         const senderId = req.body.sender_id;
         const recipientId = req.body.recipient_id;
         const conversationId = req.body.conversation_id;
-        const sanitizedContent = validator.escape(content);
+        // const sanitizedContent = validator.escape(content);
 
-        console.log("content", content);
-        console.log("timestamp", timestamp);
-        console.log("senderId", senderId);
-        console.log("recipientId", recipientId);
-        console.log("conversationId", conversationId);
-
+        console.log("content", content, typeof(content));
+        console.log("timestamp", timestamp, typeof(timestamp));
+        console.log("senderId", senderId, typeof(senderId));
+        console.log("recipientId", recipientId, typeof(recipientId));
+        console.log("conversationId", conversationId, typeof(conversationId));
+        
         try {
             const result = await datamapper.insertNewMessage({
-                content: sanitizedContent,
+                content: content,
                 timestamp: timestamp,
                 senderId: senderId,
                 recipientId: recipientId,
