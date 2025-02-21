@@ -11,6 +11,7 @@ import {XOctagon} from "react-bootstrap-icons";
 import { useNavigate } from 'react-router-dom';
 
 import PlaceCard from './PlaceCard/PlaceCard';
+import CardPreview from './CardPreview/CardPreview';
 
 import { axiosInstance } from '../../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
@@ -41,7 +42,7 @@ function SwapCard({
             Authorization: `Bearer ${await getToken()}`,
           },
           withCredentials: true,
-          } 
+          }
         );
         setPlaces(response.data.places);
       } catch (error) {
@@ -58,7 +59,7 @@ function SwapCard({
             Authorization: `Bearer ${await getToken()}`,
           },
           withCredentials: true,
-          } 
+          }
         );
         // console.log("allCards", allCards);
 
@@ -81,7 +82,7 @@ function SwapCard({
             Authorization: `Bearer ${await getToken()}`,
           },
           withCredentials: true,
-          } 
+          }
         );
 
       const cardName = response.data.name;
@@ -107,13 +108,13 @@ function SwapCard({
               Authorization: `Bearer ${await getToken()}`,
             },
             withCredentials: true,
-            } 
+            }
           );
 
         const swapOpportunities = response.data;
         // console.log("swapOpportunities", swapOpportunities);
         setSwapOpportunities(swapOpportunities);
-        setHidden(true);
+        setHidden(false);
         setHiddenSwapOpportunities(false);
 
       } catch (error) {
@@ -126,7 +127,7 @@ function SwapCard({
       setSwapExplorerName(swapExplorerName);
       navigate('/swap/card/chat', { state: { from: "/swap/card" } });
     }
-  
+
     useEffect(
       () => {
         if (!explorerId) {
@@ -143,11 +144,11 @@ function SwapCard({
     <Container className="page-container">
     <h1 className="swap-title">Find a card</h1>
       <Form>
-              
+
       <Form.Group className="mb-5" controlId="formGroupPlace">
         <Form.Label className="report-label">Select a chapter, {name}</Form.Label>
-        <Form.Select 
-          aria-label="Select a chapter" 
+        <Form.Select
+          aria-label="Select a chapter"
           onChange={(e) => {
             const selectedValue = e.target.value;
             // console.log(selectedValue);
@@ -159,7 +160,7 @@ function SwapCard({
         >
           <option value="">Select</option>
           {places?.map((place) => (
-            <option 
+            <option
               key={place.id}
               value={place.id}>
               {place.name}
@@ -168,32 +169,39 @@ function SwapCard({
         </Form.Select>
       </Form.Group>
 
-      <Form.Group 
-        className={hidden ? 'hidden' : 'mb-5'} 
+      <Form.Group
+        className={hidden ? 'hidden' : 'mb-5'}
+        // className={'mb-5'}
         controlId="formGroupEmail">
         <Form.Label className="report-label">
           Click on the card you are looking for!
         </Form.Label>
 
-        <Row className="g-3">
+        <div className="g-3 cards-list">
         {cards && cards.length > 0 ? (
           cards?.map((card) => (
-            <PlaceCard
+            // <PlaceCard
+            //   key={card.id}
+            //   card={card}
+            //   fetchSwapOpportunities={fetchSwapOpportunities}
+            // />
+            <CardPreview
               key={card.id}
               card={card}
-              fetchSwapOpportunities={fetchSwapOpportunities} 
+              fetchSwapOpportunities={fetchSwapOpportunities}
+              isSelected={selectedCardId === card.id}
             />
             ))
             ) : (
-              <div>No cards available</div> 
+              <div>No cards available</div>
         )}
-        </Row>
+        </div>
       </Form.Group>
       </Form>
 
-      <div 
+      <div
         className={hiddenSwapOpportunities ? 'hidden' : ''}
-      >        
+      >
 
         <Row className="g-3">
           {swapOpportunities && swapOpportunities.length > 0 ? (
@@ -202,7 +210,7 @@ function SwapCard({
             <span className='swap-cardName'>{swapCardName}</span></p>
 
             {swapOpportunities?.map((opportunity) => (
-          <Col xs={12} 
+          <Col xs={12}
             key={opportunity.explorer_id}
             className="column"
           >
@@ -210,7 +218,7 @@ function SwapCard({
             className="opportunity-card"
             id={opportunity.explorer_id}
           >
-            <Card.Title 
+            <Card.Title
               className="opportunity-title"
             >
               {opportunity.explorer_name}
@@ -224,7 +232,7 @@ function SwapCard({
                 <span>In exchange, here are the cards you can offer them:</span>
                 <br />
                 {opportunity.opportunities?.map((exchange) => (
-                <button 
+                <button
                   key={exchange.card.id}
                   className="swap-tag"
                 >
@@ -238,10 +246,10 @@ function SwapCard({
                 className="opportunity-text-empty"
             >
                 <span>You do not have any new cards for this user, but you can still contact them.</span>
-            </Card.Text>  
+            </Card.Text>
             )}
 
-            <button 
+            <button
               className="contact-button"
               onClick={() => handleContactButton(opportunity.explorer_id, opportunity.explorer_name)}
             >
@@ -260,10 +268,10 @@ function SwapCard({
             </>
           )}
         </Row>
-      </div>        
-      
+      </div>
+
       <ScrollToTop />
-      
+
     </Container>
 )
 }

@@ -1,5 +1,11 @@
 @use 'src/styles/vars';
 
+.cards-list {
+    display: flex;
+    justify-content: center;
+
+}
+
 .opportunity-card {
     border-color: vars.$primary-color !important;
     border-width: medium !important;

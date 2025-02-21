@@ -1,0 +1,26 @@
+@use 'src/styles/vars';
+
+.card-square {
+    width: 2rem;
+    height: 2rem;
+    margin: 0.2rem;
+
+    &-selected {
+        // border-color: vars.$primary-color !important;
+        border: 2px solid vars.$primary-color !important;
+        // width: 2rem;
+        // height: 2rem;
+        // margin: 0.2rem;
+    }
+    // &-duplicate {
+    //     width: 2rem;
+    //     height: 2rem;
+    //     margin: 0.2rem;
+    //     background-color: lighten(vars.$secondary-color, 50%);
+    // }
+}
+
+// .report-card {
+//     border-color: vars.$primary-color !important;
+//     border-width: medium !important;
+//     cursor: pointer;
