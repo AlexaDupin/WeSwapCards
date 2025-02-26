@@ -5,11 +5,11 @@ const opportunitiesController = {
         const explorerId = req.params.explorerId;
         const cardId = req.params.cardId;
 
-        console.log("swapCard", cardId);
+        // console.log("swapCard", cardId);
         
         try {
             const opportunities = await datamapper.findSwapOpportunities(cardId, explorerId);
-            console.log("opportunities", opportunities);
+            // console.log("opportunities", opportunities);
             res.status(200).json(opportunities);
         } catch (error) {
             console.error('Error fetching opportunities:', error);

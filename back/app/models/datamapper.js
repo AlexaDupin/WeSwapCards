@@ -120,8 +120,6 @@ module.exports = {
         return result.rows;
     },
     async getOpportunitiesForOneExplorer(explorerId) {
-        console.log("ENTERING DATAMAPPER");
-
         const preparedQuery = {
             text: `
             SELECT ehc.id, c.id AS card_id, c.name AS card_name, e.name AS explorer_name, p.id AS place_id FROM card AS c
@@ -143,8 +141,6 @@ module.exports = {
         return result.rows;
     },
     async findSwapOpportunities(cardId, explorerId) {
-        console.log("ENTERING DATAMAPPER");
-
         const preparedQuery = {
             text: `WITH explorers_with_card AS (
                 SELECT ehc.explorer_id, explorer.name
@@ -218,6 +214,35 @@ module.exports = {
         // console.log(result.rows);
         return result.rows;
     },
+    async getOpportunitiesForRecipient(creatorId, recipientId) {
+        const preparedQuery = {
+            text: `
+            SELECT
+                jsonb_build_object(
+                    'card', jsonb_build_object(
+                        'id', c.id,
+                        'name', c.name
+                    )
+                ) AS opportunity
+            FROM card c
+            JOIN explorer_has_cards ehc10 ON c.id = ehc10.card_id
+            WHERE ehc10.explorer_id = $1
+              AND ehc10.duplicate = true
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM explorer_has_cards ehc1
+                  WHERE ehc1.explorer_id = $2
+                  AND ehc1.card_id = c.id
+              )
+            ORDER BY c.name
+        `,
+            values: [creatorId, recipientId],
+        };
+
+        const result = await client.query(preparedQuery);
+        const opportunities = result.rows.map(row => row.opportunity);
+        return opportunities; 
+    },
     async getCardName(cardId) {
         const preparedQuery = {
             text: `
@@ -247,7 +272,6 @@ module.exports = {
         return null;
     },
     async getConversationParticipants(id) {
-        "ENTERING DATAMAPPER"
         const preparedQuery = {
             text: `
             SELECT creator_id, recipient_id FROM conversation
@@ -331,6 +355,8 @@ module.exports = {
                         WHEN cv.creator_id = $1 THEN e2.id
                         WHEN cv.recipient_id = $1 THEN e1.id
                     END AS swap_explorer_id,
+                    cv.creator_id,
+                    cv.recipient_id,
                     cv.status,
                     COUNT(m.id) FILTER (WHERE m.read = false AND m.recipient_id = $1) AS unread
                 FROM conversation cv
@@ -348,6 +374,8 @@ module.exports = {
                 swap_explorer,
                 swap_explorer_id,
                 status,
+                creator_id,
+                recipient_id,
                 unread
             FROM ranked_conversations
             ORDER BY unread DESC, status = 'In progress' DESC, card_name, swap_explorer;`,

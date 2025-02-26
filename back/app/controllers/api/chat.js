@@ -1,4 +1,5 @@
 const datamapper = require("../../models/datamapper");
+const { getOpportunities } = require("./opportunities");
 // const validator = require('validator');
 // const { body, validationResult } = require('express-validator');
 
@@ -7,15 +8,15 @@ const chatController = {
         const explorerId = req.params.explorerId;
         const swapExplorerId = req.params.swapExplorerId;
         const swapCardName = req.params.swapCardName;
-        console.log('getConversation CTRL', explorerId, swapExplorerId, swapCardName);
+        // console.log('getConversation CTRL', explorerId, swapExplorerId, swapCardName);
 
         try {
             const conversation = await datamapper.findConversation(swapCardName, explorerId, swapExplorerId);
             if (!conversation) {
-                console.log("NO PREVIOUS CONVO");
+                // console.log("NO PREVIOUS CONVO");
                 res.status(204).json({message: "NO PREVIOUS CONVO", conversation});
             } else if (conversation) {
-                console.log("CONVO FOUND");
+                // console.log("CONVO FOUND");
                 res.status(200).json(conversation);
             }
         } catch (error) {
@@ -103,7 +104,7 @@ const chatController = {
     },
     async getAllConversations(req, res) {
         const explorerId = req.params.explorerId;
-        console.log('CHAT CTRL', explorerId);
+        // console.log('CHAT CTRL', explorerId);
 
             try {
                 const allConversations = await datamapper.getAllConversationsOfExplorer(explorerId);
@@ -116,7 +117,7 @@ const chatController = {
     async editConversationStatus(req, res) {
         const conversationId = req.params.conversationId;
         const status = req.body.status;
-        console.log('CHAT CTRL status', conversationId, status);
+        // console.log('CHAT CTRL status', conversationId, status);
 
             try {
                 const updatedStatus = await datamapper.editConversationStatus(conversationId, status);
@@ -125,6 +126,18 @@ const chatController = {
             } catch (error) {
                 console.error("Error while updating conversation status:", error);
                 return res.status(500).send({ message: 'An error occurred while updating conversation status.', error: error.message });            
+            }
+    },
+    async getOpportunitiesForRecipient(req, res) {
+        const creatorId = req.params.creatorId;
+        const recipientId = req.params.recipientId;
+
+            try {
+                const opportunities = await datamapper.getOpportunitiesForRecipient(creatorId, recipientId);
+                res.status(200).json(opportunities);
+            } catch (error) {
+                console.error("Error while retrieving opportunities:", error);
+                return res.status(500).send({ message: 'An error occurred while retrieving opportunities.', error: error.message });            
             }
     },
 };

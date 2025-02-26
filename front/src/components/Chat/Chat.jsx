@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 import './chatStyles.scss';
 
 function Chat({
-    explorerId, swapExplorerId, swapExplorerName, swapCardName, setConversationId, conversationId
+    explorerId, swapExplorerId, swapExplorerName, swapCardName, setConversationId, conversationId, swapExplorerOpportunities
   }) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
@@ -38,6 +38,7 @@ function Chat({
     // console.log("swapCardName", swapCardName);
     // console.log("conversationId", conversationId);
     // console.log("loading", loading);
+    // console.log("swapExplorerOpportunities", swapExplorerOpportunities);
 
     const { getToken } = useAuth()
 
@@ -330,6 +331,27 @@ function Chat({
 
       {!loading &&
         <><h1 className="chat-title">Chat with {swapExplorerName} - {swapCardName}</h1>
+        
+        <div className="chat-opportunity">
+          {swapExplorerOpportunities.length > 0 ? (
+            <>
+          <span>Cards that can be exchanged for this one:</span>
+          <br />
+            {swapExplorerOpportunities.map((exchange) => (
+                <button
+                  key={exchange.card.id}
+                  className="chat-opportunity-button"
+                >
+                  {exchange.card.name}
+                </button>
+              ))}
+            </>
+              ) : (
+                <span>No new cards to exchange for this one</span>
+              )}
+            
+        </div>
+
         <Alert
           variant='danger'
           className={hiddenAlert ? 'hidden-alert' : ''}>
