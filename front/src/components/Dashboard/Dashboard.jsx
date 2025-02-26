@@ -20,9 +20,10 @@ import './dashboardStyles.scss';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
 function Dashboard({
-  explorerId, setSwapExplorerId, setSwapCardName, setSwapExplorerName, setConversationId
+  explorerId, setSwapExplorerId, setSwapCardName, setSwapExplorerName, setConversationId, setSwapExplorerOpportunities
 }) {
   const [conversations, setConversations] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [hiddenAlert, setHiddenAlert] = useState(true);
   const [alertMessage, setAlertMessage] = useState('');
@@ -51,11 +52,33 @@ function Dashboard({
     }
   };
 
-  const handleOpenChat = async (cardName, swapExplorerId, swapExplorerName) => {
+  const fetchSwapOpportunitiesForRecipient = async (creatorId, recipientId, conversationId) => {
+    try {
+      const response = await axiosInstance.get(
+          `/conversation/${conversationId}/opportunities/${creatorId}/${recipientId}`
+          , {
+            headers: {
+              Authorization: `Bearer ${await getToken()}`,
+            },
+          });
+      // console.log('response', response, response.data);
+      setSwapExplorerOpportunities(response.data);
+
+    } catch (error) {
+      setLoading(false);
+      setHiddenAlert(false);
+      setAlertMessage("There was an error while fetching the opportunities");
+      console.log(error);
+    }
+  };
+
+  const handleOpenChat = async (cardName, swapExplorerId, swapExplorerName, creatorId, recipientId, conversationId) => {
       setConversationId('');
       setSwapExplorerId(swapExplorerId);
       setSwapCardName(cardName);
       setSwapExplorerName(swapExplorerName);
+      fetchSwapOpportunitiesForRecipient(creatorId, recipientId, conversationId);
+
       navigate('/swap/card/chat', { state: { from: "/swap/dashboard" } });
   };
 
@@ -136,20 +159,20 @@ function Dashboard({
                   >{conversation.row_id}</td>
                   <td
                     className={conversation.unread > 0 ? 'requests-chat requests-table-unread' : 'requests-chat requests-table'}
-                    onClick={() => handleOpenChat(conversation.card_name, conversation.swap_explorer_id, conversation.swap_explorer)}
+                    onClick={() => handleOpenChat(conversation.card_name, conversation.swap_explorer_id, conversation.swap_explorer, conversation.creator_id, conversation.recipient_id, conversation.db_id)}
                   >
                     {conversation.unread > 0 &&
                       <Envelope />}
                   </td>
                   <td
                     className={conversation.unread > 0 ? 'requests-chat requests-table-unread' : 'requests-chat requests-table'}
-                    onClick={() => handleOpenChat(conversation.card_name, conversation.swap_explorer_id, conversation.swap_explorer)}
+                    onClick={() => handleOpenChat(conversation.card_name, conversation.swap_explorer_id, conversation.swap_explorer, conversation.creator_id, conversation.recipient_id, conversation.db_id)}
                   >
                     {conversation.card_name}
                   </td>
                   <td
                     className={conversation.unread > 0 ? 'requests-chat requests-table-unread' : 'requests-chat requests-table'}
-                    onClick={() => handleOpenChat(conversation.card_name, conversation.swap_explorer_id, conversation.swap_explorer)}
+                    onClick={() => handleOpenChat(conversation.card_name, conversation.swap_explorer_id, conversation.swap_explorer, conversation.creator_id, conversation.recipient_id, conversation.db_id)}
                   >{conversation.swap_explorer}</td>
                   <td className={conversation.unread > 0 ? 'requests-table-unread' : 'requests-table'}>
                     <DropdownButton

@@ -20,10 +20,11 @@ const checkExplorerAuthorization = async (req, res, next) => {
 
     // If the `explorerId` from the URL doesn't match the user's id, deny access
     if (user.id !== explorerId) {
+      console.log("Error in AUTHORIZATION MDLW");
       return res.status(403).json({ message: 'You are not authorized to access this resource' });
     }
 
-    console.log("PASSED AUTHORIZATION MDLW");
+    console.log("LEFT AUTHORIZATION MDLW");
     // If the IDs match, proceed to the next middleware or controller
     next();
   } catch (err) {
@@ -36,12 +37,12 @@ const checkExplorerAuthorization = async (req, res, next) => {
 const checkConversationAuthorization = async (req, res, next) => {
   const conversationId = Number(req.params.conversationId);
   const clerkUserId = req.auth.userId;
-  console.log("AUTH MDLW conversationId", conversationId);
-  console.log("AUTH MDLW clerkUserId", clerkUserId);
+  // console.log("CONV MDLW conversationId", conversationId);
+  // console.log("CONV MDLW clerkUserId", clerkUserId);
 
   try {
     // Fetch the user from the database based on Clerk's `userId`
-    console.log("INTO CONV MDLW");
+    // console.log("INTO CONV MDLW");
     const user = await userDatamapper.getExplorerIdByClerkId(clerkUserId);
 
     // If no user is found, return an error
@@ -62,10 +63,11 @@ const checkConversationAuthorization = async (req, res, next) => {
     // console.log("CONVERSATION MDLW", explorerId, conversationCreator, conversationRecipient);
 
     if (explorerId !== conversationCreator && explorerId !== conversationRecipient) {
-      return res.status(403).json({ message: 'You are not authorized to update this conversation' });
+      console.log("Error in CONV AUTHORIZATION MDLW");
+      return res.status(403).json({ message: 'You are not authorized to access this conversation' });
     }
 
-    console.log("PASSED CONV AUTHORIZATION MDLW");
+    console.log("LEFT CONV AUTHORIZATION MDLW");
     // If the IDs match, proceed to the next middleware or controller
     next();
   } catch (err) {

@@ -22,13 +22,15 @@ import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 import './swapCardStyles.scss';
 
 function SwapCard({
-    explorerId, name, setSwapExplorerId, setSwapCardName, swapCardName, setSwapExplorerName, setConversationId
+    explorerId, name, setSwapExplorerId, setSwapCardName, swapCardName, setSwapExplorerName, setConversationId, setSwapExplorerOpportunities
   }) {
     const [places, setPlaces] = useState([]);
     const [cards, setCards] = useState([]);
     const [hidden, setHidden] = useState(true);
     const [hiddenSwapOpportunities, setHiddenSwapOpportunities] = useState(true);
     const [swapOpportunities, setSwapOpportunities] = useState([]);
+    // const [swapExplorerOpportunities, setSwapExplorerOpportunities] = useState([]);
+    
     const [selectedCardId, setSelectedCardId] = useState();
     const { getToken } = useAuth()
     const navigate = useNavigate();
@@ -110,7 +112,7 @@ function SwapCard({
             withCredentials: true,
             }
           );
-
+        // console.log("SWAP response", response);
         const swapOpportunities = response.data;
         // console.log("swapOpportunities", swapOpportunities);
         setSwapOpportunities(swapOpportunities);
@@ -122,9 +124,10 @@ function SwapCard({
       }
     };
 
-    const handleContactButton = (swapExplorerId, swapExplorerName) => {
+    const handleContactButton = (swapExplorerId, swapExplorerName, swapExplorerOpportunities) => {
       setSwapExplorerId(swapExplorerId);
       setSwapExplorerName(swapExplorerName);
+      setSwapExplorerOpportunities(swapExplorerOpportunities);
       navigate('/swap/card/chat', { state: { from: "/swap/card" } });
     }
 
@@ -251,7 +254,7 @@ function SwapCard({
 
             <button
               className="contact-button"
-              onClick={() => handleContactButton(opportunity.explorer_id, opportunity.explorer_name)}
+              onClick={() => handleContactButton(opportunity.explorer_id, opportunity.explorer_name, opportunity.opportunities)}
             >
               Contact this user to swap
             </button>

@@ -21,6 +21,23 @@
     text-align: left;
     margin-bottom: 2rem;
   }
+
+  &-opportunity {
+    max-height: 80px !important;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+
+    &-button {
+      font-weight: 500;
+      color: #fff;
+      background-color: #16bc90;
+      border: none;
+      padding: 0.1rem 0.2rem;
+      margin: 0.2rem;
+      cursor: default !important;
+      font-size: 0.9rem;
+    }
+  }
 }
 
   .message-list {

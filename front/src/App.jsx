@@ -60,6 +60,7 @@ function App() {
   const [swapExplorerId, setSwapExplorerId] = useState('');
   const [swapCardName, setSwapCardName] = useState();
   const [swapExplorerName, setSwapExplorerName] = useState();
+  const [swapExplorerOpportunities, setSwapExplorerOpportunities] = useState([]);
   const [conversationId, setConversationId] = useState('');
 
   // console.log("APP userUID", userUID);
@@ -150,6 +151,7 @@ if (!isLoaded) {
                     setSwapCardName={setSwapCardName}
                     setSwapExplorerName={setSwapExplorerName}
                     setConversationId={setConversationId}
+                    setSwapExplorerOpportunities={setSwapExplorerOpportunities}
                   />} 
                 />}
           />
@@ -164,6 +166,7 @@ if (!isLoaded) {
                     swapExplorerName={swapExplorerName}
                     setConversationId={setConversationId}
                     conversationId={conversationId}
+                    swapExplorerOpportunities={swapExplorerOpportunities}
                   />} 
                 />}
             />
@@ -177,6 +180,7 @@ if (!isLoaded) {
                     setSwapExplorerId={setSwapExplorerId}
                     setSwapExplorerName={setSwapExplorerName}
                     setConversationId={setConversationId}
+                    setSwapExplorerOpportunities={setSwapExplorerOpportunities}
                   />} 
                 />}
           />

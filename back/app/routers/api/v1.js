@@ -72,6 +72,10 @@ router
     .get(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.getAllConversations))
 
 router
+    .route('/conversation/:conversationId/opportunities/:creatorId/:recipientId')
+    .get(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.getOpportunitiesForRecipient))
+
+router
     .route('/conversation/:conversationId')
     .put(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.editConversationStatus))
 
