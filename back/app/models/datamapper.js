@@ -340,7 +340,24 @@ module.exports = {
         }
         return 0;     
     },
-    async getAllConversationsOfExplorer(explorerId) {
+    async getAllConversationsOfExplorer(explorerId, page = 1, limit = 20) {
+        const countQuery = {
+            text: `
+            SELECT COUNT(*) 
+            FROM conversation cv
+            WHERE cv.creator_id = $1 
+            OR cv.recipient_id = $1
+            AND creator_id IS NOT NULL
+            AND recipient_id IS NOT NULL
+            `,
+            values: [explorerId],
+        };
+        
+        const countResult = await client.query(countQuery);
+        const totalCount = parseInt(countResult.rows[0].count);
+        
+        const offset = (page - 1) * limit;
+        
         const preparedQuery = {
             text: `
             WITH ranked_conversations AS (
@@ -378,12 +395,20 @@ module.exports = {
                 recipient_id,
                 unread
             FROM ranked_conversations
-            ORDER BY unread DESC, status = 'In progress' DESC, card_name, swap_explorer;`,
-            values: [explorerId],
+            ORDER BY unread DESC, status = 'In progress' DESC, card_name, swap_explorer
+            LIMIT $2 OFFSET $3;`,
+            values: [explorerId, limit, offset],
         };
         const result = await client.query(preparedQuery);
-        // console.log(result.rows);
-        return result.rows;
+        return {
+            conversations: result.rows,
+            pagination: {
+                currentPage: page,
+                totalPages: Math.ceil(totalCount / limit),
+                totalItems: totalCount,
+                itemsPerPage: limit
+            }
+        };
     },
     async editConversationStatus(conversationId, status) {
         console.log("editConversationStatus DTMP")
