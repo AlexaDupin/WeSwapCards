@@ -57,7 +57,7 @@ function Dashboard({
       // setLoading(false);
       setHiddenAlert(false);
       setAlertMessage("There was an error while fetching the opportunities");
-      console.log(error);
+      // console.log(error);
     }
   };
 

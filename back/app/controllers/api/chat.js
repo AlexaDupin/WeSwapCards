@@ -53,11 +53,11 @@ const chatController = {
         const conversationId = req.body.conversation_id;
         // const sanitizedContent = validator.escape(content);
 
-        console.log("content", content, typeof(content));
-        console.log("timestamp", timestamp, typeof(timestamp));
-        console.log("senderId", senderId, typeof(senderId));
-        console.log("recipientId", recipientId, typeof(recipientId));
-        console.log("conversationId", conversationId, typeof(conversationId));
+        // console.log("content", content, typeof(content));
+        // console.log("timestamp", timestamp, typeof(timestamp));
+        // console.log("senderId", senderId, typeof(senderId));
+        // console.log("recipientId", recipientId, typeof(recipientId));
+        // console.log("conversationId", conversationId, typeof(conversationId));
         
         try {
             const result = await datamapper.insertNewMessage({

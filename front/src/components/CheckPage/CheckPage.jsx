@@ -65,7 +65,7 @@ function CheckPage({
     {loading &&
       <><Spinner
           animation="border"
-          className="spinner" /><p>Loading your requests...</p></>
+          className="spinner" /><p>Loading your cards...</p></>
     }
 
     {!loading && (
