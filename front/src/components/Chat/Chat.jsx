@@ -24,12 +24,15 @@ function Chat({
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
+    const [isSending, setIsSending] = useState(false);
     const messageEndRef = useRef(null);
+    const messageInputRef = useRef(null);
+
     const navigate = useNavigate();
     const [hiddenAlert, setHiddenAlert] = useState(true);
     const [alertMessage, setAlertMessage] = useState('');
 
-    const location = useLocation(); // Get the current URL
+    const location = useLocation();
     const previousUrl = location.state?.from;
 
     // console.log("explorerId", explorerId);
@@ -145,6 +148,25 @@ function Chat({
         }          
     };
 
+    const handleConversationStatus = async (conversationId, newStatus) => {
+      // console.log("CHANGING STATUS", newStatus);
+      try {
+        await axiosInstance.put(
+          `/conversation/${conversationId}`,
+          { status: newStatus }, 
+          {
+            headers: {
+              Authorization: `Bearer ${await getToken()}`,
+            },
+          });
+
+          navigate('/swap/dashboard');    
+
+      } catch (error) {
+        // console.error('Error updating status:', error);
+      }
+    };
+
     const sendMessage = async (conversationId) => {
       // console.log("INTO CHAT SEND MESSAGE");
       const sanitizedMessage = DOMPurify.sanitize(newMessage);
@@ -191,6 +213,14 @@ function Chat({
             fetchMessages();
             setNewMessage('');
             setHiddenAlert(true);
+            setIsSending(false);
+
+            setTimeout(() => {
+              if (messageInputRef.current) {
+                messageInputRef.current.focus();
+              }
+            }, 0);
+
             return;
           }
 
@@ -203,39 +233,26 @@ function Chat({
             if (error.status === 400) {
               setHiddenAlert(false);
               setAlertMessage("There was an error with the format of your message. Review it and retry.");
+              setIsSending(false);
               return;
             }
             setHiddenAlert(false);
             setAlertMessage("There was an error while sending the message");
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            setIsSending(false);
             // console.log(error);
             return;
           }
         }
       }
-    };
 
-    const handleConversationStatus = async (conversationId, newStatus) => {
-        // console.log("CHANGING STATUS", newStatus);
-        try {
-          await axiosInstance.put(
-            `/conversation/${conversationId}`,
-            { status: newStatus }, 
-            {
-              headers: {
-                Authorization: `Bearer ${await getToken()}`,
-              },
-            });
-
-            navigate('/swap/dashboard');    
-
-        } catch (error) {
-          // console.error('Error updating status:', error);
-        }
     };
 
     const handleSendMessage = async () => {
       if (newMessage.trim() === '') return;
+
+      if (isSending) return;
+      setIsSending(true);
 
       // If no previous conversation, create one and send message
       if (!conversationId) {
@@ -267,7 +284,7 @@ function Chat({
                 withCredentials: true,
               }
             );
-              // console.log("RESPONSE", response);
+              console.log("RESPONSE", response);
             
               if (response.status === 201) {
                 setConversationId(response.data.id);
@@ -288,6 +305,7 @@ function Chat({
             setAlertMessage("There was an error while creating the conversation");
             window.scrollTo({ top: 0, behavior: 'smooth' });
             // console.log(error);
+            setIsSending(false);
             return;
             }
           }
@@ -297,7 +315,7 @@ function Chat({
       } else {
         sendMessage(conversationId);
       }
-      
+
     };
 
     // In case of missing explorerId in localStorage, retrieve it again
@@ -307,7 +325,7 @@ function Chat({
       } else {
         fetchConversation();    
       };
-    }, []);
+    }, [sendMessage]);
     
     // Scroll to the bottom of the chat after sending a new message
     useEffect(() => {
@@ -332,6 +350,12 @@ function Chat({
       {!loading &&
         <><h1 className="chat-title">Chat with {swapExplorerName} - {swapCardName}</h1>
         
+        <Alert
+          variant='danger'
+          className={hiddenAlert ? 'hidden-alert' : ''}>
+          {alertMessage}
+        </Alert>
+
         <div className="chat-opportunity">
           {swapExplorerOpportunities.length > 0 ? (
             <>
@@ -349,14 +373,8 @@ function Chat({
               ) : (
                 <span>No new cards to exchange for this one</span>
               )}
-            
         </div>
 
-        <Alert
-          variant='danger'
-          className={hiddenAlert ? 'hidden-alert' : ''}>
-          {alertMessage}
-        </Alert>
         <Container fluid className="chat">
             <div>
               <Row className="message-list">
@@ -394,6 +412,7 @@ function Chat({
                   <InputGroup>
                     <Form.Control
                       as="textarea"
+                      ref={messageInputRef}
                       rows={3}
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
@@ -402,13 +421,16 @@ function Chat({
                           handleSendMessage();
                       } }
                       className="message-input"
-                      placeholder="Type a message..." />
+                      placeholder="Type a message..."
+                      disabled={isSending}
+                    />
                   </InputGroup>
                 </Col>
                 <Col xs={2}>
                   <Button
                     onClick={handleSendMessage}
                     className="send-button w-100"
+                    disabled={isSending || !newMessage.trim()}
                   >
                     <span className="send-text">Send</span>
                     <span className="mobile-symbol"> &gt; </span>
@@ -416,8 +438,9 @@ function Chat({
                 </Col>
               </Row>
             </div>
-          </Container></>}
-    </div>
+        </Container></>}
+
+      </div>
     </Container>
 
   );
