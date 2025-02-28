@@ -36,7 +36,7 @@ function Chat({
     // console.log("CHAT JSX swapExplorerId", swapExplorerId);
     // console.log("messages", messages);
     // console.log("swapCardName", swapCardName);
-    // console.log("conversationId", conversationId);
+    console.log("conversationId", conversationId);
     // console.log("loading", loading);
     // console.log("swapExplorerOpportunities", swapExplorerOpportunities);
 
@@ -52,7 +52,7 @@ function Chat({
           },
         });
 
-        // console.log("fetchConversation response", response);
+        console.log("fetchConversation response", response);
         setLoading(false);
 
         if (!response.data) {
@@ -307,7 +307,7 @@ function Chat({
       } else {
         fetchConversation();    
       };
-    }, []);
+    }, [sendMessage]);
     
     // Scroll to the bottom of the chat after sending a new message
     useEffect(() => {

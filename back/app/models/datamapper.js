@@ -140,7 +140,25 @@ module.exports = {
 
         return result.rows;
     },
-    async findSwapOpportunities(cardId, explorerId) {
+    async findSwapOpportunities(cardId, explorerId, page = 1, limit = 10) {
+        const countQuery = {
+            text: 
+            `SELECT COUNT(*)
+            FROM explorer_has_cards AS ehc
+            JOIN explorer ON explorer.id = ehc.explorer_id
+            WHERE ehc.card_id = $1
+            AND explorer.id != $2
+            AND ehc.duplicate = true
+            `,
+            values: [cardId, explorerId],
+        };
+
+        const countResult = await client.query(countQuery);
+        const totalCount = parseInt(countResult.rows[0].count);
+        console.log("DM totalCount", totalCount);
+
+        const offset = (page - 1) * limit;
+
         const preparedQuery = {
             text: `WITH explorers_with_card AS (
                 SELECT ehc.explorer_id, explorer.name
@@ -205,14 +223,23 @@ module.exports = {
                             ORDER BY o.card_name
                         ) FILTER (WHERE o.card_id IS NOT NULL), '[]'::jsonb)) > 0 THEN 1
                     ELSE 2
-                END,
-                random();
+                END
+            LIMIT $3 OFFSET $4;
             `,
-            values: [cardId, explorerId],
+            values: [cardId, explorerId, limit, offset],
         };
+
         const result = await client.query(preparedQuery);
-        // console.log(result.rows);
-        return result.rows;
+
+        return {
+            items: result.rows,
+            pagination: {
+                currentPage: page,
+                totalPages: Math.ceil(totalCount / limit),
+                totalItems: totalCount,
+                itemsPerPage: limit
+            }
+        };
     },
     async getOpportunitiesForRecipient(creatorId, recipientId) {
         const preparedQuery = {

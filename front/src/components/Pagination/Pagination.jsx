@@ -38,7 +38,7 @@ const PaginationControl = ({
           return null;
         })}
         
-        {activePage + 3 < totalPages && (
+        {activePage + 2 < totalPages && (
           <>
             <Pagination.Ellipsis disabled />
             <Pagination.Item onClick={() => onPageChange(totalPages)}>

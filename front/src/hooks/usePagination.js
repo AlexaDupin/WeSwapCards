@@ -13,6 +13,14 @@ export const usePagination = (fetchUrl, itemsPerPage = 20) => {
   const { getToken } = useAuth();
   
   const fetchData = async () => {
+    if (!fetchUrl) {
+        setData([]);
+        setLoading(false);
+        setTotalPages(0);
+        setTotalItems(0);
+        return;
+    }
+
     try {
       const response = await axiosInstance.get(
         `${fetchUrl}?page=${activePage}&limit=${itemsPerPage}`,
@@ -22,7 +30,7 @@ export const usePagination = (fetchUrl, itemsPerPage = 20) => {
           },
         }
       );
-      
+      // console.log("usePag response", response);
       setData(response.data.items || response.data.conversations || response.data);
       
       if (response.data.pagination) {
@@ -56,6 +64,7 @@ export const usePagination = (fetchUrl, itemsPerPage = 20) => {
     totalPages,
     totalItems,
     handlePageChange,
+    setActivePage,
     refresh: fetchData
   };
 };
