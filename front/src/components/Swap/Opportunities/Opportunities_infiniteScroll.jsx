@@ -22,7 +22,7 @@ function Opportunities({
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(true); // Track if more data is available
 
-    console.log("offset", offset);
+    // console.log("offset", offset);
     const baseUrl = process.env.REACT_APP_BASE_URL;
 
     const fetchOpportunities = async () => {
@@ -39,7 +39,7 @@ function Opportunities({
             },
           });
         const fetchedOpportunities = response.data;
-        console.log("OPPORTUNITIES", fetchedOpportunities);
+        // console.log("OPPORTUNITIES", fetchedOpportunities);
 
         if (fetchedOpportunities.length < 30) {
           setHasMore(false); // No more data to load
@@ -84,7 +84,7 @@ function Opportunities({
           setMessage(`Amazing ${name}, you have ${fetchedOpportunities.length} opportunities!`);
         }
       } catch (error) {
-        console.log('Error fetching opportunities:', error);
+        // console.log('Error fetching opportunities:', error);
       } 
       // finally {
       //   setLoading(false);

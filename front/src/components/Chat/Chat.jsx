@@ -284,7 +284,6 @@ function Chat({
                 withCredentials: true,
               }
             );
-              console.log("RESPONSE", response);
             
               if (response.status === 201) {
                 setConversationId(response.data.id);

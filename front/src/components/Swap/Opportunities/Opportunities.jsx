@@ -33,7 +33,7 @@ function Opportunities({
             },
           });
         const fetchedOpportunities = response.data;
-        console.log("OPPORTUNITIES", fetchedOpportunities);
+        // console.log("OPPORTUNITIES", fetchedOpportunities);
   
         // Fetch the count for each opportunity and determine the className
         const opportunitiesWithClassNames = await Promise.all(
@@ -72,7 +72,7 @@ function Opportunities({
           setMessage(`Amazing ${name}, you have ${fetchedOpportunities.length} opportunities!`);
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
   
