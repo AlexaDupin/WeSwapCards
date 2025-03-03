@@ -14,7 +14,7 @@ const opportunitiesController = {
 
         try {
             const opportunities = await datamapper.findSwapOpportunities(cardId, explorerId, page, limit);
-            console.log("opportunities", opportunities);
+            console.log("CTRL opportunities result", opportunities.pagination);
             res.status(200).json(opportunities);
         } catch (error) {
             console.error('Error fetching opportunities:', error);

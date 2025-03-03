@@ -24,6 +24,7 @@
   /* Focus state styling (for accessibility) */
   .pagination .page-link:focus {
     box-shadow: 0 0 0 0.25rem rgba(240, 122, 26, 0.4);
+    color: vars.$darker-primary-color; 
     outline: none;
   }
   

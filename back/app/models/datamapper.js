@@ -155,7 +155,6 @@ module.exports = {
 
         const countResult = await client.query(countQuery);
         const totalCount = parseInt(countResult.rows[0].count);
-        console.log("DM totalCount", totalCount);
 
         const offset = (page - 1) * limit;
 

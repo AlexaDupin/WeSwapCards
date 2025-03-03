@@ -39,7 +39,7 @@ function Chat({
     // console.log("CHAT JSX swapExplorerId", swapExplorerId);
     // console.log("messages", messages);
     // console.log("swapCardName", swapCardName);
-    console.log("conversationId", conversationId);
+    // console.log("conversationId", conversationId);
     // console.log("loading", loading);
     // console.log("swapExplorerOpportunities", swapExplorerOpportunities);
 
