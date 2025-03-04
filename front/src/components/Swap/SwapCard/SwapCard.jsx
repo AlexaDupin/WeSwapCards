@@ -4,7 +4,8 @@ import {
 	  Row,
     Container,
     Card,
-    Col
+    Col,
+    Badge
 } from "react-bootstrap";
 import {XOctagon} from "react-bootstrap-icons";
 
@@ -99,8 +100,6 @@ function SwapCard({
     const fetchSwapOpportunities = async (cardId) => {
       // console.log("FETCH OPP");
       setSelectedCardId(cardId);
-
-      // Fetch card name
       fetchSearchedCardName(cardId);
 
       try {
@@ -131,6 +130,13 @@ function SwapCard({
       navigate('/swap/card/chat', { state: { from: "/swap/card" } });
     }
 
+    // Function to check if a user has been active in the last 2 days
+    // const isActiveRecently = (lastActiveTimestamp) => {
+    //   const currentTime = Date.now();
+    //   const recentThreshold = 2 * 24 * 60 * 60 * 1000; // 2 days in milliseconds
+    //   return currentTime - lastActiveTimestamp <= recentThreshold;
+    // };
+
     useEffect(
       () => {
         if (!explorerId) {
@@ -143,145 +149,270 @@ function SwapCard({
 
     // console.log("SWAP OPP", swapOpportunities);
 
-  return (
-    <Container className="page-container">
-    <h1 className="swap-title">Find a card</h1>
-      <Form>
-
-      <Form.Group className="mb-5" controlId="formGroupPlace">
-        <Form.Label className="report-label">Select a chapter, {name}</Form.Label>
-        <Form.Select
-          aria-label="Select a chapter"
-          onChange={(e) => {
-            const selectedValue = e.target.value;
-            // console.log(selectedValue);
-
-            if (selectedValue !== "") {
-              handleSelectPlace(selectedValue);
-            }
-          }}
-        >
-          <option value="">Select</option>
-          {places?.map((place) => (
-            <option
-              key={place.id}
-              value={place.id}>
-              {place.name}
-            </option>
-          ))}
-        </Form.Select>
-      </Form.Group>
-
-      <Form.Group
-        className={hidden ? 'hidden' : 'mb-5'}
-        // className={'mb-5'}
-        controlId="formGroupEmail">
-        <Form.Label className="report-label">
-          Click on the card you are looking for!
-        </Form.Label>
-
-        <div className="g-3 cards-list">
-        {cards && cards.length > 0 ? (
-          cards?.map((card) => (
-            // <PlaceCard
-            //   key={card.id}
-            //   card={card}
-            //   fetchSwapOpportunities={fetchSwapOpportunities}
-            // />
-            <CardPreview
-              key={card.id}
-              card={card}
-              fetchSwapOpportunities={fetchSwapOpportunities}
-              isSelected={selectedCardId === card.id}
-            />
-            ))
-            ) : (
-              <div>No cards available</div>
-        )}
-        </div>
-      </Form.Group>
-      </Form>
-
-      <div
-        className={hiddenSwapOpportunities ? 'hidden' : ''}
-      >
-
-        <Row className="g-3">
-          {swapOpportunities && swapOpportunities.length > 0 ? (
-            <>
-            <p>Here are the users who can give you this card: <br />
-            <span className='swap-cardName'>{swapCardName}</span></p>
-
-            {swapOpportunities?.map((opportunity) => (
-          <Col xs={12}
-            key={opportunity.explorer_id}
-            className="column"
-          >
-          <Card
-            className="opportunity-card"
-            id={opportunity.explorer_id}
-          >
-            <Card.Title
-              className="opportunity-title"
+    return (
+      <Container className="page-container">
+        <h1 className="swap-title">Find a card</h1>
+        <Form>
+          <Form.Group className="mb-5" controlId="formGroupPlace">
+            <Form.Label className="report-label">Select a chapter, {name}</Form.Label>
+            <Form.Select
+              aria-label="Select a chapter"
+              onChange={(e) => {
+                const selectedValue = e.target.value;
+                if (selectedValue !== "") {
+                  handleSelectPlace(selectedValue);
+                }
+              }}
             >
-              {opportunity.explorer_name}
-            </Card.Title>
-
-            {opportunity.opportunities.length > 0 ? (
-            <Card.Text
-              className="opportunity-text"
-            >
-                <>
-                <span>In exchange, here are the cards you can offer them:</span>
-                <br />
-                {opportunity.opportunities?.map((exchange) => (
-                <button
-                  key={exchange.card.id}
-                  className="swap-tag"
-                >
-                  {exchange.card.name}
-                </button>
+              <option value="">Select</option>
+              {places?.map((place) => (
+                <option key={place.id} value={place.id}>
+                  {place.name}
+                </option>
               ))}
-                </>
-            </Card.Text>
+            </Form.Select>
+          </Form.Group>
+  
+          <Form.Group className={hidden ? 'hidden' : 'mb-5'} controlId="formGroupEmail">
+            <Form.Label className="report-label">Click on the card you are looking for!</Form.Label>
+            <div className="g-3 cards-list">
+              {cards.length > 0 ? (
+                cards.map((card) => (
+                  <CardPreview
+                    key={card.id}
+                    card={card}
+                    fetchSwapOpportunities={fetchSwapOpportunities}
+                    isSelected={selectedCardId === card.id}
+                  />
+                ))
               ) : (
-            <Card.Text
-                className="opportunity-text-empty"
-            >
-                <span>You do not have any new cards for this user, but you can still contact them.</span>
-            </Card.Text>
+                <div>No cards available</div>
+              )}
+            </div>
+          </Form.Group>
+        </Form>
+  
+        <div className={hiddenSwapOpportunities ? 'hidden' : ''}>
+          <Row className="g-3">
+            {swapOpportunities.length > 0 ? (
+              <>
+                <p>Here are the users who can give you this card: <br />
+                  <span className='swap-cardName'>{swapCardName}</span>
+                </p>
+  
+                {swapOpportunities.map((opportunity) => (
+                  // { const lastActiveTimestamp = opportunity.last_active_at
+                  //   ? new Date(opportunity.last_active_at).getTime()
+                  //   : 0;
+                  // const isActive = isActiveRecently(lastActiveTimestamp);
+  
+                  // return (
+                    <Col xs={12} key={opportunity.explorer_id} className="column">
+                      <Card className="opportunity-card" id={opportunity.explorer_id}>
+                        <Card.Title className="opportunity-title">
+                          <span className="opportunity-explorer-name">{opportunity.explorer_name}</span>
+                          {/* {isActive && (
+                            <span className="opportunity-explorer-badge">
+                              <Badge bg="success">Active Recently</Badge>
+                            </span>
+                          )} */}
+                        </Card.Title>
+  
+                        {opportunity.opportunities.length > 0 ? (
+                          <Card.Text className="opportunity-text">
+                            <span>In exchange, here are the cards you can offer them:</span>
+                            <br />
+                            {opportunity.opportunities.map((exchange) => (
+                              <button key={exchange.card.id} className="swap-tag">
+                                {exchange.card.name}
+                              </button>
+                            ))}
+                          </Card.Text>
+                        ) : (
+                          <Card.Text className="opportunity-text-empty">
+                            <span>You do not have any new cards for this user, but you can still contact them.</span>
+                          </Card.Text>
+                        )}
+  
+                        <button
+                          className="contact-button"
+                          onClick={() => handleContactButton(opportunity.explorer_id, opportunity.explorer_name, opportunity.opportunities)}
+                        >
+                          Contact this user to swap
+                        </button>
+  
+                      </Card>
+                    </Col>
+                  // );
+                // })}
+                ))}
+              </>
+            ) : (
+              <>
+                <div>No opportunities available for <span className='swap-cardName'>{swapCardName}</span>, try another card!</div>
+                <XOctagon className='lock-icon' />
+              </>
             )}
+          </Row>
+        </div>
+  
+        <ScrollToTop />
+      </Container>
+    );
+  }
+  
+  SwapCard.propTypes = {
+    explorerId: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    setSwapExplorerId: PropTypes.func.isRequired,
+    setSwapCardName: PropTypes.func.isRequired,
+    swapCardName: PropTypes.string,
+    setSwapExplorerName: PropTypes.func.isRequired,
+    setConversationId: PropTypes.func.isRequired,
+    setSwapExplorerOpportunities: PropTypes.func.isRequired
+  };
+  
+  export default SwapCard;
 
-            <button
-              className="contact-button"
-              onClick={() => handleContactButton(opportunity.explorer_id, opportunity.explorer_name, opportunity.opportunities)}
-            >
-              Contact this user to swap
-            </button>
+//   return (
+//     <Container className="page-container">
+//     <h1 className="swap-title">Find a card</h1>
+//       <Form>
 
-          </Card>
-          </Col>
-          ))}
-          </>
-          ) : (
-            <>
-            <div>No opportunities available for <span className='swap-cardName'>{swapCardName}</span>, try another card!</div>
-            {/* <div className="swap-disclaimer"><em>Only users that need cards you have in duplicates will be shown at a later stage. So remember to log all your cards!</em></div> */}
-            <XOctagon className='lock-icon'/>
-            </>
-          )}
-        </Row>
-      </div>
+//       <Form.Group className="mb-5" controlId="formGroupPlace">
+//         <Form.Label className="report-label">Select a chapter, {name}</Form.Label>
+//         <Form.Select
+//           aria-label="Select a chapter"
+//           onChange={(e) => {
+//             const selectedValue = e.target.value;
+//             // console.log(selectedValue);
 
-      <ScrollToTop />
+//             if (selectedValue !== "") {
+//               handleSelectPlace(selectedValue);
+//             }
+//           }}
+//         >
+//           <option value="">Select</option>
+//           {places?.map((place) => (
+//             <option
+//               key={place.id}
+//               value={place.id}>
+//               {place.name}
+//             </option>
+//           ))}
+//         </Form.Select>
+//       </Form.Group>
 
-    </Container>
-)
-}
+//       <Form.Group
+//         className={hidden ? 'hidden' : 'mb-5'}
+//         // className={'mb-5'}
+//         controlId="formGroupEmail">
+//         <Form.Label className="report-label">
+//           Click on the card you are looking for!
+//         </Form.Label>
 
-SwapCard.propTypes = {
-  explorerId: PropTypes.number.isRequired,
-  name: PropTypes.string,
-};
+//         <div className="g-3 cards-list">
+//         {cards && cards.length > 0 ? (
+//           cards?.map((card) => (
+//             // <PlaceCard
+//             //   key={card.id}
+//             //   card={card}
+//             //   fetchSwapOpportunities={fetchSwapOpportunities}
+//             // />
+//             <CardPreview
+//               key={card.id}
+//               card={card}
+//               fetchSwapOpportunities={fetchSwapOpportunities}
+//               isSelected={selectedCardId === card.id}
+//             />
+//             ))
+//             ) : (
+//               <div>No cards available</div>
+//         )}
+//         </div>
+//       </Form.Group>
+//       </Form>
 
-export default React.memo(SwapCard);
+//       <div
+//         className={hiddenSwapOpportunities ? 'hidden' : ''}
+//       >
+
+//         <Row className="g-3">
+//           {swapOpportunities && swapOpportunities.length > 0 ? (
+//             <>
+//             <p>Here are the users who can give you this card: <br />
+//             <span className='swap-cardName'>{swapCardName}</span></p>
+
+//             {swapOpportunities?.map((opportunity) => (
+//           <Col xs={12}
+//             key={opportunity.explorer_id}
+//             className="column"
+//           >
+//           <Card
+//             className="opportunity-card"
+//             id={opportunity.explorer_id}
+//           >
+//             <Card.Title
+//               className="opportunity-title"
+//             >
+//               {opportunity.explorer_name}
+//             </Card.Title>
+
+//             {opportunity.opportunities.length > 0 ? (
+//             <Card.Text
+//               className="opportunity-text"
+//             >
+//                 <>
+//                 <span>In exchange, here are the cards you can offer them:</span>
+//                 <br />
+//                 {opportunity.opportunities?.map((exchange) => (
+//                 <button
+//                   key={exchange.card.id}
+//                   className="swap-tag"
+//                 >
+//                   {exchange.card.name}
+//                 </button>
+//               ))}
+//                 </>
+//             </Card.Text>
+//               ) : (
+//             <Card.Text
+//                 className="opportunity-text-empty"
+//             >
+//                 <span>You do not have any new cards for this user, but you can still contact them.</span>
+//             </Card.Text>
+//             )}
+
+//             <button
+//               className="contact-button"
+//               onClick={() => handleContactButton(opportunity.explorer_id, opportunity.explorer_name, opportunity.opportunities)}
+//             >
+//               Contact this user to swap
+//             </button>
+
+//           </Card>
+//           </Col>
+//           ))}
+//           </>
+//           ) : (
+//             <>
+//             <div>No opportunities available for <span className='swap-cardName'>{swapCardName}</span>, try another card!</div>
+//             {/* <div className="swap-disclaimer"><em>Only users that need cards you have in duplicates will be shown at a later stage. So remember to log all your cards!</em></div> */}
+//             <XOctagon className='lock-icon'/>
+//             </>
+//           )}
+//         </Row>
+//       </div>
+
+//       <ScrollToTop />
+
+//     </Container>
+// )
+// }
+
+// SwapCard.propTypes = {
+//   explorerId: PropTypes.number.isRequired,
+//   name: PropTypes.string,
+// };
+
+// export default React.memo(SwapCard);

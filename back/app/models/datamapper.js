@@ -214,6 +214,7 @@ module.exports = {
         // console.log(result.rows);
         return result.rows;
     },
+    // PREPARATION FOR PAGINATION
     // async findSwapOpportunities(cardId, explorerId, page = 1, limit = 10) {
     //     const countQuery = {
     //         text: 
