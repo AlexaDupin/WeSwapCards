@@ -140,24 +140,7 @@ module.exports = {
 
         return result.rows;
     },
-    async findSwapOpportunities(cardId, explorerId, page = 1, limit = 10) {
-        const countQuery = {
-            text: 
-            `SELECT COUNT(*)
-            FROM explorer_has_cards AS ehc
-            JOIN explorer ON explorer.id = ehc.explorer_id
-            WHERE ehc.card_id = $1
-            AND explorer.id != $2
-            AND ehc.duplicate = true
-            `,
-            values: [cardId, explorerId],
-        };
-
-        const countResult = await client.query(countQuery);
-        const totalCount = parseInt(countResult.rows[0].count);
-
-        const offset = (page - 1) * limit;
-
+    async findSwapOpportunities(cardId, explorerId) {
         const preparedQuery = {
             text: `WITH explorers_with_card AS (
                 SELECT ehc.explorer_id, explorer.name
@@ -222,24 +205,115 @@ module.exports = {
                             ORDER BY o.card_name
                         ) FILTER (WHERE o.card_id IS NOT NULL), '[]'::jsonb)) > 0 THEN 1
                     ELSE 2
-                END
-            LIMIT $3 OFFSET $4;
+                END,
+                random();
             `,
-            values: [cardId, explorerId, limit, offset],
+            values: [cardId, explorerId],
         };
-
         const result = await client.query(preparedQuery);
-
-        return {
-            items: result.rows,
-            pagination: {
-                currentPage: page,
-                totalPages: Math.ceil(totalCount / limit),
-                totalItems: totalCount,
-                itemsPerPage: limit
-            }
-        };
+        // console.log(result.rows);
+        return result.rows;
     },
+    // async findSwapOpportunities(cardId, explorerId, page = 1, limit = 10) {
+    //     const countQuery = {
+    //         text: 
+    //         `SELECT COUNT(*)
+    //         FROM explorer_has_cards AS ehc
+    //         JOIN explorer ON explorer.id = ehc.explorer_id
+    //         WHERE ehc.card_id = $1
+    //         AND explorer.id != $2
+    //         AND ehc.duplicate = true
+    //         `,
+    //         values: [cardId, explorerId],
+    //     };
+
+    //     const countResult = await client.query(countQuery);
+    //     const totalCount = parseInt(countResult.rows[0].count);
+
+    //     const offset = (page - 1) * limit;
+
+    //     const preparedQuery = {
+    //         text: `WITH explorers_with_card AS (
+    //             SELECT ehc.explorer_id, explorer.name
+    //             FROM explorer_has_cards AS ehc
+    //             JOIN explorer ON explorer.id = ehc.explorer_id
+    //             WHERE ehc.card_id = $1
+    //             AND explorer.id != $2
+    //             AND ehc.duplicate = true
+    //         ),
+    //         explorer_duplicates AS (
+    //             SELECT ehc.card_id
+    //             FROM explorer_has_cards AS ehc
+    //             WHERE ehc.explorer_id = $2
+    //             AND ehc.duplicate = true
+    //         ),
+    //         opportunities_for_explorers AS (
+    //             SELECT 
+    //                 ewce.explorer_id,
+    //                 ewce.name,
+    //                 c.id AS card_id,
+    //                 c.name AS card_name
+    //             FROM 
+    //                 explorers_with_card ewce
+    //             CROSS JOIN 
+    //                 explorer_duplicates ed
+    //             LEFT JOIN 
+    //                 explorer_has_cards ehc ON ehc.explorer_id = ewce.explorer_id AND ehc.card_id = ed.card_id
+    //             LEFT JOIN 
+    //                 card c ON c.id = ed.card_id
+    //             WHERE 
+    //                 ehc.explorer_id IS NULL
+    //         )
+    //         SELECT 
+    //             ewce.explorer_id,
+    //             ewce.name AS explorer_name,
+    //             COALESCE(
+    //                 jsonb_agg(
+    //                     jsonb_build_object(
+    //                         'card', 
+    //                         jsonb_build_object(
+    //                             'id', o.card_id, 
+    //                             'name', o.card_name)
+    //                     ) 
+    //                     ORDER BY o.card_name
+    //                 ) FILTER (WHERE o.card_id IS NOT NULL), '[]'::jsonb
+    //             ) AS opportunities
+    //         FROM 
+    //             explorers_with_card ewce
+    //         LEFT JOIN 
+    //             opportunities_for_explorers o ON o.explorer_id = ewce.explorer_id
+    //         GROUP BY 
+    //             ewce.explorer_id, ewce.name
+    //         ORDER BY 
+    //             CASE 
+    //                 WHEN jsonb_array_length(COALESCE(jsonb_agg(
+    //                         jsonb_build_object(
+    //                             'card', 
+    //                             jsonb_build_object(
+    //                                 'id', o.card_id, 
+    //                                 'name', o.card_name)
+    //                             ) 
+    //                         ORDER BY o.card_name
+    //                     ) FILTER (WHERE o.card_id IS NOT NULL), '[]'::jsonb)) > 0 THEN 1
+    //                 ELSE 2
+    //             END
+    //         LIMIT $3 OFFSET $4;
+    //         `,
+    //         values: [cardId, explorerId, limit, offset],
+    //     };
+
+    //     const result = await client.query(preparedQuery);
+
+    //     return {
+    //         items: result.rows,
+    //         pagination: {
+    //             currentPage: page,
+    //             totalPages: Math.ceil(totalCount / limit),
+    //             totalItems: totalCount,
+    //             itemsPerPage: limit
+    //         }
+    //     };
+    // },
     async getOpportunitiesForRecipient(creatorId, recipientId) {
         const preparedQuery = {
             text: `

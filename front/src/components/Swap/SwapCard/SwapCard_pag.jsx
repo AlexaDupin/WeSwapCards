@@ -4,16 +4,18 @@ import {
 	  Row,
     Container,
     Card,
-    Col
+    Col,
+    Spinner
 } from "react-bootstrap";
 import {XOctagon} from "react-bootstrap-icons";
-
 import { useNavigate } from 'react-router-dom';
 
-import PlaceCard from './PlaceCard/PlaceCard';
 import CardPreview from './CardPreview/CardPreview';
 
+import { usePagination } from '../../../hooks/usePagination';
+import PaginationControl from '../../Pagination/Pagination';
 import { axiosInstance } from '../../../helpers/axiosInstance';
+
 import { useAuth } from '@clerk/clerk-react';
 
 import PropTypes from 'prop-types';
@@ -28,13 +30,25 @@ function SwapCard({
     const [cards, setCards] = useState([]);
     const [hidden, setHidden] = useState(true);
     const [hiddenSwapOpportunities, setHiddenSwapOpportunities] = useState(true);
-    const [swapOpportunities, setSwapOpportunities] = useState([]);
-    // const [swapExplorerOpportunities, setSwapExplorerOpportunities] = useState([]);
-    
     const [selectedCardId, setSelectedCardId] = useState();
+    const [loadingOpportunities, setLoadingOpportunities] = useState(true);
+
     const { getToken } = useAuth()
     const navigate = useNavigate();
     // console.log('selectedCardId', selectedCardId);
+
+    const { 
+      data: swapOpportunities, 
+      loading,
+      activePage,
+      totalPages,
+      setActivePage,
+      handlePageChange,
+      refresh
+    } = usePagination(
+      selectedCardId ? `/opportunities/${explorerId}/card/${selectedCardId}` : '', 
+      2
+    );
 
     // Fetch all places to show in dropdown
     const fetchAllPlaces = async () => {
@@ -70,7 +84,6 @@ function SwapCard({
         setHiddenSwapOpportunities(true);
         setSwapExplorerId('');
         setConversationId('');
-
       } catch (error) {
         // console.log(error);
       }
@@ -97,31 +110,15 @@ function SwapCard({
     }
 
     const fetchSwapOpportunities = async (cardId) => {
-      // console.log("FETCH OPP");
+      setLoadingOpportunities(true);
       setSelectedCardId(cardId);
-
-      // Fetch card name
       fetchSearchedCardName(cardId);
+      setHidden(false);
 
-      try {
-          const response = await axiosInstance.get(
-          `/opportunities/${explorerId}/card/${cardId}`, {
-            headers: {
-              Authorization: `Bearer ${await getToken()}`,
-            },
-            withCredentials: true,
-            }
-          );
-        // console.log("SWAP response", response);
-        const swapOpportunities = response.data;
-        // console.log("swapOpportunities", swapOpportunities);
-        setSwapOpportunities(swapOpportunities);
-        setHidden(false);
-        setHiddenSwapOpportunities(false);
-
-      } catch (error) {
-        // console.log(error);
-      }
+      await refresh();
+      setActivePage(1);
+      setLoadingOpportunities(false);
+      setHiddenSwapOpportunities(false);
     };
 
     const handleContactButton = (swapExplorerId, swapExplorerName, swapExplorerOpportunities) => {
@@ -144,70 +141,76 @@ function SwapCard({
     // console.log("SWAP OPP", swapOpportunities);
 
   return (
-    <Container className="page-container">
-    <h1 className="swap-title">Find a card</h1>
+  <Container className="page-container">
+      <h1 className="swap-title">Find a card</h1>
+
       <Form>
+        <Form.Group className="mb-5" controlId="formGroupPlace">
+          <Form.Label className="report-label">Select a chapter, {name}</Form.Label>
+          <Form.Select
+            aria-label="Select a chapter"
+            onChange={(e) => {
+              const selectedValue = e.target.value;
+              if (selectedValue !== "") {
+                handleSelectPlace(selectedValue);
+              }
+            } }
+          >
+            <option value="">Select</option>
+            {places?.map((place) => (
+              <option
+                key={place.id}
+                value={place.id}>
+                {place.name}
+              </option>
+            ))}
+          </Form.Select>
+        </Form.Group>
 
-      <Form.Group className="mb-5" controlId="formGroupPlace">
-        <Form.Label className="report-label">Select a chapter, {name}</Form.Label>
-        <Form.Select
-          aria-label="Select a chapter"
-          onChange={(e) => {
-            const selectedValue = e.target.value;
-            // console.log(selectedValue);
+        <Form.Group
+          className={hidden ? 'hidden' : 'mb-5'}
+          controlId="formGroupEmail">
+          <Form.Label className="report-label">
+            Click on the card you are looking for!
+          </Form.Label>
 
-            if (selectedValue !== "") {
-              handleSelectPlace(selectedValue);
-            }
-          }}
-        >
-          <option value="">Select</option>
-          {places?.map((place) => (
-            <option
-              key={place.id}
-              value={place.id}>
-              {place.name}
-            </option>
-          ))}
-        </Form.Select>
-      </Form.Group>
-
-      <Form.Group
-        className={hidden ? 'hidden' : 'mb-5'}
-        // className={'mb-5'}
-        controlId="formGroupEmail">
-        <Form.Label className="report-label">
-          Click on the card you are looking for!
-        </Form.Label>
-
-        <div className="g-3 cards-list">
-        {cards && cards.length > 0 ? (
-          cards?.map((card) => (
-            // <PlaceCard
-            //   key={card.id}
-            //   card={card}
-            //   fetchSwapOpportunities={fetchSwapOpportunities}
-            // />
-            <CardPreview
-              key={card.id}
-              card={card}
-              fetchSwapOpportunities={fetchSwapOpportunities}
-              isSelected={selectedCardId === card.id}
-            />
-            ))
+          <div className="g-3 cards-list">
+            {cards && cards.length > 0 ? (
+              cards?.map((card) => (
+                <CardPreview
+                  key={card.id}
+                  card={card}
+                  fetchSwapOpportunities={fetchSwapOpportunities}
+                  isSelected={selectedCardId === card.id} />
+              ))
             ) : (
               <div>No cards available</div>
-        )}
-        </div>
-      </Form.Group>
+            )}
+          </div>
+        </Form.Group>
       </Form>
 
-      <div
-        className={hiddenSwapOpportunities ? 'hidden' : ''}
-      >
+      {/* {loading && (
+        <>
+          <Spinner animation="border" className="spinner" />
+        </>
+      )} */}
+      
+      {loadingOpportunities && selectedCardId && (
+        <div className="text-center my-4">
+          <Spinner animation="border" className="spinner" />
+        </div>
+      )}
 
+      {/* {!loading && ( */}
+      {!loadingOpportunities && !hiddenSwapOpportunities && (
+
+      // <div
+      //   className={hiddenSwapOpportunities ? 'hidden' : ''}
+      // >
+      <div>
         <Row className="g-3">
-          {swapOpportunities && swapOpportunities.length > 0 ? (
+          {swapOpportunities.length > 0 ? (
             <>
             <p>Here are the users who can give you this card: <br />
             <span className='swap-cardName'>{swapCardName}</span></p>
@@ -261,7 +264,14 @@ function SwapCard({
 
           </Card>
           </Col>
+
           ))}
+
+          <PaginationControl
+            activePage={activePage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange} 
+          />
           </>
           ) : (
             <>
@@ -272,10 +282,12 @@ function SwapCard({
           )}
         </Row>
       </div>
+      )}
+      
+    <ScrollToTop />
 
-      <ScrollToTop />
-
-    </Container>
+  </Container>
+  
 )
 }
 
