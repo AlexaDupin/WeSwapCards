@@ -1,0 +1,41 @@
+@use 'src/styles/vars';
+
+/* Custom pagination styles */
+.pagination .page-link {
+    color: vars.$primary-color;
+    background-color: #ffffff; 
+    border-color: #dedede;
+  }
+  
+  /* Active/current page styling */
+  .pagination .page-item.active .page-link {
+    color: #ffffff;
+    background-color: vars.$primary-color; 
+    border-color: vars.$primary-color; 
+  }
+  
+  /* Hover state styling */
+  .pagination .page-link:hover {
+    color: vars.$darker-primary-color; 
+    background-color: vars.$verylight-primary-color; 
+    border-color: vars.$primary-color; 
+  }
+  
+  /* Focus state styling (for accessibility) */
+  .pagination .page-link:focus {
+    box-shadow: 0 0 0 0.25rem rgba(240, 122, 26, 0.4);
+    color: vars.$darker-primary-color; 
+    outline: none;
+  }
+  
+  /* Disabled state styling (for First/Prev buttons when on first page) */
+  .pagination .page-item.disabled .page-link {
+    color: #a9a9a9; /* Gray text */
+    background-color: #f8f8f8; /* Very light gray background */
+    border-color: #dedede; /* Light gray border */
+  }
+  
+  /* Ellipsis styling */
+  .pagination .page-item .page-link[aria-label="More"] {
+    color: vars.$primary-color; 
+  }

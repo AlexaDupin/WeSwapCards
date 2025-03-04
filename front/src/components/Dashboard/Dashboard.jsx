@@ -9,9 +9,11 @@ import {
 } from "react-bootstrap";
 import {Envelope} from "react-bootstrap-icons";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@clerk/clerk-react';
 
 import { axiosInstance } from '../../helpers/axiosInstance';
-import { useAuth } from '@clerk/clerk-react';
+import { usePagination } from '../../hooks/usePagination';
+import PaginationControl from '../Pagination/Pagination';
 
 import PropTypes from 'prop-types';
 
@@ -22,35 +24,22 @@ import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 function Dashboard({
   explorerId, setSwapExplorerId, setSwapCardName, setSwapExplorerName, setConversationId, setSwapExplorerOpportunities
 }) {
-  const [conversations, setConversations] = useState([]);
+  const { 
+    data: conversations, 
+    loading, 
+    error,
+    activePage, 
+    totalPages, 
+    totalItems,
+    handlePageChange,
+    refresh: refreshConversations
+  } = usePagination(`/conversation/${explorerId}`, 15);
 
-  const [loading, setLoading] = useState(true);
   const [hiddenAlert, setHiddenAlert] = useState(true);
   const [alertMessage, setAlertMessage] = useState('');
-  // console.log('conversations', conversations);
 
-  const { getToken } = useAuth()
+  const { getToken } = useAuth();
   const navigate = useNavigate();
-
-  const fetchAllConversations = async () => {
-    try {
-      const response = await axiosInstance.get(
-          `/conversation/${explorerId}`
-          , {
-            headers: {
-              Authorization: `Bearer ${await getToken()}`,
-            },
-          });
-      setConversations(response.data.allConversations);
-      setLoading(false);
-
-    } catch (error) {
-      setLoading(false);
-      setHiddenAlert(false);
-      setAlertMessage("There was an error while loading your requests");
-      // console.log(error);
-    }
-  };
 
   const fetchSwapOpportunitiesForRecipient = async (creatorId, recipientId, conversationId) => {
     try {
@@ -65,7 +54,7 @@ function Dashboard({
       setSwapExplorerOpportunities(response.data);
 
     } catch (error) {
-      setLoading(false);
+      // setLoading(false);
       setHiddenAlert(false);
       setAlertMessage("There was an error while fetching the opportunities");
       // console.log(error);
@@ -83,7 +72,6 @@ function Dashboard({
   };
 
   const handleStatusChange = async (conversationId, newStatus) => {
-    // console.log("CHANGING STATUS", newStatus);
     try {
       await axiosInstance.put(
         `/conversation/${conversationId}`,
@@ -93,13 +81,9 @@ function Dashboard({
             Authorization: `Bearer ${await getToken()}`,
           },
         });
-      setConversations(prevConversations =>
-        prevConversations.map(conversation =>
-          conversation.db_id === conversationId ? { ...conversation, status: newStatus } : conversation
-        )
-      );
+      refreshConversations();
     } catch (error) {
-      // console.error('Error updating status:', error);
+      console.error('Error updating status:', error);
     }
   };
 
@@ -116,32 +100,34 @@ function Dashboard({
     }
   };
 
-  useEffect(
-    () => {
-      if (!explorerId) {
-        navigate('/login/redirect', { state: { from: "/swap/dashboard" } });
-      } else {
-      fetchAllConversations();
-      }
-    }, [],
-  );
+  useEffect(() => {
+    if (!explorerId) {
+      navigate('/login/redirect', { state: { from: "/swap/dashboard" } });
+    }
+  }, [explorerId]);
+
+  if (error) {
+    setHiddenAlert(false);
+    setAlertMessage("There was an error while loading your requests");
+  }
 
   return (
     <Container className="page-container">
-    <h1 className="swap-title">Requests dashboard</h1>
+      <h1 className="swap-title">Requests dashboard</h1>
 
-    {loading &&
-      <><Spinner
-          animation="border"
-          className="spinner" /><p>Loading your requests...</p></>
-    }
+      {loading && (
+        <><Spinner animation="border" className="spinner" /><p>Loading your requests...</p></>
+      )}
 
-    {!loading &&
-      <><Alert
-          variant='danger'
-          className={hiddenAlert ? 'hidden-alert' : ''}>
-          {alertMessage}
-        </Alert><Table>
+      {!loading && (
+        <>
+          <Alert variant='danger' className={hiddenAlert ? 'hidden-alert' : ''}>
+            {alertMessage}
+          </Alert>
+          
+          {totalItems > 0 ? (
+            <>
+              <Table>
             <thead>
               <tr>
                 <th style={{ width: '10%' }}>#</th>
@@ -189,10 +175,21 @@ function Dashboard({
                 </tr>
               ))}
             </tbody>
-          </Table></>
-    }
+              </Table>
+              
+              <PaginationControl 
+                activePage={activePage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </>
+          ) : (
+            <p>You do not have any conversation at the moment. Start swapping!</p>
+          )}
+        </>
+      )}
 
-    <ScrollToTop />
+      <ScrollToTop />
     </Container>
   );
 }

@@ -104,11 +104,14 @@ const chatController = {
     },
     async getAllConversations(req, res) {
         const explorerId = req.params.explorerId;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
         // console.log('CHAT CTRL', explorerId);
 
             try {
-                const allConversations = await datamapper.getAllConversationsOfExplorer(explorerId);
-                res.status(200).json({ allConversations });
+                const result = await datamapper.getAllConversationsOfExplorer(explorerId, page, limit);
+                console.log("CTRL CHAT result", result.pagination);
+                res.status(200).json(result);
             } catch (error) {
                 console.error("Error while retrieving conversations:", error);
                 return res.status(500).send({ message: 'An error occurred while retrieving conversations.', error: error.message });            

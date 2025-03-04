@@ -17,7 +17,22 @@
 .opportunity-title {
     font-size: 1.3rem !important;
     padding: 1rem;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    width: 100%;
 }
+
+// .opportunity-explorer-badge {
+//     position: absolute;
+//     right: 40px;
+//     margin: 0;
+// }
+
+// .opportunity-explorer-badge .badge {
+//     background-color: rgb(176, 0, 176) !important;
+// }
 
 .opportunity-text {
     height: 150px !important;
