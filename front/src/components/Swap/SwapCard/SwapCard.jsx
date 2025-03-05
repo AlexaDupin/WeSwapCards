@@ -113,7 +113,7 @@ function SwapCard({
           );
         // console.log("SWAP response", response);
         const swapOpportunities = response.data;
-        // console.log("swapOpportunities", swapOpportunities);
+        console.log("swapOpportunities", swapOpportunities);
         setSwapOpportunities(swapOpportunities);
         setHidden(false);
         setHiddenSwapOpportunities(false);
@@ -130,12 +130,14 @@ function SwapCard({
       navigate('/swap/card/chat', { state: { from: "/swap/card" } });
     }
 
-    // Function to check if a user has been active in the last 2 days
-    // const isActiveRecently = (lastActiveTimestamp) => {
-    //   const currentTime = Date.now();
-    //   const recentThreshold = 2 * 24 * 60 * 60 * 1000; // 2 days in milliseconds
-    //   return currentTime - lastActiveTimestamp <= recentThreshold;
-    // };
+    const isRecentlyActive = (lastActiveAt) => {
+      const lastActiveDate = new Date(lastActiveAt);
+      
+      const twoDaysAgo = new Date();
+      twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+      
+      return lastActiveDate > twoDaysAgo;
+    };    
 
     useEffect(
       () => {
@@ -146,8 +148,6 @@ function SwapCard({
         }
       }, [],
     );
-
-    // console.log("SWAP OPP", swapOpportunities);
 
     return (
       <Container className="page-container">
@@ -201,21 +201,15 @@ function SwapCard({
                 </p>
   
                 {swapOpportunities.map((opportunity) => (
-                  // { const lastActiveTimestamp = opportunity.last_active_at
-                  //   ? new Date(opportunity.last_active_at).getTime()
-                  //   : 0;
-                  // const isActive = isActiveRecently(lastActiveTimestamp);
-  
-                  // return (
                     <Col xs={12} key={opportunity.explorer_id} className="column">
                       <Card className="opportunity-card" id={opportunity.explorer_id}>
                         <Card.Title className="opportunity-title">
                           <span className="opportunity-explorer-name">{opportunity.explorer_name}</span>
-                          {/* {isActive && (
+                          {isRecentlyActive(opportunity.last_active_at) && (
                             <span className="opportunity-explorer-badge">
                               <Badge bg="success">Active Recently</Badge>
                             </span>
-                          )} */}
+                          )}
                         </Card.Title>
   
                         {opportunity.opportunities.length > 0 ? (
@@ -243,8 +237,6 @@ function SwapCard({
   
                       </Card>
                     </Col>
-                  // );
-                // })}
                 ))}
               </>
             ) : (
@@ -273,146 +265,3 @@ function SwapCard({
   };
   
   export default SwapCard;
-
-//   return (
-//     <Container className="page-container">
-//     <h1 className="swap-title">Find a card</h1>
-//       <Form>
-
-//       <Form.Group className="mb-5" controlId="formGroupPlace">
-//         <Form.Label className="report-label">Select a chapter, {name}</Form.Label>
-//         <Form.Select
-//           aria-label="Select a chapter"
-//           onChange={(e) => {
-//             const selectedValue = e.target.value;
-//             // console.log(selectedValue);
-
-//             if (selectedValue !== "") {
-//               handleSelectPlace(selectedValue);
-//             }
-//           }}
-//         >
-//           <option value="">Select</option>
-//           {places?.map((place) => (
-//             <option
-//               key={place.id}
-//               value={place.id}>
-//               {place.name}
-//             </option>
-//           ))}
-//         </Form.Select>
-//       </Form.Group>
-
-//       <Form.Group
-//         className={hidden ? 'hidden' : 'mb-5'}
-//         // className={'mb-5'}
-//         controlId="formGroupEmail">
-//         <Form.Label className="report-label">
-//           Click on the card you are looking for!
-//         </Form.Label>
-
-//         <div className="g-3 cards-list">
-//         {cards && cards.length > 0 ? (
-//           cards?.map((card) => (
-//             // <PlaceCard
-//             //   key={card.id}
-//             //   card={card}
-//             //   fetchSwapOpportunities={fetchSwapOpportunities}
-//             // />
-//             <CardPreview
-//               key={card.id}
-//               card={card}
-//               fetchSwapOpportunities={fetchSwapOpportunities}
-//               isSelected={selectedCardId === card.id}
-//             />
-//             ))
-//             ) : (
-//               <div>No cards available</div>
-//         )}
-//         </div>
-//       </Form.Group>
-//       </Form>
-
-//       <div
-//         className={hiddenSwapOpportunities ? 'hidden' : ''}
-//       >
-
-//         <Row className="g-3">
-//           {swapOpportunities && swapOpportunities.length > 0 ? (
-//             <>
-//             <p>Here are the users who can give you this card: <br />
-//             <span className='swap-cardName'>{swapCardName}</span></p>
-
-//             {swapOpportunities?.map((opportunity) => (
-//           <Col xs={12}
-//             key={opportunity.explorer_id}
-//             className="column"
-//           >
-//           <Card
-//             className="opportunity-card"
-//             id={opportunity.explorer_id}
-//           >
-//             <Card.Title
-//               className="opportunity-title"
-//             >
-//               {opportunity.explorer_name}
-//             </Card.Title>
-
-//             {opportunity.opportunities.length > 0 ? (
-//             <Card.Text
-//               className="opportunity-text"
-//             >
-//                 <>
-//                 <span>In exchange, here are the cards you can offer them:</span>
-//                 <br />
-//                 {opportunity.opportunities?.map((exchange) => (
-//                 <button
-//                   key={exchange.card.id}
-//                   className="swap-tag"
-//                 >
-//                   {exchange.card.name}
-//                 </button>
-//               ))}
-//                 </>
-//             </Card.Text>
-//               ) : (
-//             <Card.Text
-//                 className="opportunity-text-empty"
-//             >
-//                 <span>You do not have any new cards for this user, but you can still contact them.</span>
-//             </Card.Text>
-//             )}
-
-//             <button
-//               className="contact-button"
-//               onClick={() => handleContactButton(opportunity.explorer_id, opportunity.explorer_name, opportunity.opportunities)}
-//             >
-//               Contact this user to swap
-//             </button>
-
-//           </Card>
-//           </Col>
-//           ))}
-//           </>
-//           ) : (
-//             <>
-//             <div>No opportunities available for <span className='swap-cardName'>{swapCardName}</span>, try another card!</div>
-//             {/* <div className="swap-disclaimer"><em>Only users that need cards you have in duplicates will be shown at a later stage. So remember to log all your cards!</em></div> */}
-//             <XOctagon className='lock-icon'/>
-//             </>
-//           )}
-//         </Row>
-//       </div>
-
-//       <ScrollToTop />
-
-//     </Container>
-// )
-// }
-
-// SwapCard.propTypes = {
-//   explorerId: PropTypes.number.isRequired,
-//   name: PropTypes.string,
-// };
-
-// export default React.memo(SwapCard);

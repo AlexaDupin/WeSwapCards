@@ -110,7 +110,7 @@ const chatController = {
 
             try {
                 const result = await datamapper.getAllConversationsOfExplorer(explorerId, page, limit);
-                console.log("CTRL CHAT result", result.pagination);
+                // console.log("CTRL CHAT result", result.pagination);
                 res.status(200).json(result);
             } catch (error) {
                 console.error("Error while retrieving conversations:", error);

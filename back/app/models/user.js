@@ -50,4 +50,16 @@ module.exports = {
         console.log(preparedQuery);
         return preparedQuery.rowCount;
     },
+    async updateExplorerActivity(explorerId, lastActiveAt) {
+        const preparedQuery = {
+            text: `
+            UPDATE explorer
+            SET last_active_at = $2
+            WHERE id = $1
+            `,
+            values: [explorerId, lastActiveAt]
+        };
+        const result = await client.query(preparedQuery);
+        console.log(result.command);
+    },
 };

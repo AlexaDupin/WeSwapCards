@@ -92,6 +92,10 @@ router
     .route('/explorercards/:explorerId/cards/:cardId/duplicate')
     .patch(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.editDuplicateStatus));
 
+router
+    .route('/exploreractivity/:explorerId')
+    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(userController.updateLastActive))
+
 // router
 //     .route('/opportunities/:explorerId/card/:cardId')
 //     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findExplorerForswapCard));
