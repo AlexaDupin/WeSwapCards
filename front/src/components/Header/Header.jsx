@@ -2,18 +2,16 @@ import React from 'react';
 import { UserButton, useUser } from "@clerk/clerk-react";
 
 import {
-  NavLink, Link, useNavigate
+  NavLink, Link
 } from 'react-router-dom';
 import {
   NavDropdown
 } from "react-bootstrap";
-// import Logo from '../../images/logo.png';
 
 import './headerStyles.scss';
 
 function Header() {
-  const { isSignedIn } = useUser(); // Get user's sign-in status from Clerk
-  const navigate = useNavigate();
+  const { isSignedIn } = useUser();
 
   return (
     <header className="header border-bottom fixed-top">
@@ -22,7 +20,6 @@ function Header() {
         <div>
           <NavLink to="/menu" style={{ textDecoration: 'none' }}>
             <h1 className="header-title m-0 header-title-link">WeSwapCards</h1>
-            {/* <img src={Logo} alt="Website logo" className="header-logo" /> */}
           </NavLink>
         </div>
         :

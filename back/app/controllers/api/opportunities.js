@@ -9,7 +9,7 @@ const opportunitiesController = {
         
         try {
             const opportunities = await datamapper.findSwapOpportunities(cardId, explorerId);
-            console.log("opportunities", opportunities);
+            // console.log("opportunities", opportunities);
             res.status(200).json(opportunities);
 
             // PREPARATION FOR LAST ACTIVE RETRIEVE

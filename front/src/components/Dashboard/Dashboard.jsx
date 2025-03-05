@@ -9,7 +9,7 @@ import {
 } from "react-bootstrap";
 import {Envelope} from "react-bootstrap-icons";
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth, useUser } from '@clerk/clerk-react';
 
 import { axiosInstance } from '../../helpers/axiosInstance';
 import { usePagination } from '../../hooks/usePagination';
@@ -39,6 +39,8 @@ function Dashboard({
   const [alertMessage, setAlertMessage] = useState('');
 
   const { getToken } = useAuth();
+  const { user } = useUser();
+  const userId = user.id; 
   const navigate = useNavigate();
 
   const fetchSwapOpportunitiesForRecipient = async (creatorId, recipientId, conversationId) => {
@@ -100,9 +102,26 @@ function Dashboard({
     }
   };
 
+  const updateLastActive = async () => {
+    try {
+      const token = await getToken();
+
+      await axiosInstance.post(`/exploreractivity/${explorerId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      // console.log("Successfully updated last active timestamp");
+    } catch (error) {
+      // console.error("Error updating last active:", error);
+    }
+  };
+
   useEffect(() => {
     if (!explorerId) {
       navigate('/login/redirect', { state: { from: "/swap/dashboard" } });
+    } else {
+      updateLastActive();
     }
   }, [explorerId]);
 

@@ -143,7 +143,7 @@ module.exports = {
     async findSwapOpportunities(cardId, explorerId) {
         const preparedQuery = {
             text: `WITH explorers_with_card AS (
-                SELECT ehc.explorer_id, explorer.name
+                SELECT ehc.explorer_id, explorer.name, explorer.last_active_at
                 FROM explorer_has_cards AS ehc
                 JOIN explorer ON explorer.id = ehc.explorer_id
                 WHERE ehc.card_id = $1
@@ -160,6 +160,7 @@ module.exports = {
                 SELECT 
                     ewce.explorer_id,
                     ewce.name,
+                    ewce.last_active_at,
                     c.id AS card_id,
                     c.name AS card_name
                 FROM 
@@ -176,6 +177,7 @@ module.exports = {
             SELECT 
                 ewce.explorer_id,
                 ewce.name AS explorer_name,
+                ewce.last_active_at,
                 COALESCE(
                     jsonb_agg(
                         jsonb_build_object(
@@ -192,7 +194,7 @@ module.exports = {
             LEFT JOIN 
                 opportunities_for_explorers o ON o.explorer_id = ewce.explorer_id
             GROUP BY 
-                ewce.explorer_id, ewce.name
+                ewce.explorer_id, ewce.name, ewce.last_active_at
             ORDER BY 
                 CASE 
                     WHEN jsonb_array_length(COALESCE(jsonb_agg(
@@ -204,6 +206,10 @@ module.exports = {
                                 ) 
                             ORDER BY o.card_name
                         ) FILTER (WHERE o.card_id IS NOT NULL), '[]'::jsonb)) > 0 THEN 1
+                    ELSE 2
+                END,
+                CASE
+                    WHEN ewce.last_active_at > NOW() - INTERVAL '2 days' THEN 1
                     ELSE 2
                 END,
                 random();
@@ -642,6 +648,7 @@ module.exports = {
         const result = await client.query(preparedQuery);
         console.log(result.command);
     },
+    
 
 
     // async getAllExplorers() {
