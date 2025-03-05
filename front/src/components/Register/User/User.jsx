@@ -148,7 +148,7 @@ const User = ({
                             required: 'Please enter a username.',
                             pattern: {
                               value: /^[a-zA-Z0-9_]{2,20}$/,
-                              message: 'The format is invalid. Your username must contain at least 2 letters or numbers, and no special characters.',
+                              message: 'The format is invalid. Your username must contain between 2 and 20 letters and/or numbers, and no special characters.',
                             },
                             minLength: {
                               value: 2,

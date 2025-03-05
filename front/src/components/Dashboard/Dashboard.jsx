@@ -33,7 +33,7 @@ function Dashboard({
     totalItems,
     handlePageChange,
     refresh: refreshConversations
-  } = usePagination(`/conversation/${explorerId}`, 15);
+  } = usePagination(`/conversation/${explorerId}`, 20);
   // console.log("conv", conversations);
   const [hiddenAlert, setHiddenAlert] = useState(true);
   const [alertMessage, setAlertMessage] = useState('');
