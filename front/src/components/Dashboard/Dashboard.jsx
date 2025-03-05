@@ -111,9 +111,9 @@ function Dashboard({
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Successfully updated last active timestamp");
+      // console.log("Successfully updated last active timestamp");
     } catch (error) {
-      console.error("Error updating last active:", error);
+      // console.error("Error updating last active:", error);
     }
   };
 

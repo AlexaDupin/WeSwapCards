@@ -147,7 +147,7 @@ const User = ({
                           {...register('username', {
                             required: 'Please enter a username.',
                             pattern: {
-                              value: /^[a-zA-Z0-9_]{2,30}$/,
+                              value: /^[a-zA-Z0-9_]{2,20}$/,
                               message: 'The format is invalid. Your username must contain at least 2 letters or numbers, and no special characters.',
                             },
                             minLength: {
@@ -156,7 +156,7 @@ const User = ({
                             },
                             maxLength: {
                               value: 30,
-                              message: 'Your username must contain 30 characters max.',
+                              message: 'Your username must contain 20 characters max.',
                             },
                             },
                           )}

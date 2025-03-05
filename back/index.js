@@ -21,10 +21,6 @@ const datamapper = require("./app/models/user");
 
 const app = express();
 const port = process.env.PORT ?? 3001;
-// const {updateLastActiveForAllUsers} = require('./app/helpers/fetchLastActive');
-
-// // require('./app/helpers/fetchLastActive');
-// updateLastActiveForAllUsers();
 
 app.get('/', function(req, res) {
     var body = 'Hello World';

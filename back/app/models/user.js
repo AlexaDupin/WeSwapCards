@@ -60,6 +60,6 @@ module.exports = {
             values: [explorerId, lastActiveAt]
         };
         const result = await client.query(preparedQuery);
-        console.log(result.command);
+        // console.log(result.command);
     },
 };

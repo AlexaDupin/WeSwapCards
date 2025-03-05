@@ -5,9 +5,12 @@ import {
     Container,
     Card,
     Col,
-    Badge
+    Badge,
+    OverlayTrigger,
+    Tooltip
 } from "react-bootstrap";
 import {XOctagon} from "react-bootstrap-icons";
+import Lightning from '../../../images/lightning.svg';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -31,7 +34,8 @@ function SwapCard({
     const [hiddenSwapOpportunities, setHiddenSwapOpportunities] = useState(true);
     const [swapOpportunities, setSwapOpportunities] = useState([]);
     // const [swapExplorerOpportunities, setSwapExplorerOpportunities] = useState([]);
-    
+    const [activeTooltips, setActiveTooltips] = useState({});
+
     const [selectedCardId, setSelectedCardId] = useState();
     const { getToken } = useAuth()
     const navigate = useNavigate();
@@ -101,6 +105,7 @@ function SwapCard({
       // console.log("FETCH OPP");
       setSelectedCardId(cardId);
       fetchSearchedCardName(cardId);
+      setActiveTooltips({});
 
       try {
           const response = await axiosInstance.get(
@@ -113,7 +118,7 @@ function SwapCard({
           );
         // console.log("SWAP response", response);
         const swapOpportunities = response.data;
-        console.log("swapOpportunities", swapOpportunities);
+        // console.log("swapOpportunities", swapOpportunities);
         setSwapOpportunities(swapOpportunities);
         setHidden(false);
         setHiddenSwapOpportunities(false);
@@ -132,13 +137,26 @@ function SwapCard({
 
     const isRecentlyActive = (lastActiveAt) => {
       const lastActiveDate = new Date(lastActiveAt);
-      
+
       const twoDaysAgo = new Date();
       twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
       
       return lastActiveDate > twoDaysAgo;
     };    
 
+    const renderTooltip = (props) => (
+      <Tooltip id="button-tooltip" {...props}>
+        This user has recent activity on the platform
+      </Tooltip>
+    );
+
+    const handleMobileTooltip = (explorerId) => {
+      setActiveTooltips((prevState) => ({
+        ...Object.keys(prevState).reduce((acc, key) => ({ ...acc, [key]: false }), {}),
+        [explorerId]: !prevState[explorerId],
+      }));
+    };
+    
     useEffect(
       () => {
         if (!explorerId) {
@@ -207,7 +225,28 @@ function SwapCard({
                           <span className="opportunity-explorer-name">{opportunity.explorer_name}</span>
                           {isRecentlyActive(opportunity.last_active_at) && (
                             <span className="opportunity-explorer-badge">
-                              <Badge bg="success">Active Recently</Badge>
+                              <OverlayTrigger
+                                placement="right"
+                                delay={{ show: 250, hide: 400 }}
+                                overlay={renderTooltip}
+                              >                            
+                                <Badge className="opportunity-explorer-badge-desktop">Active</Badge>
+                              </OverlayTrigger>
+
+
+                              <img 
+                                src={Lightning} 
+                                alt="Lightning icon" 
+                                className="opportunity-explorer-badge-mobile" 
+                                onClick={() => handleMobileTooltip(opportunity.explorer_id)}
+                              />
+                               {activeTooltips[opportunity.explorer_id] && (
+                                <div className="tooltip-mobile">
+                                  <div className="tooltip-content">
+                                    Active user
+                                  </div>
+                                </div>
+                              )}
                             </span>
                           )}
                         </Card.Title>
@@ -254,7 +293,6 @@ function SwapCard({
   }
   
   SwapCard.propTypes = {
-    explorerId: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     setSwapExplorerId: PropTypes.func.isRequired,
     setSwapCardName: PropTypes.func.isRequired,

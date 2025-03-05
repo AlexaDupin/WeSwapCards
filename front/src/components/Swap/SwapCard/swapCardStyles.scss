@@ -26,12 +26,17 @@
 
 .opportunity-explorer-badge {
     position: absolute;
-    right: 40px;
+    right: 18px;
     margin: 0;
+    top: 12px;
 }
 
 .opportunity-explorer-badge .badge {
-    background-color: rgb(176, 0, 176) !important;
+    background-color: #b000b0 !important;
+}
+
+.opportunity-explorer-badge-desktop {
+    display: none !important;
 }
 
 .opportunity-text {
@@ -103,4 +108,56 @@
     height: 100px;
     color: vars.$primary-color;
     padding-top: 1rem;
+}
+
+.tooltip-mobile {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 1000;
+    width: max-content;
+    text-align: center;
+  }
+  
+  .tooltip-content {
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+@media (min-width: 1024px) { /* This targets larger screens */
+    .opportunity-explorer-badge {
+        position: absolute;
+        right: 40px;
+        top: 15px;
+    }
+
+    .opportunity-explorer-badge-mobile {
+        display: none;
+    }
+
+    .opportunity-explorer-badge-desktop {
+        display: block !important;
+    };
+    
+}
+
+@media (min-width: 1440px) { /* This targets extra large screens */
+    .opportunity-explorer-badge {
+        position: absolute;
+        right: 70px;
+        top: 15px;
+    }
+
+    .opportunity-explorer-badge-mobile {
+        display: none;
+    }
+
+    .opportunity-explorer-badge-desktop {
+        display: block !important;
+    };
 }

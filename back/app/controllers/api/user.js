@@ -30,9 +30,9 @@ const userController  = {
    };
    sanitizedUsernameBack = sanitizeUsername(sanitizedUsername);
 
-   const usernameRegex = /^[a-zA-Z0-9_]{2,30}$/;
+   const usernameRegex = /^[a-zA-Z0-9_]{2,20}$/;
    if (!usernameRegex.test(sanitizedUsernameBack)) {
-     return res.status(400).json({ error: 'Username format is invalid. It must be 2-30 characters and contain only letters, numbers, and underscores.' });
+     return res.status(400).json({ error: 'Username format is invalid. It must be 2-20 characters and contain only letters, numbers, and underscores.' });
    }
    
    try {
@@ -46,11 +46,11 @@ const userController  = {
   },
   async updateLastActive (req, res) {
     const explorerId = req.params.explorerId;
-    console.log("USER CTRL last active explorerId", explorerId);
+    // console.log("USER CTRL last active explorerId", explorerId);
 
     try {
       const lastActive = await datamapper.updateExplorerActivity(explorerId, new Date());
-      console.log("USER CTRL last active", lastActive);
+      // console.log("USER CTRL last active", lastActive);
       res.status(200).json({ message: 'User last active timestamp updated' });
     } catch (error) {
       console.error('Error updating last active in db:', error);
