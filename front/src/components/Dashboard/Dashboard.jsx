@@ -34,7 +34,7 @@ function Dashboard({
     handlePageChange,
     refresh: refreshConversations
   } = usePagination(`/conversation/${explorerId}`, 15);
-
+  // console.log("conv", conversations);
   const [hiddenAlert, setHiddenAlert] = useState(true);
   const [alertMessage, setAlertMessage] = useState('');
 
@@ -103,17 +103,36 @@ function Dashboard({
   };
 
   const updateLastActive = async () => {
-    try {
-      const token = await getToken();
+    const maxRetries = 3;
+    const delayBetweenRetries = 1000;
 
-      await axiosInstance.post(`/exploreractivity/${explorerId}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      // console.log("Successfully updated last active timestamp");
-    } catch (error) {
-      // console.error("Error updating last active:", error);
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const token = await getToken();
+
+        const response = await axiosInstance.post(
+          `/exploreractivity/${explorerId}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+        });
+
+        if (response.status === 200) {
+          // console.log("Successfully updated last active timestamp");
+        return;
+        }
+      } catch (error) {
+        if (attempt < maxRetries) {
+          // console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
+          await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
+        } else {
+          // console.error("Error updating last active:", error);
+          return;
+        }
+      }
     }
   };
 
