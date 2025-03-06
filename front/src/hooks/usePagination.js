@@ -87,7 +87,7 @@ export const usePagination = (fetchUrl, itemsPerPage = 20) => {
       
       // Set appropriate error message based on error type
       if (err.code === 'ERR_NETWORK' || err.message === 'Network Error') {
-        setError("Server connection error. Please try again later.");
+        setError("There was an error reaching the server. Try again.");
       } else {
         setError(err.message || 'There was an error loading the data');
       }

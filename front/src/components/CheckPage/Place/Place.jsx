@@ -11,6 +11,8 @@ import './placeStyles.scss';
 function Place({
     place,
     explorerId,
+    setHiddenAlert,
+    setAlertMessage
 }) {
     const [placeCards, setPlaceCards] = useState(place.cards);
     const [progressClassName, setProgressClassName] = useState('progress-bar');
@@ -51,6 +53,8 @@ function Place({
               // console.error('Failed to update duplicate status');
             }
         } catch (error) {
+          setHiddenAlert(false);
+          setAlertMessage("Oops, the update did not go through. Try again.");
           // console.log(error);
         }
     };

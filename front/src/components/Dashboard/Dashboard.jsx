@@ -126,11 +126,11 @@ function Dashboard({
             },
             withCredentials: true,
         });
-        console.log("Successfully updated last active timestamp");        
+        // console.log("Successfully updated last active timestamp");        
         return;
         
       } catch (error) {
-          console.error("Error updating last active:", error);
+          // console.error("Error updating last active:", error);
           return;
       }
       
