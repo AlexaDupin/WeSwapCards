@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
-import { useClerk } from '@clerk/clerk-react';
 
 import {
     Container,
     Button
 } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
-import CarouselSlides from '../Carousel/Carousel';
+import CarouselModal from '../Carousel/Carousel';
 
 import Report from '../../images/reportPL.svg';
 import Search from '../../images/searchPL.svg';
@@ -20,7 +19,6 @@ function Menu({
     explorerId,
 }) {
     const navigate = useNavigate();
-    const { signOut } = useClerk();
     // console.log("MENU explorerId", explorerId);
     
     useEffect(() => {
@@ -31,7 +29,8 @@ function Menu({
      }, []);
 
   return (
-    <><Container className="page-container">
+    <>
+    <Container className="page-container">
           <h1 className="menu-title" style={{ fontSize: '1.2rem' }}>
               Welcome {name}!
           </h1>
@@ -93,12 +92,12 @@ function Menu({
 
           </section>
 
-      </Container>
+    </Container>
       
-      <section className="">
-              <CarouselSlides />
-          </section></>
-
+    <section className="modal">
+      <CarouselModal/>
+    </section>
+    </> 
     )
 }
 

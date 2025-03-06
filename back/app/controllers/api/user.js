@@ -41,9 +41,24 @@ const userController  = {
 
      return res.status(201).json({ message: 'User successfully registered!', user });
    } catch (err) {
-     console.error("Error during user creation:", err); 
-     return res.status(500).json({ error: 'Error during sign-up: ' + err.message });    }
+     console.error("Error during user creation:", err);
+
+     if (err.code === '23505') {
+      if (err.constraint === 'explorer_UIID_key') {
+        // Duplicate userUID
+        return res.status(409).json({ error: `UserID '${userUID}' is already registered. Username already logged for this user.` });
+      } else if (err.constraint === 'explorer_name_key') {
+        // Duplicate username
+        return res.status(409).json({ error: `Username '${sanitizedUsernameBack}' is already taken. Please choose a different username.` });
+      }
+    }
+
+    // Generic error handler
+     return res.status(500).json({ error: 'Error during sign-up: ' + err.message });
+   }
   },
+
+
   async updateLastActive (req, res) {
     const explorerId = req.params.explorerId;
     // console.log("USER CTRL last active explorerId", explorerId);

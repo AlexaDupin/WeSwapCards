@@ -1,32 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import {
   Carousel, Modal 
 } from "react-bootstrap";
-import { useNavigate } from 'react-router-dom';
-
-import CustomButton from '../CustomButton/CustomButton';
 
 import Report from '../../images/reportPL.svg';
 import Search from '../../images/searchPL.svg';
-import Users from '../../images/usersPL.svg';
-import Chat from '../../images/chatdealPL.svg';
 import Dashboard from '../../images/dashboardPL.svg';
 import Check from '../../images/checkPL.svg';
 
 import './carouselStyles.scss';
 
-const CustomCarousel = ({  }) => {
-  const [index, setIndex] = useState(0);
-  const [show, setShow] = useState(true);
-
-  const handleSelect = (selectedIndex, e) => {
-    setIndex(selectedIndex);
-  };
-
-  const handleClose = () => {
-    setShow(false);
-  };
+const CustomCarousel = () => {
+    const [index, setIndex] = useState(0);
+    const [show, setShow] = useState(false);
+    const location = useLocation();
+  
+    useEffect(() => {
+      if (location.state?.from === "/register/user") {
+        setShow(true);
+      }
+    }, [location.state]);
+  
+    const handleClose = () => setShow(false);
+  
+    const handleSelect = (selectedIndex, e) => {
+      setIndex(selectedIndex);
+    };
 
   return (
 
