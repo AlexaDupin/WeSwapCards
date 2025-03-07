@@ -96,7 +96,7 @@ function Dashboard({
         });
       refreshConversations();
     } catch (error) {
-      console.error('Error updating status:', error);
+      // console.error('Error updating status:', error);
     }
   };
 
