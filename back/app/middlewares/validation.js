@@ -5,9 +5,8 @@ const validateNewMessage = [
     .trim()
     .isLength({ min: 1, max: 500 }).withMessage('Content must be between 1 and 500 characters.')
     .customSanitizer((value) => {
-        return value.replace(/[&<>"]/g, (match) => {
+        return value.replace(/[<>"]/g, (match) => {
             switch (match) {
-              case '&': return '&amp;';
               case '<': return '&lt;';
               case '>': return '&gt;';
               case '"': return '&quot;';

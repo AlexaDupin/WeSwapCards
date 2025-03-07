@@ -92,7 +92,7 @@ export const usePagination = (fetchUrl, itemsPerPage = 20) => {
         setError(err.message || 'There was an error loading the data');
       }
       
-      console.error("Pagination error:", err);
+      // console.error("Pagination error:", err);
       
       // Keep existing data on error to allow retry without losing state
     } finally {
