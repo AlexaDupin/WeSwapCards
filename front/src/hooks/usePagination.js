@@ -99,6 +99,10 @@ export const usePagination = (fetchUrl, itemsPerPage = 20) => {
       // Always update loading state unless request was aborted
       if (!abortControllerRef.current.signal.aborted) {
         setLoading(false);
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth',
+        });
       }
     }
   };
