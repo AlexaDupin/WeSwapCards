@@ -5,8 +5,9 @@ require('dotenv').config();
 const pool = new Pool({
   connectionString: process.env.PG_URL,
   max: 20,  // Max number of clients in the pool
+  // connectionTimeoutMillis: 2000,  // 2 seconds
   idleTimeoutMillis: 30000,  // 30 seconds
-  connectionTimeoutMillis: 2000,  // 2 seconds
+  connectionTimeoutMillis: 10000,  // 10 seconds
 });
 
 pool.query('SELECT NOW()', (err, res) => {

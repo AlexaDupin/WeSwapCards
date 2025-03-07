@@ -71,22 +71,40 @@ const User = ({
               // Setting name and explorerId at App level
               setExplorerId(response.data.user.id);
               setName(response.data.user.name);
-              navigate('/menu');
+              navigate('/menu', { state: { from: "/register/user" } });
               return;
             } else {
+              setMessage("There was an issue while submitting your username.");
+              setHiddenAlert(false);
               // console.error("Failed to create user");
               return;
             }
 
         } catch (error) {
           if (error.response) {
-            // If the backend returned an error with a message (e.g., 400 or 500 status)
-            // console.log("ERROR from backend:", error, error.response.data.error);
-            setExplorerId('');
-            setName('');
-            setMessage("This username is already taken. Please try another one.");
-            setHiddenAlert(false);
-            return;
+            const errorMessage = error.response.data.error;
+            // Check if the error message is for duplicate userUID
+            if (errorMessage.includes("is already registered")) {
+              setExplorerId('');
+              setName('');
+              setMessage("You already chose a username. You can go back to the menu.");
+              setHiddenAlert(false);
+              return;
+            } else if (errorMessage.includes("already taken")) {
+              // Handle duplicate username error
+              setExplorerId('');
+              setName('');
+              setMessage("This username is already taken. Please try another one.");
+              setHiddenAlert(false);
+              return;
+            } else {
+              // Handle other backend errors
+              setExplorerId('');
+              setName('');
+              setMessage("There was an issue with your request. Please try again.");
+              setHiddenAlert(false);
+              return;
+            }
           } else {
             // console.error(`Attempt ${attempt} to create user:`, error);
             if (attempt < maxRetries) {

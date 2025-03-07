@@ -43,7 +43,7 @@ function CheckPage({
         } catch (error) {
           setLoading(false);
           setHiddenAlert(false);
-          setAlertMessage("There was an error while loading your cards");
+          setAlertMessage("There was an error reaching the server. Try again.");
           // console.log(error);
         }
     };
@@ -68,14 +68,16 @@ function CheckPage({
           className="spinner" /><p>Loading your cards...</p></>
     }
 
-    {!loading && (
-    <>
+    {alertMessage && (
     <Alert
-        variant='danger'
-        className={hiddenAlert ? 'hidden-alert' : ''}>
-        {alertMessage}
+      variant='danger'
+      className={hiddenAlert ? 'hidden-alert' : ''}>
+      {alertMessage}
     </Alert>
+      )}
 
+    {!loading && !alertMessage && (
+      <>
         {cardsByPlace && cardsByPlace.length > 0 ? (
           <>
           <div className="check-tip">
@@ -88,6 +90,8 @@ function CheckPage({
               key={place.place_name}
               place={place}
               explorerId={explorerId}
+              setHiddenAlert={setHiddenAlert}
+              setAlertMessage={setAlertMessage}
             />
             ))
           }</>)  

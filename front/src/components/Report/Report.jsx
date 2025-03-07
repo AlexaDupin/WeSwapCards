@@ -34,7 +34,7 @@ function Report({
   // Alert states
   const [hiddenAlert, setHiddenAlert] = useState(true);
   const [variant, setVariant] = useState('success');
-  const [message, setMessage] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
   const { getToken } = useAuth()
   const navigate = useNavigate();
 
@@ -55,6 +55,9 @@ function Report({
 
     } catch (error) {
       // console.log(error);
+      setHiddenAlert(false);
+      setVariant('danger');
+      setAlertMessage('There was an error reaching the server. Try again.');
       setLoadingPlaces(false);
     }
   };
@@ -93,7 +96,7 @@ function Report({
     } catch (error) {
       setHiddenAlert(false);
       setVariant('danger');
-      setMessage('There was an error while loading the cards');
+      setAlertMessage('There was an error while loading the cards');
       // console.log(error);
     }
   };
@@ -202,14 +205,14 @@ function Report({
 
           if (response.status === 201) {
             setVariant("success");
-            setMessage("Your cards have been logged!");
+            setAlertMessage("Your cards have been logged!");
             setHiddenAlert(false);
             setHidden(true);
             setHiddenDuplicates(true);
             return;
           } else {
             setVariant("danger");
-            setMessage("Oops, there was an issue and your cards haven't been logged");
+            setAlertMessage("Oops, there was an issue and your cards haven't been logged");
             setHiddenAlert(false);
             setHidden(true);
             setHiddenDuplicates(true);
@@ -224,7 +227,7 @@ function Report({
             await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
           } else {
           setVariant("danger");
-          setMessage("Oops, there was an issue and your cards haven't been logged");
+          setAlertMessage("Oops, there was an issue and your cards haven't been logged");
           setHiddenAlert(false);
           setHidden(true);
           setHiddenDuplicates(true);
@@ -265,6 +268,16 @@ function Report({
     <Container className="page-container">
     <h1 className="swap-title">Report my cards</h1>
 
+    {alertMessage && (
+    <Alert
+      variant={variant}
+      className={hiddenAlert ? 'hidden-alert' : ''}>
+        {alertMessage}
+      </Alert>
+    )}
+
+    {!alertMessage && (
+
     <Form onSubmit={handleSubmit}>
 
       <Form.Group className="mb-5" controlId="formGroupPlace">
@@ -290,11 +303,11 @@ function Report({
         </Form.Select>
       </Form.Group>
 
-      <Alert
+      {/* <Alert
       variant={variant}
       className={hiddenAlert ? 'hidden-alert' : ''}>
-        {message}
-      </Alert>
+        {alertMessage}
+      </Alert> */}
 
       <Form.Group
         className={hidden ? 'hidden' : 'mb-5'}
@@ -365,10 +378,11 @@ function Report({
       </button>
 
     </Form>
-    <ScrollToTop />
+    )}
 
+    <ScrollToTop />
     </Container>
-)
+  );
 }
 
 Report.propTypes = {

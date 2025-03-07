@@ -204,10 +204,6 @@ if (!isLoaded) {
                 />} 
               />}
           />
-          {/* <Route
-              path="/profile"
-              element={<CustomProfile />}
-          /> */}
           <Route
               path="*"
               element={<NotFound />}

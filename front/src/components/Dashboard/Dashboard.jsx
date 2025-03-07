@@ -9,7 +9,7 @@ import {
 } from "react-bootstrap";
 import {Envelope} from "react-bootstrap-icons";
 import { useNavigate } from 'react-router-dom';
-import { useAuth, useUser } from '@clerk/clerk-react';
+import { useAuth } from '@clerk/clerk-react';
 
 import { axiosInstance } from '../../helpers/axiosInstance';
 import { usePagination } from '../../hooks/usePagination';
@@ -24,6 +24,12 @@ import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 function Dashboard({
   explorerId, setSwapExplorerId, setSwapCardName, setSwapExplorerName, setConversationId, setSwapExplorerOpportunities
 }) {
+  const [hiddenAlert, setHiddenAlert] = useState(true);
+  const [alertMessage, setAlertMessage] = useState('');
+
+  const { getToken } = useAuth();
+  const navigate = useNavigate();
+
   const { 
     data: conversations, 
     loading, 
@@ -33,15 +39,20 @@ function Dashboard({
     totalItems,
     handlePageChange,
     refresh: refreshConversations
-  } = usePagination(`/conversation/${explorerId}`, 20);
+  } = usePagination(explorerId ? `/conversation/${explorerId}` : null, 20);
   // console.log("conv", conversations);
-  const [hiddenAlert, setHiddenAlert] = useState(true);
-  const [alertMessage, setAlertMessage] = useState('');
 
-  const { getToken } = useAuth();
-  const { user } = useUser();
-  const userId = user.id; 
-  const navigate = useNavigate();
+  // Show alert when error occurs
+  useEffect(() => {
+    if (error) {
+      setHiddenAlert(false);
+      setAlertMessage(error);
+    }
+  }, [error]);
+
+  // const handleRetry = () => {
+  //   refreshConversations();
+  // };
 
   const fetchSwapOpportunitiesForRecipient = async (creatorId, recipientId, conversationId) => {
     try {
@@ -103,10 +114,6 @@ function Dashboard({
   };
 
   const updateLastActive = async () => {
-    const maxRetries = 3;
-    const delayBetweenRetries = 1000;
-
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const token = await getToken();
 
@@ -119,35 +126,23 @@ function Dashboard({
             },
             withCredentials: true,
         });
-
-        if (response.status === 200) {
-          // console.log("Successfully updated last active timestamp");
+        // console.log("Successfully updated last active timestamp");        
         return;
-        }
+        
       } catch (error) {
-        if (attempt < maxRetries) {
-          // console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
-          await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
-        } else {
           // console.error("Error updating last active:", error);
           return;
-        }
       }
-    }
+      
   };
 
   useEffect(() => {
     if (!explorerId) {
       navigate('/login/redirect', { state: { from: "/swap/dashboard" } });
-    } else {
-      updateLastActive();
+      return;
     }
+    updateLastActive();
   }, [explorerId]);
-
-  if (error) {
-    setHiddenAlert(false);
-    setAlertMessage("There was an error while loading your requests");
-  }
 
   return (
     <Container className="page-container">
@@ -157,7 +152,15 @@ function Dashboard({
         <><Spinner animation="border" className="spinner" /><p>Loading your requests...</p></>
       )}
 
-      {!loading && (
+      {error && (
+        <div className="error-container">
+          <Alert variant='danger' className={hiddenAlert ? 'hidden-alert' : ''}>
+            {alertMessage}
+          </Alert>
+        </div>
+      )}
+
+      {!loading && !error && (
         <>
           <Alert variant='danger' className={hiddenAlert ? 'hidden-alert' : ''}>
             {alertMessage}
