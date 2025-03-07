@@ -45,26 +45,21 @@ const userController  = {
 
      if (err.code === '23505') {
       if (err.constraint === 'explorer_UIID_key') {
-        // Duplicate userUID
         return res.status(409).json({ error: `UserID '${userUID}' is already registered. Username already logged for this user.` });
       } else if (err.constraint === 'explorer_name_key') {
-        // Duplicate username
         return res.status(409).json({ error: `Username '${sanitizedUsernameBack}' is already taken. Please choose a different username.` });
       }
     }
 
-    // Generic error handler
      return res.status(500).json({ error: 'Error during sign-up: ' + err.message });
    }
   },
-
-
   async updateLastActive (req, res) {
     const explorerId = req.params.explorerId;
     // console.log("USER CTRL last active explorerId", explorerId);
 
     try {
-      const lastActive = await datamapper.updateExplorerActivity(explorerId, new Date());
+      await datamapper.updateExplorerActivity(explorerId, new Date());
       // console.log("USER CTRL last active", lastActive);
       res.status(200).json({ message: 'User last active timestamp updated' });
     } catch (error) {

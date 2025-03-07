@@ -47,7 +47,7 @@ const CustomCarousel = () => {
                   <img src={Report} alt="Report icon" className="carousel-image" />
                   <div className="caption-container">
                     <h3 className="caption-title">Log all your cards</h3>
-                    <p className="caption-text">Go to "Report my cards", log the cards you have and specify if you have them in duplicates.</p>
+                    <p className="caption-text">Go to "Report my cards", log the cards you have and specify if you have duplicates.</p>
                   </div>
                 </div>
               </Carousel.Item>
@@ -73,8 +73,8 @@ const CustomCarousel = () => {
                 <div className="carousel-content text-center">
                   <img src={Check} alt="Check icon" className="carousel-image" />
                   <div className="caption-container">
-                    <h3 className="caption-title">Check your cards status</h3>
-                    <p className="caption-text">Go to "Check my cards" to make sure your cards are up-to-date. You can easily update the duplicate status from there.</p>
+                    <h3 className="caption-title">Check your cards' status</h3>
+                    <p className="caption-text">Go to "Check my cards" to ensure your cards are up-to-date and edit their duplicate status.</p>
                   </div>
                 </div>
               </Carousel.Item>

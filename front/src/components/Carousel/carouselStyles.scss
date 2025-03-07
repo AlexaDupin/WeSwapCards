@@ -1,7 +1,11 @@
 @use 'src/styles/vars';
 
+.modal-title{
+  font-size: 1.3rem !important;
+}
+
 .carousel-image {
-    max-height: 200px;
+    max-height: 160px;
     object-fit: contain;
     margin: auto;
     display: block;
@@ -17,11 +21,11 @@
 }
 
 .caption-title{
-    font-size: 1.3rem;
+    font-size: 1.1rem;
 }
 
 .caption-text{
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
   
 .custom-carousel .carousel-control-prev-icon,
@@ -31,4 +35,39 @@
 
 .carousel-content {
   text-align: center;
+}
+
+@media (min-width: 768px) { /* This targets larger screens */
+  .carousel-image {
+    max-height: 200px;
+    object-fit: contain;
+    margin: auto;
+      display: block;
+  }
+
+  .caption-container {
+    text-align: center;
+    background: vars.$primary-color;
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    margin-top: 10px;
+  }
+
+  .caption-title{
+      font-size: 1.2rem;
+  }
+
+  .caption-text{
+    font-size: 1rem;
+  }
+
+  .custom-carousel .carousel-control-prev-icon,
+  .custom-carousel .carousel-control-next-icon {
+    filter: invert(1);
+  }
+
+  .carousel-content {
+    text-align: center;
+  }
 }
