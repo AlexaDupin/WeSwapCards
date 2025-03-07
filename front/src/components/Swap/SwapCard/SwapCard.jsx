@@ -146,13 +146,13 @@ function SwapCard({
     }
 
     const isRecentlyActive = (lastActiveAt) => {
-      const lastActiveDate = new Date(lastActiveAt);
-
+      const lastActiveDate = new Date(lastActiveAt); 
+    
       const twoDaysAgo = new Date();
-      twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-      
+      twoDaysAgo.setHours(twoDaysAgo.getHours() - 48);
+    
       return lastActiveDate > twoDaysAgo;
-    };    
+    }; 
 
     const renderTooltip = (props) => (
       <Tooltip id="button-tooltip" {...props}>
