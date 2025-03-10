@@ -11,6 +11,7 @@ import Report from '../../images/reportPL.svg';
 import Search from '../../images/searchPL.svg';
 import Check from '../../images/checkPL.svg';
 import Dashboard from '../../images/dashboardPL.svg';
+import Info from '../../images/info-circle.svg';
 
 import './menuStyles.scss';
 
@@ -72,8 +73,9 @@ function Menu({
               </section>
               <section className="menu-image-section">
                   <a href="/swap/dashboard" className="menu-link">
-                      <img src={Dashboard} alt="Dashboard icon" className="menu-image" />
+                      <img src={Dashboard} alt="Dashboard icon" className="menu-image" id="menu-image-dashboard"/>
                   </a>
+                  <img src={Info} alt="Info icon" className="menu-info" />
                   <Button
                       onClick={() => navigate('/swap/dashboard')}
                       className="menu-button"
