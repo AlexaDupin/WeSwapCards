@@ -2,7 +2,9 @@ import React, { useEffect } from 'react';
 
 import {
     Container,
-    Button
+    Button,
+    OverlayTrigger,
+    Tooltip  
 } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import CarouselModal from '../Carousel/Carousel';
@@ -72,10 +74,20 @@ function Menu({
                   </Button>
               </section>
               <section className="menu-image-section">
-                  <a href="/swap/dashboard" className="menu-link">
-                      <img src={Dashboard} alt="Dashboard icon" className="menu-image" id="menu-image-dashboard"/>
-                  </a>
-                  <img src={Info} alt="Info icon" className="menu-info" />
+                  <div className="menu-link menu-image-container">
+                    <a href="/swap/dashboard" className="menu-link">
+                        <img src={Dashboard} alt="Dashboard icon" className="menu-image" />
+                    </a>
+                    <OverlayTrigger trigger="click" placement="top" 
+                        overlay={
+                                <Tooltip id={`tooltip-top`}>
+                                  Open this section regularly to see if you have new messages.
+                                </Tooltip>
+                        }
+                    >
+                        <img src={Info} alt="Info icon" className="menu-info" />
+                    </OverlayTrigger>  
+                  </div>   
                   <Button
                       onClick={() => navigate('/swap/dashboard')}
                       className="menu-button"

@@ -156,7 +156,7 @@ function SwapCard({
 
     const renderTooltip = (props) => (
       <Tooltip id="button-tooltip" {...props}>
-        This user has recent activity on the platform
+        This user has been active recently
       </Tooltip>
     );
 
