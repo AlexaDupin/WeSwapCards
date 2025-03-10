@@ -276,8 +276,6 @@ function Report({
       </Alert>
     )}
 
-    {!alertMessage && (
-
     <Form onSubmit={handleSubmit}>
 
       <Form.Group className="mb-5" controlId="formGroupPlace">
@@ -378,7 +376,6 @@ function Report({
       </button>
 
     </Form>
-    )}
 
     <ScrollToTop />
     </Container>
