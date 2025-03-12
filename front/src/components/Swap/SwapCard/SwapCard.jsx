@@ -5,6 +5,7 @@ import {
     Container,
     Card,
     Col,
+    Spinner,
     Badge,
     OverlayTrigger,
     Tooltip,
@@ -18,7 +19,10 @@ import { useNavigate } from 'react-router-dom';
 import PlaceCard from './PlaceCard/PlaceCard';
 import CardPreview from './CardPreview/CardPreview';
 
+import { usePagination } from '../../../hooks/usePagination';
+import PaginationControl from '../../Pagination/Pagination';
 import { axiosInstance } from '../../../helpers/axiosInstance';
+
 import { useAuth } from '@clerk/clerk-react';
 
 import PropTypes from 'prop-types';
@@ -33,14 +37,14 @@ function SwapCard({
     const [cards, setCards] = useState([]);
     const [hidden, setHidden] = useState(true);
     const [hiddenSwapOpportunities, setHiddenSwapOpportunities] = useState(true);
-    const [swapOpportunities, setSwapOpportunities] = useState([]);
-    // const [swapExplorerOpportunities, setSwapExplorerOpportunities] = useState([]);
     const [activeTooltips, setActiveTooltips] = useState({});
 
     const [hiddenAlert, setHiddenAlert] = useState(true);
     const [alertMessage, setAlertMessage] = useState('');
 
     const [selectedCardId, setSelectedCardId] = useState();
+    const [loadingOpportunities, setLoadingOpportunities] = useState(true);
+
     const { getToken } = useAuth()
     const navigate = useNavigate();
     // console.log('selectedCardId', selectedCardId);
@@ -59,7 +63,7 @@ function SwapCard({
       } catch (error) {
         setHiddenAlert(false);
         setAlertMessage('There was an error reaching the server. Try again.');
-        // console.log(error);
+        // console.log(error);      
       }
     };
 
@@ -81,7 +85,6 @@ function SwapCard({
         setHiddenSwapOpportunities(true);
         setSwapExplorerId('');
         setConversationId('');
-
       } catch (error) {
         setHiddenAlert(false);
         setAlertMessage('There was an error reaching the server. Try again.');
@@ -105,37 +108,35 @@ function SwapCard({
       setSwapCardName(cardName);
 
     } catch (error) {
+      setHiddenAlert(false);
+      setAlertMessage('There was an error reaching the server. Try again.');
       // console.log(error);
     }
-    }
+  };
+
+    const { 
+      data: swapOpportunities, 
+      activePage,
+      totalPages,
+      setActivePage,
+      handlePageChange,
+      refresh
+    } = usePagination(
+      selectedCardId ? `/opportunities/${explorerId}/card/${selectedCardId}` : '', 
+      20
+    );
 
     const fetchSwapOpportunities = async (cardId) => {
-      // console.log("FETCH OPP");
+      setLoadingOpportunities(true);
       setSelectedCardId(cardId);
       fetchSearchedCardName(cardId);
       setActiveTooltips({});
+      setHidden(false);
 
-      try {
-          const response = await axiosInstance.get(
-          `/opportunities/${explorerId}/card/${cardId}`, {
-            headers: {
-              Authorization: `Bearer ${await getToken()}`,
-            },
-            withCredentials: true,
-            }
-          );
-        // console.log("SWAP response", response);
-        const swapOpportunities = response.data;
-        // console.log("swapOpportunities", swapOpportunities);
-        setSwapOpportunities(swapOpportunities);
-        setHidden(false);
-        setHiddenSwapOpportunities(false);
-
-      } catch (error) {
-        setHiddenAlert(false);
-        setAlertMessage('There was an error reaching the server. Try again.');
-        // console.log(error);
-      }
+      await refresh();
+      setActivePage(1);
+      setLoadingOpportunities(false);
+      setHiddenSwapOpportunities(false);
     };
 
     const handleContactButton = (swapExplorerId, swapExplorerName, swapExplorerOpportunities) => {
@@ -166,7 +167,7 @@ function SwapCard({
         [explorerId]: !prevState[explorerId],
       }));
     };
-    
+
     useEffect(
       () => {
         if (!explorerId) {
@@ -177,67 +178,82 @@ function SwapCard({
       }, [],
     );
 
-    return (
-      <Container className="page-container">
-        <h1 className="swap-title">Find a card</h1>
+    // console.log("SWAP OPP", swapOpportunities);
 
-        {alertMessage && (
+  return (
+  <Container className="page-container">
+      <h1 className="swap-title">Find a card</h1>
+
+      {alertMessage && (
           <Alert
           variant='danger' className={hiddenAlert ? 'hidden-alert' : ''}>
               {alertMessage}
             </Alert>
           )}
 
-        {!alertMessage && (
+      {!alertMessage && (
         <>
-          <Form>
-            <Form.Group className="mb-5" controlId="formGroupPlace">
-              <Form.Label className="report-label">Select a chapter, {name}</Form.Label>
-              <Form.Select
-                aria-label="Select a chapter"
-                onChange={(e) => {
-                  const selectedValue = e.target.value;
-                  if (selectedValue !== "") {
-                    handleSelectPlace(selectedValue);
-                  }
-                } }
-              >
-                <option value="">Select</option>
-                {places?.map((place) => (
-                  <option key={place.id} value={place.id}>
-                    {place.name}
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
+      <Form>
+        <Form.Group className="mb-5" controlId="formGroupPlace">
+          <Form.Label className="report-label">Select a chapter, {name}</Form.Label>
+          <Form.Select
+            aria-label="Select a chapter"
+            onChange={(e) => {
+              const selectedValue = e.target.value;
+              if (selectedValue !== "") {
+                handleSelectPlace(selectedValue);
+              }
+            } }
+          >
+            <option value="">Select</option>
+            {places?.map((place) => (
+              <option
+                key={place.id}
+                value={place.id}>
+                {place.name}
+              </option>
+            ))}
+          </Form.Select>
+        </Form.Group>
 
-            <Form.Group className={hidden ? 'hidden' : 'mb-5'} controlId="formGroupEmail">
-              <Form.Label className="report-label">Click on the card you are looking for!</Form.Label>
-              <div className="g-3 cards-list">
-                {cards.length > 0 ? (
-                  cards.map((card) => (
-                    <CardPreview
-                      key={card.id}
-                      card={card}
-                      fetchSwapOpportunities={fetchSwapOpportunities}
-                      isSelected={selectedCardId === card.id} />
-                  ))
-                ) : (
-                  <div>No cards available</div>
-                )}
-              </div>
-            </Form.Group>
-          </Form>
-          
-          <div className={hiddenSwapOpportunities ? 'hidden' : ''}>
-              <Row className="g-3">
-                {swapOpportunities.length > 0 ? (
-                  <>
-                    <p>Here are the users who can give you this card: <br />
-                      <span className='swap-cardName'>{swapCardName}</span>
-                    </p>
+        <Form.Group
+          className={hidden ? 'hidden' : 'mb-5'}
+          controlId="formGroupEmail">
+          <Form.Label className="report-label">
+            Click on the card you are looking for!
+          </Form.Label>
 
-                    {swapOpportunities.map((opportunity) => (
+          <div className="g-3 cards-list">
+            {cards && cards.length > 0 ? (
+              cards?.map((card) => (
+                <CardPreview
+                  key={card.id}
+                  card={card}
+                  fetchSwapOpportunities={fetchSwapOpportunities}
+                  isSelected={selectedCardId === card.id} />
+              ))
+            ) : (
+              <div>No cards available</div>
+            )}
+          </div>
+        </Form.Group>
+      </Form>
+      
+      {loadingOpportunities && selectedCardId && (
+        <div className="text-center my-4">
+          <Spinner animation="border" className="spinner" />
+        </div>
+      )}
+
+      {!loadingOpportunities && !hiddenSwapOpportunities && (
+      <div>
+        <Row className="g-3">
+          {swapOpportunities.length > 0 ? (
+            <>
+            <p>Here are the users who can give you this card: <br />
+            <span className='swap-cardName'>{swapCardName}</span></p>
+
+            {swapOpportunities.map((opportunity) => (
                       <Col xs={12} key={opportunity.explorer_id} className="column">
                         <Card className="opportunity-card" id={opportunity.explorer_id}>
                           <Card.Title className="opportunity-title">
@@ -295,30 +311,36 @@ function SwapCard({
                         </Card>
                       </Col>
                     ))}
-                  </>
-                ) : (
-                  <>
-                    <div>No opportunities available for <span className='swap-cardName'>{swapCardName}</span>, try another card!</div>
-                    <XOctagon className='lock-icon' />
-                  </>
-                )}
-              </Row>
-            </div></>
-        )}
-        
-        <ScrollToTop />
-      </Container>
-    );
-  }
+
+          <PaginationControl
+            activePage={activePage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange} 
+          />
+          </>
+          ) : (
+            <>
+            <div>No opportunities available for <span className='swap-cardName'>{swapCardName}</span>, try another card!</div>
+            {/* <div className="swap-disclaimer"><em>Only users that need cards you have in duplicates will be shown at a later stage. So remember to log all your cards!</em></div> */}
+            <XOctagon className='lock-icon'/>
+            </>
+          )}
+        </Row>
+      </div>
+      )}
+       </>
+      )}
+
+    <ScrollToTop />
+
+  </Container>
   
-  SwapCard.propTypes = {
-    name: PropTypes.string.isRequired,
-    setSwapExplorerId: PropTypes.func.isRequired,
-    setSwapCardName: PropTypes.func.isRequired,
-    swapCardName: PropTypes.string,
-    setSwapExplorerName: PropTypes.func.isRequired,
-    setConversationId: PropTypes.func.isRequired,
-    setSwapExplorerOpportunities: PropTypes.func.isRequired
-  };
-  
-  export default SwapCard;
+)
+}
+
+SwapCard.propTypes = {
+  explorerId: PropTypes.number.isRequired,
+  name: PropTypes.string,
+};
+
+export default React.memo(SwapCard);
