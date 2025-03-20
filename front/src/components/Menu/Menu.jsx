@@ -63,9 +63,20 @@ function Menu({
                   </Button>
               </section>
               <section className="menu-image-section">
-                  <a href="/check" className="menu-link">
-                      <img src={Check} alt="Check icon" className="menu-image" />
-                  </a>
+                  <div className="menu-link menu-image-container">
+                    <a href="/check" className="menu-link">
+                        <img src={Check} alt="Check icon" className="menu-image" />
+                    </a>
+                    <OverlayTrigger trigger="click" placement="top" 
+                        overlay={
+                                <Tooltip id={`tooltip-top`}>
+                                  Keep your cards up-to-date to make successful deals and avoid unnecessary messages.
+                                </Tooltip>
+                        }
+                    >
+                        <img src={Info} alt="Info icon" className="menu-info-check" />
+                    </OverlayTrigger>  
+                  </div>   
                   <Button
                       onClick={() => navigate('/check')}
                       className="menu-button"

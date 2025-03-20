@@ -47,10 +47,18 @@
 
 .menu-info {
     position: absolute;
-    top: 1px;
-    right: -10px;
+    top: 10px;
+    right: -5px;
     width: 17px;
     height: auto;
+
+    &-check {
+        position: absolute;
+        top: 10px;
+        right: -20px;
+        width: 17px;
+        height: auto;
+    }
 }
 
 .btn-legal {
@@ -88,6 +96,12 @@
         right: -5px;
         width: 17px;
         height: auto;
+
+        &-check {
+            top: 18px;
+            right: -25px;
+            width: 17px;
+        }
     }
 }
 
@@ -96,9 +110,15 @@
     .menu-info {
         position: absolute;
         top: 18px;
-        right: 16px;
+        right: -5px;
         width: 17px;
         height: auto;
+
+        &-check {
+            top: 18px;
+            right: -20px;
+            width: 17px;
+        }
     }
 
     .menu-link {
