@@ -46,7 +46,7 @@ const CustomCarousel = () => {
                 <div className="carousel-content text-center">
                   <img src={Report} alt="Report icon" className="carousel-image" />
                   <div className="caption-container">
-                    <h3 className="caption-title">Log all your cards</h3>
+                    <h3 className="caption-title">Step 1: Log all your cards</h3>
                     <p className="caption-text">Go to "Report my cards", log the cards you have and specify if you have duplicates.</p>
                   </div>
                 </div>
@@ -55,7 +55,7 @@ const CustomCarousel = () => {
                 <div className="carousel-content text-center">
                   <img src={Search} alt="Search icon" className="carousel-image" />
                   <div className="caption-container">
-                    <h3 className="caption-title">Search for the cards you need</h3>
+                    <h3 className="caption-title">Step 2: Search for the cards you need</h3>
                     <p className="caption-text">Go to "Find a card", select a chapter and a card number and see who has it.</p>
                   </div>
                 </div>
@@ -64,7 +64,7 @@ const CustomCarousel = () => {
                 <div className="carousel-content text-center">
                   <img src={Dashboard} alt="Dashboard icon" className="carousel-image" />
                   <div className="caption-container">
-                    <h3 className="caption-title">Check all your conversations</h3>
+                    <h3 className="caption-title">Check your conversations</h3>
                     <p className="caption-text">Make sure to regularly go to "View all requests" to see if you have new messages.</p>
                   </div>
                 </div>
@@ -73,7 +73,7 @@ const CustomCarousel = () => {
                 <div className="carousel-content text-center">
                   <img src={Check} alt="Check icon" className="carousel-image" />
                   <div className="caption-container">
-                    <h3 className="caption-title">Check your cards' status</h3>
+                    <h3 className="caption-title">Keep your cards up-to-date</h3>
                     <p className="caption-text">Go to "Check my cards" to ensure your cards are up-to-date and edit their duplicate status.</p>
                   </div>
                 </div>
