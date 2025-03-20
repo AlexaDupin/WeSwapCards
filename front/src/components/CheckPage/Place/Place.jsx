@@ -96,7 +96,7 @@ function Place({
             />
             ))
             ) : (
-              <div>Unable to retrieve your data.</div>
+              <div>You did not enter any cards for this chapter.</div>
         )}
     </div>
     </div>

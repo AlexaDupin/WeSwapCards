@@ -550,19 +550,42 @@ module.exports = {
         const preparedQuery = {
             text: `
             SELECT 
-                p.name AS place_name, 
-                JSON_AGG(
-                    jsonb_build_object(
-                        'card', c,
-                        'duplicate', ehc.duplicate) 
-                    ORDER BY c.number) AS cards
-            FROM card AS c        
-            JOIN explorer_has_cards AS ehc ON ehc.card_id = c.id
-            JOIN place AS p ON p.id = c.place_id
-            WHERE ehc.explorer_id = $1
-            GROUP BY p.name
-            ORDER BY p.name
-                `,
+                p.name AS place_name,
+                COALESCE(
+                  JSON_AGG(
+                    JSON_BUILD_OBJECT(
+                      'card', JSON_BUILD_OBJECT(
+                        'id', c.id,
+                        'name', c.name,
+                        'number', c.number,
+                        'place_id', c.place_id
+                      ),
+                      'duplicate', c.duplicate
+                    )
+                    ORDER BY c.number
+                  ) FILTER (WHERE c.id IS NOT NULL),
+                  '[]'
+                ) AS cards
+            FROM 
+              place p
+            LEFT JOIN (
+              SELECT 
+                c.place_id,
+                c.id,
+                c.name,
+                c.number,
+                ehc.duplicate,
+                ehc.explorer_id
+              FROM 
+                card c
+              JOIN 
+                explorer_has_cards ehc ON c.id = ehc.card_id
+              WHERE 
+                ehc.explorer_id = $1
+            ) c ON p.id = c.place_id
+            GROUP BY p.id, p.name
+            ORDER BY p.name;
+            `,
             values: [explorerId],
         };
         const result = await client.query(preparedQuery);
