@@ -467,6 +467,82 @@ module.exports = {
         // console.log(result);
         return result.command;
     },
+    async getCountForOnePlaceForExplorer(explorerId, placeId) {
+        const preparedQuery = {
+            text: `
+            SELECT COUNT(*) FROM explorer_has_cards AS ehc
+            JOIN card AS c ON c.id = ehc.card_id
+            JOIN place AS p ON p.id = c.place_id
+            WHERE ehc.explorer_id = $1
+            AND p.id = $2
+            `,
+            values: [explorerId, placeId],
+        };
+
+        const result = await client.query(preparedQuery);
+        // console.log(result.rows);
+
+        return result.rows;
+    },
+    async getCardsByPlaceForOneExplorer(explorerId) {
+        const preparedQuery = {
+            text: `
+            SELECT 
+                p.name AS place_name, 
+                JSON_AGG(
+                    jsonb_build_object(
+                        'card', c,
+                        'duplicate', ehc.duplicate) 
+                    ORDER BY c.number) AS cards
+            FROM card AS c        
+            JOIN explorer_has_cards AS ehc ON ehc.card_id = c.id
+            JOIN place AS p ON p.id = c.place_id
+            WHERE ehc.explorer_id = $1
+            GROUP BY p.name
+            ORDER BY p.name
+                `,
+            values: [explorerId],
+        };
+        const result = await client.query(preparedQuery);
+        // console.log(result.rows);
+
+        return result.rows;
+    },
+    async editDuplicateStatus(explorerId, cardId, newDuplicateData) {
+        const preparedQuery = {
+            text: `
+            UPDATE explorer_has_cards
+            SET duplicate = $3
+            WHERE explorer_id = $1
+            AND card_id = $2
+            `,
+            values: [explorerId, cardId, newDuplicateData]
+        };
+        const result = await client.query(preparedQuery);
+        console.log(result.command);
+    },
+    async getExplorerById(explorerId) {
+        const preparedQuery = {
+                text: `
+                SELECT id, name, userid FROM explorer WHERE id = $1
+                `,
+                values: [explorerId]
+        };
+        const result = await client.query(preparedQuery);
+        return result.rows[0];
+    },
+    async updateMessageNotificationStatus(messageId, status) {
+        const preparedQuery = {
+            text: `
+            UPDATE message SET notification_sent = $1 WHERE id = $2
+            `,
+            values: [status, id]
+        };
+        await client.query(preparedQuery);
+        return true;
+    }
+
+// OPPORTUNITIES
 //     async findExplorersForCardIdOpportunity(cardId, explorerId) {
 //         console.log("ENTERING DATAMAPPER");
 
@@ -529,96 +605,4 @@ module.exports = {
 
     //     return result.rows;
     // },
-    async getCountForOnePlaceForExplorer(explorerId, placeId) {
-        const preparedQuery = {
-            text: `
-            SELECT COUNT(*) FROM explorer_has_cards AS ehc
-            JOIN card AS c ON c.id = ehc.card_id
-            JOIN place AS p ON p.id = c.place_id
-            WHERE ehc.explorer_id = $1
-            AND p.id = $2
-            `,
-            values: [explorerId, placeId],
-        };
-
-        const result = await client.query(preparedQuery);
-        // console.log(result.rows);
-
-        return result.rows;
-    },
-    async getCardsByPlaceForOneExplorer(explorerId) {
-        const preparedQuery = {
-            text: `
-            SELECT 
-                p.name AS place_name, 
-                JSON_AGG(
-                    jsonb_build_object(
-                        'card', c,
-                        'duplicate', ehc.duplicate) 
-                    ORDER BY c.number) AS cards
-            FROM card AS c        
-            JOIN explorer_has_cards AS ehc ON ehc.card_id = c.id
-            JOIN place AS p ON p.id = c.place_id
-            WHERE ehc.explorer_id = $1
-            GROUP BY p.name
-            ORDER BY p.name
-                `,
-            values: [explorerId],
-        };
-        const result = await client.query(preparedQuery);
-        // console.log(result.rows);
-
-        return result.rows;
-    },
-    async editDuplicateStatus(explorerId, cardId, newDuplicateData) {
-        const preparedQuery = {
-            text: `
-            UPDATE explorer_has_cards
-            SET duplicate = $3
-            WHERE explorer_id = $1
-            AND card_id = $2
-            `,
-            values: [explorerId, cardId, newDuplicateData]
-        };
-        const result = await client.query(preparedQuery);
-        console.log(result.command);
-    },
-    
-
-
-    // async getAllExplorers() {
-    //     const preparedQuery = {
-    //         text: `SELECT * FROM explorer
-    //         ORDER BY name`,
-    //     };
-    //     const result = await client.query(preparedQuery);
-    //     return result.rows;
-    // },
-
-    // async getExplorerInfo(userUID) {
-    //     console.log("ENTERING DATAMAPPER");
-    //     const preparedQuery = {
-    //         text: `
-    //         SELECT * FROM explorer 
-    //         WHERE userid = $1
-    //         `,
-    //         values: [userUID],
-    //     };
-    //     const result = await client.query(preparedQuery);
-    //     console.log("result.rows DM", result.rows);
-    //     return result.rows;
-    // },
-    // async getExplorerInfoByExplorerId(explorerId) {
-    //     console.log("ENTERING DATAMAPPER");
-    //     const preparedQuery = {
-    //         text: `
-    //         SELECT * FROM explorer 
-    //         WHERE id = $1
-    //         `,
-    //         values: [explorerId],
-    //     };
-    //     const result = await client.query(preparedQuery);
-    //     console.log("result.rows DM", result.rows[0]);
-    //     return result.rows[0];
-    // }
 };
