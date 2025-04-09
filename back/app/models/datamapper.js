@@ -228,8 +228,11 @@ module.exports = {
                 CASE
                     WHEN ewce.last_active_at > NOW() - INTERVAL '2 days' THEN 1
                     ELSE 2
-                END
-            LIMIT $3 OFFSET $4;
+                END,
+                ewce.last_active_at DESC,
+                ewce.explorer_id
+            LIMIT $3 OFFSET $4
+            ;
             `,
             values: [cardId, explorerId, limit, offset],
         };
@@ -318,7 +321,7 @@ module.exports = {
         return null;
     },
     async createConversation(cardName, explorerId, swapExplorerId, timestamp) {
-        console.log("CREATE CONV DTMP")
+        //console.log("CREATE CONV DTMP")
 
         const preparedQuery = await client.query(
             `
@@ -453,7 +456,7 @@ module.exports = {
         };
     },
     async editConversationStatus(conversationId, status) {
-        console.log("editConversationStatus DTMP")
+        //console.log("editConversationStatus DTMP")
 
         const preparedQuery = {
             text: `
@@ -604,7 +607,7 @@ module.exports = {
             values: [explorerId, cardId, newDuplicateData]
         };
         const result = await client.query(preparedQuery);
-        console.log(result.command);
+        //console.log(result.command);
     },
     
 

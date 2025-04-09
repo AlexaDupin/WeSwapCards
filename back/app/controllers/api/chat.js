@@ -30,7 +30,7 @@ const chatController = {
         const swapCardName = req.body.card_name;
         const timestamp = req.body.timestamp;
 
-        console.log('createConversation CTRL', explorerId, swapExplorerId, swapCardName, timestamp);
+        //console.log('createConversation CTRL', explorerId, swapExplorerId, swapCardName, timestamp);
             try {
                 const conversation = await datamapper.createConversation(swapCardName, explorerId, swapExplorerId, timestamp);
                 

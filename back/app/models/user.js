@@ -11,7 +11,7 @@ module.exports = {
         `,
             [userUID, username],
         );
-        console.log(preparedQuery.rows);
+        //console.log(preparedQuery.rows);
         return preparedQuery.rows[0];
     },
     async getExplorerInfo(userUID) {
@@ -47,7 +47,7 @@ module.exports = {
         `,
             [userUID],
         );
-        console.log(preparedQuery);
+        //console.log(preparedQuery);
         return preparedQuery.rowCount;
     },
     async updateExplorerActivity(explorerId, lastActiveAt) {

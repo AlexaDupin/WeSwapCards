@@ -24,7 +24,7 @@ const checkExplorerAuthorization = async (req, res, next) => {
       return res.status(403).json({ message: 'You are not authorized to access this resource' });
     }
 
-    console.log("LEFT AUTHORIZATION MDLW");
+    // console.log("LEFT AUTHORIZATION MDLW");
     // If the IDs match, proceed to the next middleware or controller
     next();
   } catch (err) {
@@ -67,7 +67,7 @@ const checkConversationAuthorization = async (req, res, next) => {
       return res.status(403).json({ message: 'You are not authorized to access this conversation' });
     }
 
-    console.log("LEFT CONV AUTHORIZATION MDLW");
+    // console.log("LEFT CONV AUTHORIZATION MDLW");
     // If the IDs match, proceed to the next middleware or controller
     next();
   } catch (err) {

@@ -14,7 +14,7 @@ const explorerCardsController = {
         const cardId = Number(req.params.cardId);
         const explorerId = Number(req.params.explorerId);
         const newDuplicateData = req.body.duplicate;
-        console.log(cardId, explorerId, req.body);
+        //console.log(cardId, explorerId, req.body);
         
             try {
                 await datamapper.editDuplicateStatus(explorerId, cardId, newDuplicateData);

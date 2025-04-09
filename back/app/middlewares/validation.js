@@ -34,7 +34,7 @@ const validateNewMessage = [
       console.log("RETURN ERROR VALIDATION");
       return res.status(400).json({ errors: errors.array() });
     }
-    console.log("PASSING VALIDATION");
+    //console.log("PASSING VALIDATION");
 
     next();
   },

@@ -2,7 +2,7 @@ const datamapper = require("../../models/datamapper");
 
 const reportController = {
     async getAllPlaces(req, res) {
-            console.log("ENTERING PLACES");
+            //console.log("ENTERING PLACES");
             try {
                 const places = await datamapper.getAllPlaces();
                 res.json({places});
@@ -71,7 +71,7 @@ const reportController = {
                         cardId: selectedCardId,
                         duplicate: hasDuplicate,
                     });
-                    console.log("CARD LOGGED", result);
+                    //console.log("CARD LOGGED", result);
                     results.push(result)
                 } else if (alreadyLogged) {
                     const duplicateStatus = await datamapper.checkDuplicateStatus(explorerId, selectedCardId);
@@ -89,7 +89,7 @@ const reportController = {
        
             toBeDeletedIds.forEach(async (toBeDeletedId) => {
                 const result = await datamapper.deleteCardFromExplorerHasCard(explorerId, toBeDeletedId);
-                console.log("Card deleted for this explorer", toBeDeletedId);
+                //console.log("Card deleted for this explorer", toBeDeletedId);
                 results.push(result)
             })
 

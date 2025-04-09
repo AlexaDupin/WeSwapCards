@@ -6,7 +6,7 @@ const opportunitiesController = {
         const cardId = req.params.cardId;
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
-        console.log("swapCard", explorerId, cardId, req.params, req.query);
+        //console.log("swapCard", explorerId, cardId, req.params, req.query);
         
         // if (cardId === undefined) {
         //     return res.status(400).json({ error: "Missing parameter" });
@@ -14,7 +14,7 @@ const opportunitiesController = {
 
         try {
             const opportunities = await datamapper.findSwapOpportunities(cardId, explorerId, page, limit);
-            console.log("CTRL opportunities result", opportunities.pagination);
+            //console.log("CTRL opportunities result", opportunities.pagination);
             res.status(200).json(opportunities);
         } catch (error) {
             console.error('Error fetching opportunities:', error);
