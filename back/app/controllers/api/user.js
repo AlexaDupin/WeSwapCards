@@ -18,8 +18,8 @@ const userController  = {
   // Create new user in database with username and Clerk id
   async createUser(req, res) {
    //console.log("ENTERRING CREATE USER");
-   const { userUID, sanitizedUsername } = req.body;
-   console.log("CTRL userUID username", userUID, sanitizedUsername);
+   const { userUID, userEmail, sanitizedUsername } = req.body;
+   console.log("CTRL Creation of user:", userUID, userEmail, sanitizedUsername);
    //console.log("CTRL req.body", req.body);
    if (!userUID || !sanitizedUsername) {
      return res.status(400).json({ error: 'UserUID and username are required' });

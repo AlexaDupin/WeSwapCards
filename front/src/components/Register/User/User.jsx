@@ -35,8 +35,9 @@ const User = ({
 
     // Get the user info from Clerk
     const { user } = useUser();
-    // console.log("REGISTER USER", user);
-    const userUID = user.id;  
+    console.log("REGISTER USER", user);
+    const userUID = user.id;
+    const userEmail = user.emailAddresses[0].emailAddress;  
     // console.log('User ID:', userUID);
 
     const { register, handleSubmit, formState: { errors } } = useForm({
@@ -56,7 +57,7 @@ const User = ({
         try {
             const response = await axiosInstance.post(
               `/register/user`,
-              { userUID, sanitizedUsername },
+              { userUID, userEmail, sanitizedUsername },
               {
                 headers: {
                   Authorization: `Bearer ${await getToken()}`,
