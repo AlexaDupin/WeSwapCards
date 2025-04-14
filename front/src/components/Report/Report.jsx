@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -17,24 +17,13 @@ import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 import PropTypes from 'prop-types';
 
 import './reportStyles.scss';
+import { initialState, reducer } from '../../reducers/reportReducer';
 
 function Report({
   explorerId, name
 }) {
-  const [places, setPlaces] = useState([]);
-  const [cards, setCards] = useState([]);
-  const [selectedCards, setSelectedCards] = useState([]);
-  const [duplicates, setDuplicates] = useState([]);
-  const [toBeDeleted, setToBeDeleted] = useState([]);
-  const [loadingPlaces, setLoadingPlaces] = useState(true);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  // Showing sections at a time
-  const [hidden, setHidden] = useState(true);
-  const [hiddenDuplicates, setHiddenDuplicates] = useState(true);
-  // Alert states
-  const [hiddenAlert, setHiddenAlert] = useState(true);
-  const [variant, setVariant] = useState('success');
-  const [alertMessage, setAlertMessage] = useState('');
   const { getToken } = useAuth()
   const navigate = useNavigate();
 
@@ -42,23 +31,21 @@ function Report({
   const fetchAllPlaces = async () => {
 
     try {
-      // console.log("ENTERING PLACES TRY");
-      const response = await axiosInstance.get(`/places`, {
+      const placesFetched = await axiosInstance.get(`/places`, {
         headers: {
           Authorization: `Bearer ${await getToken()}`,
         },
       });
-      // console.log("ENTERING PLACES RESPONSE", response);
 
-      setPlaces(response.data.places);
-      setLoadingPlaces(false);
-
+      dispatch({
+        type: 'places/fetched',
+        payload: placesFetched.data.places
+      })
     } catch (error) {
       // console.log(error);
-      setHiddenAlert(false);
-      setVariant('danger');
-      setAlertMessage('There was an error reaching the server. Try again.');
-      setLoadingPlaces(false);
+      dispatch({
+        type: 'places/error',
+      })
     }
   };
 
@@ -84,95 +71,77 @@ function Report({
           },
         })
       ]);
-      // console.log("allCards", allCards);
-      // console.log('explorerCards', explorerCards);
-      // console.log('explorerDuplicates', explorerDuplicates);
 
-      setCards(allCards.data.cards);
-      setSelectedCards(explorerCards.data.cards);
-      setDuplicates(explorerDuplicates.data.cards);
-      setHidden(false);
+      dispatch({
+        type: 'place/selected',
+        payload: {
+          cards: allCards.data.cards,
+          selectedCards: explorerCards.data.cards,
+          duplicates: explorerDuplicates.data.cards
+        }
+      })
 
     } catch (error) {
-      setHiddenAlert(false);
-      setVariant('danger');
-      setAlertMessage('There was an error while loading the cards');
-      // console.log(error);
+      dispatch({
+        type: 'places/error',
+      })
     }
   };
 
   const showDuplicateSection = () => {
-    if (selectedCards.length > 0) {
-      setHidden(false)
-      setHiddenAlert(true);
-      setHiddenDuplicates(false);
+    if (state.selectedCards.length > 0) {
+      dispatch({
+        type: 'duplicates/show',
+      })
     } else {
-      setHiddenDuplicates(true)
+      dispatch({
+        type: 'duplicates/notshow',
+      })
     }
   };
 
   // Add card to selected cards if not in it
   const handleCardSelection = (card) => {
-    // console.log("handleCardSelection", card);
-
-    setSelectedCards((prevSelectedCards) => {
-      // Check if the card is already selected (by matching the id)
-      const isCardSelected = prevSelectedCards.some(alreadySelectedCard => alreadySelectedCard.id === card.id);
-
-      if (isCardSelected) {
-        // If already selected, remove the card from the array (deselect)
-        // console.log("TO REMOVE IN DATABASE")
-        setToBeDeleted((prevToBeDeleted) => {
-          return [...prevToBeDeleted, card]
-        });
-        return prevSelectedCards.filter(alreadySelectedCard => alreadySelectedCard.id !== card.id);
-      } else {
-        // If not selected, add the card to the array (select)
-        return [...prevSelectedCards, card];
-      }
-    });
+    dispatch({
+      type: 'cards/selected',
+      payload: card,
+    })
   };
 
   // Handle Select All in cards section
   const handleSelectAllCards = (event) => {
     event.preventDefault();
-    setSelectedCards(cards)
+    dispatch({
+      type: 'cards/selectedAll',
+      payload: state.cards,
+    })
   };
 
   // Add card to duplicate selection array if not in it
   const handleCardDuplicate = (card) => {
-    setDuplicates((prevDuplicates) => {
-      // Check if the card is already selected (by matching the id)
-      const isCardSelected = prevDuplicates.some(duplicate => duplicate.id === card.id);
-
-      if (isCardSelected) {
-        // If already selected, remove the card from the array (deselect)
-        return prevDuplicates.filter(duplicate => duplicate.id !== card.id);
-      } else {
-        // If not selected, add the card to the array (select)
-        return [...prevDuplicates, card];
-      }
-    });
+    dispatch({
+      type: 'cards/duplicates',
+      payload: card,
+    })
   };
 
   // Handle Select All in duplicates section
   const handleSelectAllDuplicates = (event) => {
     event.preventDefault();
-    setDuplicates(cards)
+    dispatch({
+      type: 'duplicates/selectedAll',
+      payload: state.cards,
+    })
   };
-
-  // console.log("selectedCards", selectedCards);
-  // console.log("duplicates", duplicates);
-  // console.log("toBeDeleted", toBeDeleted);
 
   // On submit, log selected cards and duplicate selection into db
   const handleSubmit = async (event) => {
 
       event.preventDefault();
       // Extracting ids of selected cards and duplicates
-      const selectedCardsIds = selectedCards.map(item => item.id);
-      const duplicatesIds = duplicates.map(item => item.id);
-      const toBeDeletedIds = toBeDeleted.map(item => item.id);
+      const selectedCardsIds = state.selectedCards.map(item => item.id);
+      const duplicatesIds = state.duplicates.map(item => item.id);
+      const toBeDeletedIds = state.toBeDeleted.map(item => item.id);
 
       // Combine the data to send
       const payload = {
@@ -180,7 +149,6 @@ function Report({
         duplicatesIds,
         toBeDeletedIds
       };
-      // console.log('SUBMIT payload', payload);
 
       const maxRetries = 3;
       const delayBetweenRetries = 1000;
@@ -204,19 +172,14 @@ function Report({
             );
 
           if (response.status === 201) {
-            setVariant("success");
-            setAlertMessage("Your cards have been logged!");
-            setHiddenAlert(false);
-            setHidden(true);
-            setHiddenDuplicates(true);
+            dispatch({
+              type: 'cards/reported',
+            })
             return;
           } else {
-            setVariant("danger");
-            setAlertMessage("Oops, there was an issue and your cards haven't been logged");
-            setHiddenAlert(false);
-            setHidden(true);
-            setHiddenDuplicates(true);
-            // console.error("Failed to submit cards");
+            dispatch({
+              type: 'cards/notReported',
+            })
             return;
           }
 
@@ -226,12 +189,9 @@ function Report({
             // console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
             await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
           } else {
-          setVariant("danger");
-          setAlertMessage("Oops, there was an issue and your cards haven't been logged");
-          setHiddenAlert(false);
-          setHidden(true);
-          setHiddenDuplicates(true);
-          // console.log(error.data);
+            dispatch({
+              type: 'cards/notReported',
+            })
           return;
           }
         }
@@ -247,16 +207,16 @@ function Report({
       }
     }, [],
   );
-  
+
   useEffect(
     () => {
       showDuplicateSection();
       },
-    [selectedCards],
+    [state.selectedCards],
   );
 
   // Render loading state or content
-  if (loadingPlaces) {
+  if (state.loadingPlaces) {
     return <Container className="page-container">
       <Spinner
         animation="border"
@@ -268,11 +228,11 @@ function Report({
     <Container className="page-container">
     <h1 className="swap-title">Report my cards</h1>
 
-    {alertMessage && (
+    {state.alert.message && (
     <Alert
-      variant={variant}
-      className={hiddenAlert ? 'hidden-alert' : ''}>
-        {alertMessage}
+      variant={state.alert.variant}
+      className={state.alert.hidden ? 'hidden-alert' : ''}>
+        {state.alert.message}
       </Alert>
     )}
 
@@ -291,7 +251,7 @@ function Report({
           }}
         >
           <option value="">Select</option>
-          {places?.map((place) => (
+          {state.places?.map((place) => (
             <option
               key={place.id}
               value={place.id}>
@@ -301,33 +261,27 @@ function Report({
         </Form.Select>
       </Form.Group>
 
-      {/* <Alert
-      variant={variant}
-      className={hiddenAlert ? 'hidden-alert' : ''}>
-        {alertMessage}
-      </Alert> */}
-
       <Form.Group
-        className={hidden ? 'hidden' : 'mb-5'}
+        className={state.hidden ? 'hidden' : 'mb-5'}
         controlId="formGroupEmail">
         <Form.Label className="report-label">
           Click on the cards you have
         </Form.Label>
 
         <button
-          className={hidden ? 'hidden' : 'selectall-button mb-3'}
+          className={state.hidden ? 'hidden' : 'selectall-button mb-3'}
           onClick={handleSelectAllCards}
         >
           Select all
         </button>
 
         <Row className="g-3">
-        {cards && cards.length > 0 ? (
-          cards?.map((card) => (
+        {state.cards && state.cards.length > 0 ? (
+          state.cards?.map((card) => (
             <PlaceCard
               key={card.id}
               card={card}
-              selectedCards={selectedCards}
+              selectedCards={state.selectedCards}
               handleCardSelection={handleCardSelection}
             />
             ))
@@ -338,30 +292,30 @@ function Report({
       </Form.Group>
 
       <Form.Group
-        className={hiddenDuplicates ? 'hidden' : 'mb-5'}
+        className={state.hiddenDuplicates ? 'hidden' : 'mb-5'}
         controlId="formGroupEmail">
         <Form.Label className="report-label">
           Click on the cards for which you have duplicates
         </Form.Label>
 
         <button
-          className={hidden ? 'hidden' : 'selectall-button mb-3'}
+          className={state.hidden ? 'hidden' : 'selectall-button mb-3'}
           onClick={handleSelectAllDuplicates}
         >
           Select all
         </button>
 
         <Row className="d-flex g-3">
-        {cards && cards.length > 0 ? (
-          cards.map((duplicateCard) => (
+        {state.cards && state.cards.length > 0 ? (
+          state.cards.map((duplicateCard) => (
           <PlaceCard
               key={duplicateCard.id}
               card={duplicateCard}
-              selectedCards={selectedCards}
+              selectedCards={state.selectedCards}
               handleCardSelection={handleCardSelection}
               isDuplicateSection={true}
               handleCardDuplicate={handleCardDuplicate}
-              duplicates={duplicates}
+              duplicates={state.duplicates}
             />
           ))
           ) : (
@@ -371,7 +325,7 @@ function Report({
       </Form.Group>
 
       <button
-        className={hidden ? 'hidden' : 'custom-button' && hiddenDuplicates ? 'hidden' : 'custom-button'}>
+        className={state.hidden ? 'hidden' : 'custom-button' && state.hiddenDuplicates ? 'hidden' : 'custom-button'}>
         Submit these cards
       </button>
 
