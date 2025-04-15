@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import {
     Form,
 	  Row,
@@ -29,25 +29,15 @@ import PropTypes from 'prop-types';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
 import './swapCardStyles.scss';
+import { initialState, reducer } from '../../../reducers/swapReducer';
 
 function SwapCard({
     explorerId, name, setSwapExplorerId, setSwapCardName, swapCardName, setSwapExplorerName, setConversationId, setSwapExplorerOpportunities
   }) {
-    const [places, setPlaces] = useState([]);
-    const [cards, setCards] = useState([]);
-    const [hidden, setHidden] = useState(true);
-    const [hiddenSwapOpportunities, setHiddenSwapOpportunities] = useState(true);
-    const [activeTooltips, setActiveTooltips] = useState({});
-
-    const [hiddenAlert, setHiddenAlert] = useState(true);
-    const [alertMessage, setAlertMessage] = useState('');
-
-    const [selectedCardId, setSelectedCardId] = useState();
-    const [loadingOpportunities, setLoadingOpportunities] = useState(true);
+    const [state, dispatch] = useReducer(reducer, initialState);
 
     const { getToken } = useAuth()
     const navigate = useNavigate();
-    // console.log('selectedCardId', selectedCardId);
 
     // Fetch all places to show in dropdown
     const fetchAllPlaces = async () => {
@@ -59,10 +49,17 @@ function SwapCard({
           withCredentials: true,
           }
         );
-        setPlaces(response.data.places);
+
+        dispatch({
+          type: 'places/fetched',
+          payload: response.data.places
+        })
+
       } catch (error) {
-        setHiddenAlert(false);
-        setAlertMessage('There was an error reaching the server. Try again.');
+        dispatch({
+          type: 'places/fetchedError',
+        })
+
         // console.log(error);      
       }
     };
@@ -78,16 +75,18 @@ function SwapCard({
           withCredentials: true,
           }
         );
-        // console.log("allCards", allCards);
+        dispatch({
+          type: 'places/selected',
+          payload: allCards.data.cards
+        })
 
-        setCards(allCards.data.cards);
-        setHidden(false);
-        setHiddenSwapOpportunities(true);
         setSwapExplorerId('');
         setConversationId('');
       } catch (error) {
-        setHiddenAlert(false);
-        setAlertMessage('There was an error reaching the server. Try again.');
+        dispatch({
+          type: 'places/selectedError',
+        })
+
         // console.log(error);
       }
     };
@@ -108,8 +107,9 @@ function SwapCard({
       setSwapCardName(cardName);
 
     } catch (error) {
-      setHiddenAlert(false);
-      setAlertMessage('There was an error reaching the server. Try again.');
+      dispatch({
+        type: 'cardName/fetchedError',
+      })
       // console.log(error);
     }
   };
@@ -122,21 +122,22 @@ function SwapCard({
       handlePageChange,
       refresh
     } = usePagination(
-      selectedCardId ? `/opportunities/${explorerId}/card/${selectedCardId}` : '', 
+      state.selectedCardId ? `/opportunities/${explorerId}/card/${state.selectedCardId}` : '', 
       20
     );
 
     const fetchSwapOpportunities = async (cardId) => {
-      setLoadingOpportunities(true);
-      setSelectedCardId(cardId);
+      dispatch({
+        type: 'swapOpportunities/fetched',
+        payload: cardId
+      })
       fetchSearchedCardName(cardId);
-      setActiveTooltips({});
-      setHidden(false);
 
       await refresh();
       setActivePage(1);
-      setLoadingOpportunities(false);
-      setHiddenSwapOpportunities(false);
+      dispatch({
+        type: 'swapOpportunities/fetchedRefresh',
+      })
     };
 
     const handleContactButton = (swapExplorerId, swapExplorerName, swapExplorerOpportunities) => {
@@ -162,10 +163,10 @@ function SwapCard({
     );
 
     const handleMobileTooltip = (explorerId) => {
-      setActiveTooltips((prevState) => ({
-        ...Object.keys(prevState).reduce((acc, key) => ({ ...acc, [key]: false }), {}),
-        [explorerId]: !prevState[explorerId],
-      }));
+      dispatch({
+        type: 'activeTooltips/set',
+        payload: explorerId
+      })
     };
 
     useEffect(
@@ -178,20 +179,18 @@ function SwapCard({
       }, [],
     );
 
-    // console.log("SWAP OPP", swapOpportunities);
-
   return (
   <Container className="page-container">
       <h1 className="swap-title">Find a card</h1>
 
-      {alertMessage && (
+      {state.alert.message && (
           <Alert
-          variant='danger' className={hiddenAlert ? 'hidden-alert' : ''}>
-              {alertMessage}
+          variant='danger' className={state.alert.hidden ? 'hidden-alert' : ''}>
+              {state.alert.message}
             </Alert>
           )}
 
-      {!alertMessage && (
+      {!state.alert.message && (
         <>
       <Form>
         <Form.Group className="mb-5" controlId="formGroupPlace">
@@ -206,7 +205,7 @@ function SwapCard({
             } }
           >
             <option value="">Select</option>
-            {places?.map((place) => (
+            {state.places?.map((place) => (
               <option
                 key={place.id}
                 value={place.id}>
@@ -217,20 +216,20 @@ function SwapCard({
         </Form.Group>
 
         <Form.Group
-          className={hidden ? 'hidden' : 'mb-5'}
+          className={state.hidden ? 'hidden' : 'mb-5'}
           controlId="formGroupEmail">
           <Form.Label className="report-label">
             Click on the card you are looking for!
           </Form.Label>
 
           <div className="g-3 cards-list">
-            {cards && cards.length > 0 ? (
-              cards?.map((card) => (
+            {state.cards && state.cards.length > 0 ? (
+              state.cards?.map((card) => (
                 <CardPreview
                   key={card.id}
                   card={card}
                   fetchSwapOpportunities={fetchSwapOpportunities}
-                  isSelected={selectedCardId === card.id} />
+                  isSelected={state.selectedCardId === card.id} />
               ))
             ) : (
               <div>No cards available</div>
@@ -239,13 +238,13 @@ function SwapCard({
         </Form.Group>
       </Form>
       
-      {loadingOpportunities && selectedCardId && (
+      {state.loadingOpportunities && state.selectedCardId && (
         <div className="text-center my-4">
           <Spinner animation="border" className="spinner" />
         </div>
       )}
 
-      {!loadingOpportunities && !hiddenSwapOpportunities && (
+      {!state.loadingOpportunities && !state.hiddenSwapOpportunities && (
       <div>
         <Row className="g-3">
           {swapOpportunities.length > 0 ? (
@@ -274,7 +273,7 @@ function SwapCard({
                                   alt="Lightning icon"
                                   className="opportunity-explorer-badge-mobile"
                                   onClick={() => handleMobileTooltip(opportunity.explorer_id)} />
-                                {activeTooltips[opportunity.explorer_id] && (
+                                {state.activeTooltips[opportunity.explorer_id] && (
                                   <div className="tooltip-mobile">
                                     <div className="tooltip-content">
                                       Active user
