@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import CardPreview from '../Place/CardPreview/CardPreview';
 
 import { axiosInstance } from '../../../helpers/axiosInstance';
@@ -11,22 +11,11 @@ import './placeStyles.scss';
 function Place({
     place,
     explorerId,
-    setHiddenAlert,
-    setAlertMessage
-}) {
-    const [placeCards, setPlaceCards] = useState(place.cards);
-    const [progressClassName, setProgressClassName] = useState('progress-bar');
+    dispatch, 
+    progressClassNames
+  }) {
     const { getToken } = useAuth()
-
-    const percentage = place.cards.length/9*100;
-    const attributeProgressClassName = () => {
-        if (percentage === 100) {
-          setProgressClassName("progress-bar-full");
-        } else {
-          setProgressClassName("progress-bar");
-        }
-    };
-
+    
     const handleDuplicateStatus = async (cardId, updatedDuplicateStatus) => {
         // Update duplicate status in database
         try {
@@ -40,33 +29,28 @@ function Place({
               });
 
             if (response.status === 200) {
-                const confirmation = response.data;
-                // console.log("handleDuplicateStatus", confirmation);
-
-                // Update duplicate status in state
-                setPlaceCards((prevPlaceCards) => {
-                    return prevPlaceCards.map((card) =>
-                    card.id === cardId ? { ...card, duplicate: updatedDuplicateStatus } : card
-                    );
-                });
+                dispatch({
+                  type: 'duplicate/toggled',
+                  payload: { placeName: place.place_name, cardId, updatedDuplicateStatus },
+                })
             } else {
               // console.error('Failed to update duplicate status');
             }
         } catch (error) {
-          setHiddenAlert(false);
-          setAlertMessage("Oops, the update did not go through. Try again.");
-          // console.log(error);
+          dispatch({
+            type: 'duplicate/toggledError'
+          })
         }
     };
 
-    useEffect(
-        () => {
-        attributeProgressClassName()
-        },
-        [],
-      );
+    const percentage = (place.cards.length / 9) * 100;
 
-    // console.log("placeCards", placeCards);
+    useEffect(() => {
+      dispatch({
+        type: percentage === 100 ? 'progress/classNameFull' : 'progress/classNameNotFull',
+        payload: { placeName: place.place_name },
+      });
+    }, [percentage, dispatch, place.place_name]);
 
   return (
     
@@ -77,7 +61,7 @@ function Place({
 
     <div className="container d-flex flex-row justify-content-center">
         <div className="progress w-25 mb-3">
-            <div role="progressbar" className={progressClassName} aria-valuenow={percentage} 
+            <div role="progressbar" className={progressClassNames[place.place_name] || 'progress-bar'} aria-valuenow={percentage} 
             aria-valuemin="0" aria-valuemax="100" style={{width: `${percentage}%`}}>
             </div>
         </div>
@@ -86,8 +70,8 @@ function Place({
     </div>
 
     <div className="explorerCard-numbers" id="">
-    {placeCards && placeCards.length > 0 ? (
-          placeCards?.map((card) => (
+    {place.cards && place.cards.length > 0 ? (
+          place.cards?.map((card) => (
             <CardPreview
               key={card.card.id}
               card={card.card}
@@ -106,10 +90,5 @@ function Place({
 Place.propTypes = {
 
 };
-
-// PlaceCard.defaultProps = {
-//   card: { id: 0, name: 'Default Card', number: 0, place_id: 0 },  // Default card data
-//   selectedCards: [],  // Default empty array for selectedCards
-// };
 
 export default React.memo(Place);

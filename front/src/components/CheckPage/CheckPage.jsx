@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Container,
@@ -16,15 +16,13 @@ import PropTypes from 'prop-types';
 import './checkPageStyles.scss';
 import Place from '../CheckPage/Place/Place';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
+import { initialState, reducer } from '../../reducers/checkReducer';
 
 function CheckPage({
     explorerId, name
   }) {
-    const [cardsByPlace, setCardsByPlace] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [state, dispatch] = useReducer(reducer, initialState);
     const { getToken } = useAuth()
-    const [hiddenAlert, setHiddenAlert] = useState(true);
-    const [alertMessage, setAlertMessage] = useState('');
     const navigate = useNavigate();
 
     const fetchExplorerCardsByPlace = async () => {
@@ -36,14 +34,16 @@ function CheckPage({
               },
             })
           const fetchedCardsByPlace = response.data;
-          // console.log("fetchedCardsByPlace", fetchedCardsByPlace);
-          setCardsByPlace(fetchedCardsByPlace);
-          setLoading(false);
+
+          dispatch({
+            type: 'cards/fetched',
+            payload: fetchedCardsByPlace
+          })
 
         } catch (error) {
-          setLoading(false);
-          setHiddenAlert(false);
-          setAlertMessage("There was an error reaching the server. Try again.");
+          dispatch({
+            type: 'cards/fetchedError',
+          })
           // console.log(error);
         }
     };
@@ -62,36 +62,35 @@ function CheckPage({
     <Container className="page-container">
     <h1 className="swap-title">All my cards</h1>
 
-    {loading &&
+    {state.loading &&
       <><Spinner
           animation="border"
           className="spinner" /><p>Loading your cards...</p></>
     }
 
-    {alertMessage && (
+    {state.alert.message && (
     <Alert
       variant='danger'
-      className={hiddenAlert ? 'hidden-alert' : ''}>
-      {alertMessage}
+      className={state.alert.hidden ? 'hidden-alert' : ''}>
+      {state.alert.message}
     </Alert>
       )}
 
-    {!loading && !alertMessage && (
+    {!state.loading && !state.alert.message && (
       <>
-        {cardsByPlace && cardsByPlace.length > 0 ? (
+        {state.cardsByPlace && state.cardsByPlace.length > 0 ? (
           <>
           <div className="check-tip">
-            {/* <img src={Bulb} alt="Bulb" className="check-tip-image"/> */}
             <p className="check-tip-text"><img src={Bulb} alt="Bulb icon" className="check-tip-image"/>Tap on a number to easily update a card's duplicate status.</p><br />
           </div>
           
-          {cardsByPlace?.map((place) => (
+          {state.cardsByPlace?.map((place) => (
             <Place
               key={place.place_name}
               place={place}
               explorerId={explorerId}
-              setHiddenAlert={setHiddenAlert}
-              setAlertMessage={setAlertMessage}
+              dispatch={dispatch}
+              progressClassNames={state.progressClassNames}
             />
             ))
           }</>)  
