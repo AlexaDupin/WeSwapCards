@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { useUser, useClerk } from '@clerk/clerk-react';
 
 import {
@@ -20,15 +20,17 @@ import PropTypes from 'prop-types';
 import CustomButton from '../../CustomButton/CustomButton';
 import DOMPurify from 'dompurify';
 
+import { initialState, reducer } from '../../../reducers/userReducer';
+
 import './userStyles.scss';
 
 const User = ({
-    setUserUID,
-    setName,
-    setExplorerId,
+    mainDispatch
   }) => {
-    const [hiddenAlert, setHiddenAlert] = useState(true);
-    const [message, setMessage] = useState('You already have an account. Please log in.');
+    const [state, dispatch] = useReducer(reducer, initialState);
+
+    // const [hiddenAlert, setHiddenAlert] = useState(true);
+    // const [message, setMessage] = useState('You already have an account. Please log in.');
     const navigate = useNavigate();
     const { getToken } = useAuth()
     const { signOut } = useClerk();
@@ -65,18 +67,33 @@ const User = ({
                 withCredentials: true,
               }
             );
+
+            const fetchedExplorerId = response.data.user.id;
+            const fetchedExplorerName = response.data.user.name;
+
             
             // console.log("DM user response", response.data);
 
             if (response.status === 201) {
               // Setting name and explorerId at App level
-              setExplorerId(response.data.user.id);
-              setName(response.data.user.name);
+
+              dispatch({
+                type: 'explorer/created',
+                payload: { 
+                  fetchedExplorerId, 
+                  fetchedExplorerName
+                }
+              })
+              // setExplorerId(response.data.user.id);
+              // setName(response.data.user.name);
               navigate('/menu', { state: { from: "/register/user" } });
               return;
             } else {
-              setMessage("There was an issue while submitting your username.");
-              setHiddenAlert(false);
+              dispatch({
+                type: 'explorer/notCreated',
+              })
+              // setMessage("There was an issue while submitting your username.");
+              // setHiddenAlert(false);
               // console.error("Failed to create user");
               return;
             }
@@ -86,24 +103,33 @@ const User = ({
             const errorMessage = error.response.data.error;
             // Check if the error message is for duplicate userUID
             if (errorMessage.includes("is already registered")) {
-              setExplorerId('');
-              setName('');
-              setMessage("You already chose a username. You can go back to the menu.");
-              setHiddenAlert(false);
+              dispatch({
+                type: 'explorer/errorAlreadyRegistered',
+              })
+              // setExplorerId('');
+              // setName('');
+              // setMessage("You already chose a username. You can go back to the menu.");
+              // setHiddenAlert(false);
               return;
             } else if (errorMessage.includes("already taken")) {
               // Handle duplicate username error
-              setExplorerId('');
-              setName('');
-              setMessage("This username is already taken. Please try another one.");
-              setHiddenAlert(false);
+              dispatch({
+                type: 'explorer/errorAlreadyTaken',
+              })
+              // setExplorerId('');
+              // setName('');
+              // setMessage("This username is already taken. Please try another one.");
+              // setHiddenAlert(false);
               return;
             } else {
               // Handle other backend errors
-              setExplorerId('');
-              setName('');
-              setMessage("There was an issue with your request. Please try again.");
-              setHiddenAlert(false);
+              dispatch({
+                type: 'explorer/errorGeneral',
+              })
+              // setExplorerId('');
+              // setName('');
+              // setMessage("There was an issue with your request. Please try again.");
+              // setHiddenAlert(false);
               return;
             }
           } else {
@@ -114,10 +140,13 @@ const User = ({
             } else {
               // If the error is not from the server (e.g., network error)
               // console.log("Network error or unexpected error:", error.message);
-              setExplorerId('');
-              setName('');
-              setMessage("An unexpected error occurred. Please try again later.");
-              setHiddenAlert(false);
+              dispatch({
+                type: 'explorer/errorUnexpected',
+              })
+              // setExplorerId('');
+              // setName('');
+              // setMessage("An unexpected error occurred. Please try again later.");
+              // setHiddenAlert(false);
               return;
             }
           }
@@ -126,11 +155,18 @@ const User = ({
     };
 
     useEffect(() => {
-      setName("");
-      setExplorerId("");
+      dispatch({
+        type: 'user/notFetched',
+      })
+      // setName("");
+      // setExplorerId("");
       
       if (user) {
-        setUserUID(userUID);
+        dispatch({
+          type: 'user/fetched',
+          payload: userUID
+        })
+        // setUserUID(userUID);
       } else {
         signOut();
       }
@@ -145,8 +181,8 @@ const User = ({
 
     <Alert 
       variant="danger"
-      className={hiddenAlert ? 'hidden-alert' : ''}>
-        {message}      
+      className={state.alert.hidden ? 'hidden-alert' : ''}>
+        {state.alert.message}      
     </Alert>
 
     <Form onSubmit={handleSubmit(onSubmit)}>

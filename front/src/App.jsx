@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Spinner } from "react-bootstrap";
 import { useUser, useAuth } from "@clerk/clerk-react";
@@ -39,8 +39,20 @@ import './styles/index.scss';
 
 import './App.css';
 import './App.scss';
+import { initialState, reducer } from './reducers/mainReducer';
 
-function App() {
+function App() {  
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('explorer', JSON.stringify(state.explorer));
+    } catch (e) {
+      console.error('Failed to save explorer to localStorage', e);
+    }
+  }, [state.explorer]);
+
+
   const { isLoaded } = useUser();
   const { getToken } = useAuth()
 
@@ -52,16 +64,16 @@ function App() {
     fetchToken();
   }, []);
 
-  const [userUID, setUserUID] = useState('');
-  const [name, setName] = usePersistState('', 'name');
-  const [explorerId, setExplorerId] = usePersistState('', 'explorerId');
+  // const [userUID, setUserUID] = useState('');
+  // const [name, setName] = usePersistState('', 'name');
+  // const [explorerId, setExplorerId] = usePersistState('', 'explorerId');
 
-  // Swap feature
-  const [swapExplorerId, setSwapExplorerId] = useState('');
-  const [swapCardName, setSwapCardName] = useState();
-  const [swapExplorerName, setSwapExplorerName] = useState();
-  const [swapExplorerOpportunities, setSwapExplorerOpportunities] = useState([]);
-  const [conversationId, setConversationId] = useState('');
+  // // Swap feature
+  // const [swapExplorerId, setSwapExplorerId] = useState('');
+  // const [swapCardName, setSwapCardName] = useState();
+  // const [swapExplorerName, setSwapExplorerName] = useState();
+  // const [swapExplorerOpportunities, setSwapExplorerOpportunities] = useState([]);
+  // const [conversationId, setConversationId] = useState('');
 
   // console.log("APP userUID", userUID);
   // console.log("APP name", name);
@@ -97,8 +109,9 @@ if (!isLoaded) {
               path="/login/redirect"
               element={(
                 <LoginRedirect 
-                  setName={setName}
-                  setExplorerId={setExplorerId}
+                  dispatch={dispatch}
+                  // setName={setName}
+                  // setExplorerId={setExplorerId}
                 />
           )}
           />  
@@ -112,9 +125,10 @@ if (!isLoaded) {
               path="/register/user"
               element={(
                 <User
-                  setUserUID={setUserUID}
-                  setName={setName}
-                  setExplorerId={setExplorerId}
+                  // setUserUID={setUserUID}
+                  // setName={setName}
+                  // setExplorerId={setExplorerId}
+                  mainDispatch={dispatch}
                 />
               )}
           />
@@ -124,8 +138,8 @@ if (!isLoaded) {
               element={<ProtectedRoute 
                 element={
                 <Menu 
-                  name={name} 
-                  explorerId={explorerId} 
+                  name={state.explorer.name} 
+                  explorerId={state.explorer.id} 
                 />} 
               />}
           />
@@ -134,8 +148,8 @@ if (!isLoaded) {
               element={<ProtectedRoute 
                 element={
                   <Report 
-                    name={name}
-                    explorerId={explorerId}
+                    name={state.explorer.name} 
+                    explorerId={state.explorer.id} 
                   />} 
               />}
           />
@@ -144,14 +158,18 @@ if (!isLoaded) {
               element={<ProtectedRoute 
                 element={
                   <SwapCard
-                    name={name}
-                    explorerId={explorerId}
-                    setSwapExplorerId={setSwapExplorerId}
-                    swapCardName={swapCardName}
-                    setSwapCardName={setSwapCardName}
-                    setSwapExplorerName={setSwapExplorerName}
-                    setConversationId={setConversationId}
-                    setSwapExplorerOpportunities={setSwapExplorerOpportunities}
+                    name={state.explorer.name} 
+                    explorerId={state.explorer.id} 
+                    swapCardName={state.swap.cardName}
+                    mainDispatch={dispatch}
+                    // name={name}
+                    // explorerId={explorerId}
+                    // setSwapExplorerId={setSwapExplorerId}
+                    // swapCardName={swapCardName}
+                    // setSwapCardName={setSwapCardName}
+                    // setSwapExplorerName={setSwapExplorerName}
+                    // setConversationId={setConversationId}
+                    // setSwapExplorerOpportunities={setSwapExplorerOpportunities}
                   />} 
                 />}
           />
@@ -160,13 +178,21 @@ if (!isLoaded) {
               element={<ProtectedRoute 
                 element={
                   <Chat
-                    explorerId={explorerId}
-                    swapExplorerId={swapExplorerId}
-                    swapCardName={swapCardName}
-                    swapExplorerName={swapExplorerName}
-                    setConversationId={setConversationId}
-                    conversationId={conversationId}
-                    swapExplorerOpportunities={swapExplorerOpportunities}
+                    explorerId={state.explorer.id} 
+                    dispatch={dispatch}
+                    swapExplorerId={state.swap.explorerId}
+                    swapCardName={state.swap.CardName}
+                    swapExplorerName={state.swap.explorerName}
+                    conversationId={state.swap.conversationId}
+                    swapExplorerOpportunities={state.swap.opportunities}
+
+                    // explorerId={explorerId}
+                    // swapExplorerId={swapExplorerId}
+                    // swapCardName={swapCardName}
+                    // swapExplorerName={swapExplorerName}
+                    // setConversationId={setConversationId}
+                    // conversationId={conversationId}
+                    // swapExplorerOpportunities={swapExplorerOpportunities}
                   />} 
                 />}
             />
@@ -175,16 +201,18 @@ if (!isLoaded) {
               element={<ProtectedRoute 
                 element={
                   <Dashboard
-                    explorerId={explorerId}
-                    setSwapCardName={setSwapCardName}
-                    setSwapExplorerId={setSwapExplorerId}
-                    setSwapExplorerName={setSwapExplorerName}
-                    setConversationId={setConversationId}
-                    setSwapExplorerOpportunities={setSwapExplorerOpportunities}
+                    explorerId={state.explorer.id}
+                    dispatch={dispatch}
+                    // explorerId={explorerId}
+                    // setSwapCardName={setSwapCardName}
+                    // setSwapExplorerId={setSwapExplorerId}
+                    // setSwapExplorerName={setSwapExplorerName}
+                    // setConversationId={setConversationId}
+                    // setSwapExplorerOpportunities={setSwapExplorerOpportunities}
                   />} 
                 />}
           />
-          <Route
+          {/* <Route
               path="/swap/opportunities"
               element={<ProtectedRoute 
                 element={
@@ -193,14 +221,16 @@ if (!isLoaded) {
                     explorerId={explorerId}
                 />} 
               />}
-          />
+          /> */}
           <Route
               path="/check"
               element={<ProtectedRoute 
                 element={
                   <CheckPage
-                    name={name}
-                    explorerId={explorerId}
+                    name={state.explorer.name} 
+                    explorerId={state.explorer.id} 
+                    // name={name}
+                    // explorerId={explorerId}
                 />} 
               />}
           />

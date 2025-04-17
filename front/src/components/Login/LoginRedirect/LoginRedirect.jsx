@@ -11,13 +11,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { axiosInstance } from '../../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
 
-import PropTypes from 'prop-types';
-
 import './loginRedirectStyles.scss';
 
 const LoginRedirect = ({
-  setName,
-  setExplorerId
+  dispatch
 }) => {
   const { user } = useUser();
   const navigate = useNavigate();
@@ -62,8 +59,15 @@ const LoginRedirect = ({
         // console.log("User data received:", userInfo);
 
         if (userInfo.data) {
-          setName(userInfo.data.name);
-          setExplorerId(userInfo.data.id);
+          const explorerName = userInfo.data.name;
+          const explorerId = userInfo.data.id;
+
+          dispatch({
+            type: 'explorer/set',
+            payload: { explorerName, explorerId }
+          })
+          // setName(userInfo.data.name);
+          // setExplorerId(userInfo.data.id);
           navigate('/menu');
           return;
         }
@@ -96,8 +100,11 @@ const LoginRedirect = ({
   // Fetch Clerk userid on mount
   useEffect(() => {
   //  console.log('REDIRECT entering useffect');
-   setName("");
-   setExplorerId("");
+    dispatch({
+      type: 'explorer/reset',
+    })
+  //  setName("");
+  //  setExplorerId("");
 
    if (user) {
      const userUID = user.id;  // Clerk's userId
@@ -127,10 +134,5 @@ const LoginRedirect = ({
   </Container>
   )
 }
-
-LoginRedirect.propTypes = {
-  setName: PropTypes.func,
-  setExplorerId: PropTypes.func,
-};
 
 export default React.memo(LoginRedirect);

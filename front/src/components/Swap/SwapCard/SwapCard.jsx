@@ -32,7 +32,7 @@ import './swapCardStyles.scss';
 import { initialState, reducer } from '../../../reducers/swapReducer';
 
 function SwapCard({
-    explorerId, name, setSwapExplorerId, setSwapCardName, swapCardName, setSwapExplorerName, setConversationId, setSwapExplorerOpportunities
+    explorerId, name, swapCardName, mainDispatch
   }) {
     const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -80,8 +80,12 @@ function SwapCard({
           payload: allCards.data.cards
         })
 
-        setSwapExplorerId('');
-        setConversationId('');
+        mainDispatch({
+          type: 'swap/placeSelected',
+        })
+
+        // setSwapExplorerId('');
+        // setConversationId('');
       } catch (error) {
         dispatch({
           type: 'places/selectedError',
@@ -104,7 +108,11 @@ function SwapCard({
 
       const cardName = response.data.name;
       // console.log("cardName", cardName);
-      setSwapCardName(cardName);
+      mainDispatch({
+        type: 'swap/cardNameFetched',
+        payload: cardName
+      })
+      // setSwapCardName(cardName);
 
     } catch (error) {
       dispatch({
@@ -141,9 +149,14 @@ function SwapCard({
     };
 
     const handleContactButton = (swapExplorerId, swapExplorerName, swapExplorerOpportunities) => {
-      setSwapExplorerId(swapExplorerId);
-      setSwapExplorerName(swapExplorerName);
-      setSwapExplorerOpportunities(swapExplorerOpportunities);
+      mainDispatch({
+        type: 'swap/ContactClicked',
+        payload:  { swapExplorerId, swapExplorerName, swapExplorerOpportunities }
+      })
+      
+      // setSwapExplorerId(swapExplorerId);
+      // setSwapExplorerName(swapExplorerName);
+      // setSwapExplorerOpportunities(swapExplorerOpportunities);
       navigate('/swap/card/chat', { state: { from: "/swap/card" } });
     }
 
