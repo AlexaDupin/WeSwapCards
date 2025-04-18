@@ -14,19 +14,26 @@ import { axiosInstance } from '../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
 import DOMPurify from 'dompurify';
 
-import PropTypes from 'prop-types';
+import { useStateContext } from '../../contexts/StateContext';
+import { useDispatchContext } from '../../contexts/DispatchContext';
 
 import './chatStyles.scss';
 
-function Chat({
-    explorerId, swapExplorerId, swapExplorerName, swapCardName, setConversationId, conversationId, swapExplorerOpportunities
-  }) {
+function Chat() {
+    const state = useStateContext();
+    const dispatch = useDispatchContext();
+    const { explorer, swap } = state;
+    const { id: explorerId } = explorer;
+    const { explorerId: swapExplorerId, explorerName: swapExplorerName, cardName: swapCardName, opportunities: swapExplorerOpportunities, conversationId } = swap;
+
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
     const [isSending, setIsSending] = useState(false);
     const messageEndRef = useRef(null);
     const messageInputRef = useRef(null);
+    console.log('chat', swapExplorerOpportunities, swapExplorerName, swapCardName);
+    console.log("chat full state", state);
 
     const navigate = useNavigate();
     const [hiddenAlert, setHiddenAlert] = useState(true);
@@ -55,15 +62,22 @@ function Chat({
           },
         });
 
-        // console.log("fetchConversation response", response);
+        console.log("fetchConversation response", response);
         setLoading(false);
 
         if (!response.data) {
-          setConversationId('');
-          // console.log("CHAT NEW CONV: NO convID set");
+          dispatch({
+            type: 'chat/conversationNotFetched'
+          })
+          // setConversationId('');
+          console.log("CHAT NEW CONV: NO convID set");
         } else {
-          setConversationId(response.data.id);
-          // console.log("CHAT CONV FOUND: convID set");
+          dispatch({
+            type: 'chat/conversationFetched',
+            payload: response.data.id
+          })
+          // setConversationId(response.data.id);
+          console.log("CHAT CONV FOUND: convID set");
         }
 
       } catch (error) {
@@ -75,11 +89,11 @@ function Chat({
     };
 
     const fetchMessages = async () => {
-      // console.log("FETCHING MESSAGES");
+      console.log("FETCHING MESSAGES");
 
       if (conversationId) {
         try {
-          // console.log("FETCHING MESSAGES conversationId", conversationId);
+          console.log("FETCHING MESSAGES conversationId", conversationId);
   
           const response = await axiosInstance.get(
             `/chat/${conversationId}`
@@ -88,7 +102,7 @@ function Chat({
               Authorization: `Bearer ${await getToken()}`,
             },
           });
-          // console.log(response.data.allMessages);
+          console.log(response.data.allMessages);
           const allFetchedMessages = response.data.allMessages;
 
           const allMessagesFormattedDate = allFetchedMessages.map((message) => {
@@ -286,7 +300,11 @@ function Chat({
             );
             
               if (response.status === 201) {
-                setConversationId(response.data.id);
+                dispatch({
+                  type: 'chat/conversationFetched',
+                  payload: response.data.id
+                })
+                // setConversationId(response.data.id);
                 sendMessage(response.data.id);
                 return;
               } else {
@@ -324,7 +342,7 @@ function Chat({
       } else {
         fetchConversation();    
       };
-    }, [sendMessage]);
+    }, []);
     
     // Scroll to the bottom of the chat after sending a new message
     useEffect(() => {
@@ -444,10 +462,5 @@ function Chat({
 
   );
 }
-
-Chat.propTypes = {
-  explorerId: PropTypes.number.isRequired,
-  name: PropTypes.string,
-};
 
 export default React.memo(Chat);

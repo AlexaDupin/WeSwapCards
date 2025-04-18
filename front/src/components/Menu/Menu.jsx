@@ -15,17 +15,18 @@ import Check from '../../images/checkPL.svg';
 import Dashboard from '../../images/dashboardPL.svg';
 import Info from '../../images/info-circle.svg';
 
+import { useStateContext } from '../../contexts/StateContext';
+
 import './menuStyles.scss';
 
-function Menu({
-    name,
-    explorerId,
-}) {
+function Menu() {
+    const state = useStateContext();
+
     const navigate = useNavigate();
     // console.log("MENU explorerId", explorerId);
     
     useEffect(() => {
-        if (!explorerId) {
+        if (!state.explorer.id) {
             navigate('/login/redirect', { state: { from: "/menu" } });
             return;
         } 
@@ -35,7 +36,7 @@ function Menu({
     <>
     <Container className="page-container">
           <h1 className="menu-title" style={{ fontSize: '1.2rem' }}>
-              Welcome {name}!
+              Welcome {state.explorer.name}!
           </h1>
 
           <section className="menu-steps">

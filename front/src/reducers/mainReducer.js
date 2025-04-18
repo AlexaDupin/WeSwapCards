@@ -46,6 +46,7 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 swap: {
+                    ...state.swap,
                     explorerId: '',
                     conversationId: '',
                 },
@@ -58,6 +59,7 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 swap: {
+                    ...state.swap,
                     cardName: cardName,
                 },
             }
@@ -69,10 +71,81 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 swap: {
+                    ...state.swap,
                     explorerId: swapExplorerId,
                     explorerName: swapExplorerName,
                     opportunities: swapExplorerOpportunities
                 },
+            }
+        }
+
+        case 'dashboard/opportunitiesFetched': {
+            const swapExplorerOpportunities = action.payload;
+
+            return {
+                ...state,
+                swap: {
+                    ...state.swap,
+                    opportunities: swapExplorerOpportunities
+                },
+            }
+        }
+
+        case 'dashboard/chatClicked': {
+            const { conversationId, swapExplorerId, swapExplorerName, swapCardName } = action.payload;
+
+            return {
+                ...state,
+                swap: {
+                    ...state.swap,
+                    conversationId: conversationId,
+                    explorerId: swapExplorerId,
+                    explorerName: swapExplorerName,
+                    cardName: swapCardName
+                },
+            }
+        }
+
+        case 'chat/conversationFetched': {
+            const fetchedConversationId = action.payload;
+
+            return {
+                ...state,
+                swap: {
+                    ...state.swap,
+                    conversationId: fetchedConversationId,
+                },
+            }
+        }
+
+        case 'chat/conversationNotFetched': {
+            return {
+                ...state,
+                swap: {
+                    ...state.swap,
+                    conversationId: '',
+                },
+            }
+        }
+
+        case 'explorer/created': {
+            const {fetchedExplorerId , fetchedExplorerName} = action.payload;
+
+            return {
+                ...state,
+                explorer: {
+                    id: fetchedExplorerId,
+                    name: fetchedExplorerName
+                } 
+            }
+        }
+
+        case 'user/fetched': {
+            const fetchedUserUID = action.payload;
+
+            return {
+                ...state,
+                userUID: fetchedUserUID
             }
         }
 

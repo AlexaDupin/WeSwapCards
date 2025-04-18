@@ -11,16 +11,18 @@ import { useAuth } from '@clerk/clerk-react'
 
 import Bulb from '../../images/bulb.svg';
 
-import PropTypes from 'prop-types';
+import { useStateContext } from '../../contexts/StateContext';
 
 import './checkPageStyles.scss';
 import Place from '../CheckPage/Place/Place';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 import { initialState, reducer } from '../../reducers/checkReducer';
 
-function CheckPage({
-    explorerId, name
-  }) {
+function CheckPage() {
+    const stateContext = useStateContext();
+    const { explorer } = stateContext;
+    const { id: explorerId, name } = explorer;
+
     const [state, dispatch] = useReducer(reducer, initialState);
     const { getToken } = useAuth()
     const navigate = useNavigate();
@@ -104,10 +106,5 @@ function CheckPage({
     </Container>
 )
 }
-
-CheckPage.propTypes = {
-  explorerId: PropTypes.number.isRequired,
-  name: PropTypes.string,
-};
 
 export default React.memo(CheckPage);

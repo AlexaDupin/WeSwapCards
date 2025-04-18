@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Spinner } from "react-bootstrap";
 import { useUser, useAuth } from "@clerk/clerk-react";
@@ -15,13 +15,10 @@ import Menu from './components/Menu/Menu';
 import Report from './components/Report/Report';
 import SwapCard from './components/Swap/SwapCard/SwapCard';
 import Chat from './components/Chat/Chat';
-import Opportunities from './components/Swap/Opportunities/Opportunities';
 import CheckPage from './components/CheckPage/CheckPage';
 import Dashboard from './components/Dashboard/Dashboard';
 import NotFound from './components/NotFound/NotFound';
 import Footer from './components/Footer/Footer';
-// import CustomProfile from './components/CustomProfile/CustomProfile';
-
 import PrivacyPolicy from './components/Legal/PrivacyPolicy/PrivacyPolicy';
 import Terms from './components/Legal/Terms/Terms';
 import CookiePolicy from './components/Legal/CookiePolicy/CookiePolicy';
@@ -29,7 +26,6 @@ import Contact from './components/Legal/Contact/Contact';
 import Legal from './components/Legal/Legal';
 
 import pageContainer from './components/PageContainer/pageContainer';
-import usePersistState from './hooks/usePersistState';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -39,19 +35,13 @@ import './styles/index.scss';
 
 import './App.css';
 import './App.scss';
-import { initialState, reducer } from './reducers/mainReducer';
+import { useStateContext } from './contexts/StateContext';
+import { useDispatchContext } from './contexts/DispatchContext';
 
 function App() {  
-  const [state, dispatch] = useReducer(reducer, initialState);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('explorer', JSON.stringify(state.explorer));
-    } catch (e) {
-      console.error('Failed to save explorer to localStorage', e);
-    }
-  }, [state.explorer]);
-
+  const state = useStateContext();
+  const dispatch = useDispatchContext();
+  console.log('state', state);
 
   const { isLoaded } = useUser();
   const { getToken } = useAuth()
@@ -64,23 +54,6 @@ function App() {
     fetchToken();
   }, []);
 
-  // const [userUID, setUserUID] = useState('');
-  // const [name, setName] = usePersistState('', 'name');
-  // const [explorerId, setExplorerId] = usePersistState('', 'explorerId');
-
-  // // Swap feature
-  // const [swapExplorerId, setSwapExplorerId] = useState('');
-  // const [swapCardName, setSwapCardName] = useState();
-  // const [swapExplorerName, setSwapExplorerName] = useState();
-  // const [swapExplorerOpportunities, setSwapExplorerOpportunities] = useState([]);
-  // const [conversationId, setConversationId] = useState('');
-
-  // console.log("APP userUID", userUID);
-  // console.log("APP name", name);
-  // console.log("APP explorerId", explorerId);
-  // console.log("APP swapExplorerId", swapExplorerId);
-  // console.log("APP conversationId", conversationId);
-
 if (!isLoaded) {
   return <div className="loading">
     <Header />
@@ -91,13 +64,12 @@ if (!isLoaded) {
 }
 
   return (
-    // <TokenProvider>
     <div className="App">
       <Header />
       <Routes>
           <Route
               path="/"
-              element={(<Home/>)}
+              element={( <Home/> )}
           />   
           <Route
               path="/login"
@@ -124,114 +96,48 @@ if (!isLoaded) {
           <Route
               path="/register/user"
               element={(
-                <User
-                  // setUserUID={setUserUID}
-                  // setName={setName}
-                  // setExplorerId={setExplorerId}
-                  mainDispatch={dispatch}
-                />
+                <User />
               )}
           />
           
           <Route
               path="/menu"
               element={<ProtectedRoute 
-                element={
-                <Menu 
-                  name={state.explorer.name} 
-                  explorerId={state.explorer.id} 
-                />} 
+                element={ <Menu /> } 
               />}
           />
           <Route
               path="/report"
               element={<ProtectedRoute 
-                element={
-                  <Report 
-                    name={state.explorer.name} 
-                    explorerId={state.explorer.id} 
-                  />} 
+                element={ <Report />} 
               />}
           />
           <Route
               path="/swap/card"
               element={<ProtectedRoute 
                 element={
-                  <SwapCard
-                    name={state.explorer.name} 
-                    explorerId={state.explorer.id} 
-                    swapCardName={state.swap.cardName}
-                    mainDispatch={dispatch}
-                    // name={name}
-                    // explorerId={explorerId}
-                    // setSwapExplorerId={setSwapExplorerId}
-                    // swapCardName={swapCardName}
-                    // setSwapCardName={setSwapCardName}
-                    // setSwapExplorerName={setSwapExplorerName}
-                    // setConversationId={setConversationId}
-                    // setSwapExplorerOpportunities={setSwapExplorerOpportunities}
-                  />} 
+                  <SwapCard />} 
                 />}
           />
           <Route
               path="/swap/card/chat"
               element={<ProtectedRoute 
                 element={
-                  <Chat
-                    explorerId={state.explorer.id} 
-                    dispatch={dispatch}
-                    swapExplorerId={state.swap.explorerId}
-                    swapCardName={state.swap.CardName}
-                    swapExplorerName={state.swap.explorerName}
-                    conversationId={state.swap.conversationId}
-                    swapExplorerOpportunities={state.swap.opportunities}
-
-                    // explorerId={explorerId}
-                    // swapExplorerId={swapExplorerId}
-                    // swapCardName={swapCardName}
-                    // swapExplorerName={swapExplorerName}
-                    // setConversationId={setConversationId}
-                    // conversationId={conversationId}
-                    // swapExplorerOpportunities={swapExplorerOpportunities}
-                  />} 
+                  <Chat />} 
                 />}
             />
           <Route
               path="/swap/dashboard"
               element={<ProtectedRoute 
                 element={
-                  <Dashboard
-                    explorerId={state.explorer.id}
-                    dispatch={dispatch}
-                    // explorerId={explorerId}
-                    // setSwapCardName={setSwapCardName}
-                    // setSwapExplorerId={setSwapExplorerId}
-                    // setSwapExplorerName={setSwapExplorerName}
-                    // setConversationId={setConversationId}
-                    // setSwapExplorerOpportunities={setSwapExplorerOpportunities}
-                  />} 
+                  <Dashboard />} 
                 />}
           />
-          {/* <Route
-              path="/swap/opportunities"
-              element={<ProtectedRoute 
-                element={
-                  <Opportunities
-                    name={name}
-                    explorerId={explorerId}
-                />} 
-              />}
-          /> */}
           <Route
               path="/check"
               element={<ProtectedRoute 
                 element={
-                  <CheckPage
-                    name={state.explorer.name} 
-                    explorerId={state.explorer.id} 
-                    // name={name}
-                    // explorerId={explorerId}
-                />} 
+                  <CheckPage />} 
               />}
           />
           <Route
@@ -261,7 +167,6 @@ if (!isLoaded) {
       </Routes>
       <Footer />
     </div>
-    // </TokenProvider>
   );
 }
 

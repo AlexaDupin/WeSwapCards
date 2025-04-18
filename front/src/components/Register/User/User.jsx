@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useUser, useClerk } from '@clerk/clerk-react';
 
 import {
@@ -15,22 +15,19 @@ import { PersonFill } from "react-bootstrap-icons";
 
 import { axiosInstance } from '../../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
-import PropTypes from 'prop-types';
 
 import CustomButton from '../../CustomButton/CustomButton';
 import DOMPurify from 'dompurify';
 
-import { initialState, reducer } from '../../../reducers/userReducer';
+import { useDispatchContext } from '../../../contexts/DispatchContext';
 
 import './userStyles.scss';
 
-const User = ({
-    mainDispatch
-  }) => {
-    const [state, dispatch] = useReducer(reducer, initialState);
+const User = () => {
+  const dispatch = useDispatchContext();
 
-    // const [hiddenAlert, setHiddenAlert] = useState(true);
-    // const [message, setMessage] = useState('You already have an account. Please log in.');
+    const [hiddenAlert, setHiddenAlert] = useState(true);
+    const [message, setMessage] = useState('You already have an account. Please log in.');
     const navigate = useNavigate();
     const { getToken } = useAuth()
     const { signOut } = useClerk();
@@ -89,11 +86,11 @@ const User = ({
               navigate('/menu', { state: { from: "/register/user" } });
               return;
             } else {
-              dispatch({
-                type: 'explorer/notCreated',
-              })
-              // setMessage("There was an issue while submitting your username.");
-              // setHiddenAlert(false);
+              // dispatch({
+              //   type: 'explorer/notCreated',
+              // })
+              setMessage("There was an issue while submitting your username.");
+              setHiddenAlert(false);
               // console.error("Failed to create user");
               return;
             }
@@ -104,32 +101,32 @@ const User = ({
             // Check if the error message is for duplicate userUID
             if (errorMessage.includes("is already registered")) {
               dispatch({
-                type: 'explorer/errorAlreadyRegistered',
+                type: 'explorer/reset',
               })
               // setExplorerId('');
               // setName('');
-              // setMessage("You already chose a username. You can go back to the menu.");
-              // setHiddenAlert(false);
+              setMessage("You already chose a username. You can go back to the menu.");
+              setHiddenAlert(false);
               return;
             } else if (errorMessage.includes("already taken")) {
               // Handle duplicate username error
               dispatch({
-                type: 'explorer/errorAlreadyTaken',
+                type: 'explorer/reset',
               })
               // setExplorerId('');
               // setName('');
-              // setMessage("This username is already taken. Please try another one.");
-              // setHiddenAlert(false);
+              setMessage("This username is already taken. Please try another one.");
+              setHiddenAlert(false);
               return;
             } else {
               // Handle other backend errors
               dispatch({
-                type: 'explorer/errorGeneral',
+                type: 'explorer/reset',
               })
               // setExplorerId('');
               // setName('');
-              // setMessage("There was an issue with your request. Please try again.");
-              // setHiddenAlert(false);
+              setMessage("There was an issue with your request. Please try again.");
+              setHiddenAlert(false);
               return;
             }
           } else {
@@ -141,12 +138,12 @@ const User = ({
               // If the error is not from the server (e.g., network error)
               // console.log("Network error or unexpected error:", error.message);
               dispatch({
-                type: 'explorer/errorUnexpected',
+                type: 'explorer/reset',
               })
               // setExplorerId('');
               // setName('');
-              // setMessage("An unexpected error occurred. Please try again later.");
-              // setHiddenAlert(false);
+              setMessage("An unexpected error occurred. Please try again later.");
+              setHiddenAlert(false);
               return;
             }
           }
@@ -156,7 +153,7 @@ const User = ({
 
     useEffect(() => {
       dispatch({
-        type: 'user/notFetched',
+        type: 'user/reset',
       })
       // setName("");
       // setExplorerId("");
@@ -181,8 +178,8 @@ const User = ({
 
     <Alert 
       variant="danger"
-      className={state.alert.hidden ? 'hidden-alert' : ''}>
-        {state.alert.message}      
+      className={hiddenAlert ? 'hidden-alert' : ''}>
+        {message}      
     </Alert>
 
     <Form onSubmit={handleSubmit(onSubmit)}>
@@ -230,11 +227,5 @@ const User = ({
     </Container>
 )
 }
-
-User.propTypes = {
-    setUserUID: PropTypes.func,
-    setName: PropTypes.func,
-    setExplorerId: PropTypes.func,
-};
 
 export default React.memo(User);

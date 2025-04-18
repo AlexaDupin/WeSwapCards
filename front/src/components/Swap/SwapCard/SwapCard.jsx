@@ -25,16 +25,20 @@ import { axiosInstance } from '../../../helpers/axiosInstance';
 
 import { useAuth } from '@clerk/clerk-react';
 
-import PropTypes from 'prop-types';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
 import './swapCardStyles.scss';
 import { initialState, reducer } from '../../../reducers/swapReducer';
+import { useStateContext } from '../../../contexts/StateContext';
+import { useDispatchContext } from '../../../contexts/DispatchContext';
 
-function SwapCard({
-    explorerId, name, swapCardName, mainDispatch
-  }) {
+function SwapCard() {
     const [state, dispatch] = useReducer(reducer, initialState);
+    const stateContext = useStateContext();
+    const mainDispatch = useDispatchContext();
+    const explorerId = stateContext.explorer.id;
+    const name = stateContext.explorer.name;
+    const swapCardName = stateContext.swap.cardName;
 
     const { getToken } = useAuth()
     const navigate = useNavigate();
@@ -349,10 +353,5 @@ function SwapCard({
   
 )
 }
-
-SwapCard.propTypes = {
-  explorerId: PropTypes.number.isRequired,
-  name: PropTypes.string,
-};
 
 export default React.memo(SwapCard);

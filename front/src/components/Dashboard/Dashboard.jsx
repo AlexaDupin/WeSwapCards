@@ -15,15 +15,18 @@ import { axiosInstance } from '../../helpers/axiosInstance';
 import { usePagination } from '../../hooks/usePagination';
 import PaginationControl from '../Pagination/Pagination';
 
-import PropTypes from 'prop-types';
+import { useStateContext } from '../../contexts/StateContext';
+import { useDispatchContext } from '../../contexts/DispatchContext';
 
 import './dashboardStyles.scss';
 
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
-function Dashboard({
-  explorerId, setSwapExplorerId, setSwapCardName, setSwapExplorerName, setConversationId, setSwapExplorerOpportunities
-}) {
+function Dashboard() {
+  const state = useStateContext();
+  const dispatch = useDispatchContext();
+  const explorerId = state.explorer.id;
+
   const [hiddenAlert, setHiddenAlert] = useState(true);
   const [alertMessage, setAlertMessage] = useState('');
 
@@ -64,7 +67,11 @@ function Dashboard({
             },
           });
       // console.log('response', response, response.data);
-      setSwapExplorerOpportunities(response.data);
+      dispatch({
+        type: 'dashboard/opportunitiesFetched',
+        payload: response.data
+      })
+      // setSwapExplorerOpportunities(response.data);
 
     } catch (error) {
       // setLoading(false);
@@ -75,10 +82,16 @@ function Dashboard({
   };
 
   const handleOpenChat = async (cardName, swapExplorerId, swapExplorerName, creatorId, recipientId, conversationId) => {
-      setConversationId('');
-      setSwapExplorerId(swapExplorerId);
-      setSwapCardName(cardName);
-      setSwapExplorerName(swapExplorerName);
+      const conversationIdReset = '';
+    console.log(cardName, swapExplorerId, swapExplorerName, creatorId, recipientId, conversationId);
+      dispatch({
+        type: 'dashboard/chatClicked',
+        payload: { conversationIdReset, swapExplorerId, swapExplorerName, cardName }
+      })
+      // setConversationId('');
+      // setSwapExplorerId(swapExplorerId);
+      // setSwapCardName(cardName);
+      // setSwapExplorerName(swapExplorerName);
       fetchSwapOpportunitiesForRecipient(creatorId, recipientId, conversationId);
 
       navigate('/swap/card/chat', { state: { from: "/swap/dashboard" } });
@@ -234,10 +247,5 @@ function Dashboard({
     </Container>
   );
 }
-
-Dashboard.propTypes = {
-  explorerId: PropTypes.number.isRequired,
-  name: PropTypes.string,
-};
 
 export default React.memo(Dashboard);

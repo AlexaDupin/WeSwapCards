@@ -14,15 +14,15 @@ import { useAuth } from '@clerk/clerk-react';
 import PlaceCard from './PlaceCard/PlaceCard';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 
-import PropTypes from 'prop-types';
-
 import './reportStyles.scss';
+import { useStateContext } from '../../contexts/StateContext';
 import { initialState, reducer } from '../../reducers/reportReducer';
 
-function Report({
-  explorerId, name
-}) {
+function Report() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const stateContext = useStateContext();
+  const explorerId = stateContext.explorer.id;
+  const name = stateContext.explorer.name;
 
   const { getToken } = useAuth()
   const navigate = useNavigate();
@@ -335,10 +335,5 @@ function Report({
     </Container>
   );
 }
-
-Report.propTypes = {
-  explorerId: PropTypes.number.isRequired,
-  name: PropTypes.string,
-};
 
 export default React.memo(Report);
