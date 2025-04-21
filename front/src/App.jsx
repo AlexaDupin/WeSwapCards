@@ -35,13 +35,11 @@ import './styles/index.scss';
 
 import './App.css';
 import './App.scss';
-import { useStateContext } from './contexts/StateContext';
-import { useDispatchContext } from './contexts/DispatchContext';
+// import { useStateContext } from './contexts/StateContext';
 
 function App() {  
-  const state = useStateContext();
-  const dispatch = useDispatchContext();
-  console.log('state', state);
+  // const state = useStateContext();
+  // console.log('state', state);
 
   const { isLoaded } = useUser();
   const { getToken } = useAuth()
@@ -73,31 +71,19 @@ if (!isLoaded) {
           />   
           <Route
               path="/login"
-              element={(
-                <SignInPage />
-              )}
+              element={( <SignInPage /> )}
           />            
           <Route
               path="/login/redirect"
-              element={(
-                <LoginRedirect 
-                  dispatch={dispatch}
-                  // setName={setName}
-                  // setExplorerId={setExplorerId}
-                />
-          )}
+              element={( <LoginRedirect /> )}
           />  
           <Route
               path="/register"
-              element={(
-                <SignUpPage />
-              )}
+              element={( <SignUpPage /> )}
           />
           <Route
               path="/register/user"
-              element={(
-                <User />
-              )}
+              element={( <User /> )}
           />
           
           <Route
@@ -115,16 +101,14 @@ if (!isLoaded) {
           <Route
               path="/swap/card"
               element={<ProtectedRoute 
-                element={
-                  <SwapCard />} 
-                />}
+                element={ <SwapCard />} 
+              />}
           />
           <Route
               path="/swap/card/chat"
               element={<ProtectedRoute 
-                element={
-                  <Chat />} 
-                />}
+                element={ <Chat />} 
+              />}
             />
           <Route
               path="/swap/dashboard"

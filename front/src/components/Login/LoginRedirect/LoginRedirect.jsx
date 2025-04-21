@@ -7,15 +7,16 @@ import {
   Alert
   } from "react-bootstrap";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatchContext } from '../../../contexts/DispatchContext';
 
 import { axiosInstance } from '../../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
 
 import './loginRedirectStyles.scss';
 
-const LoginRedirect = ({
-  dispatch
-}) => {
+const LoginRedirect = () => {
+  const dispatch = useDispatchContext();
+
   const { user } = useUser();
   const navigate = useNavigate();
   const location = useLocation(); // Get the current URL

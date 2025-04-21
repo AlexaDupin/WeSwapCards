@@ -53,10 +53,6 @@ function Dashboard() {
     }
   }, [error]);
 
-  // const handleRetry = () => {
-  //   refreshConversations();
-  // };
-
   const fetchSwapOpportunitiesForRecipient = async (creatorId, recipientId, conversationId) => {
     try {
       const response = await axiosInstance.get(
@@ -71,27 +67,22 @@ function Dashboard() {
         type: 'dashboard/opportunitiesFetched',
         payload: response.data
       })
-      // setSwapExplorerOpportunities(response.data);
 
     } catch (error) {
-      // setLoading(false);
       setHiddenAlert(false);
       setAlertMessage("There was an error while fetching the opportunities");
       // console.log(error);
     }
   };
 
-  const handleOpenChat = async (cardName, swapExplorerId, swapExplorerName, creatorId, recipientId, conversationId) => {
-      const conversationIdReset = '';
-    console.log(cardName, swapExplorerId, swapExplorerName, creatorId, recipientId, conversationId);
+  const handleOpenChat = async (swapCardName, swapExplorerId, swapExplorerName, creatorId, recipientId, conversationId) => {
+      // console.log(swapCardName, swapExplorerId, swapExplorerName, creatorId, recipientId, conversationId);
+      
       dispatch({
         type: 'dashboard/chatClicked',
-        payload: { conversationIdReset, swapExplorerId, swapExplorerName, cardName }
+        payload: { conversationId, swapExplorerId, swapExplorerName, swapCardName }
       })
-      // setConversationId('');
-      // setSwapExplorerId(swapExplorerId);
-      // setSwapCardName(cardName);
-      // setSwapExplorerName(swapExplorerName);
+
       fetchSwapOpportunitiesForRecipient(creatorId, recipientId, conversationId);
 
       navigate('/swap/card/chat', { state: { from: "/swap/dashboard" } });

@@ -32,8 +32,6 @@ function Chat() {
     const [isSending, setIsSending] = useState(false);
     const messageEndRef = useRef(null);
     const messageInputRef = useRef(null);
-    console.log('chat', swapExplorerOpportunities, swapExplorerName, swapCardName);
-    console.log("chat full state", state);
 
     const navigate = useNavigate();
     const [hiddenAlert, setHiddenAlert] = useState(true);
@@ -41,14 +39,6 @@ function Chat() {
 
     const location = useLocation();
     const previousUrl = location.state?.from;
-
-    // console.log("explorerId", explorerId);
-    // console.log("CHAT JSX swapExplorerId", swapExplorerId);
-    // console.log("messages", messages);
-    // console.log("swapCardName", swapCardName);
-    // console.log("conversationId", conversationId);
-    // console.log("loading", loading);
-    // console.log("swapExplorerOpportunities", swapExplorerOpportunities);
 
     const { getToken } = useAuth()
 
@@ -62,22 +52,17 @@ function Chat() {
           },
         });
 
-        console.log("fetchConversation response", response);
         setLoading(false);
 
         if (!response.data) {
           dispatch({
             type: 'chat/conversationNotFetched'
           })
-          // setConversationId('');
-          console.log("CHAT NEW CONV: NO convID set");
         } else {
           dispatch({
             type: 'chat/conversationFetched',
             payload: response.data.id
           })
-          // setConversationId(response.data.id);
-          console.log("CHAT CONV FOUND: convID set");
         }
 
       } catch (error) {
@@ -89,12 +74,8 @@ function Chat() {
     };
 
     const fetchMessages = async () => {
-      console.log("FETCHING MESSAGES");
-
       if (conversationId) {
         try {
-          console.log("FETCHING MESSAGES conversationId", conversationId);
-  
           const response = await axiosInstance.get(
             `/chat/${conversationId}`
           , {
@@ -102,7 +83,6 @@ function Chat() {
               Authorization: `Bearer ${await getToken()}`,
             },
           });
-          console.log(response.data.allMessages);
           const allFetchedMessages = response.data.allMessages;
 
           const allMessagesFormattedDate = allFetchedMessages.map((message) => {
@@ -163,7 +143,6 @@ function Chat() {
     };
 
     const handleConversationStatus = async (conversationId, newStatus) => {
-      // console.log("CHANGING STATUS", newStatus);
       try {
         await axiosInstance.put(
           `/conversation/${conversationId}`,
@@ -182,7 +161,6 @@ function Chat() {
     };
 
     const sendMessage = async (conversationId) => {
-      // console.log("INTO CHAT SEND MESSAGE");
       const sanitizedMessage = DOMPurify.sanitize(newMessage);
 
       const input = {
@@ -193,7 +171,6 @@ function Chat() {
         recipient_id: swapExplorerId,
         conversation_id: conversationId,
       };
-      // console.log("CHAT SEND MESSAGE INPUT", input);
 
       const maxRetries = 3;
       const delayBetweenRetries = 1000;
@@ -207,7 +184,6 @@ function Chat() {
           }
 
           if (!conversationId) {
-            // console.log("CHAT SEND MESSAGE NO CONV ID");
             fetchConversation();
           }
 
@@ -221,7 +197,6 @@ function Chat() {
             withCredentials: true,
             } 
           );
-          // console.log("RESPONSE", response);
 
           if (response.status === 201) {
             fetchMessages();
@@ -304,7 +279,6 @@ function Chat() {
                   type: 'chat/conversationFetched',
                   payload: response.data.id
                 })
-                // setConversationId(response.data.id);
                 sendMessage(response.data.id);
                 return;
               } else {

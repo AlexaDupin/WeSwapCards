@@ -88,8 +88,6 @@ function SwapCard() {
           type: 'swap/placeSelected',
         })
 
-        // setSwapExplorerId('');
-        // setConversationId('');
       } catch (error) {
         dispatch({
           type: 'places/selectedError',
@@ -116,7 +114,6 @@ function SwapCard() {
         type: 'swap/cardNameFetched',
         payload: cardName
       })
-      // setSwapCardName(cardName);
 
     } catch (error) {
       dispatch({
@@ -158,9 +155,6 @@ function SwapCard() {
         payload:  { swapExplorerId, swapExplorerName, swapExplorerOpportunities }
       })
       
-      // setSwapExplorerId(swapExplorerId);
-      // setSwapExplorerName(swapExplorerName);
-      // setSwapExplorerOpportunities(swapExplorerOpportunities);
       navigate('/swap/card/chat', { state: { from: "/swap/card" } });
     }
 
