@@ -34,7 +34,7 @@ const User = () => {
 
     // Get the user info from Clerk
     const { user } = useUser();
-    console.log("REGISTER USER", user);
+    // console.log("REGISTER USER", user);
     const userUID = user.id;
     const userEmail = user.emailAddresses[0].emailAddress;  
     // console.log('User ID:', userUID);

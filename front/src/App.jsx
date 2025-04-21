@@ -12,7 +12,7 @@ import Home from './components/Home/Home';
 
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import Menu from './components/Menu/Menu';
-import Report from './components/Report/Report';
+import Report from './components/Report/ui/Report';
 import SwapCard from './components/Swap/SwapCard/SwapCard';
 import Chat from './components/Chat/Chat';
 import CheckPage from './components/CheckPage/CheckPage';
