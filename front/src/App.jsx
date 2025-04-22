@@ -7,7 +7,7 @@ import Header from './components/Header/Header';
 import SignInPage from './components/Login/SignInPage';
 import SignUpPage from './components/Register/SignUpPage';
 import LoginRedirect from './components/Login/LoginRedirect/LoginRedirect';
-import User from './components/Register/User/User';
+import User from './components/Register/User/ui/User';
 import Home from './components/Home/Home';
 
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
@@ -35,19 +35,14 @@ import './styles/index.scss';
 
 import './App.css';
 import './App.scss';
-// import { useStateContext } from './contexts/StateContext';
 
 function App() {  
-  // const state = useStateContext();
-  // console.log('state', state);
-
   const { isLoaded } = useUser();
   const { getToken } = useAuth()
 
   useEffect(() => {
     const fetchToken = async () => {
-       const token = await getToken()
-      //  console.log("APP TOKEN", token);
+       await getToken()
     }
     fetchToken();
   }, []);
