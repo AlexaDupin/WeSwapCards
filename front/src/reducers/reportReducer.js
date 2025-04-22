@@ -92,22 +92,22 @@ export const reducer = (state, action) => {
 
             const isCardSelected = state.selectedCards.some(
                 (alreadySelectedCard) => alreadySelectedCard.id === card.id
-              );
+            );
         
-              if (isCardSelected) {
-                return {
-                  ...state,
-                  selectedCards: state.selectedCards.filter(
-                    (c) => c.id !== card.id
-                  ),
-                  toBeDeleted: [...state.toBeDeleted, card],
-                };
-              } else {
-                return {
-                  ...state,
-                  selectedCards: [...state.selectedCards, card],
-                };
-              }
+            if (isCardSelected) {
+              return {
+                ...state,
+                selectedCards: state.selectedCards.filter(
+                  (c) => c.id !== card.id
+                ),
+                toBeDeleted: [...state.toBeDeleted, card],
+              };
+            } else {
+              return {
+                ...state,
+                selectedCards: [...state.selectedCards, card],
+              };
+            }
         }
 
         case 'cards/selectedAll': {

@@ -1,10 +1,8 @@
 import React, { useEffect, useReducer } from 'react';
 import CardPreview from '../Place/CardPreview/CardPreview';
 
-import { axiosInstance } from '../../../helpers/axiosInstance';
+import { axiosInstance } from '../../../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react'
-
-import PropTypes from 'prop-types';
 
 import './placeStyles.scss';
 
@@ -86,9 +84,5 @@ function Place({
     </div>
 )
 }
-
-Place.propTypes = {
-
-};
 
 export default React.memo(Place);

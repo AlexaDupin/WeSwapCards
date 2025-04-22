@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
     Container,
     Table,
@@ -8,145 +8,28 @@ import {
     Alert
 } from "react-bootstrap";
 import {Envelope} from "react-bootstrap-icons";
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@clerk/clerk-react';
-
-import { axiosInstance } from '../../helpers/axiosInstance';
-import { usePagination } from '../../hooks/usePagination';
-import PaginationControl from '../Pagination/Pagination';
-
-import { useStateContext } from '../../contexts/StateContext';
-import { useDispatchContext } from '../../contexts/DispatchContext';
-
+import PaginationControl from '../../Pagination/Pagination';
 import './dashboardStyles.scss';
 
-import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
+import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
+
+import useDashboardLogic from '../hooks/useDashboardLogic';
 
 function Dashboard() {
-  const state = useStateContext();
-  const dispatch = useDispatchContext();
-  const explorerId = state.explorer.id;
-
-  const [hiddenAlert, setHiddenAlert] = useState(true);
-  const [alertMessage, setAlertMessage] = useState('');
-
-  const { getToken } = useAuth();
-  const navigate = useNavigate();
-
   const { 
-    data: conversations, 
-    loading, 
+    conversations,
+    loading,
     error,
-    activePage, 
-    totalPages, 
+    activePage,
+    totalPages,
     totalItems,
     handlePageChange,
-    refresh: refreshConversations
-  } = usePagination(explorerId ? `/conversation/${explorerId}` : null, 20);
-  // console.log("conv", conversations);
-
-  // Show alert when error occurs
-  useEffect(() => {
-    if (error) {
-      setHiddenAlert(false);
-      setAlertMessage(error);
-    }
-  }, [error]);
-
-  const fetchSwapOpportunitiesForRecipient = async (creatorId, recipientId, conversationId) => {
-    try {
-      const response = await axiosInstance.get(
-          `/conversation/${conversationId}/opportunities/${creatorId}/${recipientId}`
-          , {
-            headers: {
-              Authorization: `Bearer ${await getToken()}`,
-            },
-          });
-      // console.log('response', response, response.data);
-      dispatch({
-        type: 'dashboard/opportunitiesFetched',
-        payload: response.data
-      })
-
-    } catch (error) {
-      setHiddenAlert(false);
-      setAlertMessage("There was an error while fetching the opportunities");
-      // console.log(error);
-    }
-  };
-
-  const handleOpenChat = async (swapCardName, swapExplorerId, swapExplorerName, creatorId, recipientId, conversationId) => {
-      // console.log(swapCardName, swapExplorerId, swapExplorerName, creatorId, recipientId, conversationId);
-      
-      dispatch({
-        type: 'dashboard/chatClicked',
-        payload: { conversationId, swapExplorerId, swapExplorerName, swapCardName }
-      })
-
-      fetchSwapOpportunitiesForRecipient(creatorId, recipientId, conversationId);
-
-      navigate('/swap/card/chat', { state: { from: "/swap/dashboard" } });
-  };
-
-  const handleStatusChange = async (conversationId, newStatus) => {
-    try {
-      await axiosInstance.put(
-        `/conversation/${conversationId}`,
-        { status: newStatus }, 
-        {
-          headers: {
-            Authorization: `Bearer ${await getToken()}`,
-          },
-        });
-      refreshConversations();
-    } catch (error) {
-      // console.error('Error updating status:', error);
-    }
-  };
-
-  const getDropdownClass = (status) => {
-    switch (status) {
-      case 'In progress':
-        return 'secondary'; 
-      case 'Completed':
-        return 'completed';
-      case 'Declined':
-        return 'declined'; 
-      default:
-        return 'secondary';
-    }
-  };
-
-  const updateLastActive = async () => {
-      try {
-        const token = await getToken();
-
-        const response = await axiosInstance.post(
-          `/exploreractivity/${explorerId}`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true,
-        });
-        // console.log("Successfully updated last active timestamp");        
-        return;
-        
-      } catch (error) {
-          // console.error("Error updating last active:", error);
-          return;
-      }
-      
-  };
-
-  useEffect(() => {
-    if (!explorerId) {
-      navigate('/login/redirect', { state: { from: "/swap/dashboard" } });
-      return;
-    }
-    updateLastActive();
-  }, [explorerId]);
+    handleOpenChat,
+    getDropdownClass,
+    handleStatusChange,
+    hiddenAlert,
+    alertMessage,
+  } = useDashboardLogic();
 
   return (
     <Container className="page-container">

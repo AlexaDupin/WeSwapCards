@@ -59,7 +59,6 @@ const useReportLogic = () => {
 
     // On submit, log selected cards and duplicate selection into db
     const handleSubmit = async (event) => {
-
       event.preventDefault();
       // Extracting ids of selected cards and duplicates
       const selectedCardsIds = state.selectedCards.map(item => item.id);
