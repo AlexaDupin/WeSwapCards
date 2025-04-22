@@ -14,7 +14,7 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import Menu from './components/Menu/Menu';
 import Report from './components/Report/ui/Report';
 import SwapCard from './components/Swap/ui/SwapCard';
-import Chat from './components/Chat/Chat';
+import Chat from './components/Chat/ui/Chat';
 import CheckPage from './components/CheckPage/ui/CheckPage';
 import Dashboard from './components/Dashboard/ui/Dashboard';
 import NotFound from './components/NotFound/NotFound';
