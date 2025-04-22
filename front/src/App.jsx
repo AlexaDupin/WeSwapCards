@@ -6,7 +6,7 @@ import { useUser, useAuth } from "@clerk/clerk-react";
 import Header from './components/Header/Header';
 import SignInPage from './components/Login/SignInPage';
 import SignUpPage from './components/Register/SignUpPage';
-import LoginRedirect from './components/Login/LoginRedirect/LoginRedirect';
+import LoginRedirect from './components/Login/LoginRedirect/ui/LoginRedirect';
 import User from './components/Register/User/ui/User';
 import Home from './components/Home/Home';
 
