@@ -1,8 +1,6 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Icon1Square, Icon2Square, Icon3Square,Icon4Square,
     Icon5Square,Icon6Square,Icon7Square,Icon8Square,Icon9Square} from "react-bootstrap-icons";
-
-import PropTypes from 'prop-types';
 
 import './cardPreviewStyles.scss';
 
@@ -48,14 +46,5 @@ function CardPreview({
     </div>
     )
 }
-
-CardPreview.propTypes = {
-
-};
-
-// PlaceCard.defaultProps = {
-//   card: { id: 0, name: 'Default Card', number: 0, place_id: 0 },  // Default card data
-//   selectedCards: [],  // Default empty array for selectedCards
-// };
 
 export default React.memo(CardPreview);
