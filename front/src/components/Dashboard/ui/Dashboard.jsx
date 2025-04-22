@@ -1,4 +1,5 @@
 import React from 'react';
+import PageContainer from '../../PageContainer/PageContainer';
 import {
     Container,
     Table,
@@ -10,7 +11,6 @@ import {
 import {Envelope} from "react-bootstrap-icons";
 import PaginationControl from '../../Pagination/Pagination';
 import './dashboardStyles.scss';
-
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
 import useDashboardLogic from '../hooks/useDashboardLogic';
@@ -32,7 +32,7 @@ function Dashboard() {
   } = useDashboardLogic();
 
   return (
-    <Container className="page-container">
+    <PageContainer>
       <h1 className="swap-title">Requests dashboard</h1>
 
       {loading && (
@@ -118,7 +118,7 @@ function Dashboard() {
       )}
 
       <ScrollToTop />
-    </Container>
+    </ PageContainer>
   );
 }
 

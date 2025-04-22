@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
-
+import PageContainer from '../PageContainer/PageContainer';
 import {
-    Container,
     Button,
     OverlayTrigger,
     Tooltip  
@@ -34,7 +33,7 @@ function Menu() {
 
   return (
     <>
-    <Container className="page-container">
+    <PageContainer>
           <h1 className="menu-title" style={{ fontSize: '1.2rem' }}>
               Welcome {state.explorer.name}!
           </h1>
@@ -118,7 +117,7 @@ function Menu() {
 
           </section>
 
-    </Container>
+    </PageContainer>
       
     <section className="modal">
       <CarouselModal/>

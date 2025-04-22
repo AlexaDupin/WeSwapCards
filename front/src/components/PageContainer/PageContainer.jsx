@@ -5,13 +5,13 @@ import {
 
 import './pageContainerStyles.scss';
 
-function PageContainer() {
+function PageContainer({ children }) {
     
   return (
     <Container className="page-container">
-
+      {children}
     </Container>
-)
+  )
 }
 
 export default React.memo(PageContainer);

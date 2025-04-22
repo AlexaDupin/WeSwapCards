@@ -25,15 +25,11 @@ import CookiePolicy from './components/Legal/CookiePolicy/CookiePolicy';
 import Contact from './components/Legal/Contact/Contact';
 import Legal from './components/Legal/Legal';
 
-import pageContainer from './components/PageContainer/pageContainer';
-
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './styles/_reset.css';
 import './styles/index.scss';
-
-import './App.css';
 import './App.scss';
 
 function App() {  

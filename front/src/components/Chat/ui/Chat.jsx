@@ -1,4 +1,5 @@
 import React from 'react';
+import PageContainer from '../../PageContainer/PageContainer';
 import {
     Form,
 	  Row,
@@ -10,6 +11,7 @@ import {
     Alert
 } from "react-bootstrap";
 import './chatStyles.scss';
+
 import useChatLogic from '../hooks/useChatLogic';
 
 function Chat() {
@@ -33,7 +35,7 @@ function Chat() {
    } = useChatLogic();
   
   return (
-    <Container className="page-container">
+    <PageContainer>
 
       <div className='chat-container'>
       {loading &&
@@ -137,7 +139,7 @@ function Chat() {
         </Container></>}
 
       </div>
-    </Container>
+    </PageContainer>
 
   );
 }

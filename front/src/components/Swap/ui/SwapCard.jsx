@@ -1,8 +1,8 @@
 import React from 'react';
+import PageContainer from '../../PageContainer/PageContainer';
 import {
     Form,
 	  Row,
-    Container,
     Card,
     Col,
     Spinner,
@@ -43,7 +43,7 @@ function SwapCard() {
   );
 
   return (
-  <Container className="page-container">
+  <PageContainer>
       <h1 className="swap-title">Find a card</h1>
 
       {state.alert.message && (
@@ -195,9 +195,8 @@ function SwapCard() {
 
     <ScrollToTop />
 
-  </Container>
-  
-)
+  </PageContainer>
+ )
 }
 
 export default React.memo(SwapCard);

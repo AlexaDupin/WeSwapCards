@@ -1,26 +1,22 @@
 import React from 'react';
+import PageContainer from '../PageContainer/PageContainer';
 import { SignUp } from '@clerk/clerk-react'; 
-
-import {
-  Container,
-} from "react-bootstrap";
 
 import './registerStyles.scss';
 
 function SignUpPage() {
 
   return (
-    <Container className="page-container">
+    <PageContainer>
       <h1 className="page-title">Sign Up</h1>
       <div className="signup-container">
         <SignUp 
           routing="virtual"
-          // routing="path" 
           forceRedirectUrl="/register/user"
         />
       </div>
-    </Container>
-)
+    </PageContainer>
+  )
 }
 
 export default React.memo(SignUpPage);

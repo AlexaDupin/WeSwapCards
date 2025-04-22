@@ -1,8 +1,13 @@
-/* The following line can be included in a src/App.scss */
 @use 'src/styles/vars';
 
 @import '~bootstrap/scss/bootstrap';
 
+.App {
+    text-align: center;
+    display: flex;
+    flex-direction: column; 
+    height: 100vh;   
+}
 
 .loading {
     padding-top: 7rem !important;
@@ -12,5 +17,11 @@
 
 .spinner {
     color: vars.$primary-color;
-        
 }
+
+@media (min-width: 1200px) {
+    body {
+      font-size: 18px !important;
+    }
+}
+  

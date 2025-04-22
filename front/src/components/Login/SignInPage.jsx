@@ -1,9 +1,6 @@
 import React, { useEffect } from 'react';
+import PageContainer from '../PageContainer/PageContainer';
 import { SignIn, useUser } from '@clerk/clerk-react';
-
-import {
-  Container,
-  } from "react-bootstrap";
 
 import './loginStyles.scss';
 
@@ -17,14 +14,14 @@ const SignInPage = () => {
   }, [isSignedIn]);
 
   return (
-  <Container className="page-container">
+  <PageContainer>
     <h1 className="page-title">Sign in</h1>
     <div className="signup-container">
       <SignIn 
         forceRedirectUrl="/login/redirect"
       />
     </div>
-  </Container>
+  </PageContainer>
   )
 }
 

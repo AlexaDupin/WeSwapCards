@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import PageContainer from '../PageContainer/PageContainer';
 import {
     Container,
     Row,
@@ -8,46 +9,44 @@ import { useNavigate } from 'react-router-dom';
 
 import CustomButton from '../CustomButton/CustomButton';
 
-import './legalStyles.scss';
-
 function Legal() {
     const navigate = useNavigate();
 
   return (
-    <Container className="page-container">
-    <h1 className="swap-title">Legal</h1>
+    <PageContainer>
+        <h1 className="swap-title">Legal</h1>
 
-    <Container>
-        <Row className="g-4">
-            <Col sm={12}>
-                <CustomButton
-                    text="Privacy Policy"
-                    onClick={() => navigate('/privacy')}
-                    />
-            </Col>
-            <Col sm={12}>
+        <Container>
+            <Row className="g-4">
+                <Col sm={12}>
                     <CustomButton
-                    text="Terms and Conditions"
-                    onClick={() => navigate('/terms')}
+                        text="Privacy Policy"
+                        onClick={() => navigate('/privacy')}
                     />
-            </Col>
-            <Col sm={12}>
+                </Col>
+                <Col sm={12}>
                     <CustomButton
-                    text="Cookie Policy"
-                    onClick={() => navigate('/cookies')}
+                        text="Terms and Conditions"
+                        onClick={() => navigate('/terms')}
                     />
-            </Col>
-            <Col sm={12}>
+                </Col>
+                <Col sm={12}>
                     <CustomButton
-                    text="Contact"
-                    onClick={() => navigate('/contact')}
+                        text="Cookie Policy"
+                        onClick={() => navigate('/cookies')}
                     />
-            </Col>
-        </Row> 
-               
-    </Container>
-    </Container>
-)
+                </Col>
+                <Col sm={12}>
+                    <CustomButton
+                        text="Contact"
+                        onClick={() => navigate('/contact')}
+                    />
+                </Col>
+            </Row> 
+        </Container>
+
+    </PageContainer>
+    )   
 }
 
 export default React.memo(Legal);
