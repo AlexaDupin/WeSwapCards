@@ -25,13 +25,13 @@ Users can keep track of all their conversations in a practical dashboard.
 - Dashboard with all conversations and status of the swap
 
 ## What does it look like?
-Landing page, sign in and menu: 
+Landing page, sign in and menu:  
 https://github.com/user-attachments/assets/32107731-2b30-4ae9-96f1-444aa923fa22
   
 Reporting cards:  
 https://github.com/user-attachments/assets/4018b99f-fca4-492d-a490-ffacfa9785fc
 
-Checking all my cards:  
+Checking all cards and updating duplicate status:  
 https://github.com/user-attachments/assets/e2bcbf5d-eb65-47c3-9ad4-204acff956f3
 
 Searching for cards:  
