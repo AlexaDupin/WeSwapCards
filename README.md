@@ -24,6 +24,10 @@ Users can keep track of all their conversations in a practical dashboard.
 - Messaging feature
 - Dashboard with all conversations and status of the swap
 
+## What does it look like?
+Landing page, sign in and menu:
+https://github.com/user-attachments/assets/32107731-2b30-4ae9-96f1-444aa923fa22
+
 ## Installation
 
 Clone the repository:
