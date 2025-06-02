@@ -105,7 +105,7 @@ const chatController = {
     async getAllConversations(req, res) {
         const explorerId = req.params.explorerId;
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 20;
+        const limit = parseInt(req.query.limit) || 40;
         // console.log('CHAT CTRL', explorerId);
 
             try {

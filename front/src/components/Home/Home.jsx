@@ -1,9 +1,6 @@
 import React, { useEffect } from 'react';
+import PageContainer from '../PageContainer/PageContainer';
 import { useUser } from '@clerk/clerk-react';
-
-import {
-  Container
-} from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
@@ -31,7 +28,7 @@ function Home() {
 
 
   return (
-  <Container className="page-container">
+  <PageContainer>
     <section>
       <h1 className="home-title">Welcome to WeSwapCards!</h1><br />
       <p>You use the WeWard app and want to exchange cards easily? This is the place for you!</p>
@@ -73,7 +70,7 @@ function Home() {
 
     <ScrollToTop />
   
-  </Container>
+  </ PageContainer>
 )
 }
 

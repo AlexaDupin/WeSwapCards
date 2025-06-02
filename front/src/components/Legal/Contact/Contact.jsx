@@ -1,14 +1,10 @@
 import React from 'react';
-import {
-  Container
-} from "react-bootstrap";
-
-import './contactStyles.scss';
+import PageContainer from '../../PageContainer/PageContainer';
 
 function Contact() {
 
   return (
-  <Container className="page-container">
+  <PageContainer className="page-container">
     <section>
       <h1 className="page-title">Contact us</h1>
       
@@ -20,7 +16,7 @@ function Contact() {
         </ul>
     </section>
   
-  </Container>
+  </ PageContainer>
 )
 }
 

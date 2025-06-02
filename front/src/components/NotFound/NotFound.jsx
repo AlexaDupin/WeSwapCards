@@ -1,19 +1,17 @@
 import React from 'react';
-import {
-  Container,
-} from "react-bootstrap";
+import PageContainer from '../PageContainer/PageContainer';
 import {PatchQuestion} from "react-bootstrap-icons";
 
 import './notFoundStyles.scss';
 
 function NotFound() {
   return (
-    <Container className="page-container">
+    <PageContainer>
       <PatchQuestion 
         className='notfound'
       />
       <p>Oops, looks like this page was not found</p>
-    </Container>
+    </PageContainer>
   );
 }
 
