@@ -26,7 +26,7 @@ const useDashboardLogic = () => {
         totalItems,
         handlePageChange,
         refresh: refreshConversations
-    } = usePagination(explorerId ? `/conversation/${explorerId}` : null, 30);
+    } = usePagination(explorerId ? `/conversation/${explorerId}` : null, 40);
     
     // Show alert when error occurs
     useEffect(() => {
