@@ -16,7 +16,8 @@ const useDashboardLogic = () => {
     const [hiddenAlert, setHiddenAlert] = useState(true);
     const [alertMessage, setAlertMessage] = useState('');
     const [activeTab, setActiveTab] = useState('in-progress');
-    const fetchUrl = activeTab === 'in-progress' ? '/conversation'
+    const fetchUrl = 
+      activeTab === 'in-progress' ? '/conversation'
       : '/conversation/past';
 
     const { 
@@ -160,7 +161,7 @@ const useDashboardLogic = () => {
       hiddenAlert,
       alertMessage,
       activeTab,
-      handleTabChange
+      handleTabChange,
     }
 }
 

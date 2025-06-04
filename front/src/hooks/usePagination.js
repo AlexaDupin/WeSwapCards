@@ -93,7 +93,7 @@ export const usePagination = (fetchUrl, itemsPerPage = 20) => {
       }
       
       // console.error("Pagination error:", err);
-      
+
       // Keep existing data on error to allow retry without losing state
     } finally {
       // Always update loading state unless request was aborted

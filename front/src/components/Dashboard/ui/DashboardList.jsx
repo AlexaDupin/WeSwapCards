@@ -20,19 +20,11 @@ function DashboardList({
     handleStatusChange,
     hiddenAlert,
     alertMessage,
-    activeTab
+    activeTab,
 }) {
-  let message;
-
-  const getMessage = () => {
-    if (activeTab === 'past') {
-      message = 'You do not have any conversation at the moment. Start swapping!'
-    } else {
-      message = 'You do not have any current conversation at the moment. Start swapping!'
-    }
-    return message;
-  }
-  getMessage();
+  const noResultsMessage = activeTab === 'in-progress'
+  ? "You do not have any ongoing requests. Start swapping!"
+  : "You do not have any past requests yet.";
 
     return (
         <>
@@ -99,7 +91,7 @@ function DashboardList({
               />
             </>
           ) : (
-            <p>{message}</p>
+            <p>{noResultsMessage}</p>
           )}
         </>
     )
