@@ -375,15 +375,16 @@ module.exports = {
         }
         return 0;     
     },
-    async getAllConversationsOfExplorer(explorerId, page = 1, limit = 40) {
+    async getCurrentConversationsOfExplorer(explorerId, page = 1, limit = 40) {
         const countQuery = {
             text: `
             SELECT COUNT(*) 
             FROM conversation cv
-            WHERE cv.creator_id = $1 
-            OR cv.recipient_id = $1
+            WHERE (cv.creator_id = $1 
+            OR cv.recipient_id = $1)
             AND creator_id IS NOT NULL
             AND recipient_id IS NOT NULL
+            AND status = 'In progress'
             `,
             values: [explorerId],
         };
@@ -415,8 +416,91 @@ module.exports = {
                 JOIN explorer e1 ON e1.id = cv.creator_id
                 JOIN explorer e2 ON e2.id = cv.recipient_id
                 LEFT JOIN message m ON m.conversation_id = cv.id
-                WHERE cv.creator_id = $1
-                   OR cv.recipient_id = $1
+                WHERE (cv.creator_id = $1
+                   OR cv.recipient_id = $1)
+                   AND status = 'In progress'
+                GROUP BY cv.id, e2.name, e1.name, e2.id, e1.id
+            )
+            SELECT 
+                ROW_NUMBER() OVER (
+                    ORDER BY 
+                        (unread > 0) DESC,
+                        CASE WHEN unread > 0 THEN card_name END,
+                        (status = 'In progress') DESC,
+                        card_name
+                ) AS row_id,
+                db_id,
+                card_name,
+                swap_explorer,
+                swap_explorer_id,
+                status,
+                creator_id,
+                recipient_id,
+                unread
+            FROM ranked_conversations
+            ORDER BY 
+                (unread > 0) DESC,  
+                CASE WHEN unread > 0 THEN card_name END,  
+                (status = 'In progress') DESC,  
+                card_name
+            LIMIT $2 OFFSET $3;`,
+            values: [explorerId, limit, offset],
+        };
+        const result = await client.query(preparedQuery);
+        return {
+            conversations: result.rows,
+            pagination: {
+                currentPage: page,
+                totalPages: Math.ceil(totalCount / limit),
+                totalItems: totalCount,
+                itemsPerPage: limit
+            }
+        };
+    },
+    async getPastConversationsOfExplorer(explorerId, page = 1, limit = 40) {
+        const countQuery = {
+            text: `
+            SELECT COUNT(*) 
+            FROM conversation cv
+            WHERE cv.creator_id = $1 
+            OR cv.recipient_id = $1
+            AND creator_id IS NOT NULL
+            AND recipient_id IS NOT NULL
+            AND status = 'Completed' OR status = 'Declined'
+            `,
+            values: [explorerId],
+        };
+        
+        const countResult = await client.query(countQuery);
+        const totalCount = parseInt(countResult.rows[0].count);
+        
+        const offset = (page - 1) * limit;
+        
+        const preparedQuery = {
+            text: `
+            WITH ranked_conversations AS (
+                SELECT 
+                    cv.id AS db_id,
+                    cv.card_name,
+                    CASE
+                        WHEN cv.creator_id = $1 THEN e2.name
+                        WHEN cv.recipient_id = $1 THEN e1.name
+                    END AS swap_explorer,
+                    CASE
+                        WHEN cv.creator_id = $1 THEN e2.id
+                        WHEN cv.recipient_id = $1 THEN e1.id
+                    END AS swap_explorer_id,
+                    cv.creator_id,
+                    cv.recipient_id,
+                    cv.status,
+                    COUNT(m.id) FILTER (WHERE m.read = false AND m.recipient_id = $1) AS unread
+                FROM conversation cv
+                JOIN explorer e1 ON e1.id = cv.creator_id
+                JOIN explorer e2 ON e2.id = cv.recipient_id
+                LEFT JOIN message m ON m.conversation_id = cv.id
+                WHERE (cv.creator_id = $1
+                   OR cv.recipient_id = $1)
+                   AND status = 'Completed' OR status = 'Declined'
                 GROUP BY cv.id, e2.name, e1.name, e2.id, e1.id
             )
             SELECT 

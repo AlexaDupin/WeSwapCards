@@ -1,5 +1,12 @@
 @use 'src/styles/vars';
 
+.dashboard-nav {
+    color: vars.$primary-color !important;
+    font-weight: 500 !important; 
+    margin-right: 2rem; 
+    margin-bottom: 1rem;
+}
+
 .requests {
     padding-top: 7rem !important;
 

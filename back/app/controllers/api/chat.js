@@ -102,15 +102,30 @@ const chatController = {
                 return res.status(500).send({ message: 'An error occurred while retrieving messages.', error: error.message });            
             }
     },
-    async getAllConversations(req, res) {
+    async getCurrentConversations(req, res) {
         const explorerId = req.params.explorerId;
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 40;
         // console.log('CHAT CTRL', explorerId);
 
             try {
-                const result = await datamapper.getAllConversationsOfExplorer(explorerId, page, limit);
+                const result = await datamapper.getCurrentConversationsOfExplorer(explorerId, page, limit);
                 // console.log("CTRL CHAT result", result.pagination);
+                res.status(200).json(result);
+            } catch (error) {
+                console.error("Error while retrieving conversations:", error);
+                return res.status(500).send({ message: 'An error occurred while retrieving conversations.', error: error.message });            
+            }
+    },
+    async getPastConversations(req, res) {
+        const explorerId = req.params.explorerId;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 40;
+        // console.log('CHAT CTRL', explorerId);
+
+            try {
+                const result = await datamapper.getPastConversationsOfExplorer(explorerId, page, limit);
+                console.log("CTRL CHAT result", result.pagination);
                 res.status(200).json(result);
             } catch (error) {
                 console.error("Error while retrieving conversations:", error);

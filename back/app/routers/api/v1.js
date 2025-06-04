@@ -69,7 +69,11 @@ router
 
 router
     .route('/conversation/:explorerId')
-    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.getAllConversations))
+    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.getCurrentConversations))
+
+router
+    .route('/conversation/past/:explorerId')
+    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.getPastConversations))
 
 router
     .route('/conversation/:conversationId/opportunities/:creatorId/:recipientId')

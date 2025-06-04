@@ -15,6 +15,9 @@ const useDashboardLogic = () => {
 
     const [hiddenAlert, setHiddenAlert] = useState(true);
     const [alertMessage, setAlertMessage] = useState('');
+    const [activeTab, setActiveTab] = useState('in-progress');
+    const fetchUrl = activeTab === 'in-progress' ? '/conversation'
+      : '/conversation/past';
 
     const { 
         data,
@@ -22,11 +25,19 @@ const useDashboardLogic = () => {
         loading, 
         error,
         activePage, 
+        setActivePage,
         totalPages, 
         totalItems,
         handlePageChange,
         refresh: refreshConversations
-    } = usePagination(explorerId ? `/conversation/${explorerId}` : null, 40);
+    } = usePagination(explorerId ? `${fetchUrl}/${explorerId}` : null, 40);
+
+    const handleTabChange = (tab) => {
+      if (tab !== activeTab) {
+        setActiveTab(tab);
+        setActivePage(1);
+      }
+    }
     
     // Show alert when error occurs
     useEffect(() => {
@@ -148,6 +159,8 @@ const useDashboardLogic = () => {
       handleStatusChange,
       hiddenAlert,
       alertMessage,
+      activeTab,
+      handleTabChange
     }
 }
 
