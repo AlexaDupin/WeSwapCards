@@ -10,7 +10,7 @@ import PaginationControl from '../../Pagination/Pagination';
 import './dashboardStyles.scss';
 
 function DashboardList({
-    conversations,
+    data,
     activePage,
     totalPages,
     totalItems,
@@ -20,8 +20,8 @@ function DashboardList({
     handleStatusChange,
     hiddenAlert,
     alertMessage,
-    activeTab,
-}) {
+    activeTab
+  }) {
   const noResultsMessage = activeTab === 'in-progress'
   ? "You do not have any ongoing requests. Start swapping!"
   : "You do not have any past requests yet.";
@@ -45,7 +45,7 @@ function DashboardList({
               </tr>
             </thead>
             <tbody>
-              {conversations?.map((conversation) => (
+              {data.conversations?.map((conversation) => (
                 <tr key={conversation.row_id}>
                   <td
                     className={conversation.unread > 0 ? 'requests-table-unread' : 'requests-table'}

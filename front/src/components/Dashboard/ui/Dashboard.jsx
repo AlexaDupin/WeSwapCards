@@ -4,7 +4,8 @@ import DashboardList from './DashboardList';
 import {
     Spinner,
     Alert,
-    Nav
+    Nav,
+    Badge
 } from "react-bootstrap";
 
 import './dashboardStyles.scss';
@@ -14,7 +15,7 @@ import useDashboardLogic from '../hooks/useDashboardLogic';
 
 function Dashboard() {
   const { 
-    conversations,
+    data,
     loading,
     error,
     activePage,
@@ -27,9 +28,9 @@ function Dashboard() {
     hiddenAlert,
     alertMessage,
     activeTab,
-    handleTabChange
+    handleTabChange,
+    unreadConv
   } = useDashboardLogic();
-
   return (
     <PageContainer>
       <h1 className="swap-title">Requests dashboard</h1>
@@ -40,10 +41,10 @@ function Dashboard() {
       variant="underline"
     >
       <Nav.Item>
-        <Nav.Link className="dashboard-nav" eventKey="in-progress">In Progress</Nav.Link>
+        <Nav.Link className="dashboard-nav" eventKey="in-progress">In Progress <Badge bg="secondary">{unreadConv.inProgress}</Badge></Nav.Link>
       </Nav.Item>
       <Nav.Item>
-        <Nav.Link className="dashboard-nav" eventKey="past">Past Requests</Nav.Link>
+        <Nav.Link className="dashboard-nav" eventKey="past">Past Requests <Badge bg="secondary">{unreadConv.past}</Badge></Nav.Link>
       </Nav.Item>
     </Nav>
 
@@ -61,7 +62,7 @@ function Dashboard() {
 
       {!loading && !error && (
         <DashboardList 
-          conversations={conversations}
+          data={data}
           activePage={activePage}
           totalPages={totalPages}
           totalItems={totalItems}

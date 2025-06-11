@@ -57,15 +57,17 @@ export const usePagination = (fetchUrl, itemsPerPage = 20) => {
 
       // Update state only if the request is not aborted
       if (abortController.signal.aborted) return;
+      
+      // // Set data based on response format
+      // if (response.data.items) {
+      //   setData(response.data.items);
+      // } else if (response.data.conversations) {
+      //   setData(response.data.conversations);
+      // } else {
+      //   setData(response.data);
+      // }
 
-      // Set data based on response format
-      if (response.data.items) {
-        setData(response.data.items);
-      } else if (response.data.conversations) {
-        setData(response.data.conversations);
-      } else {
-        setData(response.data);
-      }
+      setData(response.data);
 
       // Set pagination info if available
       if (response.data.pagination) {

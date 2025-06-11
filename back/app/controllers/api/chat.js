@@ -102,6 +102,17 @@ const chatController = {
                 return res.status(500).send({ message: 'An error occurred while retrieving messages.', error: error.message });            
             }
     },
+    async getUnreadConversations(req, res) {
+        const explorerId = req.params.explorerId;
+
+            try {
+                const result = await datamapper.getUnreadConversations(explorerId);
+                res.status(200).json(result);
+            } catch (error) {
+                console.error("Error while counting unread conversations:", error);
+                return res.status(500).send({ message: 'An error occurred while counting unread conversations.', error: error.message });            
+            }
+    },
     async getCurrentConversations(req, res) {
         const explorerId = req.params.explorerId;
         const page = parseInt(req.query.page) || 1;

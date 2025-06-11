@@ -375,6 +375,36 @@ module.exports = {
         }
         return 0;     
     },
+    async getUnreadConversations(explorerId) {
+        const preparedQuery = {
+            text: `
+            SELECT 
+                status,
+                COUNT(DISTINCT cv.id) AS unread
+            FROM conversation cv
+            JOIN message m ON m.conversation_id = cv.id
+            WHERE (cv.creator_id = $1 OR cv.recipient_id = $1)
+              AND m.recipient_id = $1
+              AND m.read = false
+              AND cv.creator_id IS NOT NULL
+              AND cv.recipient_id IS NOT NULL
+            GROUP BY status;
+            `,
+            values: [explorerId],
+        };
+        
+        const result = await client.query(preparedQuery);
+
+        const counts = result.rows.reduce((acc, row) => {
+            acc[row.status] = parseInt(row.unread);
+            return acc;
+          }, {});
+
+        return {
+          inProgress: counts['In progress'] || 0,
+          past: (counts['Completed'] || 0) + (counts['Declined'] || 0),
+        };
+    },
     async getCurrentConversationsOfExplorer(explorerId, page = 1, limit = 40) {
         const countQuery = {
             text: `
@@ -447,6 +477,7 @@ module.exports = {
             values: [explorerId, limit, offset],
         };
         const result = await client.query(preparedQuery);
+
         return {
             conversations: result.rows,
             pagination: {
@@ -536,8 +567,7 @@ module.exports = {
                 totalPages: Math.ceil(totalCount / limit),
                 totalItems: totalCount,
                 itemsPerPage: limit
-            }
-        };
+            }        };
     },
     async editConversationStatus(conversationId, status) {
         //console.log("editConversationStatus DTMP")
