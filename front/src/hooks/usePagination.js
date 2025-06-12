@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { axiosInstance } from '../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
 
-export const usePagination = (fetchUrl, itemsPerPage = 20, searchTerm = '') => {
+export const usePagination = (fetchUrl, itemsPerPage = 20, options = {}) => {
+  const { searchTerm = '', includeSearch = false } = options;
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,7 +15,7 @@ export const usePagination = (fetchUrl, itemsPerPage = 20, searchTerm = '') => {
   const abortControllerRef = useRef(new AbortController());
   
   const fetchData = async () => {
-    const fullUrl = `${fetchUrl}?page=${activePage}&limit=${itemsPerPage}&search=${encodeURIComponent(searchTerm)}`;
+    const fullUrl = `${fetchUrl}?page=${activePage}&limit=${itemsPerPage}` + (includeSearch && searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '');
 
     if (!fetchUrl) {
       setData([]);
@@ -56,19 +57,9 @@ export const usePagination = (fetchUrl, itemsPerPage = 20, searchTerm = '') => {
           timeout: 8000, // 8 second timeout
         }
       );
-
       // Update state only if the request is not aborted
       if (abortController.signal.aborted) return;
       
-      // // Set data based on response format
-      // if (response.data.items) {
-      //   setData(response.data.items);
-      // } else if (response.data.conversations) {
-      //   setData(response.data.conversations);
-      // } else {
-      //   setData(response.data);
-      // }
-
       setData(response.data);
 
       // Set pagination info if available

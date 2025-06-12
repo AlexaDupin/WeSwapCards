@@ -147,7 +147,7 @@ module.exports = {
             FROM explorer_has_cards AS ehc
             JOIN explorer ON explorer.id = ehc.explorer_id
             WHERE ehc.card_id = $1
-            AND explorer.id != $2 AND explorer.id != 1 AND explorer.id != 9 AND explorer.last_active_at > NOW() - INTERVAL '15 days'
+            AND explorer.id != $2 
             AND ehc.duplicate = true
             `,
             values: [cardId, explorerId],
@@ -164,7 +164,7 @@ module.exports = {
                 FROM explorer_has_cards AS ehc
                 JOIN explorer ON explorer.id = ehc.explorer_id
                 WHERE ehc.card_id = $1
-                AND explorer.id != $2 AND explorer.id != 1 AND explorer.id != 9 AND explorer.last_active_at > NOW() - INTERVAL '15 days'
+                AND explorer.id != $2 
                 AND ehc.duplicate = true
             ),
             explorer_duplicates AS (
@@ -238,7 +238,7 @@ module.exports = {
         };
 
         const result = await client.query(preparedQuery);
-
+        // console.log(result.rows);
         return {
             items: result.rows,
             pagination: {

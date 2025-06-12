@@ -38,7 +38,8 @@ const useDashboardLogic = () => {
     } = usePagination(
       explorerId ? baseFetchUrl : null,
       40,
-      searchTerm); 
+      { searchTerm, includeSearch: true }
+    ); 
 
     const handleTabChange = (tab) => {
       if (tab !== activeTab) {
