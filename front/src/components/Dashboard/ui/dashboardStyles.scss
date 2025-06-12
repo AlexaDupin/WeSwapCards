@@ -24,6 +24,11 @@
     
 }
 
+.search-button {
+    background-color: vars.$primary-color !important;
+    border-color: vars.$primary-color !important;
+}
+
 // Button color
 .declined .btn {
     background-color: vars.$primary-color !important;

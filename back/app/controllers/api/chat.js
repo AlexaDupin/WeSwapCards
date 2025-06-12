@@ -117,11 +117,12 @@ const chatController = {
         const explorerId = req.params.explorerId;
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 40;
+        const search = req.query.search || '';
         // console.log('CHAT CTRL', explorerId);
 
             try {
-                const result = await datamapper.getCurrentConversationsOfExplorer(explorerId, page, limit);
-                // console.log("CTRL CHAT result", result.pagination);
+                const result = await datamapper.getCurrentConversationsOfExplorer(explorerId, page, limit, search);
+                console.log("CTRL CHAT result", result);
                 res.status(200).json(result);
             } catch (error) {
                 console.error("Error while retrieving conversations:", error);
@@ -132,10 +133,11 @@ const chatController = {
         const explorerId = req.params.explorerId;
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 40;
+        const search = req.query.search || '';
         // console.log('CHAT CTRL', explorerId);
 
             try {
-                const result = await datamapper.getPastConversationsOfExplorer(explorerId, page, limit);
+                const result = await datamapper.getPastConversationsOfExplorer(explorerId, page, limit, search);
                 // console.log("CTRL CHAT result", result.pagination);
                 res.status(200).json(result);
             } catch (error) {

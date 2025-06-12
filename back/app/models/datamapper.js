@@ -405,18 +405,26 @@ module.exports = {
           past: (counts['Completed'] || 0) + (counts['Declined'] || 0),
         };
     },
-    async getCurrentConversationsOfExplorer(explorerId, page = 1, limit = 40) {
+    async getCurrentConversationsOfExplorer(explorerId, page = 1, limit = 40, search = '') {
+        const sanitizedSearch = `%${search.toLowerCase()}%`;
+
         const countQuery = {
             text: `
             SELECT COUNT(*) 
             FROM conversation cv
-            WHERE (cv.creator_id = $1 
-            OR cv.recipient_id = $1)
+            JOIN explorer e1 ON e1.id = cv.creator_id
+            JOIN explorer e2 ON e2.id = cv.recipient_id
+            WHERE (cv.creator_id = $1 OR cv.recipient_id = $1)
             AND creator_id IS NOT NULL
             AND recipient_id IS NOT NULL
             AND status = 'In progress'
+            AND (
+                LOWER(cv.card_name) LIKE $2 OR
+                LOWER(e1.name) LIKE $2 OR
+                LOWER(e2.name) LIKE $2
+            )
             `,
-            values: [explorerId],
+            values: [explorerId, sanitizedSearch],
         };
         
         const countResult = await client.query(countQuery);
@@ -446,9 +454,13 @@ module.exports = {
                 JOIN explorer e1 ON e1.id = cv.creator_id
                 JOIN explorer e2 ON e2.id = cv.recipient_id
                 LEFT JOIN message m ON m.conversation_id = cv.id
-                WHERE (cv.creator_id = $1
-                   OR cv.recipient_id = $1)
+                WHERE (cv.creator_id = $1 OR cv.recipient_id = $1)
                    AND status = 'In progress'
+                   AND (
+                    LOWER(cv.card_name) LIKE $2 OR
+                    LOWER(e1.name) LIKE $2 OR
+                    LOWER(e2.name) LIKE $2
+                   )
                 GROUP BY cv.id, e2.name, e1.name, e2.id, e1.id
             )
             SELECT 
@@ -473,11 +485,10 @@ module.exports = {
                 CASE WHEN unread > 0 THEN card_name END,  
                 (status = 'In progress') DESC,  
                 card_name
-            LIMIT $2 OFFSET $3;`,
-            values: [explorerId, limit, offset],
+            LIMIT $3 OFFSET $4;`,
+            values: [explorerId, sanitizedSearch, limit, offset],
         };
         const result = await client.query(preparedQuery);
-
         return {
             conversations: result.rows,
             pagination: {
@@ -488,18 +499,26 @@ module.exports = {
             }
         };
     },
-    async getPastConversationsOfExplorer(explorerId, page = 1, limit = 40) {
+    async getPastConversationsOfExplorer(explorerId, page = 1, limit = 40, search = '') {
+        const sanitizedSearch = `%${search.toLowerCase()}%`;
+        
         const countQuery = {
             text: `
             SELECT COUNT(*) 
             FROM conversation cv
-            WHERE cv.creator_id = $1 
-            OR cv.recipient_id = $1
+            JOIN explorer e1 ON e1.id = cv.creator_id
+            JOIN explorer e2 ON e2.id = cv.recipient_id
+            WHERE (cv.creator_id = $1 OR cv.recipient_id = $1)
             AND creator_id IS NOT NULL
             AND recipient_id IS NOT NULL
             AND status = 'Completed' OR status = 'Declined'
+            AND (
+                LOWER(cv.card_name) LIKE $2 OR
+                LOWER(e1.name) LIKE $2 OR
+                LOWER(e2.name) LIKE $2
+            )
             `,
-            values: [explorerId],
+            values: [explorerId, sanitizedSearch],
         };
         
         const countResult = await client.query(countQuery);
@@ -532,6 +551,11 @@ module.exports = {
                 WHERE (cv.creator_id = $1
                    OR cv.recipient_id = $1)
                    AND status = 'Completed' OR status = 'Declined'
+                   AND (
+                    LOWER(cv.card_name) LIKE $2 OR
+                    LOWER(e1.name) LIKE $2 OR
+                    LOWER(e2.name) LIKE $2
+                   )
                 GROUP BY cv.id, e2.name, e1.name, e2.id, e1.id
             )
             SELECT 
@@ -556,8 +580,8 @@ module.exports = {
                 CASE WHEN unread > 0 THEN card_name END,  
                 (status = 'In progress') DESC,  
                 card_name
-            LIMIT $2 OFFSET $3;`,
-            values: [explorerId, limit, offset],
+            LIMIT $3 OFFSET $4;`,
+            values: [explorerId, sanitizedSearch, limit, offset],
         };
         const result = await client.query(preparedQuery);
         return {
@@ -567,7 +591,8 @@ module.exports = {
                 totalPages: Math.ceil(totalCount / limit),
                 totalItems: totalCount,
                 itemsPerPage: limit
-            }        };
+            }        
+        };
     },
     async editConversationStatus(conversationId, status) {
         //console.log("editConversationStatus DTMP")

@@ -17,10 +17,12 @@ const useDashboardLogic = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [activeTab, setActiveTab] = useState('in-progress');
     const [unreadConv, setUnreadConv] = useState({ inProgress: 0, past: 0});
+    const [searchTerm, setSearchTerm] = useState('');
 
-    const fetchUrl = 
-      activeTab === 'in-progress' ? '/conversation'
-      : '/conversation/past';
+    const baseFetchUrl =
+    activeTab === 'in-progress'
+      ? `/conversation/${explorerId}`
+      : `/conversation/past/${explorerId}`;
 
     const { 
         data,
@@ -33,7 +35,10 @@ const useDashboardLogic = () => {
         totalItems,
         handlePageChange,
         refresh: refreshConversations
-    } = usePagination(explorerId ? `${fetchUrl}/${explorerId}` : null, 40);
+    } = usePagination(
+      explorerId ? baseFetchUrl : null,
+      40,
+      searchTerm); 
 
     const handleTabChange = (tab) => {
       if (tab !== activeTab) {
@@ -185,7 +190,9 @@ const useDashboardLogic = () => {
       alertMessage,
       activeTab,
       handleTabChange,
-      unreadConv
+      unreadConv,
+      searchTerm,
+      setSearchTerm
     }
 }
 

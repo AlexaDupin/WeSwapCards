@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PageContainer from '../../PageContainer/PageContainer';
 import DashboardList from './DashboardList';
 import {
@@ -12,8 +12,10 @@ import './dashboardStyles.scss';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
 import useDashboardLogic from '../hooks/useDashboardLogic';
+import SearchForm from './SearchForm';
 
 function Dashboard() {
+
   const { 
     data,
     loading,
@@ -29,12 +31,14 @@ function Dashboard() {
     alertMessage,
     activeTab,
     handleTabChange,
-    unreadConv
+    unreadConv,
+    searchTerm,
+    setSearchTerm
   } = useDashboardLogic();
   return (
     <PageContainer>
       <h1 className="swap-title">Requests dashboard</h1>
-
+    <SearchForm searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
     <Nav
       activeKey={activeTab}
       onSelect={handleTabChange}
@@ -73,6 +77,7 @@ function Dashboard() {
           hiddenAlert={hiddenAlert}
           alertMessage={alertMessage}
           activeTab={activeTab}
+          searchTerm={searchTerm}
         />
       )}
 

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { axiosInstance } from '../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
 
-export const usePagination = (fetchUrl, itemsPerPage = 20) => {
+export const usePagination = (fetchUrl, itemsPerPage = 20, searchTerm = '') => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,6 +14,8 @@ export const usePagination = (fetchUrl, itemsPerPage = 20) => {
   const abortControllerRef = useRef(new AbortController());
   
   const fetchData = async () => {
+    const fullUrl = `${fetchUrl}?page=${activePage}&limit=${itemsPerPage}&search=${encodeURIComponent(searchTerm)}`;
+
     if (!fetchUrl) {
       setData([]);
       setLoading(false);
@@ -45,7 +47,7 @@ export const usePagination = (fetchUrl, itemsPerPage = 20) => {
       }
 
       const response = await axiosInstance.get(
-        `${fetchUrl}?page=${activePage}&limit=${itemsPerPage}`,
+        fullUrl,
         {
           headers: {
             Authorization: `Bearer ${token}`,
