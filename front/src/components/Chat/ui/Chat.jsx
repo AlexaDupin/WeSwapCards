@@ -8,7 +8,9 @@ import {
     Col,
     InputGroup,
     Spinner,
-    Alert
+    Alert,
+    OverlayTrigger,
+    Tooltip
 } from "react-bootstrap";
 import { ArrowClockwise } from "react-bootstrap-icons";
 
@@ -104,12 +106,22 @@ function Chat() {
                   </Button>
               </Col>
               <Col xs={3} className="d-flex justify-content-end pe-3">
-                  <Button
-                    onClick={() => handleConversationStatus(conversationId, 'In progress')}
-                    variant='secondary'
+                  <OverlayTrigger
+                    key='top'
+                    placement='top'
+                    overlay={
+                      <Tooltip>
+                          Set conversation to "In progress"
+                      </Tooltip>
+                    }
                   >
-                    <span className="send-text"><ArrowClockwise/></span>
-                  </Button>
+                    <Button
+                     onClick={() => handleConversationStatus(conversationId, 'In progress')}
+                     variant='secondary'
+                    >
+                      <span className="send-text"><ArrowClockwise/></span>
+                    </Button>
+                  </OverlayTrigger>
                 </Col>
               </Row>
               <Row className="message-input-container">
