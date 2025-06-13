@@ -79,7 +79,7 @@
     padding: 10px;
     border-top: 1px solid #ddd;
     display: flex !important;
-    justify-content: center;
+    justify-content: space-between;
   }
   
   .message-input-container {
@@ -136,5 +136,12 @@
   
     .send-button .mobile-symbol {
       display: inline-block; /* Show the '>' symbol on mobile */
+    }
+
+    .message-status {
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      display: flex !important;
+      justify-content: center;
     }
   }

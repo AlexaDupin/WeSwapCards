@@ -88,24 +88,22 @@ function Chat() {
               </Row>
             </div>
             <div>
-              <Row className="message-status">
-                <Col xs={4}>
+            <Row className="message-status align-items-center">
+              <Col xs={8} className="d-flex justify-content-end gap-5 ms-1">
                   <Button
                     onClick={() => handleConversationStatus(conversationId, 'Completed')}
                     className="chat-completed"
                   >
                     <span className="send-text">Complete</span>
                   </Button>
-                </Col>
-                <Col xs={4}>
                   <Button
                     onClick={() => handleConversationStatus(conversationId, 'Declined')}
                     variant='danger'
                   >
                     <span className="send-text">Decline</span>
                   </Button>
-                </Col>
-                <Col xs={1}>
+              </Col>
+              <Col xs={3} className="d-flex justify-content-end pe-3">
                   <Button
                     onClick={() => handleConversationStatus(conversationId, 'In progress')}
                     variant='secondary'
