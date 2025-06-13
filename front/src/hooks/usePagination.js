@@ -54,7 +54,7 @@ export const usePagination = (fetchUrl, itemsPerPage = 20, options = {}) => {
             Authorization: `Bearer ${token}`,
           },
           signal: abortController.signal,
-          timeout: 8000, // 8 second timeout
+          timeout: 8000, 
         }
       );
       // Update state only if the request is not aborted

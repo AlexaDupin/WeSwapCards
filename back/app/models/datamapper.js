@@ -406,7 +406,7 @@ module.exports = {
         };
     },
     async getCurrentConversationsOfExplorer(explorerId, page = 1, limit = 40, search = '') {
-        const sanitizedSearch = `%${search.toLowerCase()}%`;
+        const searchPattern = `%${search.toLowerCase()}%`;
 
         const countQuery = {
             text: `
@@ -424,7 +424,7 @@ module.exports = {
                 LOWER(e2.name) LIKE $2
             )
             `,
-            values: [explorerId, sanitizedSearch],
+            values: [explorerId, searchPattern],
         };
         
         const countResult = await client.query(countQuery);
@@ -486,7 +486,7 @@ module.exports = {
                 (status = 'In progress') DESC,  
                 card_name
             LIMIT $3 OFFSET $4;`,
-            values: [explorerId, sanitizedSearch, limit, offset],
+            values: [explorerId, searchPattern, limit, offset],
         };
         const result = await client.query(preparedQuery);
         return {
@@ -500,7 +500,7 @@ module.exports = {
         };
     },
     async getPastConversationsOfExplorer(explorerId, page = 1, limit = 40, search = '') {
-        const sanitizedSearch = `%${search.toLowerCase()}%`;
+        const searchPattern = `%${search.toLowerCase()}%`;
         
         const countQuery = {
             text: `
@@ -518,7 +518,7 @@ module.exports = {
                 LOWER(e2.name) LIKE $2
             )
             `,
-            values: [explorerId, sanitizedSearch],
+            values: [explorerId, searchPattern],
         };
         
         const countResult = await client.query(countQuery);
@@ -581,7 +581,7 @@ module.exports = {
                 (status = 'In progress') DESC,  
                 card_name
             LIMIT $3 OFFSET $4;`,
-            values: [explorerId, sanitizedSearch, limit, offset],
+            values: [explorerId, searchPattern, limit, offset],
         };
         const result = await client.query(preparedQuery);
         return {
