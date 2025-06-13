@@ -10,6 +10,8 @@ import {
     Spinner,
     Alert
 } from "react-bootstrap";
+import { ArrowClockwise } from "react-bootstrap-icons";
+
 import './chatStyles.scss';
 
 import useChatLogic from '../hooks/useChatLogic';
@@ -90,7 +92,6 @@ function Chat() {
                 <Col xs={4}>
                   <Button
                     onClick={() => handleConversationStatus(conversationId, 'Completed')}
-                    // variant='success'
                     className="chat-completed"
                   >
                     <span className="send-text">Complete</span>
@@ -102,6 +103,14 @@ function Chat() {
                     variant='danger'
                   >
                     <span className="send-text">Decline</span>
+                  </Button>
+                </Col>
+                <Col xs={1}>
+                  <Button
+                    onClick={() => handleConversationStatus(conversationId, 'In progress')}
+                    variant='secondary'
+                  >
+                    <span className="send-text"><ArrowClockwise/></span>
                   </Button>
                 </Col>
               </Row>
