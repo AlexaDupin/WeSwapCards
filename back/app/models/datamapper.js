@@ -511,7 +511,7 @@ module.exports = {
             WHERE (cv.creator_id = $1 OR cv.recipient_id = $1)
             AND creator_id IS NOT NULL
             AND recipient_id IS NOT NULL
-            AND status = 'Completed' OR status = 'Declined'
+            AND (status = 'Completed' OR status = 'Declined')
             AND (
                 LOWER(cv.card_name) LIKE $2 OR
                 LOWER(e1.name) LIKE $2 OR
@@ -550,7 +550,7 @@ module.exports = {
                 LEFT JOIN message m ON m.conversation_id = cv.id
                 WHERE (cv.creator_id = $1
                    OR cv.recipient_id = $1)
-                   AND status = 'Completed' OR status = 'Declined'
+                   AND (status = 'Completed' OR status = 'Declined')
                    AND (
                     LOWER(cv.card_name) LIKE $2 OR
                     LOWER(e1.name) LIKE $2 OR
@@ -563,7 +563,6 @@ module.exports = {
                     ORDER BY 
                         (unread > 0) DESC,
                         CASE WHEN unread > 0 THEN card_name END,
-                        (status = 'In progress') DESC,
                         card_name
                 ) AS row_id,
                 db_id,
@@ -578,12 +577,12 @@ module.exports = {
             ORDER BY 
                 (unread > 0) DESC,  
                 CASE WHEN unread > 0 THEN card_name END,  
-                (status = 'In progress') DESC,  
                 card_name
             LIMIT $3 OFFSET $4;`,
             values: [explorerId, searchPattern, limit, offset],
         };
         const result = await client.query(preparedQuery);
+        // console.log(totalCount, result.rows);
         return {
             conversations: result.rows,
             pagination: {
