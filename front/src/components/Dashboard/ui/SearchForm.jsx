@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     Form,
-    Button,
     InputGroup
 } from "react-bootstrap";
 import { Search } from 'react-bootstrap-icons';
@@ -19,9 +18,9 @@ function SearchForm({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <Button className="search-button" type="submit">
+        <InputGroup.Text className="search-button">
             <Search />
-        </Button>
+        </InputGroup.Text>
       </InputGroup>
     </Form>
     )

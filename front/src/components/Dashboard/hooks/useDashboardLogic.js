@@ -176,6 +176,12 @@ const useDashboardLogic = () => {
       updateLastActive();
       fetchUnreadConversations();
     }, [explorerId]);
+
+    useEffect(() => {
+      if (searchTerm.trim() === '') {
+        refreshConversations();
+      }
+    }, [searchTerm]);
     
     return {
       data,

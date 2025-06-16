@@ -24,9 +24,10 @@ function DashboardList({
     searchTerm
   }) {
 
-  const noResultsMessage = activeTab === 'in-progress'
-  ? "You do not have any ongoing requests. Start swapping!"
-  : "You do not have any past requests yet.";
+  const noResultsMessage = 
+  activeTab === 'in-progress'
+    ? "You do not have any ongoing requests. Start swapping!"
+    : "You do not have any past requests yet.";
 
   const filteredConversations = useMemo(() => {
     if (!searchTerm) {
