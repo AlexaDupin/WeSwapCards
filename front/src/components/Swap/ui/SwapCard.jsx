@@ -35,7 +35,7 @@ function SwapCard() {
     totalPages,
     handlePageChange
   } = useSwapLogic();
-  console.log(swapOpportunities);
+  // console.log(swapOpportunities);
   const renderTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
       This user has been active recently
