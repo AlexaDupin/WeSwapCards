@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { axiosInstance } from '../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
 
@@ -14,8 +14,16 @@ export const usePagination = (fetchUrl, itemsPerPage = 20, options = {}) => {
   const { getToken } = useAuth();
   const abortControllerRef = useRef(new AbortController());
   
+  const fullUrl = useMemo(() => {
+    if (!fetchUrl) return null;
+    const base = `${fetchUrl}?page=${activePage}&limit=${itemsPerPage}`;
+    return includeSearch && searchTerm 
+      ? `${base}&search=${encodeURIComponent(searchTerm)}`
+      : base;
+  }, [fetchUrl, activePage, itemsPerPage, includeSearch, searchTerm]);
+
   const fetchData = async () => {
-    const fullUrl = `${fetchUrl}?page=${activePage}&limit=${itemsPerPage}` + (includeSearch && searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '');
+    // const fullUrl = `${fetchUrl}?page=${activePage}&limit=${itemsPerPage}` + (includeSearch && searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '');
 
     if (!fetchUrl) {
       setData([]);
@@ -118,6 +126,12 @@ export const usePagination = (fetchUrl, itemsPerPage = 20, options = {}) => {
   useEffect(() => {
     fetchData();
   }, [fetchUrl, activePage, itemsPerPage]);
+
+  useEffect(() => {
+    if (!fetchUrl) return;
+    fetchData();
+    setActivePage(1);
+  }, [searchTerm]);
   
   return {
     data,

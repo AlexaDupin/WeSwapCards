@@ -177,12 +177,6 @@ const useDashboardLogic = () => {
       fetchUnreadConversations();
     }, [explorerId]);
 
-    useEffect(() => {
-      if (searchTerm.trim() === '') {
-        refreshConversations();
-      }
-    }, [searchTerm]);
-    
     return {
       data,
       loading,

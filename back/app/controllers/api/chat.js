@@ -134,7 +134,7 @@ const chatController = {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 40;
         const search = req.query.search || '';
-        // console.log('CHAT CTRL', explorerId);
+        // console.log('CHAT CTRL', explorerId, search);
 
             try {
                 const result = await datamapper.getPastConversationsOfExplorer(explorerId, page, limit, search);
