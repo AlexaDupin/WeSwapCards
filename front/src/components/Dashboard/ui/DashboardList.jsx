@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
     Table,
     Dropdown,
@@ -20,25 +20,13 @@ function DashboardList({
     handleStatusChange,
     hiddenAlert,
     alertMessage,
-    activeTab,
-    searchTerm
+    activeTab
   }) {
 
   const noResultsMessage = 
   activeTab === 'in-progress'
     ? "You do not have any ongoing requests. Start swapping!"
     : "You do not have any past requests yet.";
-
-  // const filteredConversations = useMemo(() => {
-  //   if (!searchTerm) {
-  //     return data.conversations;
-  //   }
-
-  //   return data.conversations.filter(cv =>
-  //     cv.card_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     cv.swap_explorer.toLowerCase().includes(searchTerm.toLowerCase())
-  //   );
-  // }, [searchTerm, data.conversations]);
 
     return (
         <>
