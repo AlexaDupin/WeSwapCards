@@ -5,6 +5,7 @@ import { axiosInstance } from '../../../helpers/axiosInstance';
 import { useStateContext } from '../../../contexts/StateContext';
 import { useDispatchContext } from '../../../contexts/DispatchContext';
 import { usePagination } from '../../../hooks/usePagination';
+import { useDebounce } from '../../../hooks/useDebounce';
 
 const useDashboardLogic = () => {
     const state = useStateContext();
@@ -18,6 +19,7 @@ const useDashboardLogic = () => {
     const [activeTab, setActiveTab] = useState('in-progress');
     const [unreadConv, setUnreadConv] = useState({ inProgress: 0, past: 0});
     const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearch = useDebounce(searchTerm, 300);
 
     const baseFetchUrl =
     activeTab === 'in-progress'
@@ -38,7 +40,7 @@ const useDashboardLogic = () => {
     } = usePagination(
       explorerId ? baseFetchUrl : null,
       40,
-      { searchTerm, includeSearch: true }
+      { searchTerm: debouncedSearch, includeSearch: true }
     ); 
 
     const handleTabChange = (tab) => {
