@@ -47,6 +47,7 @@ const useDashboardLogic = () => {
       if (tab !== activeTab) {
         setActiveTab(tab);
         setActivePage(1);
+        fetchUnreadConversations();
       }
     }
     
