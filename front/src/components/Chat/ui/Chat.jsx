@@ -8,8 +8,12 @@ import {
     Col,
     InputGroup,
     Spinner,
-    Alert
+    Alert,
+    OverlayTrigger,
+    Tooltip
 } from "react-bootstrap";
+import { ArrowClockwise } from "react-bootstrap-icons";
+
 import './chatStyles.scss';
 
 import useChatLogic from '../hooks/useChatLogic';
@@ -86,23 +90,38 @@ function Chat() {
               </Row>
             </div>
             <div>
-              <Row className="message-status">
-                <Col xs={4}>
+            <Row className="message-status align-items-center">
+              <Col xs={8} className="d-flex justify-content-end gap-5 ms-1">
                   <Button
                     onClick={() => handleConversationStatus(conversationId, 'Completed')}
-                    // variant='success'
                     className="chat-completed"
                   >
                     <span className="send-text">Complete</span>
                   </Button>
-                </Col>
-                <Col xs={4}>
                   <Button
                     onClick={() => handleConversationStatus(conversationId, 'Declined')}
                     variant='danger'
                   >
                     <span className="send-text">Decline</span>
                   </Button>
+              </Col>
+              <Col xs={3} className="d-flex justify-content-end pe-3">
+                  <OverlayTrigger
+                    key='top'
+                    placement='top'
+                    overlay={
+                      <Tooltip>
+                          Set conversation to "In progress"
+                      </Tooltip>
+                    }
+                  >
+                    <Button
+                     onClick={() => handleConversationStatus(conversationId, 'In progress')}
+                     variant='secondary'
+                    >
+                      <span className="send-text"><ArrowClockwise/></span>
+                    </Button>
+                  </OverlayTrigger>
                 </Col>
               </Row>
               <Row className="message-input-container">

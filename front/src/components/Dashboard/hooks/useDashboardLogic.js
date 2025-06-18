@@ -5,6 +5,7 @@ import { axiosInstance } from '../../../helpers/axiosInstance';
 import { useStateContext } from '../../../contexts/StateContext';
 import { useDispatchContext } from '../../../contexts/DispatchContext';
 import { usePagination } from '../../../hooks/usePagination';
+import { useDebounce } from '../../../hooks/useDebounce';
 
 const useDashboardLogic = () => {
     const state = useStateContext();
@@ -15,6 +16,15 @@ const useDashboardLogic = () => {
 
     const [hiddenAlert, setHiddenAlert] = useState(true);
     const [alertMessage, setAlertMessage] = useState('');
+    const [activeTab, setActiveTab] = useState('in-progress');
+    const [unreadConv, setUnreadConv] = useState({ inProgress: 0, past: 0});
+    const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearch = useDebounce(searchTerm, 300);
+
+    const baseFetchUrl =
+    activeTab === 'in-progress'
+      ? `/conversation/${explorerId}`
+      : `/conversation/past/${explorerId}`;
 
     const { 
         data,
@@ -22,11 +32,24 @@ const useDashboardLogic = () => {
         loading, 
         error,
         activePage, 
+        setActivePage,
         totalPages, 
         totalItems,
         handlePageChange,
         refresh: refreshConversations
-    } = usePagination(explorerId ? `/conversation/${explorerId}` : null, 40);
+    } = usePagination(
+      explorerId ? baseFetchUrl : null,
+      40,
+      { searchTerm: debouncedSearch, includeSearch: true }
+    ); 
+
+    const handleTabChange = (tab) => {
+      if (tab !== activeTab) {
+        setActiveTab(tab);
+        setActivePage(1);
+        fetchUnreadConversations();
+      }
+    }
     
     // Show alert when error occurs
     useEffect(() => {
@@ -72,7 +95,7 @@ const useDashboardLogic = () => {
     };
 
     const handleStatusChange = async (conversationId, newStatus) => {
-        const updated = data.map((conv) =>
+        const updated = data.conversations.map((conv) =>
           conv.db_id === conversationId ? { ...conv, status: newStatus } : conv
         );
         setData(updated);
@@ -87,6 +110,7 @@ const useDashboardLogic = () => {
             },
           });
         refreshConversations();
+        fetchUnreadConversations();
       } catch (error) {
         // console.error('Error updating status:', error);
       }
@@ -128,16 +152,36 @@ const useDashboardLogic = () => {
         
     };
 
+    const fetchUnreadConversations = async () => {
+      try {
+        const token = await getToken();
+
+        const response = await axiosInstance.get(
+          `/conversation/unread/${explorerId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+        });
+        setUnreadConv(response.data);        
+        
+      } catch (error) {
+        // console.error("Error fetching unread counts", error);
+      }
+    }
+
     useEffect(() => {
       if (!explorerId) {
         navigate('/login/redirect', { state: { from: "/swap/dashboard" } });
         return;
       }
       updateLastActive();
+      fetchUnreadConversations();
     }, [explorerId]);
-    
+
     return {
-      conversations: data,
+      data,
       loading,
       activePage,
       totalPages,
@@ -148,6 +192,11 @@ const useDashboardLogic = () => {
       handleStatusChange,
       hiddenAlert,
       alertMessage,
+      activeTab,
+      handleTabChange,
+      unreadConv,
+      searchTerm,
+      setSearchTerm
     }
 }
 

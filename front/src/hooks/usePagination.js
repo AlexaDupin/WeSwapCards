@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { axiosInstance } from '../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
 
-export const usePagination = (fetchUrl, itemsPerPage = 20) => {
+export const usePagination = (fetchUrl, itemsPerPage = 20, options = {}) => {
+  const { searchTerm = '', includeSearch = false } = options;
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,8 +13,10 @@ export const usePagination = (fetchUrl, itemsPerPage = 20) => {
   
   const { getToken } = useAuth();
   const abortControllerRef = useRef(new AbortController());
-  
+
   const fetchData = async () => {
+    const fullUrl = `${fetchUrl}?page=${activePage}&limit=${itemsPerPage}` + (includeSearch && searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '');
+
     if (!fetchUrl) {
       setData([]);
       setLoading(false);
@@ -24,7 +27,6 @@ export const usePagination = (fetchUrl, itemsPerPage = 20) => {
     }
 
     try {
-      // setLoading(true);
       setError(null);
       
       // Abort the previous fetch request if it exists
@@ -45,27 +47,19 @@ export const usePagination = (fetchUrl, itemsPerPage = 20) => {
       }
 
       const response = await axiosInstance.get(
-        `${fetchUrl}?page=${activePage}&limit=${itemsPerPage}`,
+        fullUrl,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
           signal: abortController.signal,
-          timeout: 8000, // 8 second timeout
+          timeout: 8000, 
         }
       );
-
       // Update state only if the request is not aborted
       if (abortController.signal.aborted) return;
-
-      // Set data based on response format
-      if (response.data.items) {
-        setData(response.data.items);
-      } else if (response.data.conversations) {
-        setData(response.data.conversations);
-      } else {
-        setData(response.data);
-      }
+      
+      setData(response.data);
 
       // Set pagination info if available
       if (response.data.pagination) {
@@ -93,7 +87,7 @@ export const usePagination = (fetchUrl, itemsPerPage = 20) => {
       }
       
       // console.error("Pagination error:", err);
-      
+
       // Keep existing data on error to allow retry without losing state
     } finally {
       // Always update loading state unless request was aborted
@@ -123,6 +117,12 @@ export const usePagination = (fetchUrl, itemsPerPage = 20) => {
   useEffect(() => {
     fetchData();
   }, [fetchUrl, activePage, itemsPerPage]);
+
+  useEffect(() => {
+    if (!fetchUrl) return;
+    fetchData();
+    setActivePage(1);
+  }, [searchTerm]);
   
   return {
     data,

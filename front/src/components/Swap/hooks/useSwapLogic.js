@@ -109,7 +109,7 @@ const useSwapLogic = () => {
     } = usePagination(
       state.selectedCardId ? `/opportunities/${explorerId}/card/${state.selectedCardId}` : '', 
       20
-    );
+      );
 
     const fetchSwapOpportunities = async (cardId) => {
       dispatch({

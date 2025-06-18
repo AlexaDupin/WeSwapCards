@@ -147,7 +147,7 @@ module.exports = {
             FROM explorer_has_cards AS ehc
             JOIN explorer ON explorer.id = ehc.explorer_id
             WHERE ehc.card_id = $1
-            AND explorer.id != $2 AND explorer.id != 1 AND explorer.id != 9 AND explorer.last_active_at > NOW() - INTERVAL '15 days'
+            AND explorer.id != $2 
             AND ehc.duplicate = true
             `,
             values: [cardId, explorerId],
@@ -164,7 +164,7 @@ module.exports = {
                 FROM explorer_has_cards AS ehc
                 JOIN explorer ON explorer.id = ehc.explorer_id
                 WHERE ehc.card_id = $1
-                AND explorer.id != $2 AND explorer.id != 1 AND explorer.id != 9 AND explorer.last_active_at > NOW() - INTERVAL '15 days'
+                AND explorer.id != $2 
                 AND ehc.duplicate = true
             ),
             explorer_duplicates AS (
@@ -238,7 +238,7 @@ module.exports = {
         };
 
         const result = await client.query(preparedQuery);
-
+        // console.log(result.rows);
         return {
             items: result.rows,
             pagination: {
@@ -375,17 +375,56 @@ module.exports = {
         }
         return 0;     
     },
-    async getAllConversationsOfExplorer(explorerId, page = 1, limit = 40) {
+    async getUnreadConversations(explorerId) {
+        const preparedQuery = {
+            text: `
+            SELECT 
+                status,
+                COUNT(DISTINCT cv.id) AS unread
+            FROM conversation cv
+            JOIN message m ON m.conversation_id = cv.id
+            WHERE (cv.creator_id = $1 OR cv.recipient_id = $1)
+              AND m.recipient_id = $1
+              AND m.read = false
+              AND cv.creator_id IS NOT NULL
+              AND cv.recipient_id IS NOT NULL
+            GROUP BY status;
+            `,
+            values: [explorerId],
+        };
+        
+        const result = await client.query(preparedQuery);
+
+        const counts = result.rows.reduce((acc, row) => {
+            acc[row.status] = parseInt(row.unread);
+            return acc;
+          }, {});
+
+        return {
+          inProgress: counts['In progress'] || 0,
+          past: (counts['Completed'] || 0) + (counts['Declined'] || 0),
+        };
+    },
+    async getCurrentConversationsOfExplorer(explorerId, page = 1, limit = 40, search = '') {
+        const searchPattern = `%${search.toLowerCase()}%`;
+
         const countQuery = {
             text: `
             SELECT COUNT(*) 
             FROM conversation cv
-            WHERE cv.creator_id = $1 
-            OR cv.recipient_id = $1
+            JOIN explorer e1 ON e1.id = cv.creator_id
+            JOIN explorer e2 ON e2.id = cv.recipient_id
+            WHERE (cv.creator_id = $1 OR cv.recipient_id = $1)
             AND creator_id IS NOT NULL
             AND recipient_id IS NOT NULL
+            AND status = 'In progress'
+            AND (
+                LOWER(cv.card_name) LIKE $2 OR
+                LOWER(e1.name) LIKE $2 OR
+                LOWER(e2.name) LIKE $2
+            )
             `,
-            values: [explorerId],
+            values: [explorerId, searchPattern],
         };
         
         const countResult = await client.query(countQuery);
@@ -415,8 +454,13 @@ module.exports = {
                 JOIN explorer e1 ON e1.id = cv.creator_id
                 JOIN explorer e2 ON e2.id = cv.recipient_id
                 LEFT JOIN message m ON m.conversation_id = cv.id
-                WHERE cv.creator_id = $1
-                   OR cv.recipient_id = $1
+                WHERE (cv.creator_id = $1 OR cv.recipient_id = $1)
+                   AND status = 'In progress'
+                   AND (
+                    LOWER(cv.card_name) LIKE $2 OR
+                    LOWER(e1.name) LIKE $2 OR
+                    LOWER(e2.name) LIKE $2
+                   )
                 GROUP BY cv.id, e2.name, e1.name, e2.id, e1.id
             )
             SELECT 
@@ -441,8 +485,8 @@ module.exports = {
                 CASE WHEN unread > 0 THEN card_name END,  
                 (status = 'In progress') DESC,  
                 card_name
-            LIMIT $2 OFFSET $3;`,
-            values: [explorerId, limit, offset],
+            LIMIT $3 OFFSET $4;`,
+            values: [explorerId, searchPattern, limit, offset],
         };
         const result = await client.query(preparedQuery);
         return {
@@ -453,6 +497,100 @@ module.exports = {
                 totalItems: totalCount,
                 itemsPerPage: limit
             }
+        };
+    },
+    async getPastConversationsOfExplorer(explorerId, page = 1, limit = 40, search = '') {
+        const searchPattern = `%${search.toLowerCase()}%`;
+        
+        const countQuery = {
+            text: `
+            SELECT COUNT(*) 
+            FROM conversation cv
+            JOIN explorer e1 ON e1.id = cv.creator_id
+            JOIN explorer e2 ON e2.id = cv.recipient_id
+            WHERE (cv.creator_id = $1 OR cv.recipient_id = $1)
+            AND creator_id IS NOT NULL
+            AND recipient_id IS NOT NULL
+            AND (status = 'Completed' OR status = 'Declined')
+            AND (
+                LOWER(cv.card_name) LIKE $2 OR
+                LOWER(e1.name) LIKE $2 OR
+                LOWER(e2.name) LIKE $2
+            )
+            `,
+            values: [explorerId, searchPattern],
+        };
+        
+        const countResult = await client.query(countQuery);
+        const totalCount = parseInt(countResult.rows[0].count);
+        
+        const offset = (page - 1) * limit;
+        
+        const preparedQuery = {
+            text: `
+            WITH ranked_conversations AS (
+                SELECT 
+                    cv.id AS db_id,
+                    cv.card_name,
+                    CASE
+                        WHEN cv.creator_id = $1 THEN e2.name
+                        WHEN cv.recipient_id = $1 THEN e1.name
+                    END AS swap_explorer,
+                    CASE
+                        WHEN cv.creator_id = $1 THEN e2.id
+                        WHEN cv.recipient_id = $1 THEN e1.id
+                    END AS swap_explorer_id,
+                    cv.creator_id,
+                    cv.recipient_id,
+                    cv.status,
+                    COUNT(m.id) FILTER (WHERE m.read = false AND m.recipient_id = $1) AS unread
+                FROM conversation cv
+                JOIN explorer e1 ON e1.id = cv.creator_id
+                JOIN explorer e2 ON e2.id = cv.recipient_id
+                LEFT JOIN message m ON m.conversation_id = cv.id
+                WHERE (cv.creator_id = $1
+                   OR cv.recipient_id = $1)
+                   AND (status = 'Completed' OR status = 'Declined')
+                   AND (
+                    LOWER(cv.card_name) LIKE $2 OR
+                    LOWER(e1.name) LIKE $2 OR
+                    LOWER(e2.name) LIKE $2
+                   )
+                GROUP BY cv.id, e2.name, e1.name, e2.id, e1.id
+            )
+            SELECT 
+                ROW_NUMBER() OVER (
+                    ORDER BY 
+                        (unread > 0) DESC,
+                        CASE WHEN unread > 0 THEN card_name END,
+                        card_name
+                ) AS row_id,
+                db_id,
+                card_name,
+                swap_explorer,
+                swap_explorer_id,
+                status,
+                creator_id,
+                recipient_id,
+                unread
+            FROM ranked_conversations
+            ORDER BY 
+                (unread > 0) DESC,  
+                CASE WHEN unread > 0 THEN card_name END,  
+                card_name
+            LIMIT $3 OFFSET $4;`,
+            values: [explorerId, searchPattern, limit, offset],
+        };
+        const result = await client.query(preparedQuery);
+        // console.log(totalCount, result.rows);
+        return {
+            conversations: result.rows,
+            pagination: {
+                currentPage: page,
+                totalPages: Math.ceil(totalCount / limit),
+                totalItems: totalCount,
+                itemsPerPage: limit
+            }        
         };
     },
     async editConversationStatus(conversationId, status) {

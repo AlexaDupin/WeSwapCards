@@ -4,7 +4,7 @@
   display: flex;
   justify-content: space-between;
   flex-direction: column;
-  height: 80vh;
+  height: 70vh;
   max-width: 600px;
   margin: 0 auto;
   background-color: #f4f7fc;
@@ -79,7 +79,7 @@
     padding: 10px;
     border-top: 1px solid #ddd;
     display: flex !important;
-    justify-content: center;
+    justify-content: space-between;
   }
   
   .message-input-container {
@@ -105,9 +105,9 @@
     border-radius: 25px;
   }
 
-  .send-button:hover {
-    background-color: #0056b3;
-  }
+  // .send-button:hover {
+  //   background-color: #0056b3;
+  // }
 
   .w-100 {
     width: 100%;
@@ -136,5 +136,12 @@
   
     .send-button .mobile-symbol {
       display: inline-block; /* Show the '>' symbol on mobile */
+    }
+
+    .message-status {
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      display: flex !important;
+      justify-content: center;
     }
   }
