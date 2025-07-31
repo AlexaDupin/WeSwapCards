@@ -15,6 +15,7 @@ const reportController = {
 
         try {
             const cards = await datamapper.getAllCardsFromOnePlace(placeId);
+            // console.log(cards);
             res.json({ cards });
         } catch (error) {
             res.status(500).send(error);

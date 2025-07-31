@@ -23,6 +23,7 @@ module.exports = {
             values: [placeId],
         };
         const result = await client.query(preparedQuery);
+        // console.log(result);
         return result.rows;
     },
     async getCardsFromOneExplorerInOnePlace(placeId, explorerId) {
