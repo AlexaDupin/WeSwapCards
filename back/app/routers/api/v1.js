@@ -9,6 +9,7 @@ const opportunitiesController = require('../../controllers/api/opportunities');
 const explorerCardsController = require('../../controllers/api/explorerCards');
 const chatController = require('../../controllers/api/chat');
 const apiController = require('../../controllers/api/index');
+const cardController = require('../../native/cardController');
 
 const controllerHandler = require('../../helpers/controllerHandler');
 
@@ -111,5 +112,9 @@ router
 // router
 //     .route('/opportunities/:explorerId/swapexplorer/:swapExplorerId')
 //     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findSwapOpportunities));
+
+router
+    .route('/cards')
+    .get(controllerHandler(cardController.getAllCards))
 
 module.exports = router;

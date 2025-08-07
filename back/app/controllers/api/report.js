@@ -5,6 +5,7 @@ const reportController = {
             //console.log("ENTERING PLACES");
             try {
                 const places = await datamapper.getAllPlaces();
+                console.log(places);
                 res.json({places});
             } catch (error) {
                 res.status(500).send(error);
@@ -15,6 +16,7 @@ const reportController = {
 
         try {
             const cards = await datamapper.getAllCardsFromOnePlace(placeId);
+            // console.log(cards);
             res.json({ cards });
         } catch (error) {
             res.status(500).send(error);

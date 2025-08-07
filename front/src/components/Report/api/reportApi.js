@@ -15,6 +15,7 @@ export const fetchCardsForPlace = async (placeId, token) => {
           Authorization: `Bearer ${token}`,
         },
     });
+    // console.log(response);
     return response.data.cards;
 }
 
