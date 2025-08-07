@@ -115,6 +115,6 @@ router
 
 router
     .route('/cards')
-    .get(controllerHandler(cardController.getAllCards))
+    .get(requireAuth(), controllerHandler(cardController.getAllCards))
 
 module.exports = router;
