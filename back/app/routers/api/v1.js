@@ -28,6 +28,10 @@ router
     .get(controllerHandler(reportController.getAllPlaces))
 
 router
+    .route('/cards/statuses/:explorerId')
+    .get(requireAuth(), controllerHandler(cardController.getAllCardsStatuses));
+
+router
     .route('/cards/:placeId')
     .get(requireAuth(), controllerHandler(reportController.getCardsFromPlace));
 
@@ -117,8 +121,6 @@ router
     .route('/cards')
     .get(requireAuth(), controllerHandler(cardController.getAllCards))
 
-router
-    .route('/cards/statuses/:explorerId')
-    .get(requireAuth(), controllerHandler(cardController.getAllCardsStatuses));
+
 
 module.exports = router;

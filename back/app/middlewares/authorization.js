@@ -5,8 +5,8 @@ const datamapper = require("../models/datamapper");
 const checkExplorerAuthorization = async (req, res, next) => {
   const explorerId = Number(req.params.explorerId);
   const clerkUserId = req.auth.userId;
-//   console.log("AUTH MDLW explorerId", explorerId);
-//   console.log("AUTH MDLW clerkUserId", clerkUserId);
+  console.log("AUTH MDLW explorerId", explorerId);
+  console.log("AUTH MDLW clerkUserId", clerkUserId);
 
   try {
     // Fetch the user from the database based on Clerk's `userId`
