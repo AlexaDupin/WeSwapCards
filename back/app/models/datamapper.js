@@ -68,7 +68,7 @@ module.exports = {
         }
         return null;    
     },
-    async createExplorerHasCard(data) {
+    async createExplorerHasCard(data) {    
         const preparedQuery = await client.query(
             `
         INSERT INTO "explorer_has_cards"
@@ -77,8 +77,24 @@ module.exports = {
         `,
             [data.explorerId, data.cardId, data.duplicate],
         );
+        // console.log(preparedQuery);
         return preparedQuery.rows[0];
     },
+    async upsertExplorerHasCard(data) {
+        const preparedQuery = await client.query(
+         `INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
+          VALUES ($1, $2, $3)
+          ON CONFLICT (explorer_id, card_id)
+          DO UPDATE
+            SET duplicate = EXCLUDED.duplicate
+          WHERE explorer_has_cards.duplicate IS DISTINCT FROM EXCLUDED.duplicate
+          RETURNING explorer_id, card_id, duplicate
+          `,
+          [data.explorerId, data.cardId, data.duplicate],
+        );
+        const { rows } = await preparedQuery;
+        return { explorerId: data.explorerId, cardId: data.cardId, duplicate: data.duplicate, changed: rows.length > 0 };
+    },      
     async checkDuplicateStatus(explorerId, cardId) {
         const preparedQuery = {
             text: `
@@ -108,6 +124,8 @@ module.exports = {
         return result.rows;
     },
     async deleteCardFromExplorerHasCard(explorerId, cardId) {
+        console.log("DTMP DELETE1");
+
         const preparedQuery = {
             text: `
             DELETE FROM explorer_has_cards
@@ -116,9 +134,9 @@ module.exports = {
             `,
             values: [explorerId, cardId]
         };
-        // return preparedQuery.rows[0];
         const result = await client.query(preparedQuery);
-        return result.rows;
+        console.log("DTMP DELETE", result);
+        return { explorerId, cardId, changed: result.rowCount > 0 };
     },
     async getOpportunitiesForOneExplorer(explorerId) {
         const preparedQuery = {
@@ -736,6 +754,8 @@ module.exports = {
         return result.rows;
     },
     async editDuplicateStatus(explorerId, cardId, newDuplicateData) {
+        // console.log(explorerId, cardId, newDuplicateData);
+
         const preparedQuery = {
             text: `
             UPDATE explorer_has_cards
@@ -746,7 +766,7 @@ module.exports = {
             values: [explorerId, cardId, newDuplicateData]
         };
         const result = await client.query(preparedQuery);
-        //console.log(result.command);
+        // console.log(result.command);
     },
     
 

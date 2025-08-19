@@ -101,6 +101,12 @@ router
     .route('/explorercards/:explorerId')
     .get(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.getExplorerCardsByPlace));
 
+// Native    
+router
+    .route('/explorercards/:explorerId/cards/:cardId')
+    .put(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.addCardToExplorer))
+    .delete(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.deleteCardFromExplorer));
+
 router
     .route('/explorercards/:explorerId/cards/:cardId/duplicate')
     .patch(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.editDuplicateStatus));
