@@ -1,21 +1,43 @@
 @use 'src/styles/vars';
 
+
+.home-section {
+    display: flex;
+    justify-content: space-between; 
+}
+
+.home-section-left {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+}
+
+.home-section-left-image {
+    width: 50%;
+}
+
 .home-title {
-    font-size: 1.5rem;    
-    margin-top: 1rem;
+    font-size: 3.5rem;    
+    margin-top: 3rem;
+}
+
+.home-text {
+    font-size: 1.3rem; 
+    font-weight: 300
 }
 
 .home-disclaimer {
-    font-size: 0.7rem; 
+    font-size: .9rem; 
 }
 
 .home-steps {
+    margin-top: 10rem;
     display: flex;
     flex-direction: column;
 }
 
 .home-subtitle {
-    font-size: 1rem;
+    font-size: 1.3rem;
 }
 
 .home-image {

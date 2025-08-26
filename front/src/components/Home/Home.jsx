@@ -11,6 +11,7 @@ import Search from '../../images/searchPL.svg';
 import Users from '../../images/usersPL.svg';
 import Chat from '../../images/chatdealPL.svg';
 import Dashboard from '../../images/dashboardPL.svg';
+import Logo from '../../images/favImage.png';
 
 import './homeStyles.scss';
 
@@ -29,16 +30,22 @@ function Home() {
 
   return (
   <PageContainer>
-    <section>
-      <h1 className="home-title">Welcome to WeSwapCards!</h1><br />
-      <p>You use the WeWard app and want to exchange cards easily? This is the place for you!</p>
-      <p>Create an account and start searching for the cards you need!</p>
-      <p className="home-disclaimer">This platform is <strong>not</strong> affiliated in any way with the official WeWard app.</p><br />
+    <section className="home-section">
+      <div className="home-section-left">
+        <img src={Logo} alt="WeSwapCards logo" className="home-section-left-image"/>
+      </div>
 
-      <CustomButton 
-          text="Create an account"
-          href="/register"
-      /><br /><br />
+      <div className="home-section-right">
+        <h1 className="home-title">Welcome to WeSwapCards!</h1><br />
+        <p className="home-text">You use the WeWard app and want to exchange cards easily?<br />This is the place for you!</p>
+        <p className="home-text">Create an account and start searching for the cards you need!</p>
+        <p className="home-disclaimer">This platform is <strong>not</strong> affiliated in any way with the official WeWard app.</p><br />
+
+        <CustomButton 
+            text="Create an account"
+            href="/register"
+        /><br /><br />
+      </div>
     </section>
 
     <section className="home-steps">     
