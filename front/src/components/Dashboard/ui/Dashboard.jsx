@@ -37,7 +37,7 @@ function Dashboard() {
   } = useDashboardLogic();
   return (
     <PageContainer>
-      <h1 className="swap-title">Requests dashboard</h1>
+      <h1 className="page-title">Requests dashboard</h1>
     <SearchForm searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
     <Nav
       activeKey={activeTab}

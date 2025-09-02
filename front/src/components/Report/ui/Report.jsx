@@ -37,7 +37,7 @@ function Report() {
 
   return (
     <PageContainer>
-      <h1 className="swap-title">Report my cards</h1>
+      <h1 className="page-title">Report my cards</h1>
     
       {state.alert.message && (
       <Alert

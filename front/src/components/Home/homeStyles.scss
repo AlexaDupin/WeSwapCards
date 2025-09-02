@@ -1,5 +1,11 @@
 @use 'src/styles/vars';
 
+.home {
+    width: 90% !important; 
+    flex: 1;
+    margin-bottom: 1rem;
+    padding-top: 7rem !important;
+}
 
 .home-section {
     display: flex;
@@ -69,6 +75,13 @@
 
 
 @media (min-width: 576px) and (max-width: 991px) { /* This targets medium screens */
+    .home {
+        width: 90% !important; 
+        flex: 1;
+        margin-bottom: 1rem;
+        padding-top: 7rem !important;
+    }
+    
     .home-section {
         display: flex;
         flex-direction: column;
@@ -121,10 +134,17 @@
 }
 
 @media (min-width: 992px) { /* This targets larger screens */
+    .home {
+        width: 90% !important; 
+        flex: 1;
+        margin-bottom: 1rem;
+        padding-top: 7rem !important;
+    }
+    
     .home-section {
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
+        justify-content: space-evenly;
         align-items: center;
         min-height: 80vh;
     }

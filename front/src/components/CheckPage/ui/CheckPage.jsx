@@ -16,7 +16,7 @@ function CheckPage() {
 
   return (
     <PageContainer>
-      <h1 className="swap-title">All my cards</h1>
+      <h1 className="page-title">All my cards</h1>
 
       {state.loading &&
         <><Spinner

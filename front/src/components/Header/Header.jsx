@@ -42,7 +42,7 @@ function Header() {
               </NavDropdown.Item>
               {/* <NavDropdown.Item as={Link} to="/swap/opportunities">All opportunities</NavDropdown.Item> */}
             </NavDropdown>
-            <NavDropdown title="My cards" id="basic-nav-dropdown" className="header-nav-item">
+            <NavDropdown title="My cards" id="basic-nav-dropdown" className="header-nav-item mr-3">
               <NavDropdown.Item as={Link} to="/report">Report my cards</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/check">
                 Check all my cards

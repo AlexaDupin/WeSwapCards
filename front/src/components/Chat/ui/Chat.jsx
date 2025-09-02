@@ -50,7 +50,7 @@ function Chat() {
       }
 
       {!loading &&
-        <><h1 className="chat-title">Chat with {swapExplorerName} - {swapCardName}</h1>
+        <><h1 className="page-title">Chat with {swapExplorerName} - {swapCardName}</h1>
         
         <Alert
           variant='danger'

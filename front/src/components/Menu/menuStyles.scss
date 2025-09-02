@@ -93,13 +93,13 @@
     .menu-info {
         position: absolute;
         top: 18px;
-        right: 35px;
+        right: -5px;
         width: 17px;
         height: auto;
 
         &-check {
             top: 18px;
-            right: 7px;
+            right: -25px;
             width: 17px;
         }
     }
@@ -109,14 +109,14 @@
 @media (min-width: 1200px) { /* This targets extra large screens */
     .menu-info {
         position: absolute;
-        top: 16px;
-        right: 45px;
+        top: 18px;
+        right: -5px;
         width: 17px;
         height: auto;
 
         &-check {
-            top: 5px;
-            right: 10px;
+            top: 18px;
+            right: -20px;
             width: 17px;
         }
     }

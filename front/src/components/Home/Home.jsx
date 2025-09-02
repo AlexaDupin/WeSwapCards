@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import PageContainer from '../PageContainer/PageContainer';
 import { useUser } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
+import { Container } from "react-bootstrap";
 
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 import CustomButton from '../CustomButton/CustomButton';
@@ -63,7 +64,7 @@ function Home() {
     }, []);
 
   return (
-  <PageContainer>
+  <Container className="home">
     <section data-reveal-container className="home-section">
       <div className="home-section-left reveal">
         <img src={Logo} alt="WeSwapCards logo" className="home-section-left-image"/>
@@ -71,7 +72,7 @@ function Home() {
 
       <div className="home-section-right reveal">
         <h1 className="home-title">Welcome to WeSwapCards!</h1><br />
-        <p className="home-text">You use the WeWard app and want to exchange cards easily?<br />This is the place for you!</p>
+        <p className="home-text">You use WeWard and want to exchange WeCards easily?<br />This is the place for you!</p>
         <p className="home-text">Create an account and start searching for the cards you need!</p>
         <p className="home-disclaimer">This platform is <strong>not</strong> affiliated in any way with the official WeWard app.</p><br />
 
@@ -113,7 +114,7 @@ function Home() {
 
     <ScrollToTop />
   
-  </ PageContainer>
+  </ Container>
 )
 }
 

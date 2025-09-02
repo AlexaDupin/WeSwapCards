@@ -44,7 +44,7 @@ function SwapCard() {
 
   return (
   <PageContainer>
-      <h1 className="swap-title">Find a card</h1>
+      <h1 className="page-title">Find a card</h1>
 
       {state.alert.message && (
           <Alert

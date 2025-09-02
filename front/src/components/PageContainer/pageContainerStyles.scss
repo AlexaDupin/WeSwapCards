@@ -8,7 +8,6 @@
 
 .page-title {
     font-weight: bold;
-    font-style: italic;        
     color: vars.$primary-color !important;
     font-size: 1.3rem !important;
     text-align: left;
@@ -21,7 +20,7 @@
 
 @media (min-width: 768px) { /* This targets medium screens */
     .page-container {
-        width: 90% !important; 
+        width: 50% !important; 
     }
 }
 
