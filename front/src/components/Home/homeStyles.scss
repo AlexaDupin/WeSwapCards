@@ -3,7 +3,8 @@
 
 .home-section {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: space-evenly;    
     align-items: center;
     min-height: 80vh;
 }
@@ -15,15 +16,15 @@
 }
 
 .home-section-left-image {
-    width: 50%;
+    width: 20%;
 }
 
 .home-title {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
 }
 
 .home-text {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 300
 }
 
@@ -39,7 +40,9 @@
 }
 
 .home-subtitle {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 3rem;
 }
 
 .home-image {
@@ -64,26 +67,11 @@
 }
 
 
-@media (min-width: 600px) and (max-width: 899px) { /* This targets medium screens */
-    // .home-steps {
-    //     display: flex !important;
-    //     flex-direction: row !important;
-    //     flex-wrap: wrap;
-    //     justify-content: space-evenly;
-    // }
-
-    // .home-image {
-    //     width: 50%;
-    //     height: 60%;
-    // }
-
-    // .home-image-section {
-    //     width: 40%;
-    // }
-
+@media (min-width: 576px) and (max-width: 991px) { /* This targets medium screens */
     .home-section {
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
+        justify-content: space-evenly;
         align-items: center;
         min-height: 80vh;
     }
@@ -95,7 +83,7 @@
     }
     
     .home-section-left-image {
-        width: 50%;
+        width: 30%;
     }
     
     .home-title {
@@ -120,6 +108,8 @@
     
     .home-subtitle {
         font-size: 1.3rem;
+        margin-top: 2rem;
+        margin-bottom: 6rem;
     }
     
     .home-image {
@@ -128,7 +118,7 @@
 
 }
 
-@media (min-width: 900px) { /* This targets larger screens */
+@media (min-width: 992px) { /* This targets larger screens */
     .home-section {
         display: flex;
         justify-content: space-between;
@@ -147,11 +137,11 @@
     }
     
     .home-title {
-        font-size: 2.7rem;
+        font-size: 2.5rem;
     }
     
     .home-text {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
         line-height: 2em;
         font-weight: 300 !important;
     }
@@ -170,12 +160,12 @@
     }
      
     .home-subtitle {
-        font-size: 1.4rem;
+        font-size: 1.2rem;
         margin-top: 1rem;
     }
 
     .home-image {
-        width: 70%;
+        width: 60%;
         height: 60%;
     }
 
