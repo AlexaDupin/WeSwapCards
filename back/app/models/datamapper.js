@@ -124,8 +124,6 @@ module.exports = {
         return result.rows;
     },
     async deleteCardFromExplorerHasCard(explorerId, cardId) {
-        console.log("DTMP DELETE1");
-
         const preparedQuery = {
             text: `
             DELETE FROM explorer_has_cards
@@ -135,7 +133,7 @@ module.exports = {
             values: [explorerId, cardId]
         };
         const result = await client.query(preparedQuery);
-        console.log("DTMP DELETE", result);
+        // console.log("DTMP DELETE", result);
         return { explorerId, cardId, changed: result.rowCount > 0 };
     },
     async getOpportunitiesForOneExplorer(explorerId) {
