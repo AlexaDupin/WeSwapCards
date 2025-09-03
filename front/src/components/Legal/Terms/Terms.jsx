@@ -11,7 +11,7 @@ function Terms() {
     <div className="legal">
       <section>
         <h1 className="page-title">Terms and Conditions</h1>
-        <p><strong>Effective Date:</strong> February 14, 2025</p>
+        <p><strong>Effective Date:</strong> September 3, 2025</p>
         <p>Welcome to WeSwapCards ("we," "us," or "our"). By using our website www.weswapcards.com (the "Site"), you agree to comply with and be bound by these Terms and Conditions ("Terms"). If you do not agree to these Terms, please do not use the Site. These Terms apply to all users of the Site, including visitors, registered users, and those who access or use the Site's services.</p>
       </section>
 
@@ -102,7 +102,7 @@ function Terms() {
 
       <section>
         <h2 className="legal-title">8. Termination</h2>
-        <p>We reserve the right to suspend or terminate your account at our discretion if we believe you have violated these Terms or engaged in any unlawful or inappropriate behavior. Upon termination, your right to access and use the Site will be immediately revoked.</p>
+        <p>We reserve the right to suspend or terminate your account at our discretion if we believe you have violated these Terms or engaged in any unlawful or inappropriate behavior, including but not limited to fraudulent activity, failure to send agreed cards, or other wrongful conduct related to swaps. Upon termination, your right to access and use the Site will be immediately revoked.</p>
       </section>
 
       <section>

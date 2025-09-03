@@ -11,7 +11,7 @@ function PrivacyPolicy() {
     <div className="legal">
       <section>
         <h1 className="page-title">Privacy Policy</h1>
-        <p><strong>Effective Date:</strong> February 14, 2025</p>
+        <p><strong>Effective Date:</strong> September 3, 2025</p>
         <p>At WeSwapCards ("we," "us," or "our"), we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and protect your personal data when you use our website www.weswapcards.com (the "Site"). By using the Site, you consent to the collection and use of your data in accordance with this policy.</p>
       </section>
 
@@ -46,6 +46,9 @@ function PrivacyPolicy() {
           </li>
           <li>
             <p><strong>User Interaction:</strong> To enable users to initiate a chat with others when they match in card needs and availability.</p>
+          </li>
+          <li>
+            <p><strong>Communication:</strong> To send important information related to your account (such as issues with a trade or security concerns) and occasional updates about new features. You may opt out of non-essential communications at any time.</p>
           </li>
         </ul>
       </section>
