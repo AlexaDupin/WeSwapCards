@@ -15,7 +15,6 @@
 
     &-title {
         font-weight: bold;
-        // font-style: italic;
         color: #fff !important;
         font-size: 1.5rem !important;
         padding-left: 3rem !important;
@@ -29,7 +28,6 @@
 
     &-nav {
       display: flex;
-      padding-right: 3rem !important;
       
       &-item {
         margin-right: 1.5rem !important;
@@ -57,17 +55,28 @@
 }
 
 .header-nav-login {
-    margin-right: 2rem;
     cursor: pointer;
     justify-self: right !important;
     text-decoration: none !important;
-    color: #efefef;
+    color: vars.$primary-color !important;
     font-size: 1.1rem;
+    font-weight: 800 !important;
+    transition: all 0.2s ease-in-out;
+    border: none !important;
+}
+
+.header-nav-login.btn-light:hover {
+    background-color: #fff4ec; 
+    color: #f07a1a;            
+}
+
+.header-nav-login.btn-light:active {
+    background-color: #ffe0cc; /* deeper tint when clicked */
+    color: #d96a15;            /* darker orange */
 }
 
 @media (min-width: 768px) { /* This targets larger screens */
     .header {
-        padding: 2rem;
 
     &-nav {
         display: flex;
@@ -89,7 +98,7 @@
 @media (max-width: 767px) { /* This targets mobile screens */
     .header {
         display: block;
-        text-align: center;
+        align-items: center;
 
         &-nav-item {
             display: none !important;
@@ -105,8 +114,12 @@
         padding: 0 !important;
 
         &-login {
-            margin: 0 !important;
-            padding: 0 !important;
+            cursor: pointer;
+            justify-self: right !important;
+            text-decoration: none !important;
+            color: vars.$primary-color !important;
+            font-size: 1.1rem;
+            font-weight: 800 !important;
         }
 
     }    

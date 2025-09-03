@@ -2,16 +2,17 @@ import React from 'react';
 import { UserButton, useUser } from "@clerk/clerk-react";
 
 import {
-  NavLink, Link
+  NavLink, Link, useNavigate
 } from 'react-router-dom';
 import {
-  NavDropdown
+  NavDropdown, Button
 } from "react-bootstrap";
 
 import './headerStyles.scss';
 
 function Header() {
   const { isSignedIn } = useUser();
+  const navigate = useNavigate();
 
   return (
     <header className="header border-bottom fixed-top">
@@ -23,7 +24,7 @@ function Header() {
           </NavLink>
         </div>
         :
-        <div>
+        <div style={{ margin: 0 }}>
           <NavLink to="/" style={{ textDecoration: 'none' }}>
             <h1 className="header-title m-0 header-title-link">WeSwapCards</h1>
           </NavLink>
@@ -56,7 +57,7 @@ function Header() {
         <nav 
           className="header-nav header-nav-login"
         >
-          <a href="/login" className="header-nav-login">Sign in</a>
+          <Button variant="light" className="header-nav-login" onClick={() => navigate('/login')}>Sign in</Button>
         </nav> 
       }
 
