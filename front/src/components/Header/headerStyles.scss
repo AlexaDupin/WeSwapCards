@@ -3,10 +3,8 @@
 .header {
     background-color: vars.$primary-color !important;
     color: #fff !important;
-    padding: 1rem;
+    padding: 1.5rem 1rem;
     display: flex !important;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
     justify-content: space-between !important;
 
     &-logo {
@@ -77,6 +75,7 @@
 
 @media (min-width: 768px) { /* This targets larger screens */
     .header {
+        padding: 1.5rem 1rem;
 
     &-nav {
         display: flex;
@@ -99,6 +98,7 @@
     .header {
         display: block;
         align-items: center;
+        padding: 1rem;
 
         &-nav-item {
             display: none !important;
@@ -106,6 +106,7 @@
 
         &-title {
             padding: 0 !important;
+            font-size: 1.4rem !important;
         }
     }
 
