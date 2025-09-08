@@ -14,7 +14,7 @@ function Legal() {
 
   return (
     <PageContainer>
-        <h1 className="swap-title">Legal</h1>
+        <h1 className="page-title">Legal</h1>
 
         <Container>
             <Row className="g-4">

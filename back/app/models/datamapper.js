@@ -120,6 +120,42 @@ module.exports = {
         const result = await client.query(preparedQuery);
         return result.rows;
     },
+    async manageExplorerCards(explorerId, selectedCardsData, toBeDeletedIds) {
+        try {
+            const results = {
+                upserted: [],
+                deletedCount: 0
+            };
+            
+            for (const cardData of selectedCardsData) {
+                const result = await client.query(`
+                    INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate) 
+                    VALUES ($1, $2, $3)
+                    ON CONFLICT (explorer_id, card_id) 
+                    DO UPDATE SET duplicate = EXCLUDED.duplicate
+                    RETURNING *, 
+                        CASE WHEN xmax = 0 THEN 'inserted' ELSE 'updated' END as action
+                `, [explorerId, cardData.cardId, cardData.duplicate]);
+                
+                results.upserted.push(result.rows[0]);
+            }
+            
+            if (toBeDeletedIds.length > 0) {
+                const deleteResult = await client.query(`
+                    DELETE FROM explorer_has_cards 
+                    WHERE explorer_id = $1 AND card_id = ANY($2)
+                `, [explorerId, toBeDeletedIds]);
+                
+                results.deletedCount = deleteResult.rowCount;
+            }
+            
+            return results;
+            
+        } catch (error) {
+            console.error('Database error in manageExplorerCards:', error);
+            throw new Error('Failed to manage explorer cards');
+        }
+    },
     async getOpportunitiesForOneExplorer(explorerId) {
         const preparedQuery = {
             text: `

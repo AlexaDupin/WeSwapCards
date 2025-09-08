@@ -41,7 +41,7 @@ router
 
 router
     .route('/report/:explorerId')
-    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(reportController.addCardsToExplorer));
+    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(reportController.reportCardsForExplorer));
 
 router
     .route('/opportunities/:explorerId')
