@@ -6,12 +6,22 @@
 
 }
 
+.opportunity-card-container {
+    width: 80vw;
+    max-width: 1200px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+}
+
 .opportunity-card {
-    border-color: vars.$primary-color !important;
-    border-width: medium !important;
     display: flex;
     justify-content: center;
     align-items: center;   
+    border-color: rgb(226, 226, 226) !important;
+    border-width: small !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+    padding: 10px !important;
 }
 
 .opportunity-title {
@@ -49,13 +59,15 @@
 }
 
 .swap-tag {
-    font-weight: 500;
-    color: #fff;
-    background-color: vars.$secondary-color;
-    border: none;
+    background-color: #FFF !important;
+    border: 1px solid;
+    border-color: #29b6aa;
+    color: rgb(54, 53, 53);
+    border-radius: 5px;
     padding: 0.375rem 0.75rem;
     margin: 0.5rem;
     cursor: default !important; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
 }
 
 .swap-cardName {

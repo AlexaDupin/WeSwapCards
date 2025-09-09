@@ -108,7 +108,7 @@ function SwapCard() {
       )}
 
       {!state.loadingOpportunities && !state.hiddenSwapOpportunities && (
-      <div>
+      <div className="opportunity-card-container">
         <Row className="g-3">
           {swapOpportunities.items?.length > 0 ? (
             <>
@@ -116,7 +116,7 @@ function SwapCard() {
             <span className='swap-cardName'>{swapCardName}</span></p>
 
             {swapOpportunities.items?.map((opportunity) => (
-                      <Col xs={12} key={opportunity.explorer_id} className="column">
+                      <Col xs={12} md={6} key={opportunity.explorer_id} className="column">
                         <Card className="opportunity-card" id={opportunity.explorer_id}>
                           <Card.Title className="opportunity-title">
                             <span className="opportunity-explorer-name">{opportunity.explorer_name}</span>
