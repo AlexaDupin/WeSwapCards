@@ -6,12 +6,7 @@
 
 }
 
-.opportunity-card-container {
-    width: 80vw;
-    max-width: 1200px;
-    margin-left: 50%;
-    transform: translateX(-50%);
-}
+
 
 .opportunity-card {
     display: flex;
@@ -135,6 +130,15 @@
   .hidden-alert {
     display: none;
   }
+
+@media (min-width: 768px) { /* This targets medium screens */
+  .opportunity-card-container {
+        width: 80vw;
+        max-width: 1200px;
+        margin-left: 50%;
+        transform: translateX(-50%);
+    }
+}
 
 @media (min-width: 1024px) { /* This targets larger screens */
     .opportunity-explorer-badge {
