@@ -28,6 +28,13 @@
     justify-content: space-evenly;
     text-align: center;
     margin-bottom: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: scale(1.05); 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        cursor: pointer;
+    }
 }
 
 .menu-link {
@@ -51,6 +58,7 @@
     right: -5px;
     width: 17px;
     height: auto;
+    cursor: help !important;
 
     &-check {
         position: absolute;
@@ -58,6 +66,7 @@
         right: -20px;
         width: 17px;
         height: auto;
+        cursor: help !important;
     }
 }
 
