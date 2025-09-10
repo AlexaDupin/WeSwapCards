@@ -108,16 +108,19 @@ function SwapCard() {
       )}
 
       {!state.loadingOpportunities && !state.hiddenSwapOpportunities && (
-      <div className="opportunity-card-container">
-        <Row className="g-3">
-          {swapOpportunities.items?.length > 0 ? (
-            <>
-            <p>Here are the users who can give you this card: <br />
-            <span className='swap-cardName'>{swapCardName}</span></p>
+        <div className="opportunity-card-container">
+  {swapOpportunities.items?.length > 0 ? (
+    <>
+      <p>
+        Here are the users who can give you this card: <br />
+        <span className="swap-cardName">{swapCardName}</span>
+      </p>
 
-            {swapOpportunities.items?.map((opportunity) => (
-                      <Col xs={12} md={6} key={opportunity.explorer_id} className="column">
-                        <Card className="opportunity-card" id={opportunity.explorer_id}>
+      <Row className="g-3 justify-content-center align-items-stretch">
+        {swapOpportunities.items?.map((opportunity) => (
+          <Col xs={12} md={6} key={opportunity.explorer_id} className="d-flex">
+            <Card className="opportunity-card h-100 d-flex flex-column" id={opportunity.explorer_id}>
+              <Card.Body className="d-flex flex-column">
                           <Card.Title className="opportunity-title">
                             <span className="opportunity-explorer-name">{opportunity.explorer_name}</span>
                             {isRecentlyActive(opportunity.last_active_at) && (
@@ -162,32 +165,36 @@ function SwapCard() {
                               <span>You do not have any new cards for this user, but you can still contact them.</span>
                             </Card.Text>
                           )}
-
-                          <button
-                            className="contact-button"
-                            onClick={() => handleContactButton(opportunity.explorer_id, opportunity.explorer_name, opportunity.opportunities)}
-                          >
-                            Contact this user to swap
-                          </button>
-
+                        
+                          <div className="mt-auto">
+                            <button
+                              className="contact-button"
+                              onClick={() => handleContactButton(opportunity.explorer_id, opportunity.explorer_name, opportunity.opportunities)}
+                            >
+                              Contact this user to swap
+                            </button>
+                          </div>
+                          </Card.Body>
                         </Card>
                       </Col>
                     ))}
-
-          <PaginationControl
-            activePage={activePage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange} 
-          />
-          </>
-          ) : (
+                    </Row>
+              
+                    <div className="mt-3">
+                      <PaginationControl
+                        activePage={activePage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                      />
+                    </div>
+                  </>
+                ) : (
             <>
             <div>No opportunities available for <span className='swap-cardName'>{swapCardName}</span>, try another card!</div>
             {/* <div className="swap-disclaimer"><em>Only users that need cards you have in duplicates will be shown at a later stage. So remember to log all your cards!</em></div> */}
             <XOctagon className='lock-icon'/>
             </>
           )}
-        </Row>
       </div>
       )}
        </>

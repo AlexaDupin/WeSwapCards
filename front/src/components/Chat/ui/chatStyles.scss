@@ -26,19 +26,10 @@
     margin-bottom: 1rem;
 
     &-button {
-      // font-weight: 500;
-      // color: #fff;
-      // background-color: #16bc90;
-      // border: none;
-      // padding: 0.1rem 0.2rem;
-      // margin: 0.2rem;
-      // cursor: default !important;
-      // font-size: 0.9rem;
-
       font-size: 0.9rem;
       background-color: #FFF !important;
       border: 1px solid;
-      border-color: #29b6aa;
+      border-color: vars.$secondary-color !important;
       color: rgb(54, 53, 53);
       border-radius: 5px;
       padding: 0.1rem 0.2rem;
