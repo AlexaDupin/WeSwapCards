@@ -3,7 +3,6 @@
 .cards-list {
     display: flex;
     justify-content: center;
-
 }
 
 .opportunity-card {
@@ -104,7 +103,8 @@
 .lock-icon {
     height: 100px;
     color: vars.$primary-color;
-    padding-top: 1rem;
+    padding-top: 2rem;
+    width: 100%;
 }
 
 .tooltip-mobile {

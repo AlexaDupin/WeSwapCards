@@ -2,25 +2,28 @@
 
 .card-square {
     width: 2rem;
-    height: 2rem;
+    height: 3rem !important;
     margin: 0.2rem;
+    color: #333;
+    background-color: white;
+    border: 1px solid;
+    border-radius: 5px;
+    border-color: rgb(177, 177, 177);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    font-weight: 500;
 
     &-selected {
-        // border-color: vars.$primary-color !important;
-        border: 2px solid vars.$primary-color !important;
-        // width: 2rem;
-        // height: 2rem;
-        // margin: 0.2rem;
+        width: 2rem;
+        height: 3rem !important;
+        margin: 0.2rem;
+        background-color: white;
+        border: 2px solid;
+        border-radius: 5px;
+        border-color: vars.$primary-color;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
     }
-    // &-duplicate {
-    //     width: 2rem;
-    //     height: 2rem;
-    //     margin: 0.2rem;
-    //     background-color: lighten(vars.$secondary-color, 50%);
-    // }
-}
 
-// .report-card {
-//     border-color: vars.$primary-color !important;
-//     border-width: medium !important;
-//     cursor: pointer;
+    &:hover {
+        background-color: lighten(vars.$primary-color, 40%);
+    }
+}
