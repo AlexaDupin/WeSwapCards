@@ -784,42 +784,34 @@ module.exports = {
         const result = await client.query(preparedQuery);
         //console.log(result.command);
     },
-    
-
-
-    // async getAllExplorers() {
-    //     const preparedQuery = {
-    //         text: `SELECT * FROM explorer
-    //         ORDER BY name`,
-    //     };
-    //     const result = await client.query(preparedQuery);
-    //     return result.rows;
-    // },
-
-    // async getExplorerInfo(userUID) {
-    //     console.log("ENTERING DATAMAPPER");
-    //     const preparedQuery = {
-    //         text: `
-    //         SELECT * FROM explorer 
-    //         WHERE userid = $1
-    //         `,
-    //         values: [userUID],
-    //     };
-    //     const result = await client.query(preparedQuery);
-    //     console.log("result.rows DM", result.rows);
-    //     return result.rows;
-    // },
-    // async getExplorerInfoByExplorerId(explorerId) {
-    //     console.log("ENTERING DATAMAPPER");
-    //     const preparedQuery = {
-    //         text: `
-    //         SELECT * FROM explorer 
-    //         WHERE id = $1
-    //         `,
-    //         values: [explorerId],
-    //     };
-    //     const result = await client.query(preparedQuery);
-    //     console.log("result.rows DM", result.rows[0]);
-    //     return result.rows[0];
-    // }
+    async getAllCardsStatuses(explorerId) {
+        const preparedQuery = {
+            text: ` SELECT c.id AS card_id,
+                        CASE
+                          WHEN ehc.duplicate IS TRUE  THEN 'duplicated'
+                          WHEN ehc.duplicate IS FALSE THEN 'owned'
+                          ELSE 'default'
+                        END AS status
+                    FROM card c
+                    LEFT JOIN explorer_has_cards ehc ON c.id = ehc.card_id
+                    AND ehc.explorer_id = $1
+                    ORDER BY c.id;`,
+            values: [explorerId],
+        };
+        const result = await client.query(preparedQuery);
+        // console.log("DTMP getAllCardsStatuses", result.rows);
+        const map = {};
+        for (let i = 0; i < result.rows.length; i++) {
+          const row = result.rows[i];
+          map[row.card_id] = row.status;
+        }
+        return map;    
+    },
+    async getAllCards() {
+        const preparedQuery = {
+            text: `SELECT * FROM card`,
+        };
+        const result = await client.query(preparedQuery);
+        return result.rows;
+    },
 };

@@ -27,7 +27,7 @@ function CardPreview({
       onClick={handleClick}
       style={{ cursor: 'pointer' }}
     >
-    {card.number}
+      <div className="check-card-inner">{card.number}</div>
     </button>
   )
 }

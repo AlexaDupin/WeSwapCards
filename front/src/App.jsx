@@ -24,6 +24,7 @@ import Terms from './components/Legal/Terms/Terms';
 import CookiePolicy from './components/Legal/CookiePolicy/CookiePolicy';
 import Contact from './components/Legal/Contact/Contact';
 import Legal from './components/Legal/Legal';
+import Cards from './components/Cards/ui/Cards';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -112,7 +113,7 @@ if (!isLoaded) {
               path="/check"
               element={<ProtectedRoute 
                 element={
-                  <CheckPage />} 
+                  <Cards />} 
               />}
           />
           <Route

@@ -9,7 +9,7 @@ const opportunitiesController = require('../../controllers/api/opportunities');
 const explorerCardsController = require('../../controllers/api/explorerCards');
 const chatController = require('../../controllers/api/chat');
 const apiController = require('../../controllers/api/index');
-const cardController = require('../../native/cardController');
+const cardController = require('../../controllers/api/cards');
 
 const controllerHandler = require('../../helpers/controllerHandler');
 
@@ -26,6 +26,10 @@ router.post('/login/user',
 router
     .route('/places')
     .get(controllerHandler(reportController.getAllPlaces))
+
+router
+    .route('/cards/statuses/:explorerId')
+    .get(requireAuth(), controllerHandler(cardController.getAllCardsStatuses));
 
 router
     .route('/cards/:placeId')
@@ -104,14 +108,6 @@ router
 router
     .route('/exploreractivity/:explorerId')
     .post(requireAuth(), checkExplorerAuthorization, controllerHandler(userController.updateLastActive))
-
-// router
-//     .route('/opportunities/:explorerId/card/:cardId')
-//     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findExplorerForswapCard));
-
-// router
-//     .route('/opportunities/:explorerId/swapexplorer/:swapExplorerId')
-//     .get(userController.authMiddleware, controllerHandler(opportunitiesController.findSwapOpportunities));
 
 router
     .route('/cards')
