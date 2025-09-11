@@ -18,7 +18,7 @@ function CardPreview({
   return (
     <button 
       type="button"
-      className={isSelected ? "card-square-selected" : "card-square"}
+      className={isSelected ? "swap-card-square-selected" : "swap-card-square"}
       cardid={card.id}
       onClick={handleClick}
       style={{ cursor: 'pointer' }}

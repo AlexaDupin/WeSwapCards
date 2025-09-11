@@ -1,14 +1,43 @@
 @use 'src/styles/vars';
 
-.card-square {
+.check-card-square {
     width: 2rem;
-    height: 2rem;
+    height: 3rem !important;
     margin: 0.2rem;
+    color: #333;
+    background-color: white;
+    border: 1px solid;
+    border-radius: 5px;
+    border-color: #b1b1b1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    font-weight: 500;
 
     &-duplicate {
         width: 2rem;
-        height: 2rem;
+        height: 3rem !important;
         margin: 0.2rem;
         background-color: lighten(vars.$secondary-color, 50%);
+        border: 1px solid;
+        border-radius: 5px;
+        border-color: #b1b1b1  !important;
+
     }
 }
+
+@media (hover: hover) and (pointer: fine) {
+    .check-card-square:hover {
+      background-color: #f1f1f1;
+    }
+    .check-card-square-duplicate:hover {
+      background-color: #f1f1f1;
+    }
+  }
+  
+  @media (hover: none) {
+    .check-card-square:active {
+      background-color: #f1f1f1;
+    }
+    .check-card-square-duplicate:active {
+      background-color: #f1f1f1;
+    }
+  }
