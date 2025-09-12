@@ -12,7 +12,7 @@ function CardItem({ item, status, onSelect, reset }) {
             className={`card-item ${isOwned ? "card-item-owned" : ""} ${isDuplicated ? "card-item-duplicate" : ""}`}
             cardid={item.id}
             // duplicate={isDuplicated.toString()}
-            // onClick={handleClick}
+            onClick={onSelect}
             style={{ cursor: 'pointer' }}
         >
             <div className="card-item-inner">{item.number}</div>
