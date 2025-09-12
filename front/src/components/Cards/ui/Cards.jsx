@@ -11,7 +11,7 @@ import useCardsLogic from '../hooks/useCardsLogic';
 import CardItem from './CardItem';
 
 function Cards() {
-  const { state, cardStatuses, cards, chapters, handleSelect, reset, isLoading } = useCardsLogic();
+  const { state, handleSelect, reset, isLoading } = useCardsLogic();
 
   return (
     <PageContainer>
@@ -29,12 +29,12 @@ function Cards() {
         className={state.alert.hidden ? 'hidden-alert' : ''}>
         {state.alert.message}
       </Alert>
-        )}
+      )}
 
       {!state.loading && !state.alert.message && (
         <>
-        {chapters.map((chapter) => {
-        const chapterCards = cards.filter(card => card.place_id === chapter.id);
+        {state.chapters.map((chapter) => {
+        const chapterCards = state.cards.filter(card => card.place_id === chapter.id);
 
         return (
           <section key={chapter.id} style={{ marginBottom: 30 }}>
@@ -45,7 +45,7 @@ function Cards() {
                   <CardItem
                     key={item.id}
                     item={item}
-                    status={cardStatuses[item.id] || "default"}
+                    status={state.cardStatuses[item.id] || "default"}
                     onSelect={() => handleSelect(item.id)}
                     onReset={() => reset(item.id)}
                   />
