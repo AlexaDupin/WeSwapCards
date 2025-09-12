@@ -1,5 +1,5 @@
 export const initialState = {
-    loading: false,
+    loading: true,
     alert: {
         hidden: true,
         message: ''

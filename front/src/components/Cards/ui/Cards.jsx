@@ -11,11 +11,7 @@ import useCardsLogic from '../hooks/useCardsLogic';
 import CardItem from './CardItem';
 
 function Cards() {
-  const { state, name, explorerId, dispatch, 
-    cardStatuses,
-    cards,
-    chapters,
-    handleSelect, reset, isLoading } = useCardsLogic();
+  const { state, cardStatuses, cards, chapters, handleSelect, reset, isLoading } = useCardsLogic();
 
   return (
     <PageContainer>
@@ -51,7 +47,7 @@ function Cards() {
                     item={item}
                     status={cardStatuses[item.id] || "default"}
                     onSelect={() => handleSelect(item.id)}
-                    reset={() => reset(item.id)}
+                    onReset={() => reset(item.id)}
                   />
                 ))}
               </div>
