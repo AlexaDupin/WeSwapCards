@@ -156,6 +156,34 @@ module.exports = {
             throw new Error('Failed to manage explorer cards');
         }
     },
+    async upsertExplorerHasCard(data) {
+        const preparedQuery = await client.query(
+         `INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
+          VALUES ($1, $2, $3)
+          ON CONFLICT (explorer_id, card_id)
+          DO UPDATE
+            SET duplicate = EXCLUDED.duplicate
+          WHERE explorer_has_cards.duplicate IS DISTINCT FROM EXCLUDED.duplicate
+          RETURNING explorer_id, card_id, duplicate
+          `,
+          [data.explorerId, data.cardId, data.duplicate],
+        );
+        const { rows } = await preparedQuery;
+        return { explorerId: data.explorerId, cardId: data.cardId, duplicate: data.duplicate, changed: rows.length > 0 };
+    },
+    async deleteCardFromExplorerHasCard(explorerId, cardId) {
+        const preparedQuery = {
+            text: `
+            DELETE FROM explorer_has_cards
+            WHERE explorer_id = $1
+            AND card_id = $2
+            `,
+            values: [explorerId, cardId]
+        };
+        const result = await client.query(preparedQuery);
+        // console.log("DTMP DELETE", result);
+        return { explorerId, cardId, changed: result.rowCount > 0 };
+    },
     async getOpportunitiesForOneExplorer(explorerId) {
         const preparedQuery = {
             text: `
