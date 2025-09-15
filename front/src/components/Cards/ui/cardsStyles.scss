@@ -36,3 +36,9 @@
     align-items: flex-start;
   }
 }
+
+@media (min-width: 992px) { /* This targets large screens */
+    .chapter-title {
+      font-size: 1.8rem;
+    }
+}
