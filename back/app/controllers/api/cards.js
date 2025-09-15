@@ -24,7 +24,7 @@ const cardController = {
         const explorerId = Number(req.params.explorerId);
         const cardId = Number(req.params.cardId);
         const duplicate = req.body.duplicate;
-        console.log("addCardToExplorer CTRL", explorerId, req.body, cardId, duplicate);
+        // console.log("addCardToExplorer CTRL", explorerId, req.body, cardId, duplicate);
         
         if (!Number.isInteger(explorerId) || !Number.isInteger(cardId)) {
             return res.status(400).json({ error: "Invalid explorerId/cardId" });
@@ -43,7 +43,7 @@ const cardController = {
     async deleteCardFromExplorer(req, res) {
         const explorerId = Number(req.params.explorerId);
         const cardId = Number(req.params.cardId);
-        console.log("deleteCardFromExplorer CTRL", explorerId, cardId);
+        // console.log("deleteCardFromExplorer CTRL", explorerId, cardId);
         
         if (!Number.isInteger(explorerId) || !Number.isInteger(cardId)) {
             return res.status(400).json({ error: "Invalid explorerId/cardId" });

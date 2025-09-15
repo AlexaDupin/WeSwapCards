@@ -9,6 +9,7 @@ import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
 import useCardsLogic from '../hooks/useCardsLogic';
 import CardItem from './CardItem';
+import ProgressBar from '../../ProgressBar/ui/ProgressBar';
 
 function Cards() {
   const { state, handleSelect, reset, isLoading } = useCardsLogic();
@@ -32,13 +33,15 @@ function Cards() {
       )}
 
       {!state.loading && !state.alert.message && (
-        <>
+      <section className="chapter-list">
         {state.chapters.map((chapter) => {
         const chapterCards = state.cards.filter(card => card.place_id === chapter.id);
+        const cardsOwned = chapterCards.filter(card => state.cardStatuses[card.id] === "owned" || state.cardStatuses[card.id] === "duplicated");
 
         return (
-          <section key={chapter.id} style={{ marginBottom: 30 }}>
+          <section key={chapter.id} className="chapter">
               <h2 className="chapter-title">{chapter.name}</h2>
+              <ProgressBar value={cardsOwned.length} max={9} className="chapter-progress" />
 
               <div className="cards-list" role="list">
                 {chapterCards.map((item) => (
@@ -54,8 +57,8 @@ function Cards() {
           </section>
         );
     })}
-        </>
-        )}
+      </section>
+      )}
 
         <ScrollToTop />
     </PageContainer>

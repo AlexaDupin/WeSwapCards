@@ -99,7 +99,7 @@ router
     
 router
     .route('/explorercards/:explorerId')
-    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.getExplorerCardsByPlace));
+    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.getExplorerCardsByChapter));
 
 router
     .route('/explorercards/:explorerId/cards/:cardId')

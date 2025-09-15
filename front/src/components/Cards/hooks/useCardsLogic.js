@@ -165,6 +165,29 @@ const useCardsLogic = () => {
       }
     };
 
+  //   const fetchExplorerCardsByChapter = async () => {
+  //     try {
+  //       const response = await axiosInstance.get(
+  //         `/explorercards/${explorerId}`, {
+  //           headers: {
+  //             Authorization: `Bearer ${await getToken()}`,
+  //           },
+  //         })
+  //       const fetchedCardsByPlace = response.data;
+
+  //       dispatch({
+  //         type: 'cards/fetched',
+  //         payload: fetchedCardsByPlace
+  //       })
+
+  //     } catch (error) {
+  //       dispatch({
+  //         type: 'cards/fetchedError',
+  //       })
+  //       // console.log(error);
+  //     }
+  // };
+
     return {
         state,
         handleSelect,

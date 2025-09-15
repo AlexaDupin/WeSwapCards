@@ -1,0 +1,38 @@
+@use 'src/styles/vars';
+
+.chapter-list {
+    margin-inline: auto;      /* centers horizontally */
+    width: 100%;              /* take full width until max */
+    max-width: 960px;         /* narrow column on large screens */
+    text-align: center !important;
+}
+
+.chapter {
+  margin-block-end: 2rem;
+
+  .chapter-title,
+  .chapter-progress {
+    margin: 0 0 0.5rem 0;
+    padding: 0;
+  }
+
+  .chapter-title {
+    font-family: 'Lobster_400Regular';
+    font-weight: 600;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+    text-align: left;
+  }
+
+  .chapter-progress {
+    display: inline-block;      /* prevents 100% width stretch if your component does that */
+    margin-bottom: 0.75rem;
+    vertical-align: top;
+  }
+
+  .cards-list {
+    display: flex;
+    gap: 0.2rem;               // container controls the spacing
+    justify-content: flex-start; // <<< keeps left/start alignment at all sizes
+    align-items: flex-start;
+  }
+}
