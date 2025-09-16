@@ -3,6 +3,7 @@ import { axiosInstance } from '../../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
 import { useStateContext } from '../../../contexts/StateContext';
 import { initialState, reducer } from '../../../reducers/cardsReducer';
+import { useDebounce } from '../../../hooks/useDebounce';
 
 const useCardsLogic = () => {
     const stateContext = useStateContext();
@@ -14,7 +15,6 @@ const useCardsLogic = () => {
     const [isLoading, setIsLoading] = useState(true);
     const isNetworkError = (error) =>
       !navigator.onLine || error?.code === 'ERR_NETWORK' || error?.message === 'Network Error';
-
 
     const fetchAllChapters = async () => {
         try {
@@ -124,20 +124,20 @@ const useCardsLogic = () => {
         } 
       };
     
-    const handleSelect = async (cardId) =>  {
-      const currentStatus = state.cardStatuses[cardId] || 'default';
-      const nextStatus = getNextStatus(currentStatus);
+      const handleSelect = async (cardId) =>  {
+        const currentStatus = state.cardStatuses[cardId] || 'default';
+        const nextStatus = getNextStatus(currentStatus);
 
-      switch (nextStatus) {
-        case 'owned':
-          await upsertCard(cardId, false)
-          break;
-        case 'duplicated':
-          await upsertCard(cardId, true)
-          break;
-        default: await upsertCard(cardId, false);
-      }
-    };
+        switch (nextStatus) {
+          case 'owned':
+            await upsertCard(cardId, false)
+            break;
+          case 'duplicated':
+            await upsertCard(cardId, true)
+            break;
+          default: await upsertCard(cardId, false);
+        }
+      };
 
     const reset = async (cardId) => {  
       const current = state.cardStatuses[cardId] || 'default';
@@ -164,29 +164,6 @@ const useCardsLogic = () => {
         console.error("Error during card deletion", error);
       }
     };
-
-  //   const fetchExplorerCardsByChapter = async () => {
-  //     try {
-  //       const response = await axiosInstance.get(
-  //         `/explorercards/${explorerId}`, {
-  //           headers: {
-  //             Authorization: `Bearer ${await getToken()}`,
-  //           },
-  //         })
-  //       const fetchedCardsByPlace = response.data;
-
-  //       dispatch({
-  //         type: 'cards/fetched',
-  //         payload: fetchedCardsByPlace
-  //       })
-
-  //     } catch (error) {
-  //       dispatch({
-  //         type: 'cards/fetchedError',
-  //       })
-  //       // console.log(error);
-  //     }
-  // };
 
     return {
         state,

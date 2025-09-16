@@ -12,7 +12,7 @@ import './dashboardStyles.scss';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
 import useDashboardLogic from '../hooks/useDashboardLogic';
-import SearchForm from './SearchForm';
+import SearchForm from '../../SearchBar/ui/SearchBar';
 
 function Dashboard() {
 

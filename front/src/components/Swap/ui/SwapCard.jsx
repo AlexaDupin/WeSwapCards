@@ -56,10 +56,9 @@ function SwapCard() {
       {!state.alert.message && (
         <>
       <Form>
-        <Form.Group className="mb-5" controlId="formGroupPlace">
-          <Form.Label className="report-label">Select a chapter, {name}</Form.Label>
+        <Form.Group className="mb-3" controlId="formGroupPlace">
+          <Form.Label className="visually-hidden">Select a chapter</Form.Label>
           <Form.Select
-            aria-label="Select a chapter"
             onChange={(e) => {
               const selectedValue = e.target.value;
               if (selectedValue !== "") {
@@ -81,7 +80,7 @@ function SwapCard() {
         <Form.Group
           className={state.hidden ? 'hidden' : 'mb-5'}
           controlId="formGroupEmail">
-          <Form.Label className="report-label">
+          <Form.Label className="visually-hidden report-label">
             Click on the card you are looking for!
           </Form.Label>
 

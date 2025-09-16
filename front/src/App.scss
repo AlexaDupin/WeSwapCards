@@ -2,6 +2,8 @@
 
 @import '~bootstrap/scss/bootstrap';
 
+:root { --header-h: 60px; }
+
 .App {
     text-align: center;
     display: flex;
@@ -26,4 +28,11 @@
       font-size: 18px !important;
     }
 }
-  
+
+@media (min-width: 768px) {
+    :root { --header-h: 80px; }
+}
+ 
+@media (min-width: 992px) {
+    :root { --header-h: 78px; }
+}

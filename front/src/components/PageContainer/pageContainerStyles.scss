@@ -1,9 +1,10 @@
 @use 'src/styles/vars';
 
 .page-container {
-    padding-top: 7rem !important;
+    padding-top: var(--header-h) !important;
     flex: 1;
     margin-bottom: 1rem;
+    margin-top: 2rem;
 }
 
 .page-title {
@@ -19,6 +20,7 @@
 
 @media (min-width: 768px) { /* This targets medium screens */
     .page-container {
+        padding-top: var(--header-h) !important; 
         width: 50% !important; 
     }
 }
@@ -26,6 +28,5 @@
 @media (max-width: 767px) { /* This targets mobile screens */
     .page-container {
       padding-bottom: 4rem !important;
-      padding-top: 5rem !important;
     } 
 }

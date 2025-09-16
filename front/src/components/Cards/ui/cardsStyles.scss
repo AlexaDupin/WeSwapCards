@@ -9,6 +9,7 @@
 
 .chapter {
   margin-block-end: 2rem;
+  scroll-margin-top: 40px;
 
   .chapter-title,
   .chapter-progress {
@@ -34,6 +35,43 @@
     gap: 0.2rem;               // container controls the spacing
     justify-content: flex-start; // <<< keeps left/start alignment at all sizes
     align-items: flex-start;
+  }
+}
+
+.cards-page { /* or main/app-content */
+  overflow-y: auto;           /* if your app uses an internal scroller */
+  height: 100vh;             /* or 100vh/100% matching your layout */
+}
+
+.cards-sticky {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 100;                  /* ensure it stays above content */
+  background: #fff;              /* avoids see-through while stuck */
+  border-bottom: 1px solid #eee;
+}
+
+.az-toolbar.equalized {
+  position: relative;            /* no longer sticky here */
+  display: grid;
+  grid-template-columns: repeat(26, 1fr);
+  column-gap: 0;
+
+  .az-pill {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    font-size: clamp(15px, 4.2vw, 14px);
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover { text-decoration: underline; }
+    &:focus-visible { outline: 2px solid rgba(0,0,0,.2); outline-offset: 2px; border-radius: 3px; }
+    &.is-empty { opacity: .5; }
   }
 }
 

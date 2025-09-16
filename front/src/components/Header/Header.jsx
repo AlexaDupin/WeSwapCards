@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import { UserButton, useUser } from "@clerk/clerk-react";
 
 import {
@@ -13,6 +13,26 @@ import './headerStyles.scss';
 function Header() {
   const { isSignedIn } = useUser();
   const navigate = useNavigate();
+
+  const ref = useRef(null);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const setVar = () =>
+      document.documentElement.style.setProperty("--header-h", `${el.offsetHeight}px`);
+
+    setVar();                                 // set on mount
+    const ro = new ResizeObserver(setVar);    // update on size changes (breakpoints, auth state, fonts)
+    ro.observe(el);
+    window.addEventListener("resize", setVar);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", setVar);
+    };
+  }, []);
 
   return (
     <header className="header border-bottom fixed-top">
