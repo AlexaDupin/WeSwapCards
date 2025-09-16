@@ -1,5 +1,6 @@
 export default function AZNav({ onSelect, lettersWithContent = new Set(), className = "" }) {
     const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    
     return (
       <nav className={`az-toolbar ${className}`} role="toolbar" aria-label="Jump to letter">
         {LETTERS.map((L) => (

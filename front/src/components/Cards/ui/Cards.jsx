@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useLayoutEffect } from "react";
 import PageContainer from '../../PageContainer/PageContainer';
 import {
     Spinner,
@@ -67,6 +67,18 @@ function Cards() {
     },
     [letterToChapterId]
   );
+
+  const azRef = useRef(null);
+  useLayoutEffect(() => {
+    const el = azRef.current;
+    if (!el) return;
+    const setVar = () =>
+      document.documentElement.style.setProperty("--az-bar-h", `${el.offsetHeight}px`);
+    setVar();
+    const ro = new ResizeObserver(setVar);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   
   return (
     <PageContainer className="cards-page">
@@ -86,10 +98,10 @@ function Cards() {
       </Alert>
       )}
 
-      {!state.loading && !state.alert.message && (
+      {!isLoading && !state.alert.message && (
 
       <>
-      <header className="cards-sticky">
+      <header ref={azRef} className="cards-sticky">
         <AZNav onSelect={jumpToLetter} lettersWithContent={lettersWithContent} className="equalized"/>
       </header>
       

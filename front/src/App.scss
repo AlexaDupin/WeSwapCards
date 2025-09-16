@@ -2,7 +2,7 @@
 
 @import '~bootstrap/scss/bootstrap';
 
-:root { --header-h: 60px; }
+:root { --header-h: 60px; --az-bar-h: 36px; }
 
 .App {
     text-align: center;
@@ -10,7 +10,6 @@
     flex-direction: column; 
     height: 100vh;   
     font-size: 16px;
-
 }
 
 .loading {
@@ -21,6 +20,11 @@
 
 .spinner {
     color: vars.$primary-color;
+}
+
+html, body {
+    scroll-behavior: smooth; /* optional */
+    scroll-padding-top: calc(var(--header-h) + var(--az-bar-h));
 }
 
 @media (min-width: 1200px) {

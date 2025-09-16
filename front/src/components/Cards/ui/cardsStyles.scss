@@ -9,7 +9,7 @@
 
 .chapter {
   margin-block-end: 2rem;
-  scroll-margin-top: 40px;
+  scroll-margin-top: 0px;
 
   .chapter-title,
   .chapter-progress {
@@ -68,6 +68,7 @@
     font-size: clamp(15px, 4.2vw, 14px);
     cursor: pointer;
     white-space: nowrap;
+    color: #333;
 
     &:hover { text-decoration: underline; }
     &:focus-visible { outline: 2px solid rgba(0,0,0,.2); outline-offset: 2px; border-radius: 3px; }
