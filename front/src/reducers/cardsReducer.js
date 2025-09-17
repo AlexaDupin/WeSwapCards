@@ -1,7 +1,6 @@
-import { replaceStatuses } from "../helpers/statuses";
+import { replaceStatuses, snapshotToStatusesMap, makeAllOwned } from "../helpers/statuses";
 
 export const initialState = {
-    loading: true,
     cardStatuses: {},
     chapters: [],
     cards: [],
@@ -21,14 +20,12 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 chapters: fetchedChapters,
-                loading: false
             }
         }
 
         case 'chapters/fetchedError': {
             return {
                 ...state,
-                loading: false,
                 alert: {
                     hidden: false,
                     message: "There was an error fetching chapters. Try again."
@@ -42,14 +39,12 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 cards: fetchedCards,
-                loading: false
             }
         }
 
         case 'cards/fetchedError': {
             return {
                 ...state,
-                loading: false,
                 alert: {
                     hidden: false,
                     message: "There was an error fetching cards. Try again."
@@ -63,14 +58,12 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 cardStatuses: fetchedCardStatuses,
-                loading: false
             }
         }
 
         case 'cardStatuses/fetchedError': {
             return {
                 ...state,
-                loading: false,
                 alert: {
                     hidden: false,
                     message: action.payload?.message ?? "There was an error fetching statuses. Try again."
@@ -85,7 +78,6 @@ export const reducer = (state, action) => {
                     ...state.cardStatuses,
                     [action.payload.cardId]: 'owned',
                   },
-                loading: false
             }
         }
 
@@ -96,7 +88,6 @@ export const reducer = (state, action) => {
                     ...state.cardStatuses,
                     [action.payload.cardId]: 'duplicated',
                   },
-                loading: false
             }
         }
 
@@ -107,7 +98,6 @@ export const reducer = (state, action) => {
                     ...state.cardStatuses,
                     [action.payload.cardId]: 'default',
                   },
-                loading: false
             }
         }
 
@@ -115,29 +105,32 @@ export const reducer = (state, action) => {
             return {
               ...state,
               bulkUpdating: true,
-              alert: { hidden: true, message: '' },
             };
           }
       
           case 'bulk/allOwnedOptimistic': {
-            const { cardIds } = action.payload;
-            const next = { ...state.cardStatuses };
-            for (const id of cardIds) {
-              next[id] = next[id] === 'duplicated' ? 'duplicated' : 'owned';
-            }
-            return { ...state, cardStatuses: next };
+            const allCardIds = action.payload?.allCardIds ?? [];
+            const snapshotBefore = action.payload?.snapshotBefore ?? [];
+          
+            // Optimistically set every card to 'owned'
+            const allOwnedMap = makeAllOwned(allCardIds);
+          
+            return {
+              ...state,
+              cardStatuses: replaceStatuses(allOwnedMap),
+              lastUndo: { type: 'allOwned', snapshot: snapshotBefore },
+              bulkUpdating: true,
+            };
           }
           
           case 'bulk/allOwnedFailed': {
-            const { rollbackTo } = action.payload;
+            const snapshotBefore = action.payload?.snapshotBefore ?? [];
+            const rollbackMap = snapshotToStatusesMap(snapshotBefore);
             return {
               ...state,
+              cardStatuses: replaceStatuses(rollbackMap),
+              lastUndo: null,
               bulkUpdating: false,
-              cardStatuses: rollbackTo,
-              alert: {
-                hidden: false,
-                message: 'Bulk update failed. Nothing was changed.',
-              },
             };
           }
       
@@ -147,24 +140,7 @@ export const reducer = (state, action) => {
               bulkUpdating: false,
             };
           }
-
-          case 'statuses/bulkReplace': {
-            return {
-              ...state,
-              cardStatuses: action.payload,
-            };
-          }
-
-          case 'bulk/undoFailed': {
-            return {
-              ...state,
-              alert: {
-                hidden: false,
-                message: action.payload?.message || 'Undo failed to persist on server.',
-              },
-            };
-          }
-
+          
           case 'cards/allDeleted': {
             const snapshot = action.payload?.snapshot || [];
 

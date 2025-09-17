@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useLayoutEffect, useState } from "react";
+import React, { useCallback, useMemo, useRef, useLayoutEffect, useState, useEffect } from "react";
 import PageContainer from '../../PageContainer/PageContainer';
 import { Spinner, Alert, Button, Modal, Toast, ToastContainer } from "react-bootstrap";
 import './cardsStyles.scss';
@@ -16,7 +16,7 @@ function normalizeLeadingLetter(name = "") {
 }
 
 function Cards() {
-  const { state, handleSelect, reset, isLoading, handleBulkSetAllOwned, restoreStatuses, deleteAllCardsBulk, undoLastBulk } = useCardsLogic();
+  const { state, handleSelect, reset, isLoading, handleBulkSetAllOwned, deleteAllCardsBulk, undoLastBulk } = useCardsLogic();
 
   const [showConfirmAllOwned, setShowConfirmAllOwned] = useState(false);
   const [showConfirmDeleteAll, setShowConfirmDeleteAll] = useState(false);
@@ -24,15 +24,7 @@ function Cards() {
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showDeleteToast, setShowDeleteToast] = useState(false);
 
-  const [prevSnapshot, setPrevSnapshot] = useState(null);
-
-  const { totalCards } = useMemo(() => {
-    const total = state.cards?.length ?? 0;
-
-    return {
-      totalCards: total,
-    };
-  }, [state.cards]);
+  const totalCards = state.cards?.length ?? 0;
 
   const openConfirm = () => setShowConfirmAllOwned(true);
   const closeConfirm = () => setShowConfirmAllOwned(false);
@@ -40,12 +32,8 @@ function Cards() {
   const closeConfirmDeleteAll = () => setShowConfirmDeleteAll(false);
 
   const onConfirmAllOwned = async () => {
-    const snapshot = { ...state.cardStatuses };
     const ok = await handleBulkSetAllOwned();
-    if (ok) {
-      setPrevSnapshot(snapshot);
-      setShowSuccessToast(true);
-    }
+    if (ok) setShowSuccessToast(true); 
     closeConfirm();
   };
 
@@ -57,12 +45,10 @@ function Cards() {
     closeConfirmDeleteAll();
   };
 
-  const onUndoBulk = async () => {
-    if (!prevSnapshot) return;
-    await restoreStatuses(prevSnapshot);
-    setPrevSnapshot(null);
-    setShowSuccessToast(false);
-  };
+  useEffect(() => {
+    if (state?.lastUndo?.type === 'allOwned') setShowSuccessToast(true);
+    if (state?.lastUndo?.type === 'deleteAll') setShowDeleteToast(true);
+  }, [state.lastUndo]);
 
   const chapterRefs = useRef(new Map());
   const getChapterRef = (id) => {
@@ -149,7 +135,7 @@ function Cards() {
         size="sm"
         className="rounded-pill quick-pill"
         onClick={openConfirm}
-        disabled={state.bulkUpdating || (state.cards?.length ?? 0) === 0}
+        disabled={state.bulkUpdating || totalCards === 0}
       >
         Select all cards
       </Button>
@@ -158,7 +144,7 @@ function Cards() {
         size="sm"
         className="rounded-pill quick-pill"
         onClick={openConfirmDeleteAll}
-        disabled={state.bulkUpdating || (state.cards?.length ?? 0) === 0}
+        disabled={state.bulkUpdating || totalCards === 0}
       >
         Delete all cards
       </Button>
@@ -167,7 +153,7 @@ function Cards() {
         size="sm"
         className="rounded-pill quick-pill"
         // onClick={openConfirm}
-        disabled={state.bulkUpdating || (state.cards?.length ?? 0) === 0}
+        disabled={state.bulkUpdating || totalCards === 0}
       >
         Mark all as duplicated
       </Button>
@@ -176,7 +162,7 @@ function Cards() {
         size="sm"
         className="rounded-pill quick-pill"
         // onClick={openConfirm}
-        disabled={state.bulkUpdating || (state.cards?.length ?? 0) === 0}
+        disabled={state.bulkUpdating || totalCards === 0}
       >
         Missing cards
       </Button>
@@ -283,10 +269,17 @@ function Cards() {
             >
               <Toast.Body className="text-white d-flex align-items-center justify-content-between gap-3">
                 <span>Marked all {totalCards} cards as owned.</span>
-                {prevSnapshot && (
-                  <Button size="sm" variant="light" onClick={onUndoBulk}>
-                    Undo
-                  </Button>
+                {state?.lastUndo?.type === 'allOwned' && (
+                 <Button
+                   size="sm"
+                   variant="light"
+                   onClick={async () => {
+                     await undoLastBulk();
+                     setShowSuccessToast(false);
+                   }}
+                   >
+                   Undo
+                 </Button>
                 )}
               </Toast.Body>
             </Toast>

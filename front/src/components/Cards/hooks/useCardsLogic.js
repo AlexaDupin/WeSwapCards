@@ -4,18 +4,7 @@ import { useAuth } from '@clerk/clerk-react';
 import { useStateContext } from '../../../contexts/StateContext';
 import { initialState, reducer } from '../../../reducers/cardsReducer';
 import { useNavigate } from 'react-router-dom';
-import { replaceStatuses } from '../../../helpers/statuses';
-
-const snapshotToStatusesMap = (snapshot = []) => {
-  const map = {};
-  for (const it of snapshot) {
-    if (it.status === 'owned' || it.status === 'duplicated') {
-      map[it.card_id] = it.status;
-    }
-    // status 'default' -> not present in map
-  }
-  return map;
-};
+import { replaceStatuses, snapshotToStatusesMap, statusesMapToSnapshot } from '../../../helpers/statuses';
 
 const useCardsLogic = () => {
     const stateContext = useStateContext();
@@ -66,7 +55,7 @@ const useCardsLogic = () => {
       }
     };
   
-    const fetchAllCardStatuses = async (explorerId) => {
+    const fetchAllCardStatuses = async () => {
       // console.log('explorerId', explorerId);
       
       try {
@@ -96,7 +85,7 @@ const useCardsLogic = () => {
           navigate('/login/redirect', { state: { from: "/cards" } });
         } else {
           try {
-            await Promise.all([fetchAllChapters(), fetchAllCards(), fetchAllCardStatuses(explorerId)]);
+            await Promise.all([fetchAllChapters(), fetchAllCards(), fetchAllCardStatuses()]);
           } finally {
             setIsLoading(false);
           }
@@ -179,19 +168,19 @@ const useCardsLogic = () => {
     }, [state.cardStatuses, explorerId, getToken, dispatch]);
 
     const handleBulkSetAllOwned = useCallback(async () => {
-      const cardIds = state.cards?.map(c => c.id) ?? [];
-      if (!explorerId || cardIds.length === 0) return false;
+      const allCardIds = state.cards?.map(card => card.id) ?? [];
+      if (!explorerId || allCardIds.length === 0) return false;
 
-      const rollbackTo = state.cardStatuses;
+      const snapshotBefore = statusesMapToSnapshot(allCardIds, state.cardStatuses);
   
       dispatch({ type: 'bulk/allOwnedStarted' });
-      dispatch({ type: 'bulk/allOwnedOptimistic', payload: { cardIds } });
+      dispatch({ type: 'bulk/allOwnedOptimistic', payload: { allCardIds, snapshotBefore } });
   
       try {
         const token = await getToken();
 
         const response = await axiosInstance.post(`/cards/statuses/${explorerId}`,
-          { cardIds },
+          { cardIds: allCardIds },
           { headers: { Authorization: `Bearer ${token}` } }
         );
         console.log('[bulk] response status:', response?.status);
@@ -204,30 +193,10 @@ const useCardsLogic = () => {
         }
   
       } catch (error) {
-        dispatch({ type: 'bulk/allOwnedFailed', payload: { rollbackTo } });
+        dispatch({ type: 'bulk/allOwnedFailed', payload: { snapshotBefore } });
         return false;
       }
     }, [explorerId, state?.cards, state?.cardStatuses, getToken, dispatch]);
-
-    const restoreStatuses = useCallback(async(snapshot) => {
-      dispatch({ type: 'statuses/bulkReplace', payload: snapshot });
-
-      try {
-        const token = await getToken();
-        await axiosInstance.post(
-          `/cards/statuses/${explorerId}/replace`,
-          { statuses: snapshot },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        return true;
-      } catch (error) {
-        dispatch({
-          type: 'bulk/undoFailed',
-          payload: { message: 'Undo failed to persist on server. Your view was restored locally.' }
-        });
-        return false;
-      }
-    }, [explorerId, getToken, dispatch]);
 
     const deleteAllCardsBulk = async () => {
       console.log("logic deleteAllCardsBulk", explorerId);
@@ -270,8 +239,8 @@ const useCardsLogic = () => {
   
         // Rebuild map from snapshot and replace via helper
         const restoredMap = snapshotToStatusesMap(snapshot);
-        const merged = replaceStatuses(state.cardStatuses, restoredMap);
-        dispatch({ type: 'cards/restoreBulkSuccess', payload: { merged } });
+        const normalized = replaceStatuses(restoredMap);
+        dispatch({ type: 'cards/restoreBulkSuccess', payload: { merged: normalized } });
       } catch (error) {
         console.error(error);
         dispatch({ type: 'cards/restoreBulkError' });
@@ -286,7 +255,6 @@ const useCardsLogic = () => {
         reset,
         isLoading,
         handleBulkSetAllOwned,
-        restoreStatuses,
         deleteAllCardsBulk,
         undoLastBulk,
     }
