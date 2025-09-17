@@ -16,11 +16,14 @@ function normalizeLeadingLetter(name = "") {
 }
 
 function Cards() {
-  const { state, handleSelect, reset, isLoading, handleBulkSetAllOwned, restoreStatuses } = useCardsLogic();
+  const { state, handleSelect, reset, isLoading, handleBulkSetAllOwned, restoreStatuses, deleteAllCardsBulk, undoLastBulk } = useCardsLogic();
 
   const [showConfirmAllOwned, setShowConfirmAllOwned] = useState(false);
+  const [showConfirmDeleteAll, setShowConfirmDeleteAll] = useState(false);
 
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showDeleteToast, setShowDeleteToast] = useState(false);
+
   const [prevSnapshot, setPrevSnapshot] = useState(null);
 
   const { totalCards } = useMemo(() => {
@@ -33,6 +36,8 @@ function Cards() {
 
   const openConfirm = () => setShowConfirmAllOwned(true);
   const closeConfirm = () => setShowConfirmAllOwned(false);
+  const openConfirmDeleteAll = () => setShowConfirmDeleteAll(true);
+  const closeConfirmDeleteAll = () => setShowConfirmDeleteAll(false);
 
   const onConfirmAllOwned = async () => {
     const snapshot = { ...state.cardStatuses };
@@ -42,6 +47,14 @@ function Cards() {
       setShowSuccessToast(true);
     }
     closeConfirm();
+  };
+
+  const onConfirmDeleteAll = async () => {
+    const ok = await deleteAllCardsBulk();
+    if (ok) {
+      setShowDeleteToast(true);
+    }
+    closeConfirmDeleteAll();
   };
 
   const onUndoBulk = async () => {
@@ -144,7 +157,7 @@ function Cards() {
         variant="outline-primary"
         size="sm"
         className="rounded-pill quick-pill"
-        // onClick={openConfirm}
+        onClick={openConfirmDeleteAll}
         disabled={state.bulkUpdating || (state.cards?.length ?? 0) === 0}
       >
         Delete all cards
@@ -196,6 +209,34 @@ function Cards() {
         </Button>
       </Modal.Footer>
       </Modal>
+
+      <Modal show={showConfirmDeleteAll} onHide={closeConfirmDeleteAll} centered>
+  <Modal.Header closeButton>
+    <Modal.Title>Delete all cards (set to Default)?</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <p>
+      This will remove <strong>all {totalCards}</strong> of your card statuses for this user.
+      After this, every card will be <em>Default</em>.
+    </p>
+    <p className="mb-0">
+      You’ll get an <strong>Undo</strong> option right after.
+    </p>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={closeConfirmDeleteAll}>
+      Cancel
+    </Button>
+    <Button
+      variant="danger"
+      onClick={onConfirmDeleteAll}
+      disabled={state.bulkUpdating}
+    >
+      {state.bulkUpdating && <Spinner size="sm" className="me-2" />}
+      Yes, delete all
+    </Button>
+  </Modal.Footer>
+      </Modal>
             
       <header ref={azRef} className="cards-sticky mb-3">
         <AZNav onSelect={jumpToLetter} lettersWithContent={lettersWithContent} className="equalized"/>
@@ -230,7 +271,7 @@ function Cards() {
       <ToastContainer
             position="bottom-end"
             className="p-3 cards-toast-container"
-          >
+      >
             <Toast
               bg="success"
               onClose={() => setShowSuccessToast(false)}
@@ -249,7 +290,35 @@ function Cards() {
                 )}
               </Toast.Body>
             </Toast>
-          </ToastContainer>
+
+            <Toast
+              bg="success"
+              onClose={() => setShowDeleteToast(false)}
+              show={showDeleteToast}
+              delay={4500}
+              autohide
+              role="status"
+              aria-live="polite"
+            >
+              <Toast.Body className="text-white d-flex align-items-center justify-content-between gap-3">
+                <span>All cards set to Default.</span>
+                {state?.lastUndo?.type === 'deleteAll' && (
+                <Button
+                  size="sm"
+                  variant="light"
+                   onClick={async () => {
+                     await undoLastBulk();
+                     setShowDeleteToast(false);
+                   }}
+                 >
+                   Undo
+                </Button>
+                )}
+              </Toast.Body>
+            </Toast>
+      </ToastContainer>
+
+
       </>
       )}
 

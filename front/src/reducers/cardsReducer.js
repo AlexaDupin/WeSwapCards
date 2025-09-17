@@ -1,3 +1,5 @@
+import { replaceStatuses } from "../helpers/statuses";
+
 export const initialState = {
     loading: true,
     cardStatuses: {},
@@ -8,6 +10,7 @@ export const initialState = {
         hidden: true,
         message: ''
     },
+    lastUndo: null,
 }
 
 export const reducer = (state, action) => {
@@ -159,6 +162,39 @@ export const reducer = (state, action) => {
                 hidden: false,
                 message: action.payload?.message || 'Undo failed to persist on server.',
               },
+            };
+          }
+
+          case 'cards/allDeleted': {
+            const snapshot = action.payload?.snapshot || [];
+
+            return {
+              ...state,
+              cardStatuses: replaceStatuses({}), // or {}
+              lastUndo: { type: 'deleteAll', snapshot },
+            };
+          }
+      
+          case 'cards/bulkDeleteError': {
+            return {
+              ...state,
+              alert: { hidden: false, message: 'There was an error clearing your cards. Try again.' },
+            };
+          }
+      
+          case 'cards/restoreBulkSuccess': {
+            // merged was already produced in the hook via replaceStatuses
+            return {
+              ...state,
+              cardStatuses: action.payload.merged,
+              lastUndo: null,
+            };
+          }
+      
+          case 'cards/restoreBulkError': {
+            return {
+              ...state,
+              alert: { hidden: false, message: 'Undo failed. Your cards were not restored.' },
             };
           }
 

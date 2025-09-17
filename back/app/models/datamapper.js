@@ -853,5 +853,63 @@ module.exports = {
           await client.query('ROLLBACK');
           throw e;
         }
-    }
+    },
+    async deleteAllCardsForExplorer(explorerId) {
+        const query = `
+          DELETE FROM explorer_has_cards
+          WHERE explorer_id = $1
+          RETURNING card_id, duplicate
+        `;
+        const { rows } = await client.query(query, [explorerId]);
+        console.log("DTMP deleteAllCardsForExplorer", rows);
+
+        return rows;
+    },
+    async applyExplorerCardStatusesBulk(explorerId, items) {
+      const upsertItems = [];
+      const deleteIds = [];
+
+      for (const item of items) {
+        if (item.status === 'default') {
+          deleteIds.push(Number(item.card_id));
+        } else if (item.status === 'owned' || item.status === 'duplicated') {
+          upsertItems.push({
+            card_id: Number(item.card_id),
+            duplicate: item.status === 'duplicated',
+          });
+        }
+      }
+
+      await client.query('BEGIN');
+
+      try {
+        if (upsertItems.length) {
+          const cardIds = upsertItems.map(x => x.card_id);
+          const dupes = upsertItems.map(x => x.duplicate);
+
+          const upsertQuery = `
+            INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
+            SELECT $1, x.card_id, x.duplicate
+            FROM unnest($2::int[], $3::boolean[]) AS x(card_id, duplicate)
+            ON CONFLICT (explorer_id, card_id) DO UPDATE
+            SET duplicate = EXCLUDED.duplicate
+          `;
+          await client.query(upsertQuery, [explorerId, cardIds, dupes]);
+        }
+
+        if (deleteIds.length) {
+          const deleteQuery = `
+            DELETE FROM explorer_has_cards
+            WHERE explorer_id = $1 AND card_id = ANY($2::int[])
+          `;
+          await client.query(deleteQuery, [explorerId, deleteIds]);
+        }
+
+        await client.query('COMMIT');
+        return { appliedCount: upsertItems.length + deleteIds.length };
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+      }
+    },
 };

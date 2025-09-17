@@ -4,6 +4,18 @@ import { useAuth } from '@clerk/clerk-react';
 import { useStateContext } from '../../../contexts/StateContext';
 import { initialState, reducer } from '../../../reducers/cardsReducer';
 import { useNavigate } from 'react-router-dom';
+import { replaceStatuses } from '../../../helpers/statuses';
+
+const snapshotToStatusesMap = (snapshot = []) => {
+  const map = {};
+  for (const it of snapshot) {
+    if (it.status === 'owned' || it.status === 'duplicated') {
+      map[it.card_id] = it.status;
+    }
+    // status 'default' -> not present in map
+  }
+  return map;
+};
 
 const useCardsLogic = () => {
     const stateContext = useStateContext();
@@ -217,13 +229,66 @@ const useCardsLogic = () => {
       }
     }, [explorerId, getToken, dispatch]);
 
+    const deleteAllCardsBulk = async () => {
+      console.log("logic deleteAllCardsBulk", explorerId);
+      try {
+        setIsLoading(true);
+        const token = await getToken();
+        const { data } = await axiosInstance.delete(`/explorercards/${explorerId}/cards`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        const snapshot = Array.isArray(data?.snapshot) ? data.snapshot : [];
+  
+        dispatch({
+          type: 'cards/allDeleted',
+          payload: { snapshot },
+        });
+        return true;
+
+      } catch (error) {
+        console.error(error);
+        dispatch({ type: 'cards/bulkDeleteError' });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    // --- Undo last bulk operation (works for Delete-all now, Mark-all-duplicated later) ---
+    const undoLastBulk = async () => {
+      const snapshot = state.lastUndo?.snapshot;
+      if (!Array.isArray(snapshot) || !snapshot.length) return;
+  
+      try {
+        setIsLoading(true);
+        const token = await getToken();
+        await axiosInstance.post(
+          `/explorercards/${explorerId}/cards/restore-bulk`,
+          { items: snapshot },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+  
+        // Rebuild map from snapshot and replace via helper
+        const restoredMap = snapshotToStatusesMap(snapshot);
+        const merged = replaceStatuses(state.cardStatuses, restoredMap);
+        dispatch({ type: 'cards/restoreBulkSuccess', payload: { merged } });
+      } catch (error) {
+        console.error(error);
+        dispatch({ type: 'cards/restoreBulkError' });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     return {
         state,
         handleSelect,
         reset,
         isLoading,
         handleBulkSetAllOwned,
-        restoreStatuses
+        restoreStatuses,
+        deleteAllCardsBulk,
+        undoLastBulk,
     }
 }
 

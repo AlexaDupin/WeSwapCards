@@ -1,5 +1,12 @@
 const datamapper = require("../../models/datamapper");
 
+const toSnapshot = (rows) => {
+    return rows.map(row => ({
+      card_id: row.card_id,
+      status: row.duplicate ? 'duplicated' : 'owned',
+    }));
+};
+
 const cardController = {
     async getAllCards(req, res) {
         try {
@@ -12,7 +19,6 @@ const cardController = {
     },
     async getAllCardsStatuses(req, res) {
         const explorerId = Number(req.params.explorerId);
-        console.log("get request");
         try {
             const statuses = await datamapper.getAllCardsStatuses(explorerId);
             res.json({statuses});
@@ -59,7 +65,6 @@ const cardController = {
     async markAllAsOwned(req, res) {
         const explorerId = Number(req.params.explorerId);
         const cardIds = req.body?.cardIds;
-        console.log("CTRL cardIds", cardIds);
         
         if (!explorerId || !Array.isArray(cardIds) || cardIds.length === 0) {
             return res.status(400).json({ error: 'Invalid payload: cardIds[] required' });
@@ -102,6 +107,45 @@ const cardController = {
         } catch (error) {
           console.error('Error replacing statuses:', error);
           return res.status(500).json({ error: 'Internal Server Error' });
+        }
+      },
+      async deleteAllCards(req, res) {
+        console.log("CTRL deleteAllCards");
+        const explorerId = Number(req.params.explorerId);
+        if (!Number.isInteger(explorerId)) {
+          return res.status(400).json({ error: 'Invalid explorerId' });
+        }
+
+        try {
+          const deletedRows = await datamapper.deleteAllCardsForExplorer(explorerId);
+          const snapshotBefore = toSnapshot(deletedRows);
+          console.log("CTRL deletedRows", deletedRows);
+          console.log("CTRL snapshotBefore", snapshotBefore);
+
+          return res.status(200).json({ success: true, snapshot: snapshotBefore });
+        } catch (error) {
+          console.error('deleteAllCards error', error);
+          return res.status(500).json({ error: 'Failed to delete all cards' });
+        }
+      },
+    
+      async restoreBulkCards(req, res) {
+        const explorerId = Number(req.params.explorerId);
+        if (!Number.isInteger(explorerId)) {
+          return res.status(400).json({ error: 'Invalid explorerId' });
+        }
+    
+        const items = Array.isArray(req.body?.items) ? req.body.items : [];
+        if (!items.length) {
+          return res.status(400).json({ error: 'No items to restore' });
+        }
+    
+        try {
+          const applied = await datamapper.applyExplorerCardStatusesBulk(explorerId, items);
+          return res.status(200).json({ success: true, appliedCount: applied.appliedCount });
+        } catch (error) {
+          console.error('restoreBulkCards error', error);
+          return res.status(500).json({ error: 'Failed to restore cards' });
         }
       },
 };
