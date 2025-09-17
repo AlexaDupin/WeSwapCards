@@ -1,9 +1,6 @@
-import React, { useCallback, useMemo, useRef, useLayoutEffect } from "react";
+import React, { useCallback, useMemo, useRef, useLayoutEffect, useState } from "react";
 import PageContainer from '../../PageContainer/PageContainer';
-import {
-    Spinner,
-    Alert
-} from "react-bootstrap";
+import { Spinner, Alert, Button, Modal, Toast, ToastContainer } from "react-bootstrap";
 import './cardsStyles.scss';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
@@ -19,7 +16,40 @@ function normalizeLeadingLetter(name = "") {
 }
 
 function Cards() {
-  const { state, handleSelect, reset, isLoading } = useCardsLogic();
+  const { state, handleSelect, reset, isLoading, handleBulkSetAllOwned, restoreStatuses } = useCardsLogic();
+
+  const [showConfirmAllOwned, setShowConfirmAllOwned] = useState(false);
+
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [prevSnapshot, setPrevSnapshot] = useState(null);
+
+  const { totalCards } = useMemo(() => {
+    const total = state.cards?.length ?? 0;
+
+    return {
+      totalCards: total,
+    };
+  }, [state.cards]);
+
+  const openConfirm = () => setShowConfirmAllOwned(true);
+  const closeConfirm = () => setShowConfirmAllOwned(false);
+
+  const onConfirmAllOwned = async () => {
+    const snapshot = { ...state.cardStatuses };
+    const ok = await handleBulkSetAllOwned();
+    if (ok) {
+      setPrevSnapshot(snapshot);
+      setShowSuccessToast(true);
+    }
+    closeConfirm();
+  };
+
+  const onUndoBulk = async () => {
+    if (!prevSnapshot) return;
+    await restoreStatuses(prevSnapshot);
+    setPrevSnapshot(null);
+    setShowSuccessToast(false);
+  };
 
   const chapterRefs = useRef(new Map());
   const getChapterRef = (id) => {
@@ -82,7 +112,7 @@ function Cards() {
   
   return (
     <PageContainer className="cards-page">
-      <h1 className="page-title">My cards</h1>
+      <h1 className="page-title mb-3">My cards</h1>
 
       {isLoading &&
         <><Spinner
@@ -99,9 +129,75 @@ function Cards() {
       )}
 
       {!isLoading && !state.alert.message && (
-
       <>
-      <header ref={azRef} className="cards-sticky">
+      <div className="quick-actions mb-1">
+      <Button
+        variant="outline-primary"
+        size="sm"
+        className="rounded-pill quick-pill"
+        onClick={openConfirm}
+        disabled={state.bulkUpdating || (state.cards?.length ?? 0) === 0}
+      >
+        Select all cards
+      </Button>
+      <Button
+        variant="outline-primary"
+        size="sm"
+        className="rounded-pill quick-pill"
+        // onClick={openConfirm}
+        disabled={state.bulkUpdating || (state.cards?.length ?? 0) === 0}
+      >
+        Delete all cards
+      </Button>
+      <Button
+        variant="outline-primary"
+        size="sm"
+        className="rounded-pill quick-pill"
+        // onClick={openConfirm}
+        disabled={state.bulkUpdating || (state.cards?.length ?? 0) === 0}
+      >
+        Mark all as duplicated
+      </Button>
+      <Button
+        variant="outline-primary"
+        size="sm"
+        className="rounded-pill quick-pill"
+        // onClick={openConfirm}
+        disabled={state.bulkUpdating || (state.cards?.length ?? 0) === 0}
+      >
+        Missing cards
+      </Button>
+      {/* (Future) "Report all as duplicated" pill goes here */}
+      </div>
+
+      <Modal show={showConfirmAllOwned} onHide={closeConfirm} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Mark all cards as owned?</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p>
+          Do you really want to mark all <strong>{totalCards}</strong> cards as owned?
+        </p>
+        <p className="mb-0">
+          This is useful for new users. You will be able to update them individually after.
+        </p>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={closeConfirm}>
+          Cancel
+        </Button>
+        <Button
+          variant="primary"
+          onClick={onConfirmAllOwned}
+          disabled={state.bulkUpdating}
+        >
+          {state.bulkUpdating && <Spinner size="sm" className="me-2" />}
+          Yes, mark all as owned
+        </Button>
+      </Modal.Footer>
+      </Modal>
+            
+      <header ref={azRef} className="cards-sticky mb-3">
         <AZNav onSelect={jumpToLetter} lettersWithContent={lettersWithContent} className="equalized"/>
       </header>
       
@@ -130,6 +226,30 @@ function Cards() {
         );
     })}
       </section>
+
+      <ToastContainer
+            position="bottom-end"
+            className="p-3 cards-toast-container"
+          >
+            <Toast
+              bg="success"
+              onClose={() => setShowSuccessToast(false)}
+              show={showSuccessToast}
+              delay={4500}
+              autohide
+              role="status"
+              aria-live="polite"
+            >
+              <Toast.Body className="text-white d-flex align-items-center justify-content-between gap-3">
+                <span>Marked all {totalCards} cards as owned.</span>
+                {prevSnapshot && (
+                  <Button size="sm" variant="light" onClick={onUndoBulk}>
+                    Undo
+                  </Button>
+                )}
+              </Toast.Body>
+            </Toast>
+          </ToastContainer>
       </>
       )}
 

@@ -76,6 +76,20 @@
   }
 }
 
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.quick-pill {
+  font-weight: 500;
+}
+
+.cards-toast-container {
+  z-index: 1080;
+}
+
 @media (min-width: 992px) { /* This targets large screens */
     .chapter-title {
       font-size: 1.8rem;

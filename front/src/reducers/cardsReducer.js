@@ -3,6 +3,7 @@ export const initialState = {
     cardStatuses: {},
     chapters: [],
     cards: [],
+    bulkUpdating: false,
     alert: {
         hidden: true,
         message: ''
@@ -106,6 +107,60 @@ export const reducer = (state, action) => {
                 loading: false
             }
         }
+
+        case 'bulk/allOwnedStarted': {
+            return {
+              ...state,
+              bulkUpdating: true,
+              alert: { hidden: true, message: '' },
+            };
+          }
+      
+          case 'bulk/allOwnedOptimistic': {
+            const { cardIds } = action.payload;
+            const next = { ...state.cardStatuses };
+            for (const id of cardIds) {
+              next[id] = next[id] === 'duplicated' ? 'duplicated' : 'owned';
+            }
+            return { ...state, cardStatuses: next };
+          }
+          
+          case 'bulk/allOwnedFailed': {
+            const { rollbackTo } = action.payload;
+            return {
+              ...state,
+              bulkUpdating: false,
+              cardStatuses: rollbackTo,
+              alert: {
+                hidden: false,
+                message: 'Bulk update failed. Nothing was changed.',
+              },
+            };
+          }
+      
+          case 'bulk/allOwnedSuccess': {
+            return {
+              ...state,
+              bulkUpdating: false,
+            };
+          }
+
+          case 'statuses/bulkReplace': {
+            return {
+              ...state,
+              cardStatuses: action.payload,
+            };
+          }
+
+          case 'bulk/undoFailed': {
+            return {
+              ...state,
+              alert: {
+                hidden: false,
+                message: action.payload?.message || 'Undo failed to persist on server.',
+              },
+            };
+          }
 
         default: 
         return state;

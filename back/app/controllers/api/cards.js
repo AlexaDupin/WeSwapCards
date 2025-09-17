@@ -12,7 +12,7 @@ const cardController = {
     },
     async getAllCardsStatuses(req, res) {
         const explorerId = Number(req.params.explorerId);
-  
+        console.log("get request");
         try {
             const statuses = await datamapper.getAllCardsStatuses(explorerId);
             res.json({statuses});
@@ -55,7 +55,55 @@ const cardController = {
         } catch (error) {
             res.status(500).send(error);
         }
-    }
+    },
+    async markAllAsOwned(req, res) {
+        const explorerId = Number(req.params.explorerId);
+        const cardIds = req.body?.cardIds;
+        console.log("CTRL cardIds", cardIds);
+        
+        if (!explorerId || !Array.isArray(cardIds) || cardIds.length === 0) {
+            return res.status(400).json({ error: 'Invalid payload: cardIds[] required' });
+        }
+
+        try {
+            const { inserted, skipped } = await datamapper.bulkInsertOwned(explorerId, cardIds);
+            return res.status(200).json({ inserted, skipped, total: cardIds.length });
+        } catch (error) {
+            console.error('Error bulk-owning cards:', error);
+            return res.status(500).json({ error: 'Internal Server Error' });            
+        }
+    },
+    async replaceStatuses(req, res) {
+        const explorerId = Number(req.params.explorerId);
+        const statusesMap = req.body?.statuses;
+    
+        if (!Number.isInteger(explorerId) || !statusesMap || typeof statusesMap !== 'object') {
+          return res.status(400).json({ error: "Invalid payload: statuses map required" });
+        }
+    
+        const ownedIds = [];
+        const duplicatedIds = [];
+        const defaultIds = [];
+    
+        for (const [key, val] of Object.entries(statusesMap)) {
+          const cardId = Number(key);
+          if (!Number.isInteger(cardId)) {
+            return res.status(400).json({ error: `Invalid cardId key: ${key}` });
+          }
+          if (val === 'owned') ownedIds.push(cardId);
+          else if (val === 'duplicated') duplicatedIds.push(cardId);
+          else if (val === 'default' || val == null) defaultIds.push(cardId);
+          else return res.status(400).json({ error: `Invalid status for cardId ${key}: ${val}` });
+        }
+    
+        try {
+          const result = await datamapper.bulkReplaceStatuses(explorerId, { ownedIds, duplicatedIds, defaultIds });
+          return res.status(200).json(result); // { upserted, deleted }
+        } catch (error) {
+          console.error('Error replacing statuses:', error);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+      },
 };
 
 module.exports = cardController;

@@ -94,7 +94,7 @@ function SwapCard() {
                   isSelected={state.selectedCardId === card.id} />
               ))
             ) : (
-              <div>No cards available</div>
+              <div></div>
             )}
           </div>
         </Form.Group>

@@ -29,7 +29,13 @@ router
 
 router
     .route('/cards/statuses/:explorerId')
-    .get(requireAuth(), controllerHandler(cardController.getAllCardsStatuses));
+    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.getAllCardsStatuses))
+    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.markAllAsOwned));
+
+router
+    .route('/cards/statuses/:explorerId/replace')
+    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.replaceStatuses));
+
 
 router
     .route('/cards/:placeId')
@@ -97,18 +103,22 @@ router
     .get(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.getAllMessagesInConversation))
     .post(requireAuth(), checkConversationAuthorization, validateNewMessage, controllerHandler(chatController.insertNewMessage));
     
-router
-    .route('/explorercards/:explorerId')
-    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.getExplorerCardsByChapter));
+// router
+//     .route('/explorercards/:explorerId')
+//     .get(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.getExplorerCardsByChapter));
 
 router
     .route('/explorercards/:explorerId/cards/:cardId')
     .put(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.addCardToExplorer))
     .delete(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.deleteCardFromExplorer));
 
-router
-    .route('/explorercards/:explorerId/cards/:cardId/duplicate')
-    .patch(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.editDuplicateStatus));
+// router
+//     .route('/explorercards/:explorerId/cards/:cardId/duplicate')
+//     .patch(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.editDuplicateStatus));
+
+// router
+//     .route('/explorercards/:explorerId/cards/status')
+//     .post(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.markAllAsOwned));    
 
 router
     .route('/exploreractivity/:explorerId')

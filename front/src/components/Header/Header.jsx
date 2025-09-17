@@ -65,7 +65,7 @@ function Header() {
             </NavDropdown>
             <NavDropdown title="My cards" id="basic-nav-dropdown" className="header-nav-item mr-3">
               <NavDropdown.Item as={Link} to="/report">Report my cards</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/check">
+              <NavDropdown.Item as={Link} to="/cards">
                 Check all my cards
               </NavDropdown.Item>
             </NavDropdown>

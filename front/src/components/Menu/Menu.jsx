@@ -64,7 +64,7 @@ function Menu() {
               </section>
               <section className="menu-image-section">
                   <div className="menu-link menu-image-container">
-                    <a href="/check" className="menu-link">
+                    <a href="/cards" className="menu-link">
                         <img src={Check} alt="Check icon" className="menu-image" />
                     </a>
                     <OverlayTrigger trigger="click" placement="top" 
@@ -78,7 +78,7 @@ function Menu() {
                     </OverlayTrigger>  
                   </div>   
                   <Button
-                      onClick={() => navigate('/check')}
+                      onClick={() => navigate('/cards')}
                       className="menu-button"
                   >
                       Check my cards

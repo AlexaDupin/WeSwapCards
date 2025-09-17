@@ -673,68 +673,6 @@ module.exports = {
         // console.log(result);
         return result.command;
     },
-//     async findExplorersForCardIdOpportunity(cardId, explorerId) {
-//         console.log("ENTERING DATAMAPPER");
-
-//         const preparedQuery = {
-//             text: `
-//             SELECT explorer_id FROM explorer_has_cards
-//             WHERE card_id = $1 AND duplicate = true AND explorer_id NOT IN ($2)
-//             ORDER BY random()
-//             `,
-//             values: [cardId, explorerId],
-//         };
-//         const result = await client.query(preparedQuery);
-//         // console.log(result.rows);
-//         return result.rows;
-//     },
-//     async findSwapOpportunities(explorerId, swapExplorerId) {
-//         console.log("ENTERING DATAMAPPER");
-
-//         const preparedQuery = {
-//             text: `
-// SELECT id FROM card
-// WHERE id NOT IN (
-//     SELECT card_id FROM explorer_has_cards
-//     WHERE explorer_id = $2
-//     ) AND id IN (
-//     SELECT card_id FROM explorer_has_cards
-//     WHERE explorer_id = $1 and duplicate = true
-//     )
-//             `,
-//             values: [explorerId, swapExplorerId],
-//         };
-//         const result = await client.query(preparedQuery);
-//         // console.log(result.rows);
-//         return result.rows;
-//     },
-    
-    ////// INFINITE SCROLL //////
-    // async getOpportunitiesForOneExplorer(explorerId, limit, offset) {
-    //     console.log("ENTERING DATAMAPPER", limit, offset);
-
-    //     const preparedQuery = {
-    //         text: `
-    //         SELECT ehc.id, c.id AS card_id, c.name AS card_name, e.name AS explorer_name, p.id AS place_id FROM card AS c
-    //         JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
-    //         JOIN explorer AS e ON e.id = ehc.explorer_id
-    //         JOIN place AS p ON p.id = c.place_id
-    //         WHERE ehc.duplicate = true AND ehc.explorer_id NOT IN ($1) 
-    //         AND ehc.explorer_id NOT IN (3, $1)  
-    //         AND c.id NOT IN (SELECT DISTINCT c.id FROM card AS c
-    //         JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
-    //         WHERE ehc.explorer_id = $1)
-    //         ORDER BY c.name, e.name
-    //         LIMIT $2 
-    //         OFFSET $3
-    //             `,
-    //         values: [explorerId, limit, offset],
-    //     };
-    //     const result = await client.query(preparedQuery);
-    //     // console.log(result.rows);
-
-    //     return result.rows;
-    // },
     async getCountForOnePlaceForExplorer(explorerId, placeId) {
         const preparedQuery = {
             text: `
@@ -842,4 +780,78 @@ module.exports = {
         const result = await client.query(preparedQuery);
         return result.rows;
     },
+    async bulkInsertOwned(explorerId, cardIds) {
+        // cardIds: number[]
+        if (!Array.isArray(cardIds) || cardIds.length === 0) {
+          return { inserted: 0, skipped: 0 };
+        }
+      
+        const preparedQuery = {
+            text: ` WITH payload AS (
+            SELECT UNNEST($2::int[]) AS card_id
+            )
+            INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
+            SELECT $1, p.card_id, FALSE
+            FROM payload p
+            ON CONFLICT (explorer_id, card_id) DO NOTHING
+            RETURNING card_id
+            `,
+            values: [explorerId, cardIds],
+        };
+        const result = await client.query(preparedQuery);
+        const inserted = result.rowCount ?? 0;
+        const skipped = cardIds.length - inserted;
+      
+        return { inserted, skipped };
+    },
+    async bulkReplaceStatuses(explorerId, { ownedIds = [], duplicatedIds = [], defaultIds = [] }) {
+        const idsForUpsert = [...ownedIds, ...duplicatedIds];
+        const duplicateFlags = [
+          ...Array(ownedIds.length).fill(false),
+          ...Array(duplicatedIds.length).fill(true),
+        ];
+      
+        await client.query('BEGIN');
+        try {
+          let upserted = 0;
+          if (idsForUpsert.length > 0) {
+            const qUpsert = {
+              text: `
+                WITH payload AS (
+                  SELECT UNNEST($2::int[]) AS card_id, UNNEST($3::bool[]) AS duplicate
+                )
+                INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
+                SELECT $1, p.card_id, p.duplicate
+                FROM payload p
+                ON CONFLICT (explorer_id, card_id)
+                DO UPDATE SET duplicate = EXCLUDED.duplicate
+                RETURNING card_id
+              `,
+              values: [explorerId, idsForUpsert, duplicateFlags],
+            };
+            const r1 = await client.query(qUpsert);
+            upserted = r1.rowCount ?? 0;
+          }
+      
+          let deleted = 0;
+          if (defaultIds.length > 0) {
+            const qDelete = {
+              text: `
+                DELETE FROM explorer_has_cards
+                WHERE explorer_id = $1
+                  AND card_id = ANY($2::int[])
+              `,
+              values: [explorerId, defaultIds],
+            };
+            const r2 = await client.query(qDelete);
+            deleted = r2.rowCount ?? 0;
+          }
+      
+          await client.query('COMMIT');
+          return { upserted, deleted };
+        } catch (e) {
+          await client.query('ROLLBACK');
+          throw e;
+        }
+    }
 };

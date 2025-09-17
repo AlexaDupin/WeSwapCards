@@ -12,10 +12,8 @@ import Home from './components/Home/Home';
 
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import Menu from './components/Menu/Menu';
-import Report from './components/Report/ui/Report';
 import SwapCard from './components/Swap/ui/SwapCard';
 import Chat from './components/Chat/ui/Chat';
-import CheckPage from './components/CheckPage/ui/CheckPage';
 import Dashboard from './components/Dashboard/ui/Dashboard';
 import NotFound from './components/NotFound/NotFound';
 import Footer from './components/Footer/Footer';
@@ -85,12 +83,6 @@ if (!isLoaded) {
               />}
           />
           <Route
-              path="/report"
-              element={<ProtectedRoute 
-                element={ <Report />} 
-              />}
-          />
-          <Route
               path="/swap/card"
               element={<ProtectedRoute 
                 element={ <SwapCard />} 
@@ -110,7 +102,7 @@ if (!isLoaded) {
                 />}
           />
           <Route
-              path="/check"
+              path="/cards"
               element={<ProtectedRoute 
                 element={
                   <Cards />} 

@@ -1,9 +1,9 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer, useState, useCallback } from 'react';
 import { axiosInstance } from '../../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
 import { useStateContext } from '../../../contexts/StateContext';
 import { initialState, reducer } from '../../../reducers/cardsReducer';
-import { useDebounce } from '../../../hooks/useDebounce';
+import { useNavigate } from 'react-router-dom';
 
 const useCardsLogic = () => {
     const stateContext = useStateContext();
@@ -14,7 +14,8 @@ const useCardsLogic = () => {
     const { getToken } = useAuth()
     const [isLoading, setIsLoading] = useState(true);
     const isNetworkError = (error) =>
-      !navigator.onLine || error?.code === 'ERR_NETWORK' || error?.message === 'Network Error';
+    !navigator.onLine || error?.code === 'ERR_NETWORK' || error?.message === 'Network Error';
+    const navigate = useNavigate();
 
     const fetchAllChapters = async () => {
         try {
@@ -31,115 +32,115 @@ const useCardsLogic = () => {
             type: 'chapters/fetchedError',
           })        
         }
-      };
+    };
       
-      const fetchAllCards = async () => {
-        try {
-          const token = await getToken();
-          const response = await axiosInstance.get('/cards', {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          const fetchedCards = response.data.cards;
-
-          dispatch({
-            type: 'cards/fetched',
-            payload: fetchedCards
-          })
-
-        } catch (error) {
-          dispatch({
-            type: 'cards/fetchedError',
-          })    
-        }
-      };
-    
-      const fetchAllCardStatuses = async (explorerId) => {
-        // console.log('explorerId', explorerId);
-        
-        try {
-          const token = await getToken();
-          const response = await axiosInstance.get(`/cards/statuses/${explorerId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          // console.log('statuses', response.data.statuses);
-          const fetchedCardStatuses = response.data.statuses;
-
-          dispatch({
-            type: 'cardStatuses/fetched',
-            payload: fetchedCardStatuses
-          })
-        } catch (error) {
-          dispatch({
-            type: 'cardStatuses/fetchedError',
-            payload: isNetworkError(error) ? { message: "There was an error reaching the server. Try again." } : undefined
-          }) 
-        }
+    const fetchAllCards = async () => {
+      try {
+        const token = await getToken();
+        const response = await axiosInstance.get('/cards', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const fetchedCards = response.data.cards;
+        dispatch({
+          type: 'cards/fetched',
+          payload: fetchedCards
+        })
+      } catch (error) {
+        dispatch({
+          type: 'cards/fetchedError',
+        })    
       }
+    };
+  
+    const fetchAllCardStatuses = async (explorerId) => {
+      // console.log('explorerId', explorerId);
       
-      useEffect(() => {
-        const fetchData = async () => {
+      try {
+        const token = await getToken();
+        const response = await axiosInstance.get(`/cards/statuses/${explorerId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        // console.log('statuses', response.data.statuses);
+        const fetchedCardStatuses = response.data.statuses;
+        dispatch({
+          type: 'cardStatuses/fetched',
+          payload: fetchedCardStatuses
+        })
+      } catch (error) {
+        dispatch({
+          type: 'cardStatuses/fetchedError',
+          payload: isNetworkError(error) ? { message: "There was an error reaching the server. Try again." } : undefined
+        }) 
+      }
+    }
+    
+    useEffect(() => {
+      const fetchData = async () => {
+        if (!explorerId) {
+          navigate('/login/redirect', { state: { from: "/cards" } });
+        } else {
           try {
             await Promise.all([fetchAllChapters(), fetchAllCards(), fetchAllCardStatuses(explorerId)]);
           } finally {
             setIsLoading(false);
           }
-        };
-      
-        fetchData();
-      }, []);
-
-      const getNextStatus = (current) => {
-        switch (current) {
-          case 'default': return 'owned';
-          case 'owned': return 'duplicated';
-          case 'duplicated': return 'owned';
-          default: return 'owned';
         }
       };
     
-      const upsertCard = async (cardId, duplicate) => {
-        const token = await getToken();
-        const response = await axiosInstance.put(`/explorercards/${explorerId}/cards/${cardId}`,
-          { duplicate },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        console.log(`Card ${cardId} status updated`, response.data);
-    
-        if (response.status === 200 && response.data.duplicate === false) { 
-          dispatch({
-            type: 'cardStatuses/updatedToOwned',
-            payload: { cardId },
-          })
-        } 
-    
-        if (response.status === 200 && response.data.duplicate === true) { 
-          dispatch({
-            type: 'cardStatuses/updatedToDuplicate',
-            payload: { cardId },
-          })
-        } 
-      };
-    
-      const handleSelect = async (cardId) =>  {
-        const currentStatus = state.cardStatuses[cardId] || 'default';
-        const nextStatus = getNextStatus(currentStatus);
+      fetchData();
+    }, []);
 
-        switch (nextStatus) {
-          case 'owned':
-            await upsertCard(cardId, false)
-            break;
-          case 'duplicated':
-            await upsertCard(cardId, true)
-            break;
-          default: await upsertCard(cardId, false);
-        }
-      };
+    const getNextStatus = (current) => {
+      switch (current) {
+        case 'default': return 'owned';
+        case 'owned': return 'duplicated';
+        case 'duplicated': return 'owned';
+        default: return 'owned';
+      }
+    };
+    
+    const upsertCard = useCallback(async (cardId, duplicate) => {
+      const token = await getToken();
+      const response = await axiosInstance.put(`/explorercards/${explorerId}/cards/${cardId}`,
+        { duplicate },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log(`Card ${cardId} status updated`, response.data);
+  
+      if (response.status === 200 && response.data.duplicate === false) { 
+        dispatch({
+          type: 'cardStatuses/updatedToOwned',
+          payload: { cardId },
+        })
+      } 
+  
+      if (response.status === 200 && response.data.duplicate === true) { 
+        dispatch({
+          type: 'cardStatuses/updatedToDuplicate',
+          payload: { cardId },
+        })
+      }
+    }, [explorerId, getToken, dispatch]);
 
-    const reset = async (cardId) => {  
+    const handleSelect = useCallback(async (cardId) =>  {
+      const currentStatus = state.cardStatuses[cardId] || 'default';
+      const nextStatus = getNextStatus(currentStatus);
+      switch (nextStatus) {
+        case 'owned':
+          await upsertCard(cardId, false)
+          break;
+        case 'duplicated':
+          await upsertCard(cardId, true)
+          break;
+        default: await upsertCard(cardId, false);
+      }
+    }, [state.cardStatuses, upsertCard]);
+
+    const reset = useCallback(async (cardId) => {
       const current = state.cardStatuses[cardId] || 'default';
       if (current === 'default') return; 
 
@@ -163,13 +164,66 @@ const useCardsLogic = () => {
       } catch (error) {
         console.error("Error during card deletion", error);
       }
-    };
+    }, [state.cardStatuses, explorerId, getToken, dispatch]);
+
+    const handleBulkSetAllOwned = useCallback(async () => {
+      const cardIds = state.cards?.map(c => c.id) ?? [];
+      if (!explorerId || cardIds.length === 0) return false;
+
+      const rollbackTo = state.cardStatuses;
+  
+      dispatch({ type: 'bulk/allOwnedStarted' });
+      dispatch({ type: 'bulk/allOwnedOptimistic', payload: { cardIds } });
+  
+      try {
+        const token = await getToken();
+
+        const response = await axiosInstance.post(`/cards/statuses/${explorerId}`,
+          { cardIds },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log('[bulk] response status:', response?.status);
+
+        if (response.status === 200) {
+          dispatch({ type: 'bulk/allOwnedSuccess' });
+          return true;
+        } else {
+          throw new Error('Bad status');
+        }
+  
+      } catch (error) {
+        dispatch({ type: 'bulk/allOwnedFailed', payload: { rollbackTo } });
+        return false;
+      }
+    }, [explorerId, state?.cards, state?.cardStatuses, getToken, dispatch]);
+
+    const restoreStatuses = useCallback(async(snapshot) => {
+      dispatch({ type: 'statuses/bulkReplace', payload: snapshot });
+
+      try {
+        const token = await getToken();
+        await axiosInstance.post(
+          `/cards/statuses/${explorerId}/replace`,
+          { statuses: snapshot },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        return true;
+      } catch (error) {
+        dispatch({
+          type: 'bulk/undoFailed',
+          payload: { message: 'Undo failed to persist on server. Your view was restored locally.' }
+        });
+        return false;
+      }
+    }, [explorerId, getToken, dispatch]);
 
     return {
         state,
         handleSelect,
         reset,
-        isLoading
+        isLoading,
+        handleBulkSetAllOwned,
+        restoreStatuses
     }
 }
 

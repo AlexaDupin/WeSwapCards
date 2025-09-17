@@ -60,11 +60,7 @@ function Footer() {
             <CardList />
             <p className="footer-mobile-caption">Dashboard</p>
         </NavLink>
-        <NavLink to="/report" className="footer-mobile-link">
-            <Pencil />
-            <p className="footer-mobile-caption">Report</p>
-        </NavLink>
-        <NavLink to="/check" className="footer-mobile-link">
+        <NavLink to="/cards" className="footer-mobile-link">
             <Eyeglasses />
             <p className="footer-mobile-caption">My cards</p>
         </NavLink>
