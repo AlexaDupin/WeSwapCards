@@ -6,9 +6,8 @@ import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
 import useChapterBuckets from "../hooks/useChapterBuckets";
 import useCardsLogic from '../hooks/useCardsLogic';
-import CardItem from './CardItem/CardItem';
-import ProgressBar from '../../ProgressBar/ui/ProgressBar';
 import useStickyVars from "../../../hooks/useStickyVars";
+import ChaptersList from "./ChaptersList";
 
 import useAZIndex from "../hooks/useAZIndex";
 import AZNav from "./AZNav";
@@ -136,26 +135,13 @@ function Cards() {
         />
       </section>
       
-      <section className="chapter-list">
-        {visibleChaptersData.map(({ chapterId, chapterName, cards, ownedOrDuplicatedCount }) => (
-          <section key={chapterId} id={getChapterDomId(chapterId)} className="chapter">
-            <h2 className="chapter-title">{chapterName}</h2>
-            <ProgressBar value={ownedOrDuplicatedCount} max={9} className="chapter-progress" />
-        
-            <div className="cards-list" role="list">
-              {cards.map((item) => (
-                <CardItem
-                  key={item.id}
-                  item={item}
-                  status={state.cardStatuses[item.id] || "default"}
-                  onSelect={() => handleSelect(item.id)}
-                  onReset={() => reset(item.id)}
-                />
-              ))}
-            </div>
-          </section>
-        ))}
-      </section>
+      <ChaptersList
+        chaptersData={visibleChaptersData}
+        getChapterDomId={getChapterDomId}
+        onSelectCard={handleSelect}
+        onResetCard={reset}
+        statuses={state.cardStatuses}
+      />
 
       <ToastContainer position="bottom-end" className="p-3 cards-toast-container">
         <BulkToast
