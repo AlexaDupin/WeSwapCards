@@ -1,7 +1,7 @@
 import React from 'react';
 
 import './cardItemStyles.scss';
-import useLongPress from "../hooks/useLongPress";
+import useLongPress from "../../hooks/useLongPress";
 
 function CardItem({ item, status, onSelect, onReset }) {
     const isOwned = status === 'owned';
