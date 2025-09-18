@@ -1,4 +1,4 @@
-import { replaceStatuses, snapshotToStatusesMap, makeAllOwned } from "../helpers/statuses";
+import { replaceStatuses, snapshotToStatusesMap, makeAllDuplicated, makeAllOwnedPreservingDuplicated } from "../helpers/statuses";
 
 export const initialState = {
     cardStatuses: {},
@@ -113,7 +113,7 @@ export const reducer = (state, action) => {
             const snapshotBefore = action.payload?.snapshotBefore ?? [];
           
             // Optimistically set every card to 'owned'
-            const allOwnedMap = makeAllOwned(allCardIds);
+            const allOwnedMap = makeAllOwnedPreservingDuplicated(allCardIds, state.cardStatuses);
           
             return {
               ...state,
@@ -140,7 +140,45 @@ export const reducer = (state, action) => {
               bulkUpdating: false,
             };
           }
-          
+
+          case 'bulk/allDuplicatedStarted': {
+              return {
+                ...state,
+                bulkUpdating: true,
+              };
+          }
+      
+          case 'bulk/allDuplicatedOptimistic': {
+              const allCardIds = action.payload?.allCardIds ?? [];
+              const snapshotBefore = action.payload?.snapshotBefore ?? [];
+              const allDuplicatedMap = makeAllDuplicated(allCardIds);
+      
+              return {
+                ...state,
+                cardStatuses: replaceStatuses(allDuplicatedMap),
+                lastUndo: { type: 'allDuplicated', snapshot: snapshotBefore },
+                bulkUpdating: true,
+              };
+            }
+      
+            case 'bulk/allDuplicatedFailed': {
+              const snapshotBefore = action.payload?.snapshotBefore ?? [];
+              const rollbackMap = snapshotToStatusesMap(snapshotBefore);
+              return {
+                ...state,
+                cardStatuses: replaceStatuses(rollbackMap),
+                lastUndo: null,
+                bulkUpdating: false,
+              };
+            }
+      
+            case 'bulk/allDuplicatedSuccess': {
+              return {
+                ...state,
+                bulkUpdating: false,
+              };
+            }
+
           case 'cards/allDeleted': {
             const snapshot = action.payload?.snapshot || [];
 

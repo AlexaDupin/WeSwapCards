@@ -30,7 +30,7 @@ router
 router
     .route('/cards/statuses/:explorerId')
     .get(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.getAllCardsStatuses))
-    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.markAllAsOwned));
+    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.markAll));
 
 router
     .route('/cards/statuses/:explorerId/replace')

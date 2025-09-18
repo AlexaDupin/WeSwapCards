@@ -16,13 +16,15 @@ function normalizeLeadingLetter(name = "") {
 }
 
 function Cards() {
-  const { state, handleSelect, reset, isLoading, handleBulkSetAllOwned, deleteAllCardsBulk, undoLastBulk } = useCardsLogic();
+  const { state, handleSelect, reset, isLoading, handleBulkSetAllOwned, handleBulkSetAllDuplicated, deleteAllCardsBulk, undoLastBulk } = useCardsLogic();
 
   const [showConfirmAllOwned, setShowConfirmAllOwned] = useState(false);
   const [showConfirmDeleteAll, setShowConfirmDeleteAll] = useState(false);
+  const [showConfirmAllDuplicated, setShowConfirmAllDuplicated] = useState(false);
 
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showDeleteToast, setShowDeleteToast] = useState(false);
+  const [showDuplicatedToast, setShowDuplicatedToast] = useState(false);
 
   const totalCards = state.cards?.length ?? 0;
 
@@ -30,11 +32,19 @@ function Cards() {
   const closeConfirm = () => setShowConfirmAllOwned(false);
   const openConfirmDeleteAll = () => setShowConfirmDeleteAll(true);
   const closeConfirmDeleteAll = () => setShowConfirmDeleteAll(false);
+  const openConfirmDuplicated = () => setShowConfirmAllDuplicated(true);
+  const closeConfirmDuplicated = () => setShowConfirmAllDuplicated(false);
 
   const onConfirmAllOwned = async () => {
     const ok = await handleBulkSetAllOwned();
     if (ok) setShowSuccessToast(true); 
     closeConfirm();
+  };
+
+  const onConfirmAllDuplicated = async () => {
+    const ok = await handleBulkSetAllDuplicated();
+    if (ok) setShowDuplicatedToast(true);
+    closeConfirmDuplicated();
   };
 
   const onConfirmDeleteAll = async () => {
@@ -47,6 +57,7 @@ function Cards() {
 
   useEffect(() => {
     if (state?.lastUndo?.type === 'allOwned') setShowSuccessToast(true);
+    if (state?.lastUndo?.type === 'allDuplicated') setShowDuplicatedToast(true);
     if (state?.lastUndo?.type === 'deleteAll') setShowDeleteToast(true);
   }, [state.lastUndo]);
 
@@ -152,7 +163,7 @@ function Cards() {
         variant="outline-primary"
         size="sm"
         className="rounded-pill quick-pill"
-        // onClick={openConfirm}
+        onClick={openConfirmDuplicated}
         disabled={state.bulkUpdating || totalCards === 0}
       >
         Mark all as duplicated
@@ -197,31 +208,56 @@ function Cards() {
       </Modal>
 
       <Modal show={showConfirmDeleteAll} onHide={closeConfirmDeleteAll} centered>
-  <Modal.Header closeButton>
-    <Modal.Title>Delete all cards (set to Default)?</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <p>
-      This will remove <strong>all {totalCards}</strong> of your card statuses for this user.
-      After this, every card will be <em>Default</em>.
-    </p>
-    <p className="mb-0">
-      You’ll get an <strong>Undo</strong> option right after.
-    </p>
-  </Modal.Body>
-  <Modal.Footer>
-    <Button variant="secondary" onClick={closeConfirmDeleteAll}>
-      Cancel
-    </Button>
-    <Button
-      variant="danger"
-      onClick={onConfirmDeleteAll}
-      disabled={state.bulkUpdating}
-    >
-      {state.bulkUpdating && <Spinner size="sm" className="me-2" />}
-      Yes, delete all
-    </Button>
-  </Modal.Footer>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete all cards (set to Default)?</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            This will remove <strong>all {totalCards}</strong> of your card statuses for this user.
+            After this, every card will be <em>Default</em>.
+          </p>
+          <p className="mb-0">
+            You’ll get an <strong>Undo</strong> option right after.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeConfirmDeleteAll}>
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            onClick={onConfirmDeleteAll}
+            disabled={state.bulkUpdating}
+          >
+            {state.bulkUpdating && <Spinner size="sm" className="me-2" />}
+            Yes, delete all
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showConfirmAllDuplicated} onHide={closeConfirmDuplicated} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Mark all cards as duplicated?</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Do you really want to mark all <strong>{totalCards}</strong> cards as <em>duplicated</em>?
+          </p>
+          <p className="mb-0">You can still toggle individual cards afterward.</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeConfirmDuplicated}>
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={onConfirmAllDuplicated}
+            disabled={state.bulkUpdating}
+          >
+            {state.bulkUpdating && <Spinner size="sm" className="me-2" />}
+            Yes, mark all as duplicated
+          </Button>
+        </Modal.Footer>
       </Modal>
             
       <header ref={azRef} className="cards-sticky mb-3">
@@ -309,8 +345,33 @@ function Cards() {
                 )}
               </Toast.Body>
             </Toast>
-      </ToastContainer>
 
+            <Toast
+              bg="success"
+              onClose={() => setShowDuplicatedToast(false)}
+              show={showDuplicatedToast}
+              delay={4500}
+              autohide
+              role="status"
+              aria-live="polite"
+            >
+              <Toast.Body className="text-white d-flex align-items-center justify-content-between gap-3">
+                <span>Marked all {totalCards} cards as duplicated.</span>
+                {state?.lastUndo?.type === 'allDuplicated' && (
+                  <Button
+                    size="sm"
+                    variant="light"
+                    onClick={async () => {
+                      await undoLastBulk();
+                      setShowDuplicatedToast(false);
+                    }}
+                  >
+                    Undo
+                  </Button>
+                )}
+              </Toast.Body>
+            </Toast>
+      </ToastContainer>
 
       </>
       )}

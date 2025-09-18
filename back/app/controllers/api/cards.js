@@ -62,20 +62,34 @@ const cardController = {
             res.status(500).send(error);
         }
     },
-    async markAllAsOwned(req, res) {
+    async markAll(req, res) {
         const explorerId = Number(req.params.explorerId);
-        const cardIds = req.body?.cardIds;
-        
-        if (!explorerId || !Array.isArray(cardIds) || cardIds.length === 0) {
-            return res.status(400).json({ error: 'Invalid payload: cardIds[] required' });
+        const rawIds = Array.isArray(req.body?.cardIds) ? req.body.cardIds : [];
+        const duplicate = !!req.body?.duplicate;
+
+        if (!Number.isInteger(explorerId) || rawIds.length === 0) {
+          return res.status(400).json({ error: 'Invalid payload: cardIds[] required' });
+        }
+
+        const cardIds = rawIds
+          .map(Number)
+          .filter((n) => Number.isInteger(n));
+        if (!cardIds.length) {
+          return res.status(400).json({ error: 'No valid cardIds' });
         }
 
         try {
-            const { inserted, skipped } = await datamapper.bulkInsertOwned(explorerId, cardIds);
-            return res.status(200).json({ inserted, skipped, total: cardIds.length });
+          // Reuse the "replace" path so existing rows are updated on conflict.
+          const payload = duplicate
+            ? { ownedIds: [], duplicatedIds: cardIds, defaultIds: [] }
+            : { ownedIds: cardIds, duplicatedIds: [], defaultIds: [] };
+
+          const result = await datamapper.bulkReplaceStatuses(explorerId, payload);
+          // UI only checks 200; still nice to return some stats
+          return res.status(200).json({ ...result, total: cardIds.length, duplicate });
         } catch (error) {
-            console.error('Error bulk-owning cards:', error);
-            return res.status(500).json({ error: 'Internal Server Error' });            
+          console.error('Error bulk-marking cards:', error);
+          return res.status(500).json({ error: 'Internal Server Error' });
         }
     },
     async replaceStatuses(req, res) {
@@ -110,7 +124,6 @@ const cardController = {
         }
       },
       async deleteAllCards(req, res) {
-        console.log("CTRL deleteAllCards");
         const explorerId = Number(req.params.explorerId);
         if (!Number.isInteger(explorerId)) {
           return res.status(400).json({ error: 'Invalid explorerId' });
@@ -119,8 +132,6 @@ const cardController = {
         try {
           const deletedRows = await datamapper.deleteAllCardsForExplorer(explorerId);
           const snapshotBefore = toSnapshot(deletedRows);
-          console.log("CTRL deletedRows", deletedRows);
-          console.log("CTRL snapshotBefore", snapshotBefore);
 
           return res.status(200).json({ success: true, snapshot: snapshotBefore });
         } catch (error) {

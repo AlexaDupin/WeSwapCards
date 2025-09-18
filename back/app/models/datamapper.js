@@ -780,30 +780,6 @@ module.exports = {
         const result = await client.query(preparedQuery);
         return result.rows;
     },
-    async bulkInsertOwned(explorerId, cardIds) {
-        // cardIds: number[]
-        if (!Array.isArray(cardIds) || cardIds.length === 0) {
-          return { inserted: 0, skipped: 0 };
-        }
-      
-        const preparedQuery = {
-            text: ` WITH payload AS (
-            SELECT UNNEST($2::int[]) AS card_id
-            )
-            INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
-            SELECT $1, p.card_id, FALSE
-            FROM payload p
-            ON CONFLICT (explorer_id, card_id) DO NOTHING
-            RETURNING card_id
-            `,
-            values: [explorerId, cardIds],
-        };
-        const result = await client.query(preparedQuery);
-        const inserted = result.rowCount ?? 0;
-        const skipped = cardIds.length - inserted;
-      
-        return { inserted, skipped };
-    },
     async bulkReplaceStatuses(explorerId, { ownedIds = [], duplicatedIds = [], defaultIds = [] }) {
         const idsForUpsert = [...ownedIds, ...duplicatedIds];
         const duplicateFlags = [
@@ -861,8 +837,6 @@ module.exports = {
           RETURNING card_id, duplicate
         `;
         const { rows } = await client.query(query, [explorerId]);
-        console.log("DTMP deleteAllCardsForExplorer", rows);
-
         return rows;
     },
     async applyExplorerCardStatusesBulk(explorerId, items) {

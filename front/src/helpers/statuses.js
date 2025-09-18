@@ -89,13 +89,13 @@ export function statusesMapToSnapshot(allCardIds = [], currentMap = {}) {
     }
     return snapshot;
   }
-  
-  // Make a full map where every provided card is 'owned'
-  export function makeAllOwned(allCardIds = []) {
+
+export function makeAllOwnedPreservingDuplicated(allCardIds = [], currentMap = {}) {
     const map = Object.create(null);
     for (const rawId of allCardIds) {
-      const cardId = Number(rawId);
-      if (Number.isInteger(cardId)) map[cardId] = 'owned';
+      const id = Number(rawId);
+      if (!Number.isInteger(id)) continue;
+      map[id] = currentMap[id] === 'duplicated' ? 'duplicated' : 'owned';
     }
     return map;
-  }
+}
