@@ -23,7 +23,6 @@ import useSwapLogic from '../hooks/useSwapLogic';
 function SwapCard() {
   const { 
     state,
-    name, 
     handleSelectPlace, 
     fetchSwapOpportunities,
     swapOpportunities,

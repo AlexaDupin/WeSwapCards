@@ -8,6 +8,7 @@ import useChapterBuckets from "../hooks/useChapterBuckets";
 import useCardsLogic from '../hooks/useCardsLogic';
 import useStickyVars from "../../../hooks/useStickyVars";
 import ChaptersList from "./ChaptersList";
+import EmptyChaptersHint from "./EmptyChaptersHint";
 
 import useAZIndex from "../hooks/useAZIndex";
 import AZNav from "./AZNav";
@@ -99,33 +100,33 @@ function Cards() {
 
       {!isLoading && !state.alert.message && (
       <>
-        <QuickActions
-          order={BULK_ACTION_ORDER}
-          registry={BULK_ACTIONS}
-          context={{ busy: state.bulkUpdating, total: totalCards }}
-          onAction={handleQuickAction}
-          activeKeys={showMissingOnly ? [BULK_ACTION.SHOW_MISSING] : []}
-        />
+      <QuickActions
+        order={BULK_ACTION_ORDER}
+        registry={BULK_ACTIONS}
+        context={{ busy: state.bulkUpdating, total: totalCards }}
+        onAction={handleQuickAction}
+        activeKeys={showMissingOnly ? [BULK_ACTION.SHOW_MISSING] : []}
+      />
 
-        {confirm.open && (() => {
-          const config = BULK_ACTIONS[confirm.type];
-          const { title, body, confirmLabel, confirmVariant } = config.confirm;
-          return (
-            <ConfirmModal
-              show
-              title={title}
-              body={body(totalCards)}
-              confirmLabel={confirmLabel}
-              confirmVariant={confirmVariant}
-              busy={state.bulkUpdating}
-              onCancel={closeConfirm}
-              onConfirm={async () => {
-                await executeConfirmedAction(confirm.type);
-                closeConfirm();
-              }}
-            />
-          );
-        })()}
+      {confirm.open && (() => {
+        const config = BULK_ACTIONS[confirm.type];
+        const { title, body, confirmLabel, confirmVariant } = config.confirm;
+        return (
+          <ConfirmModal
+            show
+            title={title}
+            body={body(totalCards)}
+            confirmLabel={confirmLabel}
+            confirmVariant={confirmVariant}
+            busy={state.bulkUpdating}
+            onCancel={closeConfirm}
+            onConfirm={async () => {
+              await executeConfirmedAction(confirm.type);
+              closeConfirm();
+            }}
+          />
+        );
+      })()}
             
       <section ref={azBarRef} className="cards-sticky mb-3">
         <AZNav 
@@ -135,13 +136,17 @@ function Cards() {
         />
       </section>
       
-      <ChaptersList
-        chaptersData={visibleChaptersData}
-        getChapterDomId={getChapterDomId}
-        onSelectCard={handleSelect}
-        onResetCard={reset}
-        statuses={state.cardStatuses}
-      />
+      {visibleChaptersData.length === 0 ? (
+        <EmptyChaptersHint onClearFilter={() => setShowMissingOnly(false)} />
+      ) : (
+        <ChaptersList
+          chaptersData={visibleChaptersData}
+          getChapterDomId={getChapterDomId}
+          onSelectCard={handleSelect}
+          onResetCard={reset}
+          statuses={state.cardStatuses}
+        />
+      )}
 
       <ToastContainer position="bottom-end" className="p-3 cards-toast-container">
         <BulkToast

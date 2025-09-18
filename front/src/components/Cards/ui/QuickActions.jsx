@@ -23,7 +23,7 @@ function QuickActions({ order = [], registry, context, onAction, activeKeys }) {
             key={key}
             variant={variant}
             size="sm"
-            className="rounded-pill quick-pill"
+            className="rounded-pill quick-pill quick-button"
             onClick={() => onAction(key)}
             disabled={isDisabled}
             aria-pressed={isPressed ? "true" : "false"}

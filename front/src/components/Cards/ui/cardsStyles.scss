@@ -1,9 +1,9 @@
 @use 'src/styles/vars';
 
 .chapter-list {
-    margin-inline: auto;      /* centers horizontally */
-    width: 100%;              /* take full width until max */
-    max-width: 960px;         /* narrow column on large screens */
+    margin-inline: auto; 
+    width: 100%;
+    max-width: 960px;
     text-align: center !important;
 }
 
@@ -38,21 +38,21 @@
   }
 }
 
-.cards-page { /* or main/app-content */
-  overflow-y: auto;           /* if your app uses an internal scroller */
-  height: 100vh;             /* or 100vh/100% matching your layout */
+.cards-page { 
+  overflow-y: auto; 
+  height: 100vh;
 }
 
 .cards-sticky {
   position: sticky;
   top: var(--header-h);
-  z-index: 100;                  /* ensure it stays above content */
-  background: #fff;              /* avoids see-through while stuck */
+  z-index: 100;                 
+  background: #fff;
   border-bottom: 1px solid #eee;
 }
 
 .az-toolbar.equalized {
-  position: relative;            /* no longer sticky here */
+  position: relative;
   display: grid;
   grid-template-columns: repeat(26, 1fr);
   column-gap: 0;
@@ -86,9 +86,66 @@
   font-weight: 500;
 }
 
+.quick-button {
+  $quick: vars.$tertiary-color;         
+  $quick-outline-hover-bg: rgba($quick, 0.08);
+  $quick-solid: mix(#000, $quick, 25%);
+  $quick-solid-hover: mix(#000, $quick, 32%);
+
+  color: $quick !important;
+  border-color: $quick !important;
+  background-color: transparent;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
+
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled):not(.disabled):not([aria-pressed="true"]) {
+      background-color: $quick-outline-hover-bg;
+      color: $quick !important;
+      border-color: $quick !important;
+    }
+  }
+
+  &[aria-pressed="true"],
+  &[data-pressed="true"] {
+    background-color: $quick-solid !important;
+    border-color: $quick-solid !important;
+    color: #fff !important;
+  }
+
+  &:active:not(:disabled):not(.disabled),
+  &.active {
+    background-color: $quick-solid !important;
+    border-color: $quick-solid !important;
+    color: #fff !important;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &[aria-pressed="true"]:hover,
+    &[data-pressed="true"]:hover,
+    &.active:hover {
+      background-color: $quick-solid-hover !important;
+      border-color: $quick-solid-hover !important;
+    }
+  }
+}
+
 .cards-toast-container {
   z-index: 1080;
 }
+
+.link-button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: vars.$primary-color; 
+  text-decoration: underline;
+  cursor: pointer;
+}
+.link-button:hover { text-decoration: none; }
+.link-button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 
 @media (min-width: 992px) { /* This targets large screens */
     .chapter-title {
