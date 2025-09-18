@@ -9,7 +9,7 @@ import {
 } from "react-bootstrap";
 
 import './headerStyles.scss';
-import useStickyVars from '../Cards/hooks/useStickyVars';
+import useStickyVars from '../../hooks/useStickyVars';
 
 function Header() {
   const { isSignedIn } = useUser();

@@ -7,12 +7,13 @@ import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 import useCardsLogic from '../hooks/useCardsLogic';
 import CardItem from './CardItem/CardItem';
 import ProgressBar from '../../ProgressBar/ui/ProgressBar';
-import AZNav from "../../AZNav/AZNav";
+import AZNav from "./AZNav";
 import ConfirmModal from "./ConfirmModal";
 import BulkToast from "./BulkToast";
 import useBulkUI from "../hooks/useBulkUI";
 import useAZIndex from "../hooks/useAZIndex";
-import useStickyVars from "../hooks/useStickyVars";
+import useStickyVars from "../../../hooks/useStickyVars";
+import useChapterBuckets from "../hooks/useChapterBuckets";
 
 const BULK_CONFIRM_COPY = {
   allOwned: {
@@ -54,7 +55,8 @@ function Cards() {
   const { state, handleSelect, reset, isLoading, handleBulkSetAllOwned, handleBulkSetAllDuplicated, deleteAllCardsBulk, undoLastBulk } = useCardsLogic();
   const { toast, showToast, hideToast } = useBulkUI();
   const { lettersWithChapters, scrollToLetter, getChapterDomId } = useAZIndex(state.chapters);
-
+  const { chaptersData } = useChapterBuckets(state.chapters, state.cards, state.cardStatuses);
+  
   const [confirm, setConfirm] = useState({ open: false, type: null });
   const openConfirm = (type) => setConfirm({ open: true, type });
   const closeConfirm = () => setConfirm({ open: false, type: null });
@@ -172,29 +174,28 @@ function Cards() {
       </section>
       
       <section className="chapter-list">
-        {state.chapters.map((chapter) => {
-        const chapterCards = state.cards.filter(card => card.place_id === chapter.id);
-        const cardsOwned = chapterCards.filter(card => state.cardStatuses[card.id] === "owned" || state.cardStatuses[card.id] === "duplicated");
-
-        return (
-          <section key={chapter.id} id={getChapterDomId(chapter.id)} className="chapter">
-              <h2 className="chapter-title">{chapter.name}</h2>
-              <ProgressBar value={cardsOwned.length} max={9} className="chapter-progress" />
-
-              <div className="cards-list" role="list">
-                {chapterCards.map((item) => (
-                  <CardItem
-                    key={item.id}
-                    item={item}
-                    status={state.cardStatuses[item.id] || "default"}
-                    onSelect={() => handleSelect(item.id)}
-                    onReset={() => reset(item.id)}
-                  />
-                ))}
-              </div>
-          </section>
-        );
-    })}
+      {chaptersData.map(({ chapterId, chapterName, cards, ownedOrDuplicatedCount }) => (
+        <section
+          key={chapterId}
+          id={getChapterDomId(chapterId)}
+          className="chapter"
+        >
+          <h2 className="chapter-title">{chapterName}</h2>
+          <ProgressBar value={ownedOrDuplicatedCount} max={9} className="chapter-progress" />
+      
+          <div className="cards-list" role="list">
+            {cards.map((item) => (
+              <CardItem
+                key={item.id}
+                item={item}
+                status={state.cardStatuses[item.id] || "default"}
+                onSelect={() => handleSelect(item.id)}
+                onReset={() => reset(item.id)}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
       </section>
 
       <ToastContainer
