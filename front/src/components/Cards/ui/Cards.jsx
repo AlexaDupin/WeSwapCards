@@ -42,23 +42,33 @@ function Cards() {
   const { lettersWithChapters, scrollToLetter, getChapterDomId } = useAZIndex(chaptersForAZ);
 
   async function executeConfirmedAction(actionKey) {
-    let ok = false;
+    try {
+      let result;
   
-    if (actionKey === BULK_ACTION.ALL_OWNED) {
-      ok = await handleBulkSetAllOwned();
-    } else if (actionKey === BULK_ACTION.ALL_DUPLICATED) {
-      ok = await handleBulkSetAllDuplicated();
-    } else if (actionKey === BULK_ACTION.DELETE_ALL) {
-      ok = await deleteAllCardsBulk();
-    }
+      if (actionKey === BULK_ACTION.ALL_OWNED) {
+        result = await handleBulkSetAllOwned();
+      } else if (actionKey === BULK_ACTION.ALL_DUPLICATED) {
+        result = await handleBulkSetAllDuplicated();
+      } else if (actionKey === BULK_ACTION.DELETE_ALL) {
+        result = await deleteAllCardsBulk();
+      } else {
+        return false;
+      }
   
-    if (ok) {
       const config = BULK_ACTIONS[actionKey];
-      const message = config.toast ? config.toast(totalCards) : "";
-      if (message) showToast({ type: actionKey, message });
+      const isSuccess = config?.isSuccess ? !!config.isSuccess(result) : result !== false;
+  
+      if (isSuccess) {
+        const message = config.toast ? config.toast(totalCards) : "";
+        if (message) showToast({ type: actionKey, message });
+      }
+  
+      return isSuccess;
+    } catch (e) {
+      return false;
     }
   }
-
+  
   function handleQuickAction(actionKey) {
     const config = BULK_ACTIONS[actionKey];
     if (!config) return;
@@ -67,15 +77,9 @@ function Cards() {
       setShowMissingOnly((prev) => !prev);
       return;
     }
-  
+
     openConfirm(actionKey);
   }
-
-  useEffect(() => {
-    if (state?.lastUndo?.type) {
-      showToast(state.lastUndo.type);
-    }
-  }, [state.lastUndo, showToast]);
 
   const azBarRef = useRef(null);
   useStickyVars({ ref: azBarRef, cssVarName: "--az-bar-h", dimension: "height" });
