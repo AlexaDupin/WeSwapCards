@@ -1,24 +1,15 @@
 import React from "react";
 import { Toast, Button } from "react-bootstrap";
 
-const COPY = {
-  allOwned: (number) => `Marked all ${number} cards as owned.`,
-  allDuplicated: (number) => `Marked all ${number} cards as duplicated.`,
-  deleteAll: () => "All cards have been deleted.",
-};
-
 function BulkToast({
   show,
-  type,
-  total = 0,
+  message,
   canUndo = false,
   onUndo,
   onClose,
   delay = 4500,
 }) {
-  if (!type) return null;
-
-  const message = COPY[type](total);
+  if (!message) return null;
 
   return (
     <Toast
