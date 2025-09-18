@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { UserButton, useUser } from "@clerk/clerk-react";
 
 import {
@@ -9,33 +9,17 @@ import {
 } from "react-bootstrap";
 
 import './headerStyles.scss';
+import useStickyVars from '../Cards/hooks/useStickyVars';
 
 function Header() {
   const { isSignedIn } = useUser();
   const navigate = useNavigate();
 
-  const ref = useRef(null);
-
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const setVar = () =>
-      document.documentElement.style.setProperty("--header-h", `${el.offsetHeight}px`);
-
-    setVar();                                 // set on mount
-    const ro = new ResizeObserver(setVar);    // update on size changes (breakpoints, auth state, fonts)
-    ro.observe(el);
-    window.addEventListener("resize", setVar);
-
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", setVar);
-    };
-  }, []);
+  const appHeaderRef = useRef(null);
+  useStickyVars({ ref: appHeaderRef, cssVarName: "--header-h", dimension: "height" });
 
   return (
-    <header className="header border-bottom fixed-top">
+    <header ref={appHeaderRef} className="header border-bottom fixed-top">
         
         {isSignedIn ?
         <div>
@@ -61,17 +45,13 @@ function Header() {
               <NavDropdown.Item as={Link} to="/swap/dashboard">
                 Check all requests
               </NavDropdown.Item>
-              {/* <NavDropdown.Item as={Link} to="/swap/opportunities">All opportunities</NavDropdown.Item> */}
-            </NavDropdown>
-            <NavDropdown title="My cards" id="basic-nav-dropdown" className="header-nav-item mr-3">
-              <NavDropdown.Item as={Link} to="/report">Report my cards</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/cards">
-                Check all my cards
-              </NavDropdown.Item>
-            </NavDropdown>
-            <UserButton 
-              afterSignOutUrl="/login" 
-            />
+          </NavDropdown>
+          <NavDropdown.Item title="My cards" id="basic-nav-dropdown" className="header-nav-item mr-3" as={Link} to="/cards">
+            My cards
+          </NavDropdown.Item>
+          <UserButton 
+            afterSignOutUrl="/login" 
+          />
         </nav>
         : 
         <nav 

@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import PageContainer from '../../PageContainer/PageContainer';
 import { Spinner, Alert, Button, ToastContainer } from "react-bootstrap";
 import './cardsStyles.scss';
@@ -12,6 +12,7 @@ import ConfirmModal from "./ConfirmModal";
 import BulkToast from "./BulkToast";
 import useBulkUI from "../hooks/useBulkUI";
 import useAZIndex from "../hooks/useAZIndex";
+import useStickyVars from "../hooks/useStickyVars";
 
 const BULK_CONFIRM_COPY = {
   allOwned: {
@@ -84,17 +85,8 @@ function Cards() {
     }
   }, [state.lastUndo, showToast]);
 
-  const azRef = useRef(null);
-  useLayoutEffect(() => {
-    const el = azRef.current;
-    if (!el) return;
-    const setVar = () =>
-      document.documentElement.style.setProperty("--az-bar-h", `${el.offsetHeight}px`);
-    setVar();
-    const ro = new ResizeObserver(setVar);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
+  const azBarRef = useRef(null);
+  useStickyVars({ ref: azBarRef, cssVarName: "--az-bar-h", dimension: "height" });
   
   return (
     <PageContainer className="cards-page">
@@ -172,7 +164,7 @@ function Cards() {
         />
       )}
             
-      <section ref={azRef} className="cards-sticky mb-3">
+      <section ref={azBarRef} className="cards-sticky mb-3">
         <AZNav 
           onSelect={scrollToLetter} 
           lettersWithContent={lettersWithChapters} 
