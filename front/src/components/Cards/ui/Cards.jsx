@@ -24,13 +24,14 @@ import useBulkUI from "../hooks/useBulkUI";
 function Cards() {
   const { state, handleSelect, reset, isLoading, handleBulkSetAllOwned, handleBulkSetAllDuplicated, deleteAllCardsBulk, undoLastBulk } = useCardsLogic();
   const { chaptersData } = useChapterBuckets(state.chapters, state.cards, state.cardStatuses);
-  
   const [showMissingOnly, setShowMissingOnly] = useState(false);
   const { toast, showToast, hideToast } = useBulkUI();
+  const [actionsOpen, setActionsOpen] = useState(false);
+
   const [confirm, setConfirm] = useState({ open: false, type: null });
   const openConfirm = (type) => setConfirm({ open: true, type });
   const closeConfirm = () => setConfirm({ open: false, type: null });
-  const [actionsOpen, setActionsOpen] = useState(false);
+
   const totalCards = state.cards?.length ?? 0;
 
   const visibleChaptersData = showMissingOnly
@@ -92,30 +93,25 @@ function Cards() {
         <h1 className="page-title mb-0">My cards</h1>
 
         <QuickActionsCollapsible
-          order={BULK_ACTION_ORDER}
-          registry={BULK_ACTIONS}
-          context={{ busy: state.bulkUpdating, total: totalCards }}
-          onAction={handleQuickAction}
-          activeKeys={showMissingOnly ? [BULK_ACTION.SHOW_MISSING] : []}
           open={actionsOpen}
           onOpenChange={setActionsOpen}
-          renderInline={false}                
           controlsId="quick-actions-panel"
-          toggleLabel="Actions"
         />
       </div>
 
-      <Collapse in={actionsOpen} mountOnEnter unmountOnExit>
-        <div id="quick-actions-panel" className="page-header-actions d-flex justify-content-start mb-3">
-          <QuickActions
-            order={BULK_ACTION_ORDER}
-            registry={BULK_ACTIONS}
-            context={{ busy: state.bulkUpdating, total: totalCards }}
-            onAction={handleQuickAction}
-            activeKeys={showMissingOnly ? [BULK_ACTION.SHOW_MISSING] : []}
-          />
-        </div>
-      </Collapse>
+      <div className={actionsOpen ? "page-header-actions mb-3" : "page-header-actions"}>
+        <Collapse in={actionsOpen} mountOnEnter unmountOnExit>
+          <div id="quick-actions-panel" className="d-flex justify-content-start">
+            <QuickActions
+              order={BULK_ACTION_ORDER}
+              registry={BULK_ACTIONS}
+              context={{ busy: state.bulkUpdating, total: totalCards }}
+              onAction={handleQuickAction}
+              activeKeys={showMissingOnly ? [BULK_ACTION.SHOW_MISSING] : []}
+            />
+          </div>
+        </Collapse>
+      </div>
 
       {isLoading &&
         <><Spinner
@@ -133,14 +129,6 @@ function Cards() {
 
       {!isLoading && !state.alert.message && (
       <>
-      {/* <QuickActions
-        order={BULK_ACTION_ORDER}
-        registry={BULK_ACTIONS}
-        context={{ busy: state.bulkUpdating, total: totalCards }}
-        onAction={handleQuickAction}
-        activeKeys={showMissingOnly ? [BULK_ACTION.SHOW_MISSING] : []}
-      /> */}
-
       {confirm.open && (() => {
         const config = BULK_ACTIONS[confirm.type];
         const { title, body, confirmLabel, confirmVariant } = config.confirm;
