@@ -1,6 +1,6 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import PageContainer from '../../PageContainer/PageContainer';
-import { Spinner, Alert, ToastContainer } from "react-bootstrap";
+import { Spinner, Alert, ToastContainer, Collapse } from "react-bootstrap";
 import './cardsStyles.scss';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
@@ -15,6 +15,8 @@ import AZNav from "./AZNav";
 
 import { BULK_ACTION, BULK_ACTIONS, BULK_ACTION_ORDER } from "../config/bulkActions.config";
 import QuickActions from "./QuickActions";
+import QuickActionsCollapsible from "./QuickActionsCollapsible";
+
 import ConfirmModal from "./ConfirmModal";
 import BulkToast from "./BulkToast";
 import useBulkUI from "../hooks/useBulkUI";
@@ -28,7 +30,7 @@ function Cards() {
   const [confirm, setConfirm] = useState({ open: false, type: null });
   const openConfirm = (type) => setConfirm({ open: true, type });
   const closeConfirm = () => setConfirm({ open: false, type: null });
-
+  const [actionsOpen, setActionsOpen] = useState(false);
   const totalCards = state.cards?.length ?? 0;
 
   const visibleChaptersData = showMissingOnly
@@ -86,7 +88,34 @@ function Cards() {
   
   return (
     <PageContainer className="cards-page">
-      <h1 className="page-title mb-3">My cards</h1>
+      <div className="page-header d-flex align-items-center justify-content-between gap-3 mb-2">
+        <h1 className="page-title mb-0">My cards</h1>
+
+        <QuickActionsCollapsible
+          order={BULK_ACTION_ORDER}
+          registry={BULK_ACTIONS}
+          context={{ busy: state.bulkUpdating, total: totalCards }}
+          onAction={handleQuickAction}
+          activeKeys={showMissingOnly ? [BULK_ACTION.SHOW_MISSING] : []}
+          open={actionsOpen}
+          onOpenChange={setActionsOpen}
+          renderInline={false}                
+          controlsId="quick-actions-panel"
+          toggleLabel="Actions"
+        />
+      </div>
+
+      <Collapse in={actionsOpen} mountOnEnter unmountOnExit>
+        <div id="quick-actions-panel" className="page-header-actions d-flex justify-content-start mb-3">
+          <QuickActions
+            order={BULK_ACTION_ORDER}
+            registry={BULK_ACTIONS}
+            context={{ busy: state.bulkUpdating, total: totalCards }}
+            onAction={handleQuickAction}
+            activeKeys={showMissingOnly ? [BULK_ACTION.SHOW_MISSING] : []}
+          />
+        </div>
+      </Collapse>
 
       {isLoading &&
         <><Spinner
@@ -104,13 +133,13 @@ function Cards() {
 
       {!isLoading && !state.alert.message && (
       <>
-      <QuickActions
+      {/* <QuickActions
         order={BULK_ACTION_ORDER}
         registry={BULK_ACTIONS}
         context={{ busy: state.bulkUpdating, total: totalCards }}
         onAction={handleQuickAction}
         activeKeys={showMissingOnly ? [BULK_ACTION.SHOW_MISSING] : []}
-      />
+      /> */}
 
       {confirm.open && (() => {
         const config = BULK_ACTIONS[confirm.type];

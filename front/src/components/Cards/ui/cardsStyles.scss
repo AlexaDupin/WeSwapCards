@@ -86,51 +86,6 @@
   font-weight: 500;
 }
 
-.quick-button {
-  $quick: vars.$tertiary-color;         
-  $quick-outline-hover-bg: rgba($quick, 0.08);
-  $quick-solid: mix(#000, $quick, 25%);
-  $quick-solid-hover: mix(#000, $quick, 32%);
-
-  color: $quick !important;
-  border-color: $quick !important;
-  background-color: transparent;
-  transition: background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
-
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover:not(:disabled):not(.disabled):not([aria-pressed="true"]) {
-      background-color: $quick-outline-hover-bg;
-      color: $quick !important;
-      border-color: $quick !important;
-    }
-  }
-
-  &[aria-pressed="true"],
-  &[data-pressed="true"] {
-    background-color: $quick-solid !important;
-    border-color: $quick-solid !important;
-    color: #fff !important;
-  }
-
-  &:active:not(:disabled):not(.disabled),
-  &.active {
-    background-color: $quick-solid !important;
-    border-color: $quick-solid !important;
-    color: #fff !important;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    &[aria-pressed="true"]:hover,
-    &[data-pressed="true"]:hover,
-    &.active:hover {
-      background-color: $quick-solid-hover !important;
-      border-color: $quick-solid-hover !important;
-    }
-  }
-}
-
 .cards-toast-container {
   z-index: 1080;
 }
