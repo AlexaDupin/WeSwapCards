@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
-import PageContainer from '../PageContainer/PageContainer';
 import {
     Button,
+    Container,
     OverlayTrigger,
     Tooltip  
 } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import CarouselModal from '../Carousel/Carousel';
 
-import Report from '../../images/reportPL.svg';
 import Search from '../../images/searchPL.svg';
 import Check from '../../images/checkPL.svg';
 import Dashboard from '../../images/dashboardPL.svg';
@@ -33,24 +32,14 @@ function Menu() {
 
   return (
     <>
-    <PageContainer>
+    <Container className="page-container menu-container">
           <h1 className="menu-title" style={{ fontSize: '1.2rem' }}>
               Welcome {state.explorer.name}!
           </h1>
+          <div className="menu">
 
           <section className="menu-steps">
 
-              <section className="menu-image-section">
-                  <a href="/report" className="menu-link">
-                      <img src={Report} alt="Report icon" className="menu-image" />
-                  </a>
-                  <Button
-                      onClick={() => navigate('/report')}
-                      className="menu-button"
-                  >
-                      Report my cards
-                  </Button>
-              </section>
               <section className="menu-image-section">
                   <a href="/swap/card" className="menu-link">
                       <img src={Search} alt="Search icon" className="menu-image" />
@@ -106,18 +95,12 @@ function Menu() {
                       View all requests
                   </Button>
               </section>
-              <section className="btn-legal">
-                  <Button
-                      onClick={() => navigate('/legal')}
-                      className="menu-button"
-                  >
-                      Legal
-                  </Button>
-              </section>
-
           </section>
 
-    </PageContainer>
+          <button className="btn btn-primary btn-legal menu-button">Legal</button>
+</div>
+
+    </Container>
       
     <section className="modal">
       <CarouselModal/>

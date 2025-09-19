@@ -1,6 +1,10 @@
 @use 'src/styles/vars';
 
 .menu {
+    display: flex;
+    flex-direction: column;
+    height: 90% !important;
+
     &-title {
         font-size: 1rem;
         margin-bottom: 2rem;
@@ -12,6 +16,13 @@
     }
 }
 
+.btn-legal {
+    margin: auto !important;
+    width: 30%;
+    color: #f07a1a !important;
+    background-color: #fff !important;
+}
+
 .menu-steps {
     display: flex;
     flex-direction: row !important;
@@ -21,11 +32,10 @@
 }
 
 .menu-image-section {
-    width: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: space-around;
     text-align: center;
     margin-bottom: 1rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -54,16 +64,16 @@
 
 .menu-info {
     position: absolute;
-    top: 10px;
-    right: -5px;
+    top: 0px;
+    right: 11px;
     width: 17px;
     height: auto;
     cursor: help !important;
 
     &-check {
         position: absolute;
-        top: 10px;
-        right: -20px;
+        top: 0px;
+        right: 5px;
         width: 17px;
         height: auto;
         cursor: help !important;
@@ -79,19 +89,32 @@
 }
 
 @media (min-width: 768px) { /* This targets larger screens */
+    .menu-container {
+      width: 90% !important;
+      max-width: none !important;
+      flex-basis: auto !important;
+      margin-inline: auto;
+    }
     .menu-steps {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: wrap;
-        justify-content: space-evenly;
+        justify-content: space-between;
+        margin-top: 3rem;
     }
 
-    .image-section {
-        width: 50%;
+    .menu-image-section {
+        flex: 0 0 33.333%;
+        width: 33.333%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
     }
 
     .btn-legal {
-        display: none;
+        display: none !important;
     }
 
     .menu-link {
@@ -101,13 +124,13 @@
 
     .menu-info {
         position: absolute;
-        top: 18px;
+        top: 52px;
         right: -5px;
         width: 17px;
         height: auto;
 
         &-check {
-            top: 18px;
+            top: 52px;
             right: -25px;
             width: 17px;
         }
@@ -116,15 +139,22 @@
 
 
 @media (min-width: 1200px) { /* This targets extra large screens */
+    .menu-container {
+        width: 70% !important;
+        max-width: none !important;
+        flex-basis: auto !important;
+        margin-inline: auto;
+    }
+
     .menu-info {
         position: absolute;
-        top: 18px;
+        top: 52px;
         right: -5px;
         width: 17px;
         height: auto;
 
         &-check {
-            top: 18px;
+            top: 52px;
             right: -20px;
             width: 17px;
         }
