@@ -13,9 +13,19 @@ function CardItem({ item, status, onSelect, onReset }) {
         if (!isDefault) onReset();
     }, { threshold: 450 });
 
-    const handleClick = (e) => {
+    const handleClick = () => {
       if (wasLongPressRef.current) return;
       onSelect();
+    };
+
+    const stop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
+    const handleReset = (e) => {
+      stop(e);
+      if (!isDefault) onReset();
     };
 
     return (
@@ -29,10 +39,23 @@ function CardItem({ item, status, onSelect, onReset }) {
             onPointerCancel={onPointerCancel}
             onClick={handleClick}
             onContextMenu={(e) => e.preventDefault()}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer", position: "relative" }} 
             aria-label={`Card ${item.number} (${status})`}
         >
             <div className="card-item-inner">{item.number}</div>
+
+            {!isDefault && (
+            <span
+              className="card-item-reset"
+              role="button"
+              aria-label={`Mark card ${item.number} as not owned`}
+              title="Mark as not owned"
+              onClick={handleReset}
+              onPointerDown={stop}
+              onPointerUp={stop}
+              onContextMenu={(e) => e.preventDefault()}
+            />
+            )}
         </button>
     );
 }
