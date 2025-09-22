@@ -18,9 +18,11 @@
     }
 
     &-link--active {
-        color: vars.$primary-color !important;
+        box-shadow: 0 0 0 2px var(--footer-active-ring) inset;
+        border-radius: .75rem;
         font-weight: 600;
     }
+    
 }
 
 .footer-desktop {
