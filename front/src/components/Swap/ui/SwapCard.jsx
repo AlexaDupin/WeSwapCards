@@ -41,6 +41,9 @@ function SwapCard() {
     </Tooltip>
   );
 
+  const items = swapOpportunities.items ?? [];
+  const isSingle = items.length === 1;
+
   return (
   <PageContainer>
       <h1 className="page-title">Find a card</h1>
@@ -114,8 +117,8 @@ function SwapCard() {
         <span className="swap-cardName">{swapCardName}</span>
       </p>
 
-      <Row className="g-3 justify-content-center align-items-stretch">
-        {swapOpportunities.items?.map((opportunity) => (
+      <Row className={`g-3 align-items-stretch ${isSingle ? 'justify-content-center' : ''}`}>
+        {items?.map((opportunity) => (
           <Col xs={12} md={6} key={opportunity.explorer_id} className="d-flex">
             <Card className="opportunity-card h-100 d-flex flex-column" id={opportunity.explorer_id}>
               <Card.Body className="d-flex flex-column">
