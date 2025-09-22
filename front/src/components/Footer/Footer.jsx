@@ -3,7 +3,6 @@ import {
   NavLink, useLocation
 } from 'react-router-dom';
 import {
-	Pencil,
 	Eyeglasses,
 	Search,
 	CardList,
@@ -52,17 +51,31 @@ function Footer() {
            </div>
       :
       <div className="footer-mobile border-top fixed-bottom">
-        <NavLink to="/swap/card" className="footer-mobile-link">
-            <Search />
-            <p className="footer-mobile-caption">Find a card</p>
+        <NavLink 
+          to="/swap/card" 
+          className={({ isActive }) =>
+            `footer-mobile-link${isActive ? ' footer-mobile-link--active' : ''}`
+        }>
+          <Search />
+          <p className="footer-mobile-caption">Find a card</p>
         </NavLink>
-        <NavLink to="/swap/dashboard" className="footer-mobile-link">
-            <CardList />
-            <p className="footer-mobile-caption">Dashboard</p>
+        <NavLink 
+          to="/swap/dashboard" 
+          className={({ isActive }) =>
+          `footer-mobile-link${isActive ? ' footer-mobile-link--active' : ''}`
+          }
+        >            
+          <CardList />
+          <p className="footer-mobile-caption">Dashboard</p>
         </NavLink>
-        <NavLink to="/cards" className="footer-mobile-link">
-            <Eyeglasses />
-            <p className="footer-mobile-caption">My cards</p>
+        <NavLink 
+          to="/cards" 
+          className={({ isActive }) =>
+          `footer-mobile-link${isActive ? ' footer-mobile-link--active' : ''}`
+          }
+        >
+          <Eyeglasses />
+          <p className="footer-mobile-caption">My cards</p>
         </NavLink>
       </div>
       }

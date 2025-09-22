@@ -16,6 +16,11 @@
         color: #000;
         text-decoration: none;
     }
+
+    &-link--active {
+        color: vars.$primary-color !important;
+        font-weight: 600;
+    }
 }
 
 .footer-desktop {
