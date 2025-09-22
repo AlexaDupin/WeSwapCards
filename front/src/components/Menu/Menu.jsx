@@ -33,7 +33,7 @@ function Menu() {
   return (
     <>
     <Container className="page-container menu-container">
-          <h1 className="menu-title" style={{ fontSize: '1.2rem' }}>
+          <h1 className="page-title" style={{ fontSize: '1.2rem' }}>
               Welcome {state.explorer.name}!
           </h1>
           <div className="menu">

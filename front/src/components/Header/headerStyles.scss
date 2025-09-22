@@ -1,128 +1,263 @@
 @use 'src/styles/vars';
 
-.header {
-    background-color: vars.$primary-color !important;
-    color: #fff !important;
-    padding: 1.5rem 1rem;
-    display: flex !important;
-    justify-content: space-between !important;
-    min-height: 72px;
-
-    &-logo {
-        width: 30%;
-    }
-
-    &-title {
-        font-weight: bold;
-        color: #fff !important;
-        font-size: 1.5rem !important;
-        padding-left: 3rem !important;
-
-        &-link {
-            font-weight: bold;
-            font-size: 1rem;
-            color: #000;
-        }
-    }
-
-    &-nav {
-      display: flex;
-      
-      &-item {
-        margin-right: 1.5rem !important;
-        font-weight: 500 !important;
-        }
-    }
-
-    &-profile {
-        color: #fff;
-        position: fixed;
-        right: 20px;
-        top: 35px;
-        font-size: 1.3rem;
-    }
-
-
-    &-dropdown {
-        color: #efefef;
-        font-size: 1rem;
-        position: fixed;
-        right: 5px;
-        top: 8px;
-    }
-
+:root {
+  --accent: var(--footer-active-accent, #f07a1a);
+  --header-bg: #fff;
+  --header-fg: #111;
+  --header-border: 1px solid rgba(0,0,0,.08);
+  --underline-thickness: 2px;
+  --underline-offset: 6px;
 }
 
-.header-nav-login {
+.header {
+  background-color: var(--header-bg);
+  color: var(--header-fg);
+  border-bottom: var(--header-border);
+
+  /* Row layout: brand | nav | actions */
+  .header-inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    min-height: 72px; /* keep your original minimum */
+  }
+
+  /* Brand */
+  &-brand { justify-self: start; }
+
+  &-title {
+    color: vars.$primary-color !important; /* keep primary color title */
+    font-weight: 800;
+    font-size: 1.3rem !important;
+    letter-spacing: .2px;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Nav */
+  &-nav {
+    justify-self: center;
+    display: inline-flex;
+    gap: 22px;
+    overflow: visible;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Each link doubles as a nav item so we can hide them on mobile */
+  &-nav-item {
+    /* desktop/tablet styles live on .header-nav-link below */
+  }
+
+  &-nav-link {
+    position: relative;
+    display: inline-block;
+    padding: 6px 0;
+    color: var(--header-fg);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: var(--underline-thickness);
+    text-underline-offset: var(--underline-offset);
+    text-decoration-color: transparent;
+    transition: text-decoration-color .14s ease;
+
+    &:hover {
+      text-decoration-color: color-mix(in oklab, var(--accent) 60%, currentColor);
+    }
+
+    &--active,
+    &[aria-current="page"] {
+      text-decoration-color: var(--accent);
+      font-weight: 700;
+    }
+  }
+
+  /* Actions */
+  &-actions {
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &-nav-login {
     cursor: pointer;
-    justify-self: right !important;
     text-decoration: none !important;
     color: vars.$primary-color !important;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 800 !important;
-    transition: all 0.2s ease-in-out;
-    border: none !important;
-}
+    border-radius: 999px;
+    padding: 6px 12px;
+    border: 1px solid rgba(0,0,0,.12) !important;
+    background-color: #fff;
 
-.header-nav-login.btn-light:hover {
-    background-color: #fff4ec; 
-    color: #f07a1a;            
-}
+    &.btn-light:hover {
+      background-color: #fff4ec;
+      color: #f07a1a;
+    }
+    &.btn-light:active {
+      background-color: #ffe0cc;
+      color: #d96a15;
+    }
+  }
 
-.header-nav-login.btn-light:active {
-    background-color: #ffe0cc; /* deeper tint when clicked */
-    color: #d96a15;            /* darker orange */
-}
+  /* RESPONSIVE */
+  @media (max-width: 767px) {
+    .header-inner {
+      grid-template-columns: auto 1fr auto;
+      min-height: 56px;
+      padding: 10px 12px;
+    }
 
-@media (min-width: 768px) { /* This targets larger screens */
-    .header {
-        padding: 1.5rem 1rem;
+    /* Hide header nav items on mobile (footer handles mobile navigation) */
+    &-nav-item {
+      display: none !important;
+    }
 
-    &-nav {
-        display: flex;
-        padding-right: 3rem !important;
-        gap: 2rem;
-    }    
-
+    /* Keep brand readable on small screens */
     &-title {
-        font-weight: bold;
-        font-size: 1.3rem;
+      font-size: 1.3rem !important;
     }
 
-    &-profile {
-        display: none;
+    /* Optionally tighten the right side if needed */
+    &-actions {
+      gap: 8px;
     }
-    }
+  }
 }
 
-@media (max-width: 767px) { /* This targets mobile screens */
-    .header {
-        display: block;
-        align-items: center;
-        padding: 1rem;
+/* If you want absolutely no hairline, uncomment: */
+/* .header { border-bottom: none; } */
 
-        &-nav-item {
-            display: none !important;
-        }
 
-        &-title {
-            padding: 0 !important;
-            font-size: 1.4rem !important;
-        }
-    }
 
-    .header-nav {
-        margin: 0 !important;
-        padding: 0 !important;
+// @use 'src/styles/vars';
 
-        &-login {
-            cursor: pointer;
-            justify-self: right !important;
-            text-decoration: none !important;
-            color: vars.$primary-color !important;
-            font-size: 1.1rem;
-            font-weight: 800 !important;
-        }
+// .header {
+//     background-color: vars.$primary-color !important;
+//     color: #fff !important;
+//     padding: 1.5rem 1rem;
+//     display: flex !important;
+//     justify-content: space-between !important;
+//     min-height: 72px;
 
-    }    
-}
+//     &-logo {
+//         width: 30%;
+//     }
+
+//     &-title {
+//         font-weight: bold;
+//         color: #fff !important;
+//         font-size: 1.5rem !important;
+//         padding-left: 3rem !important;
+
+//         &-link {
+//             font-weight: bold;
+//             font-size: 1rem;
+//             color: #000;
+//         }
+//     }
+
+//     &-nav {
+//       display: flex;
+      
+//       &-item {
+//         margin-right: 1.5rem !important;
+//         font-weight: 500 !important;
+//         }
+//     }
+
+//     &-profile {
+//         color: #fff;
+//         position: fixed;
+//         right: 20px;
+//         top: 35px;
+//         font-size: 1.3rem;
+//     }
+
+
+//     &-dropdown {
+//         color: #efefef;
+//         font-size: 1rem;
+//         position: fixed;
+//         right: 5px;
+//         top: 8px;
+//     }
+
+// }
+
+// .header-nav-login {
+//     cursor: pointer;
+//     justify-self: right !important;
+//     text-decoration: none !important;
+//     color: vars.$primary-color !important;
+//     font-size: 1.1rem;
+//     font-weight: 800 !important;
+//     transition: all 0.2s ease-in-out;
+//     border: none !important;
+// }
+
+// .header-nav-login.btn-light:hover {
+//     background-color: #fff4ec; 
+//     color: #f07a1a;            
+// }
+
+// .header-nav-login.btn-light:active {
+//     background-color: #ffe0cc; /* deeper tint when clicked */
+//     color: #d96a15;            /* darker orange */
+// }
+
+// @media (min-width: 768px) { /* This targets larger screens */
+//     .header {
+//         padding: 1.5rem 1rem;
+
+//     &-nav {
+//         display: flex;
+//         padding-right: 3rem !important;
+//         gap: 2rem;
+//     }    
+
+//     &-title {
+//         font-weight: bold;
+//         font-size: 1.3rem;
+//     }
+
+//     &-profile {
+//         display: none;
+//     }
+//     }
+// }
+
+// @media (max-width: 767px) { /* This targets mobile screens */
+//     .header {
+//         display: block;
+//         align-items: center;
+//         padding: 1rem;
+
+//         &-nav-item {
+//             display: none !important;
+//         }
+
+//         &-title {
+//             padding: 0 !important;
+//             font-size: 1.4rem !important;
+//         }
+//     }
+
+//     .header-nav {
+//         margin: 0 !important;
+//         padding: 0 !important;
+
+//         &-login {
+//             cursor: pointer;
+//             justify-self: right !important;
+//             text-decoration: none !important;
+//             color: vars.$primary-color !important;
+//             font-size: 1.1rem;
+//             font-weight: 800 !important;
+//         }
+
+//     }    
+// }
