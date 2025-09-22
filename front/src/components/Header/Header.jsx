@@ -24,7 +24,7 @@ function Header() {
       <div className="header-inner container-fluid">
         {/* Brand / title (stays in primary color) */}
         <NavLink
-          to={isSignedIn ? "/cards" : "/"}
+          to={isSignedIn ? "/menu" : "/"}
           className="header-brand"
           aria-label="WeSwapCards home"
           style={{ textDecoration: "none" }}

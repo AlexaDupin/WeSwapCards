@@ -1,0 +1,140 @@
+@use 'src/styles/vars' as vars;
+
+.legal {
+  text-align: left;
+
+  .page-title {
+    margin-bottom: 1rem;
+  }
+}
+
+.legal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.legal-list__item {
+  /* nothing special here; contained by .legal-link styles */
+}
+
+/* Clickable tile */
+.legal-link {
+  --tile-radius: 16px;
+
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  width: 100%;
+  border: 1px solid #e9ecef;
+  background: #fff;
+  border-radius: var(--tile-radius);
+  padding: 0.9rem 1rem;
+  text-align: left;
+  cursor: pointer;
+
+  /* button reset */
+  appearance: none;
+  border: 1px solid #e9ecef;
+
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background-color .12s ease;
+  touch-action: manipulation;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    border-color: #dee2e6;
+
+    .legal-link__chevron {
+      transform: translateX(2px);
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(0,0,0,0.15);
+    outline-offset: 2px;
+  }
+}
+
+.legal-link__icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 12px;
+  /* neutral tinted background; works with any brand color */
+  background: rgba(0,0,0,0.05);
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+    color: vars.$primary-color;
+  }
+}
+
+.legal-link__content {
+  min-width: 0; /* permit truncation if needed */
+  display: grid;
+  gap: 0.15rem;
+}
+
+.legal-link__title {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.legal-link__desc {
+  font-size: 0.9rem;
+  color: #6c757d;
+  line-height: 1.25;
+}
+
+.legal-link__chevron {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  transition: transform .12s ease;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+    color: #adb5bd;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .legal-link {
+    transition: none;
+
+    &:hover .legal-link__chevron {
+      transform: none;
+    }
+  }
+}
+
+/* Spacing tweak on larger screens */
+@media (min-width: 768px) {
+  .legal-list {
+    gap: 1rem;
+  }
+}
+
+
+.legal {
+    text-align: left;
+
+    &-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+}
