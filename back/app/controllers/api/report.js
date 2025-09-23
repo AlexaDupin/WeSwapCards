@@ -58,9 +58,9 @@ const reportController = {
             return res.status(200).json({ ok: true, upserted: [], deleted: 0 });
         }
 
-        console.log("selectedCardsIds", selectedCardsIds);
-        console.log("duplicatesIds", duplicatesIds);
-        console.log("toBeDeletedIds", toBeDeletedIds);
+        // console.log("selectedCardsIds", selectedCardsIds);
+        // console.log("duplicatesIds", duplicatesIds);
+        // console.log("toBeDeletedIds", toBeDeletedIds);
 
         try {
             const selectedCardsData = selectedCardsIds.map(cardId => ({

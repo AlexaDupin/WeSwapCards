@@ -110,7 +110,7 @@ const useCardsLogic = () => {
         { duplicate },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log(`Card ${cardId} status updated`, response.data);
+      // console.log(`Card ${cardId} status updated`, response.data);
   
       if (response.status === 200 && response.data.duplicate === false) { 
         dispatch({
@@ -159,7 +159,7 @@ const useCardsLogic = () => {
             type: 'cardStatuses/reset',
             payload: { cardId },
           })
-          console.log(`Card ${cardId} has been deleted`);
+          // console.log(`Card ${cardId} has been deleted`);
         }
 
       } catch (error) {
