@@ -22,7 +22,7 @@ import BulkToast from "./BulkToast";
 import useBulkUI from "../hooks/useBulkUI";
 
 function Cards() {
-  const { state, handleSelect, reset, isLoading, handleBulkSetAllOwned, handleBulkSetAllDuplicated, deleteAllCardsBulk, undoLastBulk } = useCardsLogic();
+  const { state, handleSelect, reset, isLoading, handleBulkSetAllOwned, handleBulkSetAllDuplicated, undoLastBulk } = useCardsLogic();
   const { chaptersData } = useChapterBuckets(state.chapters, state.cards, state.cardStatuses);
   const [showMissingOnly, setShowMissingOnly] = useState(false);
   const { toast, showToast, hideToast } = useBulkUI();
@@ -52,8 +52,6 @@ function Cards() {
         result = await handleBulkSetAllOwned();
       } else if (actionKey === BULK_ACTION.ALL_DUPLICATED) {
         result = await handleBulkSetAllDuplicated();
-      } else if (actionKey === BULK_ACTION.DELETE_ALL) {
-        result = await deleteAllCardsBulk();
       } else {
         return false;
       }

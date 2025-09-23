@@ -202,29 +202,29 @@ const useCardsLogic = () => {
       }
     }, [explorerId, state?.cards, state?.cardStatuses, getToken, dispatch]);
 
-    const deleteAllCardsBulk = async () => {
-      try {
-        setIsLoading(true);
-        const token = await getToken();
-        const { data } = await axiosInstance.delete(`/explorercards/${explorerId}/cards`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+    // const deleteAllCardsBulk = async () => {
+    //   try {
+    //     setIsLoading(true);
+    //     const token = await getToken();
+    //     const { data } = await axiosInstance.delete(`/explorercards/${explorerId}/cards`, {
+    //       headers: { Authorization: `Bearer ${token}` },
+    //     });
   
-        const snapshot = Array.isArray(data?.snapshot) ? data.snapshot : [];
+    //     const snapshot = Array.isArray(data?.snapshot) ? data.snapshot : [];
   
-        dispatch({
-          type: 'cards/allDeleted',
-          payload: { snapshot },
-        });
-        return true;
+    //     dispatch({
+    //       type: 'cards/allDeleted',
+    //       payload: { snapshot },
+    //     });
+    //     return true;
 
-      } catch (error) {
-        console.error(error);
-        dispatch({ type: 'cards/bulkDeleteError' });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    //   } catch (error) {
+    //     console.error(error);
+    //     dispatch({ type: 'cards/bulkDeleteError' });
+    //   } finally {
+    //     setIsLoading(false);
+    //   }
+    // };
   
     // --- Undo last bulk operation (works for Delete-all now, Mark-all-duplicated later) ---
     const undoLastBulk = async () => {
@@ -288,7 +288,6 @@ const useCardsLogic = () => {
         isLoading,
         handleBulkSetAllOwned,
         handleBulkSetAllDuplicated,
-        deleteAllCardsBulk,
         undoLastBulk,
     }
 }

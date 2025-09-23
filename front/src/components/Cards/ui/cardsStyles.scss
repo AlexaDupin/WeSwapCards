@@ -24,15 +24,15 @@
   }
 
   .chapter-progress {
-    display: inline-block;      /* prevents 100% width stretch if your component does that */
+    display: inline-block;
     margin-bottom: 0.75rem;
     vertical-align: top;
   }
 
   .cards-list {
     display: flex;
-    gap: 0.2rem;               // container controls the spacing
-    justify-content: flex-start; // <<< keeps left/start alignment at all sizes
+    gap: 0.2rem;
+    justify-content: flex-start;
     align-items: flex-start;
   }
 }

@@ -25,6 +25,7 @@ function QuickActions({ order = [], registry, context, onAction, activeKeys }) {
             size="sm"
             className="rounded-pill quick-pill quick-button"
             onClick={() => onAction(key)}
+            onPointerUp={(e) => e.currentTarget.blur()}
             disabled={isDisabled}
             aria-pressed={isPressed ? "true" : "false"}
           >
