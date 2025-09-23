@@ -46,28 +46,28 @@ function Menu() {
           <button
             type="button"
             className="action-card"
-            onClick={() => navigate('/cards')}
-            aria-label="My cards"
-            title="My cards"
-          >
-            <div className="action-card__icon" aria-hidden="true"><ListCheck /></div>
-            <div className="action-card__content">
-              <h2 className="action-card__title">My cards</h2>
-              <p className="action-card__desc">Keep your list up to date to make successful deals.</p>
-            </div>
-          </button>
-
-          <button
-            type="button"
-            className="action-card"
             onClick={() => navigate('/swap/dashboard')}
             aria-label="Dashboard"
             title="Dashboard"
           >
             <div className="action-card__icon" aria-hidden="true"><ChatDots /></div>
             <div className="action-card__content">
-              <h2 className="action-card__title">Dashboard</h2>
-              <p className="action-card__desc">Check new messages and keep track of all your requests.</p>
+              <h2 className="action-card__title">Check your messages</h2>
+              <p className="action-card__desc">See if you have new messages and keep track of all your requests.</p>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            className="action-card"
+            onClick={() => navigate('/cards')}
+            aria-label="My cards"
+            title="My cards"
+          >
+            <div className="action-card__icon" aria-hidden="true"><ListCheck /></div>
+            <div className="action-card__content">
+              <h2 className="action-card__title">Log your cards</h2>
+              <p className="action-card__desc">Keep your list up to date to make successful deals.</p>
             </div>
           </button>
         </div>

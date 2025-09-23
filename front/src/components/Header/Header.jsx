@@ -22,8 +22,8 @@ function Header() {
 
   const links = [
     { to: "/swap/card",      label: "Swap" },
+    { to: "/swap/dashboard", label: "Messages" },
     { to: "/cards",          label: "My cards" },
-    { to: "/swap/dashboard", label: "Dashboard" },
   ];
 
   const navLinkClass = ({ isActive }) =>

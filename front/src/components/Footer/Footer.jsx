@@ -2,11 +2,7 @@ import React from 'react';
 import {
   NavLink
 } from 'react-router-dom';
-import {
-	Eyeglasses,
-	Search,
-	CardList,
-} from "react-bootstrap-icons";
+import { Search, ListCheck, ChatDots } from 'react-bootstrap-icons';
 import PropTypes from 'prop-types';
 import { useUser } from '@clerk/clerk-react';
 
@@ -51,8 +47,8 @@ function Footer() {
           `footer-mobile-link${isActive ? ' footer-mobile-link--active' : ''}`
           }
         >            
-          <CardList />
-          <p className="footer-mobile-caption">Dashboard</p>
+          <ChatDots />
+          <p className="footer-mobile-caption">Messages</p>
         </NavLink>
         <NavLink 
           to="/cards" 
@@ -60,7 +56,7 @@ function Footer() {
           `footer-mobile-link${isActive ? ' footer-mobile-link--active' : ''}`
           }
         >
-          <Eyeglasses />
+          <ListCheck />
           <p className="footer-mobile-caption">My cards</p>
         </NavLink>
       </div>

@@ -25,7 +25,7 @@ export const STEPS = [
     img: Dashboard,
     alt: "Dashboard icon",
     title: "Check your conversations",
-    text: 'Regularly check your "Dashboard" for new messages.',
+    text: 'Regularly check if you have new messages to seize the best opportunities.',
     to: "/swap/dashboard",
   },
   {
