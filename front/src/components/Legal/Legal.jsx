@@ -51,7 +51,7 @@ function Legal() {
       <h1 className="page-title">Legal</h1>
 
       <Container>
-        <ul className="legal-list" role="list" aria-label="Legal documents">
+        <ul className="legal-list" aria-label="Legal documents">
           {items.map(item => (
             <li key={item.key} className="legal-list__item">
               <button
