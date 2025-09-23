@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import PageContainer from '../PageContainer/PageContainer';
 import { useUser } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
 import { Container } from "react-bootstrap";
@@ -29,16 +28,14 @@ function Home() {
     }, [isSignedIn]);
 
     useEffect(() => {
-      // optional: stagger delays inside groups
       document.querySelectorAll("[data-reveal-container]").forEach((group) => {
         group.querySelectorAll(".reveal").forEach((el, i) => {
           el.style.setProperty("--delay", `${i * 90}ms`);
         });
       });
   
-      // re-animate on scroll up/down: toggle class based on visibility
-      const ENTER = 0.25; // add class when >= 25% visible
-      const EXIT  = 0.10; // remove class when <= 10% visible
+      const ENTER = 0.25;
+      const EXIT  = 0.10;
       const state = new WeakMap();
   
       const io = new IntersectionObserver(
@@ -60,7 +57,7 @@ function Home() {
       const nodes = document.querySelectorAll(".reveal");
       nodes.forEach((el) => io.observe(el));
   
-      return () => io.disconnect(); // cleanup
+      return () => io.disconnect();
     }, []);
 
   return (
