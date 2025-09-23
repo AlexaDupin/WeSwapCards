@@ -85,6 +85,18 @@
   font-weight: 500;
 }
 
+.quick-button.btn-outline-primary:active,
+.quick-button.btn-outline-primary[aria-pressed="false"]:active {
+  background-color: transparent !important;
+  color: $primary !important;
+  border-color: $primary !important;
+  box-shadow: none;
+}
+
+.quick-button.btn-outline-primary:focus:not(:focus-visible) {
+  box-shadow: none;
+}
+
 .cards-toast-container {
   z-index: 1080;
 }

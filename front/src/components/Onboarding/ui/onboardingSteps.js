@@ -9,7 +9,7 @@ export const STEPS = [
     img: Report,
     alt: "Report icon",
     title: "Step 1: Log all your cards",
-    text: 'Go to "My cards" to report the cards you own and your duplicates. You can mark them all as owned or as duplicated and adjust afterwards.',
+    text: 'Go to "My cards" to report the cards you own and your duplicates. You can mark them all as owned or as duplicated and adjust later.',
     to: "/cards",
   },
   {

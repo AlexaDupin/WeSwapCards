@@ -26,7 +26,7 @@ export const BULK_ACTIONS = {
       body: (total) => (
         <>
           <p>Do you really want to mark all <strong>{total}</strong> cards as owned?</p>
-          <p className="mb-0">This is useful for new users. You can update them individually afterwards.</p>
+          <p className="mb-0">This is useful for new users. You can update them individually later.</p>
         </>
       ),
     },
@@ -45,7 +45,7 @@ export const BULK_ACTIONS = {
       body: (total) => (
         <>
           <p>Do you really want to mark all <strong>{total}</strong> cards as <em>duplicated</em>?</p>
-          <p className="mb-0">This is useful for new users. You can update them individually afterwards.</p>
+          <p className="mb-0">This is useful for new users. You can update them individually later.</p>
         </>
       ),
     },
