@@ -8,9 +8,11 @@ import {
 	CardList,
 } from "react-bootstrap-icons";
 import PropTypes from 'prop-types';
+import { useUser } from '@clerk/clerk-react';
 
 import './footerStyles.scss';
 function Footer() {
+  const { isLoaded, isSignedIn } = useUser();
 
   return (
     <footer className="footer text-center ">
@@ -33,6 +35,7 @@ function Footer() {
 
       
       {/* For mobile screens */}
+      {isLoaded && isSignedIn && (
       <div className="footer-mobile border-top fixed-bottom">
         <NavLink 
           to="/swap/card" 
@@ -61,7 +64,7 @@ function Footer() {
           <p className="footer-mobile-caption">My cards</p>
         </NavLink>
       </div>
-        
+    )}    
     </footer>     
   );
 }
