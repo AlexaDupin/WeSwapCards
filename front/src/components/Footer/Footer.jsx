@@ -57,7 +57,7 @@ function Footer() {
             `footer-mobile-link${isActive ? ' footer-mobile-link--active' : ''}`
         }>
           <Search />
-          <p className="footer-mobile-caption">Find a card</p>
+          <p className="footer-mobile-caption">Swap</p>
         </NavLink>
         <NavLink 
           to="/swap/dashboard" 
