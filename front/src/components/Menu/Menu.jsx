@@ -5,7 +5,7 @@ import { useStateContext } from '../../contexts/StateContext';
 
 import { Search, ListCheck, ChatDots } from 'react-bootstrap-icons';
 
-import CarouselModal from '../Carousel/Carousel';
+import CarouselModal from '../Onboarding/ui/Carousel';
 import './menuStyles.scss';
 
 function Menu() {
