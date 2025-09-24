@@ -167,40 +167,40 @@ const useCardsLogic = () => {
       }
     }, [state.cardStatuses, explorerId, getToken, dispatch]);
 
-    const handleBulkSetAllOwned = useCallback(async () => {
-      const allCardIds = state.cards?.map(card => card.id) ?? [];
-      if (!explorerId || allCardIds.length === 0) return false;
+    // const handleBulkSetAllOwned = useCallback(async () => {
+    //   const allCardIds = state.cards?.map(card => card.id) ?? [];
+    //   if (!explorerId || allCardIds.length === 0) return false;
 
-      const snapshotBefore = statusesMapToSnapshot(allCardIds, state.cardStatuses);
+    //   const snapshotBefore = statusesMapToSnapshot(allCardIds, state.cardStatuses);
   
-      dispatch({ type: 'bulk/allOwnedStarted' });
-      dispatch({ type: 'bulk/allOwnedOptimistic', payload: { allCardIds, snapshotBefore } });
+    //   dispatch({ type: 'bulk/allOwnedStarted' });
+    //   dispatch({ type: 'bulk/allOwnedOptimistic', payload: { allCardIds, snapshotBefore } });
   
-      try {
-        const token = await getToken();
+    //   try {
+    //     const token = await getToken();
 
-        const statuses = Object.create(null);
-        for (const id of allCardIds) {
-          statuses[id] = state.cardStatuses[id] === 'duplicated' ? 'duplicated' : 'owned';
-        }
+    //     const statuses = Object.create(null);
+    //     for (const id of allCardIds) {
+    //       statuses[id] = state.cardStatuses[id] === 'duplicated' ? 'duplicated' : 'owned';
+    //     }
 
-        const response = await axiosInstance.post(`/cards/statuses/${explorerId}/replace`,
-          { statuses },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+    //     const response = await axiosInstance.post(`/cards/statuses/${explorerId}/replace`,
+    //       { statuses },
+    //       { headers: { Authorization: `Bearer ${token}` } }
+    //     );
 
-        if (response.status === 200) {
-          dispatch({ type: 'bulk/allOwnedSuccess' });
-          return true;
-        } else {
-          throw new Error('Bad status');
-        }
+    //     if (response.status === 200) {
+    //       dispatch({ type: 'bulk/allOwnedSuccess' });
+    //       return true;
+    //     } else {
+    //       throw new Error('Bad status');
+    //     }
   
-      } catch (error) {
-        dispatch({ type: 'bulk/allOwnedFailed', payload: { snapshotBefore } });
-        return false;
-      }
-    }, [explorerId, state?.cards, state?.cardStatuses, getToken, dispatch]);
+    //   } catch (error) {
+    //     dispatch({ type: 'bulk/allOwnedFailed', payload: { snapshotBefore } });
+    //     return false;
+    //   }
+    // }, [explorerId, state?.cards, state?.cardStatuses, getToken, dispatch]);
 
     // const deleteAllCardsBulk = async () => {
     //   try {
@@ -252,6 +252,66 @@ const useCardsLogic = () => {
       }
     };
 
+    // const handleBulkSetAllDuplicated = useCallback(async () => {
+    //   const allCardIds = state.cards?.map(card => card.id) ?? [];
+    //   if (!explorerId || allCardIds.length === 0) return false;
+
+    //   const snapshotBefore = statusesMapToSnapshot(allCardIds, state.cardStatuses);
+
+    //   dispatch({ type: 'bulk/allDuplicatedStarted' });
+    //   dispatch({ type: 'bulk/allDuplicatedOptimistic', payload: { allCardIds, snapshotBefore } });
+
+    //   try {
+    //     const token = await getToken();
+    //     const response = await axiosInstance.post(
+    //       `/cards/statuses/${explorerId}`,
+    //       { cardIds: allCardIds, duplicate: true },
+    //       { headers: { Authorization: `Bearer ${token}` } }
+    //     );
+
+    //     if (response.status === 200) {
+    //       dispatch({ type: 'bulk/allDuplicatedSuccess' });
+    //       return true;
+    //     } else {
+    //       throw new Error('Bad status');
+    //     }
+    //   } catch (error) {
+    //     dispatch({ type: 'bulk/allDuplicatedFailed', payload: { snapshotBefore } });
+    //     return false;
+    //   }
+    // }, [explorerId, state?.cards, state?.cardStatuses, getToken, dispatch]);
+
+    const handleBulkSetAllOwned = useCallback(async () => {
+      const allCardIds = state.cards?.map(card => card.id) ?? [];
+      if (!explorerId || allCardIds.length === 0) return false;
+
+      const snapshotBefore = statusesMapToSnapshot(allCardIds, state.cardStatuses);
+  
+      dispatch({ type: 'bulk/allOwnedStarted' });
+      dispatch({ type: 'bulk/allOwnedOptimistic', payload: { allCardIds, snapshotBefore } });
+  
+      try {
+        const token = await getToken();
+
+        const response = await axiosInstance.post(
+           `/cards/statuses/${explorerId}`,
+            {},
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (response.status === 200) {
+          dispatch({ type: 'bulk/allOwnedSuccess' });
+          return true;
+        } else {
+          throw new Error('Bad status');
+        }
+  
+      } catch (error) {
+        dispatch({ type: 'bulk/allOwnedFailed', payload: { snapshotBefore } });
+        return false;
+      }
+    }, [explorerId, state?.cards, state?.cardStatuses, getToken, dispatch]);
+
     const handleBulkSetAllDuplicated = useCallback(async () => {
       const allCardIds = state.cards?.map(card => card.id) ?? [];
       if (!explorerId || allCardIds.length === 0) return false;
@@ -265,7 +325,7 @@ const useCardsLogic = () => {
         const token = await getToken();
         const response = await axiosInstance.post(
           `/cards/statuses/${explorerId}`,
-          { cardIds: allCardIds, duplicate: true },
+          { duplicate: true },
           { headers: { Authorization: `Bearer ${token}` } }
         );
 

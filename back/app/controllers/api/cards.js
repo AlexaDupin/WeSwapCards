@@ -62,36 +62,36 @@ const cardController = {
             res.status(500).send(error);
         }
     },
-    async markAll(req, res) {
-        const explorerId = Number(req.params.explorerId);
-        const rawIds = Array.isArray(req.body?.cardIds) ? req.body.cardIds : [];
-        const duplicate = !!req.body?.duplicate;
+    // async markAll(req, res) {
+    //     const explorerId = Number(req.params.explorerId);
+    //     const rawIds = Array.isArray(req.body?.cardIds) ? req.body.cardIds : [];
+    //     const duplicate = !!req.body?.duplicate;
 
-        if (!Number.isInteger(explorerId) || rawIds.length === 0) {
-          return res.status(400).json({ error: 'Invalid payload: cardIds[] required' });
-        }
+    //     if (!Number.isInteger(explorerId) || rawIds.length === 0) {
+    //       return res.status(400).json({ error: 'Invalid payload: cardIds[] required' });
+    //     }
 
-        const cardIds = rawIds
-          .map(Number)
-          .filter((n) => Number.isInteger(n));
-        if (!cardIds.length) {
-          return res.status(400).json({ error: 'No valid cardIds' });
-        }
+    //     const cardIds = rawIds
+    //       .map(Number)
+    //       .filter((n) => Number.isInteger(n));
+    //     if (!cardIds.length) {
+    //       return res.status(400).json({ error: 'No valid cardIds' });
+    //     }
 
-        try {
-          // Reuse the "replace" path so existing rows are updated on conflict.
-          const payload = duplicate
-            ? { ownedIds: [], duplicatedIds: cardIds, defaultIds: [] }
-            : { ownedIds: cardIds, duplicatedIds: [], defaultIds: [] };
+    //     try {
+    //       // Reuse the "replace" path so existing rows are updated on conflict.
+    //       const payload = duplicate
+    //         ? { ownedIds: [], duplicatedIds: cardIds, defaultIds: [] }
+    //         : { ownedIds: cardIds, duplicatedIds: [], defaultIds: [] };
 
-          const result = await datamapper.bulkReplaceStatuses(explorerId, payload);
-          // UI only checks 200; still nice to return some stats
-          return res.status(200).json({ ...result, total: cardIds.length, duplicate });
-        } catch (error) {
-          console.error('Error bulk-marking cards:', error);
-          return res.status(500).json({ error: 'Internal Server Error' });
-        }
-    },
+    //       const result = await datamapper.bulkReplaceStatuses(explorerId, payload);
+    //       // UI only checks 200; still nice to return some stats
+    //       return res.status(200).json({ ...result, total: cardIds.length, duplicate });
+    //     } catch (error) {
+    //       console.error('Error bulk-marking cards:', error);
+    //       return res.status(500).json({ error: 'Internal Server Error' });
+    //     }
+    // },
     async replaceStatuses(req, res) {
         const explorerId = Number(req.params.explorerId);
         const statusesMap = req.body?.statuses;
@@ -159,6 +159,24 @@ const cardController = {
           return res.status(500).json({ error: 'Failed to restore cards' });
         }
       },
+      async markAll(req, res) {
+        const explorerId = Number(req.params.explorerId);
+        const duplicate = !!req.body?.duplicate;
+
+        if (!Number.isInteger(explorerId)) {
+             return res.status(400).json({ error: 'Invalid explorerId' });
+        }
+
+        try {
+          const result = duplicate
+            ? await datamapper.markAllDuplicated(explorerId)
+            : await datamapper.markAllOwnedPreservingDuplicates(explorerId);
+            return res.status(200).json({ success: true, duplicate, ...result });
+        } catch (error) {
+          console.error('Error bulk-marking cards:', error);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
 };
 
 module.exports = cardController;

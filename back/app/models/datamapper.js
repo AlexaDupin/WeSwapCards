@@ -886,4 +886,34 @@ module.exports = {
         throw error;
       }
     },
+    async markAllOwnedPreservingDuplicates(explorerId) {
+        const q = {
+          text: `
+            INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
+            SELECT $1, c.id, FALSE
+            FROM card AS c
+            ON CONFLICT (explorer_id, card_id)
+            DO UPDATE
+            SET duplicate = explorer_has_cards.duplicate OR EXCLUDED.duplicate
+          `,
+          values: [explorerId],
+        };
+        const r = await client.query(q);
+        return { affected: r.rowCount ?? 0 };
+      },
+      async markAllDuplicated(explorerId) {
+        const q = {
+          text: `
+            INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
+            SELECT $1, c.id, TRUE
+            FROM card AS c
+            ON CONFLICT (explorer_id, card_id)
+            DO UPDATE
+            SET duplicate = TRUE
+          `,
+          values: [explorerId],
+        };
+        const r = await client.query(q);
+        return { affected: r.rowCount ?? 0 };
+      }
 };
