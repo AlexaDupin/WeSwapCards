@@ -80,7 +80,7 @@ const cardController = {
         } else {
           await datamapper.markChapterDuplicated({ explorerId, chapterId });
         }
-        return res.status(204).end();
+        return res.status(200).json({ ok: true });
       } catch (error) {
         return res.status(500).send(error);
       }

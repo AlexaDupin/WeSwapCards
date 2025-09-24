@@ -182,10 +182,16 @@ const useCardsLogic = () => {
         try {
           const token = await getToken();
           await axiosInstance.post(
-            `/bulk/explorercards/${explorerId}/chapters/${chapterId}/mark`,
+            `/explorercards/${explorerId}/chapters/${chapterId}/status`,
             { status: 'owned' },
-            { headers: { Authorization: `Bearer ${token}` } }
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              withCredentials: true,
+            }
           );
+
           dispatch({ type: 'cards/bulkSetChapterStatus', payload: { chapterId, status: 'owned' } });
 
         } catch (e) {
@@ -217,9 +223,14 @@ const useCardsLogic = () => {
         try {
           const token = await getToken();
           await axiosInstance.post(
-            `/bulk/explorercards/${explorerId}/chapters/${chapterId}/mark`,
+            `/explorercards/${explorerId}/chapters/${chapterId}/status`,
             { status: 'duplicated' },
-            { headers: { Authorization: `Bearer ${token}` } }
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              withCredentials: true,
+            }
           );
           dispatch({ type: 'cards/bulkSetChapterStatus', payload: { chapterId, status: 'duplicated' } });
 

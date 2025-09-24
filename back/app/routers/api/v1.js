@@ -36,8 +36,9 @@ router
     .delete(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.deleteCardFromExplorer));
 
 router
-    .route('/bulk/explorercards/:explorerId/chapters/:chapterId/mark')
-    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.markChapter));
+  .route('/explorercards/:explorerId/chapters/:chapterId/status')
+  .options((req, res) => res.sendStatus(204))
+  .post(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.markChapter));
 
 router
     .route('/cards/:placeId')
