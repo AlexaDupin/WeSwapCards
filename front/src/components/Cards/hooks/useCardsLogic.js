@@ -4,7 +4,6 @@ import { useAuth } from '@clerk/clerk-react';
 import { useStateContext } from '../../../contexts/StateContext';
 import { initialState, reducer } from '../../../reducers/cardsReducer';
 import { useNavigate } from 'react-router-dom';
-import { replaceStatuses, snapshotToStatusesMap, statusesMapToSnapshot } from '../../../helpers/statuses';
 
 const useCardsLogic = () => {
     const stateContext = useStateContext();
@@ -17,6 +16,9 @@ const useCardsLogic = () => {
     const isNetworkError = (error) =>
     !navigator.onLine || error?.code === 'ERR_NETWORK' || error?.message === 'Network Error';
     const navigate = useNavigate();
+
+    const [pendingChapters, setPendingChapters] = useState(new Set());
+    const isChapterPending = useCallback((id) => pendingChapters.has(id), [pendingChapters]);
 
     const fetchAllChapters = async () => {
         try {
@@ -167,188 +169,84 @@ const useCardsLogic = () => {
       }
     }, [state.cardStatuses, explorerId, getToken, dispatch]);
 
-    // const handleBulkSetAllOwned = useCallback(async () => {
-    //   const allCardIds = state.cards?.map(card => card.id) ?? [];
-    //   if (!explorerId || allCardIds.length === 0) return false;
+    const markAllOwnedInChapter = useCallback(
+      async (chapterId) => {
+        if (pendingChapters.has(chapterId)) return;
 
-    //   const snapshotBefore = statusesMapToSnapshot(allCardIds, state.cardStatuses);
+        setPendingChapters((prev) => {
+          const next = new Set(prev);
+          next.add(chapterId);
+          return next;
+        });
   
-    //   dispatch({ type: 'bulk/allOwnedStarted' });
-    //   dispatch({ type: 'bulk/allOwnedOptimistic', payload: { allCardIds, snapshotBefore } });
-  
-    //   try {
-    //     const token = await getToken();
-
-    //     const statuses = Object.create(null);
-    //     for (const id of allCardIds) {
-    //       statuses[id] = state.cardStatuses[id] === 'duplicated' ? 'duplicated' : 'owned';
-    //     }
-
-    //     const response = await axiosInstance.post(`/cards/statuses/${explorerId}/replace`,
-    //       { statuses },
-    //       { headers: { Authorization: `Bearer ${token}` } }
-    //     );
-
-    //     if (response.status === 200) {
-    //       dispatch({ type: 'bulk/allOwnedSuccess' });
-    //       return true;
-    //     } else {
-    //       throw new Error('Bad status');
-    //     }
-  
-    //   } catch (error) {
-    //     dispatch({ type: 'bulk/allOwnedFailed', payload: { snapshotBefore } });
-    //     return false;
-    //   }
-    // }, [explorerId, state?.cards, state?.cardStatuses, getToken, dispatch]);
-
-    // const deleteAllCardsBulk = async () => {
-    //   try {
-    //     setIsLoading(true);
-    //     const token = await getToken();
-    //     const { data } = await axiosInstance.delete(`/explorercards/${explorerId}/cards`, {
-    //       headers: { Authorization: `Bearer ${token}` },
-    //     });
-  
-    //     const snapshot = Array.isArray(data?.snapshot) ? data.snapshot : [];
-  
-    //     dispatch({
-    //       type: 'cards/allDeleted',
-    //       payload: { snapshot },
-    //     });
-    //     return true;
-
-    //   } catch (error) {
-    //     console.error(error);
-    //     dispatch({ type: 'cards/bulkDeleteError' });
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // };
-  
-    // --- Undo last bulk operation (works for Delete-all now, Mark-all-duplicated later) ---
-    const undoLastBulk = async () => {
-      const snapshot = state.lastUndo?.snapshot;
-      if (!Array.isArray(snapshot) || !snapshot.length) return;
-  
-      try {
-        setIsLoading(true);
-        const token = await getToken();
-        await axiosInstance.post(
-          `/explorercards/${explorerId}/cards/restore-bulk`,
-          { items: snapshot },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-  
-        // Rebuild map from snapshot and replace via helper
-        const restoredMap = snapshotToStatusesMap(snapshot);
-        const normalized = replaceStatuses(restoredMap);
-        dispatch({ type: 'cards/restoreBulkSuccess', payload: { merged: normalized } });
-      } catch (error) {
-        console.error(error);
-        dispatch({ type: 'cards/restoreBulkError' });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    // const handleBulkSetAllDuplicated = useCallback(async () => {
-    //   const allCardIds = state.cards?.map(card => card.id) ?? [];
-    //   if (!explorerId || allCardIds.length === 0) return false;
-
-    //   const snapshotBefore = statusesMapToSnapshot(allCardIds, state.cardStatuses);
-
-    //   dispatch({ type: 'bulk/allDuplicatedStarted' });
-    //   dispatch({ type: 'bulk/allDuplicatedOptimistic', payload: { allCardIds, snapshotBefore } });
-
-    //   try {
-    //     const token = await getToken();
-    //     const response = await axiosInstance.post(
-    //       `/cards/statuses/${explorerId}`,
-    //       { cardIds: allCardIds, duplicate: true },
-    //       { headers: { Authorization: `Bearer ${token}` } }
-    //     );
-
-    //     if (response.status === 200) {
-    //       dispatch({ type: 'bulk/allDuplicatedSuccess' });
-    //       return true;
-    //     } else {
-    //       throw new Error('Bad status');
-    //     }
-    //   } catch (error) {
-    //     dispatch({ type: 'bulk/allDuplicatedFailed', payload: { snapshotBefore } });
-    //     return false;
-    //   }
-    // }, [explorerId, state?.cards, state?.cardStatuses, getToken, dispatch]);
-
-    const handleBulkSetAllOwned = useCallback(async () => {
-      const allCardIds = state.cards?.map(card => card.id) ?? [];
-      if (!explorerId || allCardIds.length === 0) return false;
-
-      const snapshotBefore = statusesMapToSnapshot(allCardIds, state.cardStatuses);
-  
-      dispatch({ type: 'bulk/allOwnedStarted' });
-      dispatch({ type: 'bulk/allOwnedOptimistic', payload: { allCardIds, snapshotBefore } });
-  
-      try {
-        const token = await getToken();
-
-        const response = await axiosInstance.post(
-           `/cards/statuses/${explorerId}`,
-            {},
+        try {
+          const token = await getToken();
+          await axiosInstance.post(
+            `/bulk/explorercards/${explorerId}/chapters/${chapterId}/mark`,
+            { status: 'owned' },
             { headers: { Authorization: `Bearer ${token}` } }
-        );
+          );
+          dispatch({ type: 'cards/bulkSetChapterStatus', payload: { chapterId, status: 'owned' } });
 
-        if (response.status === 200) {
-          dispatch({ type: 'bulk/allOwnedSuccess' });
-          return true;
-        } else {
-          throw new Error('Bad status');
+        } catch (e) {
+          dispatch({
+            type: 'cardStatuses/fetchedError',
+            payload: { message: 'Could not mark this chapter as owned. Try again.' },
+          });
+        } finally {
+          setPendingChapters((prev) => {
+            const next = new Set(prev);
+            next.delete(chapterId);
+            return next;
+          });
         }
+      },
+      [dispatch, explorerId, getToken, pendingChapters]
+    );
   
-      } catch (error) {
-        dispatch({ type: 'bulk/allOwnedFailed', payload: { snapshotBefore } });
-        return false;
-      }
-    }, [explorerId, state?.cards, state?.cardStatuses, getToken, dispatch]);
+    const markAllDuplicatedInChapter = useCallback(
+      async (chapterId) => {
+        if (pendingChapters.has(chapterId)) return;
 
-    const handleBulkSetAllDuplicated = useCallback(async () => {
-      const allCardIds = state.cards?.map(card => card.id) ?? [];
-      if (!explorerId || allCardIds.length === 0) return false;
+        setPendingChapters((prev) => {
+          const next = new Set(prev);
+          next.add(chapterId);
+          return next;
+        });
 
-      const snapshotBefore = statusesMapToSnapshot(allCardIds, state.cardStatuses);
+        try {
+          const token = await getToken();
+          await axiosInstance.post(
+            `/bulk/explorercards/${explorerId}/chapters/${chapterId}/mark`,
+            { status: 'duplicated' },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          dispatch({ type: 'cards/bulkSetChapterStatus', payload: { chapterId, status: 'duplicated' } });
 
-      dispatch({ type: 'bulk/allDuplicatedStarted' });
-      dispatch({ type: 'bulk/allDuplicatedOptimistic', payload: { allCardIds, snapshotBefore } });
-
-      try {
-        const token = await getToken();
-        const response = await axiosInstance.post(
-          `/cards/statuses/${explorerId}`,
-          { duplicate: true },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        if (response.status === 200) {
-          dispatch({ type: 'bulk/allDuplicatedSuccess' });
-          return true;
-        } else {
-          throw new Error('Bad status');
-        }
-      } catch (error) {
-        dispatch({ type: 'bulk/allDuplicatedFailed', payload: { snapshotBefore } });
-        return false;
-      }
-    }, [explorerId, state?.cards, state?.cardStatuses, getToken, dispatch]);
+         } catch (e) {
+           dispatch({
+             type: 'cardStatuses/fetchedError',
+             payload: { message: 'Could not mark this chapter as duplicated. Try again.' },
+           });
+         } finally {
+           setPendingChapters((prev) => {
+             const next = new Set(prev);
+             next.delete(chapterId);
+             return next;
+           });
+         }
+       },
+       [dispatch, explorerId, getToken, pendingChapters]
+    );
 
     return {
         state,
         handleSelect,
         reset,
         isLoading,
-        handleBulkSetAllOwned,
-        handleBulkSetAllDuplicated,
-        undoLastBulk,
+        markAllOwnedInChapter,
+        markAllDuplicatedInChapter,
+        isChapterPending,
     }
 }
 

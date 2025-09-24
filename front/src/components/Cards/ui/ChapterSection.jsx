@@ -1,6 +1,7 @@
 import React from "react";
 import ProgressBar from "../../ProgressBar/ui/ProgressBar";
 import CardItem from "./CardItem/CardItem";
+import ChapterKebabMenu from "./ChapterKebabMenu";
 
 function ChapterSection({
   chapterId,
@@ -11,10 +12,23 @@ function ChapterSection({
   onSelectCard,
   onResetCard,
   statuses,
+  onMarkAllOwned,
+  onMarkAllDuplicated,
+  isPending = false,
 }) {
   return (
     <section id={getChapterDomId(chapterId)} className="chapter">
-      <h2 className="chapter-title">{chapterName}</h2>
+      <div className="d-flex align-items-center justify-content-between mb-2">
+        <h2 className="chapter-title m-0">{chapterName}</h2>
+  
+        <div className="d-flex align-items-center gap-2">
+          <ChapterKebabMenu
+            disabled={isPending}
+            onMarkAllOwned={() => onMarkAllOwned?.(chapterId)}
+            onMarkAllDuplicated={() => onMarkAllDuplicated?.(chapterId)}
+          />
+        </div>
+      </div>
 
       <ProgressBar
         value={ownedOrDuplicatedCount}

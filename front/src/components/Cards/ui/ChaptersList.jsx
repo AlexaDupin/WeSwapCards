@@ -7,6 +7,9 @@ function ChaptersList({
   onSelectCard,
   onResetCard,
   statuses,
+  onMarkAllOwned,
+  onMarkAllDuplicated,
+  isChapterPending,
 }) {
   return (
     <section className="chapter-list">
@@ -21,6 +24,9 @@ function ChaptersList({
           onSelectCard={onSelectCard}
           onResetCard={onResetCard}
           statuses={statuses}
+          onMarkAllOwned={onMarkAllOwned} 
+          onMarkAllDuplicated={onMarkAllDuplicated}
+          isPending={isChapterPending?.(chapterId)}
         />
       ))}
     </section>

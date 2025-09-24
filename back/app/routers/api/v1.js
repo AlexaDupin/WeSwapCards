@@ -6,7 +6,6 @@ const validateNewMessage = require('../../middlewares/validation');
 const userController = require('../../controllers/api/user');
 const reportController = require('../../controllers/api/report');
 const opportunitiesController = require('../../controllers/api/opportunities');
-const explorerCardsController = require('../../controllers/api/explorerCards');
 const chatController = require('../../controllers/api/chat');
 const apiController = require('../../controllers/api/index');
 const cardController = require('../../controllers/api/cards');
@@ -30,11 +29,6 @@ router
 router
     .route('/cards/statuses/:explorerId')
     .get(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.getAllCardsStatuses))
-    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.markAll));
-
-router
-    .route('/cards/statuses/:explorerId/replace')
-    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.replaceStatuses));
 
 router
     .route('/explorercards/:explorerId/cards/:cardId')
@@ -42,28 +36,12 @@ router
     .delete(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.deleteCardFromExplorer));
 
 router
-    .route('/explorercards/:explorerId/cards')
-    .delete(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.deleteAllCards));
-
-router
-    .route('/explorercards/:explorerId/cards/restore-bulk')
-    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.restoreBulkCards));
+    .route('/bulk/explorercards/:explorerId/chapters/:chapterId/mark')
+    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.markChapter));
 
 router
     .route('/cards/:placeId')
     .get(requireAuth(), controllerHandler(reportController.getCardsFromPlace));
-
-// router
-//     .route('/cards/:placeId/:explorerId')
-//     .get(requireAuth(), checkExplorerAuthorization, controllerHandler(reportController.getExplorerCardsFromOnePlace));
-
-// router
-//     .route('/cards/:placeId/:explorerId/duplicates')
-//     .get(requireAuth(), controllerHandler(reportController.getDuplicateCards));
-
-// router
-//     .route('/report/:explorerId')
-//     .post(requireAuth(), checkExplorerAuthorization, controllerHandler(reportController.reportCardsForExplorer));
 
 router
     .route('/opportunities/:explorerId')
@@ -115,10 +93,6 @@ router
     .get(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.getAllMessagesInConversation))
     .post(requireAuth(), checkConversationAuthorization, validateNewMessage, controllerHandler(chatController.insertNewMessage));
     
-// router
-//     .route('/explorercards/:explorerId')
-//     .get(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.getExplorerCardsByChapter));
-
 router
     .route('/exploreractivity/:explorerId')
     .post(requireAuth(), checkExplorerAuthorization, controllerHandler(userController.updateLastActive))
@@ -126,13 +100,5 @@ router
 router
     .route('/cards')
     .get(controllerHandler(cardController.getAllCards))   
-
-// router
-//     .route('/explorercards/:explorerId/cards/:cardId/duplicate')
-//     .patch(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.editDuplicateStatus));
-
-// router
-//     .route('/explorercards/:explorerId/cards/status')
-//     .post(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.markAllAsOwned));    
 
 module.exports = router;

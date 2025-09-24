@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import PageContainer from '../../PageContainer/PageContainer';
-import { Spinner, Alert, ToastContainer, Collapse } from "react-bootstrap";
+import { Spinner, Alert } from "react-bootstrap";
 import './cardsStyles.scss';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
@@ -13,26 +13,13 @@ import EmptyChaptersHint from "./EmptyChaptersHint";
 import useAZIndex from "../hooks/useAZIndex";
 import AZNav from "./AZNav";
 
-import { BULK_ACTION, BULK_ACTIONS, BULK_ACTION_ORDER } from "../config/bulkActions.config";
-import QuickActions from "./QuickActions";
-import QuickActionsCollapsible from "./QuickActionsCollapsible";
-
-import ConfirmModal from "./ConfirmModal";
-import BulkToast from "./BulkToast";
-import useBulkUI from "../hooks/useBulkUI";
+import MissingCardsToggle from "./MissingCardsToggle";
 
 function Cards() {
-  const { state, handleSelect, reset, isLoading, handleBulkSetAllOwned, handleBulkSetAllDuplicated, undoLastBulk } = useCardsLogic();
+  const { state, handleSelect, reset, isLoading, markAllOwnedInChapter, markAllDuplicatedInChapter, isChapterPending } = useCardsLogic();
   const { chaptersData } = useChapterBuckets(state.chapters, state.cards, state.cardStatuses);
+
   const [showMissingOnly, setShowMissingOnly] = useState(false);
-  const { toast, showToast, hideToast } = useBulkUI();
-  const [actionsOpen, setActionsOpen] = useState(false);
-
-  const [confirm, setConfirm] = useState({ open: false, type: null });
-  const openConfirm = (type) => setConfirm({ open: true, type });
-  const closeConfirm = () => setConfirm({ open: false, type: null });
-
-  const totalCards = state.cards?.length ?? 0;
 
   const visibleChaptersData = showMissingOnly
   ? chaptersData.filter(({ cards, ownedOrDuplicatedCount }) => (cards.length - ownedOrDuplicatedCount) > 0)
@@ -43,45 +30,6 @@ function Cards() {
     name: chapterName,
   }));
   const { lettersWithChapters, scrollToLetter, getChapterDomId } = useAZIndex(chaptersForAZ);
-
-  async function executeConfirmedAction(actionKey) {
-    try {
-      let result;
-  
-      if (actionKey === BULK_ACTION.ALL_OWNED) {
-        result = await handleBulkSetAllOwned();
-      } else if (actionKey === BULK_ACTION.ALL_DUPLICATED) {
-        result = await handleBulkSetAllDuplicated();
-      } else {
-        return false;
-      }
-  
-      const config = BULK_ACTIONS[actionKey];
-      const isSuccess = config?.isSuccess ? !!config.isSuccess(result) : result !== false;
-  
-      if (isSuccess) {
-        const message = config.toast ? config.toast(totalCards) : "";
-        if (message) showToast({ type: actionKey, message });
-      }
-  
-      return isSuccess;
-    } catch (e) {
-      return false;
-    }
-  }
-  
-  function handleQuickAction(actionKey) {
-    const config = BULK_ACTIONS[actionKey];
-    if (!config) return;
-  
-    if (config.interaction === "toggleFilter") {
-      setShowMissingOnly((prev) => !prev);
-      return;
-    }
-
-    openConfirm(actionKey);
-  }
-
   const azBarRef = useRef(null);
   useStickyVars({ ref: azBarRef, cssVarName: "--az-bar-h", dimension: "height" });
   
@@ -89,26 +37,7 @@ function Cards() {
     <PageContainer className="cards-page">
       <div className="page-header d-flex align-items-center justify-content-between gap-3 mb-2">
         <h1 className="page-title mb-0">My cards</h1>
-
-        <QuickActionsCollapsible
-          open={actionsOpen}
-          onOpenChange={setActionsOpen}
-          controlsId="quick-actions-panel"
-        />
-      </div>
-
-      <div className={actionsOpen ? "page-header-actions mb-3" : "page-header-actions"}>
-        <Collapse in={actionsOpen} mountOnEnter unmountOnExit>
-          <div id="quick-actions-panel" className="d-flex justify-content-start">
-            <QuickActions
-              order={BULK_ACTION_ORDER}
-              registry={BULK_ACTIONS}
-              context={{ busy: state.bulkUpdating, total: totalCards }}
-              onAction={handleQuickAction}
-              activeKeys={showMissingOnly ? [BULK_ACTION.SHOW_MISSING] : []}
-            />
-          </div>
-        </Collapse>
+        <MissingCardsToggle checked={showMissingOnly} onChange={setShowMissingOnly} />
       </div>
 
       {isLoading &&
@@ -126,27 +55,7 @@ function Cards() {
       )}
 
       {!isLoading && !state.alert.message && (
-      <>
-      {confirm.open && (() => {
-        const config = BULK_ACTIONS[confirm.type];
-        const { title, body, confirmLabel, confirmVariant } = config.confirm;
-        return (
-          <ConfirmModal
-            show
-            title={title}
-            body={body(totalCards)}
-            confirmLabel={confirmLabel}
-            confirmVariant={confirmVariant}
-            busy={state.bulkUpdating}
-            onCancel={closeConfirm}
-            onConfirm={async () => {
-              await executeConfirmedAction(confirm.type);
-              closeConfirm();
-            }}
-          />
-        );
-      })()}
-            
+      <>           
       <section ref={azBarRef} className="cards-sticky mb-3">
         <AZNav 
           onSelect={scrollToLetter} 
@@ -164,19 +73,11 @@ function Cards() {
           onSelectCard={handleSelect}
           onResetCard={reset}
           statuses={state.cardStatuses}
+          onMarkAllOwned={markAllOwnedInChapter}
+          onMarkAllDuplicated={markAllDuplicatedInChapter}
+          isChapterPending={isChapterPending}
         />
       )}
-
-      <ToastContainer position="bottom-end" className="p-3 cards-toast-container">
-        <BulkToast
-          show={toast.visible}
-          message={toast.message}
-          canUndo={state?.lastUndo?.type === toast.type}
-          onClose={hideToast}
-          onUndo={async () => { await undoLastBulk(); hideToast(); }}
-        />
-      </ToastContainer>
-
       </>
       )}
 

@@ -780,140 +780,42 @@ module.exports = {
         const result = await client.query(preparedQuery);
         return result.rows;
     },
-    async bulkReplaceStatuses(explorerId, { ownedIds = [], duplicatedIds = [], defaultIds = [] }) {
-        const idsForUpsert = [...ownedIds, ...duplicatedIds];
-        const duplicateFlags = [
-          ...Array(ownedIds.length).fill(false),
-          ...Array(duplicatedIds.length).fill(true),
-        ];
-      
-        await client.query('BEGIN');
-        try {
-          let upserted = 0;
-          if (idsForUpsert.length > 0) {
-            const qUpsert = {
-              text: `
-                WITH payload AS (
-                  SELECT UNNEST($2::int[]) AS card_id, UNNEST($3::bool[]) AS duplicate
-                )
-                INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
-                SELECT $1, p.card_id, p.duplicate
-                FROM payload p
-                ON CONFLICT (explorer_id, card_id)
-                DO UPDATE SET duplicate = EXCLUDED.duplicate
-                RETURNING card_id
-              `,
-              values: [explorerId, idsForUpsert, duplicateFlags],
-            };
-            const r1 = await client.query(qUpsert);
-            upserted = r1.rowCount ?? 0;
-          }
-      
-          let deleted = 0;
-          if (defaultIds.length > 0) {
-            const qDelete = {
-              text: `
-                DELETE FROM explorer_has_cards
-                WHERE explorer_id = $1
-                  AND card_id = ANY($2::int[])
-              `,
-              values: [explorerId, defaultIds],
-            };
-            const r2 = await client.query(qDelete);
-            deleted = r2.rowCount ?? 0;
-          }
-      
-          await client.query('COMMIT');
-          return { upserted, deleted };
-        } catch (e) {
-          await client.query('ROLLBACK');
-          throw e;
-        }
-    },
-    async deleteAllCardsForExplorer(explorerId) {
-        const query = `
-          DELETE FROM explorer_has_cards
-          WHERE explorer_id = $1
-          RETURNING card_id, duplicate
-        `;
-        const { rows } = await client.query(query, [explorerId]);
-        return rows;
-    },
-    async applyExplorerCardStatusesBulk(explorerId, items) {
-      const upsertItems = [];
-      const deleteIds = [];
-
-      for (const item of items) {
-        if (item.status === 'default') {
-          deleteIds.push(Number(item.card_id));
-        } else if (item.status === 'owned' || item.status === 'duplicated') {
-          upsertItems.push({
-            card_id: Number(item.card_id),
-            duplicate: item.status === 'duplicated',
-          });
-        }
-      }
-
-      await client.query('BEGIN');
-
-      try {
-        if (upsertItems.length) {
-          const cardIds = upsertItems.map(x => x.card_id);
-          const dupes = upsertItems.map(x => x.duplicate);
-
-          const upsertQuery = `
-            INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
-            SELECT $1, x.card_id, x.duplicate
-            FROM unnest($2::int[], $3::boolean[]) AS x(card_id, duplicate)
-            ON CONFLICT (explorer_id, card_id) DO UPDATE
-            SET duplicate = EXCLUDED.duplicate
-          `;
-          await client.query(upsertQuery, [explorerId, cardIds, dupes]);
-        }
-
-        if (deleteIds.length) {
-          const deleteQuery = `
-            DELETE FROM explorer_has_cards
-            WHERE explorer_id = $1 AND card_id = ANY($2::int[])
-          `;
-          await client.query(deleteQuery, [explorerId, deleteIds]);
-        }
-
-        await client.query('COMMIT');
-        return { appliedCount: upsertItems.length + deleteIds.length };
-      } catch (error) {
-        await client.query('ROLLBACK');
-        throw error;
-      }
-    },
-    async markAllOwnedPreservingDuplicates(explorerId) {
-        const q = {
-          text: `
-            INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
-            SELECT $1, c.id, FALSE
-            FROM card AS c
-            ON CONFLICT (explorer_id, card_id)
-            DO UPDATE
-            SET duplicate = explorer_has_cards.duplicate OR EXCLUDED.duplicate
-          `,
-          values: [explorerId],
+    async markChapterOwned({ explorerId, chapterId }) {
+        const preparedQuery = {
+            text: `
+              WITH target_cards AS (
+                SELECT c.id AS card_id
+                FROM card c
+                WHERE c.place_id = $1
+              )
+              INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
+              SELECT $2, tc.card_id, FALSE
+              FROM target_cards tc
+              ON CONFLICT (explorer_id, card_id)
+              DO UPDATE SET duplicate = FALSE
+            `,
+            values: [chapterId, explorerId],
         };
-        const r = await client.query(q);
-        return { affected: r.rowCount ?? 0 };
-      },
-      async markAllDuplicated(explorerId) {
-        const q = {
-          text: `
-            INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
-            SELECT $1, c.id, TRUE
-            FROM card AS c
-            ON CONFLICT (explorer_id, card_id)
-            DO UPDATE
-            SET duplicate = TRUE
-          `,
-          values: [explorerId],
-        };
-        const r = await client.query(q);
-        return { affected: r.rowCount ?? 0 };
-      }
+        
+        await client.query(preparedQuery);
+    },
+    async markChapterDuplicated({ explorerId, chapterId }) {
+        const preparedQuery = {
+            text: `
+              WITH target_cards AS (
+                SELECT c.id AS card_id
+                FROM card c
+                WHERE c.place_id = $1
+              )
+              INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
+              SELECT $2, tc.card_id, TRUE
+              FROM target_cards tc
+              ON CONFLICT (explorer_id, card_id)
+              DO UPDATE SET duplicate = TRUE;
+            `,
+            values: [chapterId, explorerId],
+          };
+        
+          await client.query(preparedQuery);
+    },
 };

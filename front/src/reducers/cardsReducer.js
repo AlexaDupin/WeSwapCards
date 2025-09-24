@@ -1,15 +1,11 @@
-import { replaceStatuses, snapshotToStatusesMap, makeAllDuplicated, makeAllOwnedPreservingDuplicated } from "../helpers/statuses";
-
 export const initialState = {
     cardStatuses: {},
     chapters: [],
     cards: [],
-    bulkUpdating: false,
     alert: {
         hidden: true,
         message: ''
     },
-    lastUndo: null,
 }
 
 export const reducer = (state, action) => {
@@ -101,116 +97,21 @@ export const reducer = (state, action) => {
             }
         }
 
-        case 'bulk/allOwnedStarted': {
-            return {
-              ...state,
-              bulkUpdating: true,
-            };
-          }
-      
-          case 'bulk/allOwnedOptimistic': {
-            const allCardIds = action.payload?.allCardIds ?? [];
-            const snapshotBefore = action.payload?.snapshotBefore ?? [];
+        case "cards/bulkSetChapterStatus": {
+          const { chapterId, status } = action.payload;
+          const nextStatuses = { ...state.cardStatuses };
           
-            // Optimistically set every card to 'owned'
-            const allOwnedMap = makeAllOwnedPreservingDuplicated(allCardIds, state.cardStatuses);
-          
-            return {
-              ...state,
-              cardStatuses: replaceStatuses(allOwnedMap),
-              lastUndo: { type: 'allOwned', snapshot: snapshotBefore },
-              bulkUpdating: true,
-            };
-          }
-          
-          case 'bulk/allOwnedFailed': {
-            const snapshotBefore = action.payload?.snapshotBefore ?? [];
-            const rollbackMap = snapshotToStatusesMap(snapshotBefore);
-            return {
-              ...state,
-              cardStatuses: replaceStatuses(rollbackMap),
-              lastUndo: null,
-              bulkUpdating: false,
-            };
-          }
-      
-          case 'bulk/allOwnedSuccess': {
-            return {
-              ...state,
-              bulkUpdating: false,
-            };
-          }
-
-          case 'bulk/allDuplicatedStarted': {
-              return {
-                ...state,
-                bulkUpdating: true,
-              };
-          }
-      
-          case 'bulk/allDuplicatedOptimistic': {
-              const allCardIds = action.payload?.allCardIds ?? [];
-              const snapshotBefore = action.payload?.snapshotBefore ?? [];
-              const allDuplicatedMap = makeAllDuplicated(allCardIds);
-      
-              return {
-                ...state,
-                cardStatuses: replaceStatuses(allDuplicatedMap),
-                lastUndo: { type: 'allDuplicated', snapshot: snapshotBefore },
-                bulkUpdating: true,
-              };
+          for (const card of state.cards) {
+            if (card.place_id === chapterId) {
+              nextStatuses[card.id] = status;
             }
-      
-            case 'bulk/allDuplicatedFailed': {
-              const snapshotBefore = action.payload?.snapshotBefore ?? [];
-              const rollbackMap = snapshotToStatusesMap(snapshotBefore);
-              return {
-                ...state,
-                cardStatuses: replaceStatuses(rollbackMap),
-                lastUndo: null,
-                bulkUpdating: false,
-              };
-            }
-      
-            case 'bulk/allDuplicatedSuccess': {
-              return {
-                ...state,
-                bulkUpdating: false,
-              };
-            }
-
-          case 'cards/allDeleted': {
-            const snapshot = action.payload?.snapshot || [];
-
-            return {
-              ...state,
-              cardStatuses: replaceStatuses({}), // or {}
-              lastUndo: { type: 'deleteAll', snapshot },
-            };
           }
-      
-          case 'cards/bulkDeleteError': {
-            return {
-              ...state,
-              alert: { hidden: false, message: 'There was an error clearing your cards. Try again.' },
-            };
-          }
-      
-          case 'cards/restoreBulkSuccess': {
-            // merged was already produced in the hook via replaceStatuses
-            return {
-              ...state,
-              cardStatuses: action.payload.merged,
-              lastUndo: null,
-            };
-          }
-      
-          case 'cards/restoreBulkError': {
-            return {
-              ...state,
-              alert: { hidden: false, message: 'Undo failed. Your cards were not restored.' },
-            };
-          }
+    
+          return {
+            ...state,
+            cardStatuses: nextStatuses,
+          };
+        }
 
         default: 
         return state;
