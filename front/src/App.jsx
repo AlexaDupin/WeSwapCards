@@ -12,10 +12,8 @@ import Home from './components/Home/Home';
 
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import Menu from './components/Menu/Menu';
-import Report from './components/Report/ui/Report';
 import SwapCard from './components/Swap/ui/SwapCard';
 import Chat from './components/Chat/ui/Chat';
-import CheckPage from './components/CheckPage/ui/CheckPage';
 import Dashboard from './components/Dashboard/ui/Dashboard';
 import NotFound from './components/NotFound/NotFound';
 import Footer from './components/Footer/Footer';
@@ -24,6 +22,7 @@ import Terms from './components/Legal/Terms/Terms';
 import CookiePolicy from './components/Legal/CookiePolicy/CookiePolicy';
 import Contact from './components/Legal/Contact/Contact';
 import Legal from './components/Legal/Legal';
+import Cards from './components/Cards/ui/Cards';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -84,12 +83,6 @@ if (!isLoaded) {
               />}
           />
           <Route
-              path="/report"
-              element={<ProtectedRoute 
-                element={ <Report />} 
-              />}
-          />
-          <Route
               path="/swap/card"
               element={<ProtectedRoute 
                 element={ <SwapCard />} 
@@ -109,10 +102,10 @@ if (!isLoaded) {
                 />}
           />
           <Route
-              path="/check"
+              path="/cards"
               element={<ProtectedRoute 
                 element={
-                  <CheckPage />} 
+                  <Cards />} 
               />}
           />
           <Route

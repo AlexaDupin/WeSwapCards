@@ -48,6 +48,7 @@ export const reducer = (state, action) => {
                 cards: action.payload.cards,
                 selectedCards: action.payload.selectedCards,
                 duplicates: action.payload.duplicates,
+                toBeDeleted: [],
                 hidden: false
             };
 
@@ -106,6 +107,7 @@ export const reducer = (state, action) => {
               return {
                 ...state,
                 selectedCards: [...state.selectedCards, card],
+                toBeDeleted: state.toBeDeleted.filter(c => c.id !== card.id),
               };
             }
         }
@@ -115,7 +117,8 @@ export const reducer = (state, action) => {
 
             const newState = {
                 ...state,
-                selectedCards: cards
+                selectedCards: cards,
+                toBeDeleted: []
             };
 
             return newState;
@@ -162,6 +165,9 @@ export const reducer = (state, action) => {
                     variant: 'success',
                     message: "Your cards have been logged!",
                 },
+                selectedCards: [],
+                duplicates: [], 
+                toBeDeleted: [],
                 hidden: true,
                 hiddenDuplicates: true,
             };
@@ -177,6 +183,9 @@ export const reducer = (state, action) => {
                     variant: 'danger',
                     message: "Oops, there was an issue and your cards haven't been logged",
                 },
+                selectedCards: [],
+                duplicates: [], 
+                toBeDeleted: [],
                 hidden: true,
                 hiddenDuplicates: true,
             };

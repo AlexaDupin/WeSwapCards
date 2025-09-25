@@ -1,14 +1,98 @@
 @use 'src/styles/vars';
 
-.card-square {
-    width: 2rem;
-    height: 2rem;
-    margin: 0.2rem;
+.check-card-square,
+.check-card-square-duplicate {
+  width: 2rem;
+  height: 3rem !important;
+  margin: 0.2rem;
+  border-radius: 5px;
+  border: 1px solid;
+  display: inline-flex;  
+  vertical-align: middle;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  box-sizing: border-box;
+  background-color: #fff;
+  position: relative;
 
-    &-duplicate {
-        width: 2rem;
-        height: 2rem;
-        margin: 0.2rem;
-        background-color: lighten(vars.$secondary-color, 50%);
-    }
+  .check-card-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 400;
+    font-size: 0.9rem;
+  }
+}
+
+.check-card-square {
+  border-color: #b1b1b1;
+  .check-card-inner {
+    background-color: #eaeaea;
+    color: #222;
+  }
+}
+
+.check-card-square-duplicate {
+  border-color: vars.$secondary-color;
+  box-shadow: 0 0 4px rgba(vars.$secondary-color, 0.35);
+
+  .check-card-inner {
+    background-color: lighten(vars.$secondary-color, 45%);
+    color: vars.$secondary-color;
+    font-weight: 600;
+  }
+  // &::after {
+  //   content: "";
+  //   position: absolute;
+  //   top: 0;
+  //   right: 0;
+  //   width: 0;
+  //   height: 0;
+  //   border-top: 10px solid vars.$primary-color;
+  //   border-left: 6px solid transparent;
+  //   border-radius: 0 4px 0 4px;
+  // }
+  
+  // &::after {
+  //   content: "";
+  //   position: absolute;
+  //   left: 25%; right: 25%; bottom: 4px;
+  //   height: 2px;
+  //   border-radius: 2px;
+  //   background: vars.$secondary-color;
+  // }
+}
+
+// .check-card-square-duplicate::after {
+//   content: "+";
+//   position: absolute;
+//   top: -2px;
+//   right: -4px;
+//   font-size: 0.55rem;
+//   font-weight: 500;
+//   color: #fff;
+//   background: #679591;
+//   border-radius: 50%;
+//   width: 12px;
+//   height: 12px;
+//   text-align: center;
+//   line-height: 12px;
+// }
+
+@media (hover: hover) and (pointer: fine) {
+  .check-card-square:hover .check-card-inner,
+  .check-card-square-duplicate:hover .check-card-inner {
+    background-color: #f1f1f1;
+  }
+}
+
+@media (hover: none) {
+  .check-card-square:active .check-card-inner,
+  .check-card-square-duplicate:active .check-card-inner {
+    background-color: #f1f1f1;
+  }
 }

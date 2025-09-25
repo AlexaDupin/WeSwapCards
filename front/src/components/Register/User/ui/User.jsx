@@ -26,7 +26,7 @@ const User = () => {
     <PageContainer>
       <h1 className="user-title pb-1">Enter a username</h1>
       <p className="user-subtitle pb-3">It will be shown to other users when you have a card they are interested in.
-      You can use the username you use on the WeWard app to make things easier.
+      <br/>Use your WeWard username to make things easier.
       </p>
 
       <Alert 
@@ -46,8 +46,8 @@ const User = () => {
                             <PersonFill />
                         </InputGroup.Text>
                         <FormControl
-                            placeholder="Username"
-                            aria-label="Explorer's username"
+                            placeholder="Enter a username"
+                            aria-label="Username"
                             aria-describedby="basic-addon1"
                             {...register('username', {
                               required: 'Please enter a username.',
@@ -60,7 +60,7 @@ const User = () => {
                                 message: 'Your username must contain at least 2 characters.',
                               },
                               maxLength: {
-                                value: 30,
+                                value: 20,
                                 message: 'Your username must contain 20 characters max.',
                               },
                               },

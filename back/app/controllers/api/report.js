@@ -5,7 +5,7 @@ const reportController = {
             //console.log("ENTERING PLACES");
             try {
                 const places = await datamapper.getAllPlaces();
-                console.log(places);
+                // console.log(places);
                 res.json({places});
             } catch (error) {
                 res.status(500).send(error);
@@ -44,61 +44,40 @@ const reportController = {
             res.status(500).send(error);
         }
     },
-    async addCardsToExplorer(req, res) {
-        const explorerId = req.params.explorerId;
-        const selectedCardsIds = req.body.selectedCardsIds;
-        const duplicatesIds = req.body.duplicatesIds;
-        const toBeDeletedIds = req.body.toBeDeletedIds;
+    async reportCardsForExplorer(req, res) {
+        const explorerId = Number(req.params.explorerId);
+        const selectedCardsIds = (req.body.selectedCardsIds ?? []).map(Number);
+        const duplicatesIds    = (req.body.duplicatesIds ?? []).map(Number);
+        const toBeDeletedIds   = (req.body.toBeDeletedIds ?? []).map(Number);
 
-        if (!explorerId) {
+        if (!Number.isInteger(explorerId)) {
             return res.status(400).json({ error: "Explorer ID is required" });
-          }
+        }
+
+        if (!selectedCardsIds.length && !toBeDeletedIds.length) {
+            return res.status(200).json({ ok: true, upserted: [], deleted: 0 });
+        }
 
         // console.log("selectedCardsIds", selectedCardsIds);
         // console.log("duplicatesIds", duplicatesIds);
         // console.log("toBeDeletedIds", toBeDeletedIds);
 
         try {
-            const results = [];
+            const selectedCardsData = selectedCardsIds.map(cardId => ({
+                cardId: cardId,
+                duplicate: duplicatesIds.includes(cardId)
+            }));
 
-            // For each card submitted, check if already logged for this explorer in db
-            // If logged, check if the duplicate status has changed    
-            selectedCardsIds.forEach(async (selectedCardId) => {
-                const alreadyLogged = await datamapper.checkIfCardLoggedForExplorer(explorerId, selectedCardId);
-                const hasDuplicate = duplicatesIds.includes(selectedCardId); // Check if this card ID is marked as having duplicates
-
-                if (!alreadyLogged) {
-                    const result = await datamapper.createExplorerHasCard({
-                        explorerId: explorerId,
-                        cardId: selectedCardId,
-                        duplicate: hasDuplicate,
-                    });
-                    //console.log("CARD LOGGED", result);
-                    results.push(result)
-                } else if (alreadyLogged) {
-                    const duplicateStatus = await datamapper.checkDuplicateStatus(explorerId, selectedCardId);
-                    // console.log('duplicateStatus.duplicate', duplicateStatus.duplicate, cardId);
-                    // console.log('hasDuplicate', hasDuplicate, cardId);
-                    if (duplicateStatus?.duplicate === hasDuplicate) {
-                        // console.log('Card already logged', selectedCardId);
-                    } else if (duplicateStatus?.duplicate !== hasDuplicate) {
-                        const result = await datamapper.editExplorerHasCard(hasDuplicate, explorerId, selectedCardId);
-                        // console.log("Change in duplicate", selectedCardId);
-                        results.push(result)
-                    }
-                }
-            })
-       
-            toBeDeletedIds.forEach(async (toBeDeletedId) => {
-                const result = await datamapper.deleteCardFromExplorerHasCard(explorerId, toBeDeletedId);
-                //console.log("Card deleted for this explorer", toBeDeletedId);
-                results.push(result)
-            })
-
-            res.status(201).json(results);             
+            const results = await datamapper.manageExplorerCards(
+                explorerId, 
+                selectedCardsData, 
+                toBeDeletedIds
+            );
+            
+            res.status(201).json(results);       
 
         } catch (error) {
-            console.error('Error adding cards to explorer:', error);
+            console.error('Error managing explorer cards:', error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     },

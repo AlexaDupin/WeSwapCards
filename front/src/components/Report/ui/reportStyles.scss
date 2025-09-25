@@ -78,7 +78,7 @@
 @media (min-width: 768px) { /* This targets below the md breakpoint */
     .report {
         width: 50% !important; 
-
+        
         &-card, &-card-selected {
             width: 60%;   
         }

@@ -51,13 +51,9 @@ const useUserLogic = () => {
 
             const fetchedExplorerId = response.data.user.id;
             const fetchedExplorerName = response.data.user.name;
-
             
             // console.log("DM user response", response.data);
-
             if (response.status === 201) {
-              // Setting name and explorerId at App level
-
               dispatch({
                 type: 'explorer/created',
                 payload: { 
@@ -65,17 +61,11 @@ const useUserLogic = () => {
                   fetchedExplorerName
                 }
               })
-              // setExplorerId(response.data.user.id);
-              // setName(response.data.user.name);
               navigate('/menu', { state: { from: "/register/user" } });
               return;
             } else {
-              // dispatch({
-              //   type: 'explorer/notCreated',
-              // })
               setMessage("There was an issue while submitting your username.");
               setHiddenAlert(false);
-              // console.error("Failed to create user");
               return;
             }
 
@@ -87,8 +77,6 @@ const useUserLogic = () => {
               dispatch({
                 type: 'explorer/reset',
               })
-              // setExplorerId('');
-              // setName('');
               setMessage("You already chose a username. You can go back to the menu.");
               setHiddenAlert(false);
               return;
@@ -97,8 +85,6 @@ const useUserLogic = () => {
               dispatch({
                 type: 'explorer/reset',
               })
-              // setExplorerId('');
-              // setName('');
               setMessage("This username is already taken. Please try another one.");
               setHiddenAlert(false);
               return;
@@ -107,8 +93,6 @@ const useUserLogic = () => {
               dispatch({
                 type: 'explorer/reset',
               })
-              // setExplorerId('');
-              // setName('');
               setMessage("There was an issue with your request. Please try again.");
               setHiddenAlert(false);
               return;
@@ -124,8 +108,6 @@ const useUserLogic = () => {
               dispatch({
                 type: 'explorer/reset',
               })
-              // setExplorerId('');
-              // setName('');
               setMessage("An unexpected error occurred. Please try again later.");
               setHiddenAlert(false);
               return;

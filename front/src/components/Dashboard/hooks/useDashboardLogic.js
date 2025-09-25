@@ -183,6 +183,7 @@ const useDashboardLogic = () => {
     return {
       data,
       loading,
+      error,
       activePage,
       totalPages,
       totalItems,

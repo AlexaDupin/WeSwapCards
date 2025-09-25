@@ -120,6 +120,70 @@ module.exports = {
         const result = await client.query(preparedQuery);
         return result.rows;
     },
+    async manageExplorerCards(explorerId, selectedCardsData, toBeDeletedIds) {
+        try {
+            const results = {
+                upserted: [],
+                deletedCount: 0
+            };
+            
+            for (const cardData of selectedCardsData) {
+                const result = await client.query(`
+                    INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate) 
+                    VALUES ($1, $2, $3)
+                    ON CONFLICT (explorer_id, card_id) 
+                    DO UPDATE SET duplicate = EXCLUDED.duplicate
+                    RETURNING *, 
+                        CASE WHEN xmax = 0 THEN 'inserted' ELSE 'updated' END as action
+                `, [explorerId, cardData.cardId, cardData.duplicate]);
+                
+                results.upserted.push(result.rows[0]);
+            }
+            
+            if (toBeDeletedIds.length > 0) {
+                const deleteResult = await client.query(`
+                    DELETE FROM explorer_has_cards 
+                    WHERE explorer_id = $1 AND card_id = ANY($2)
+                `, [explorerId, toBeDeletedIds]);
+                
+                results.deletedCount = deleteResult.rowCount;
+            }
+            
+            return results;
+            
+        } catch (error) {
+            console.error('Database error in manageExplorerCards:', error);
+            throw new Error('Failed to manage explorer cards');
+        }
+    },
+    async upsertExplorerHasCard(data) {
+        const preparedQuery = await client.query(
+         `INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
+          VALUES ($1, $2, $3)
+          ON CONFLICT (explorer_id, card_id)
+          DO UPDATE
+            SET duplicate = EXCLUDED.duplicate
+          WHERE explorer_has_cards.duplicate IS DISTINCT FROM EXCLUDED.duplicate
+          RETURNING explorer_id, card_id, duplicate
+          `,
+          [data.explorerId, data.cardId, data.duplicate],
+        );
+        const { rows } = await preparedQuery;
+        return { explorerId: data.explorerId, cardId: data.cardId, duplicate: data.duplicate, changed: rows.length > 0 };
+    },
+    async deleteCardFromExplorerHasCard(explorerId, cardId) {
+        const preparedQuery = {
+            text: `
+            DELETE FROM explorer_has_cards
+            WHERE explorer_id = $1
+            AND card_id = $2
+            `,
+            values: [explorerId, cardId]
+        };
+        const result = await client.query(preparedQuery);
+        // console.log("DTMP DELETE", result);
+        return { explorerId, cardId, changed: result.rowCount > 0 };
+    },
     async getOpportunitiesForOneExplorer(explorerId) {
         const preparedQuery = {
             text: `
@@ -609,68 +673,6 @@ module.exports = {
         // console.log(result);
         return result.command;
     },
-//     async findExplorersForCardIdOpportunity(cardId, explorerId) {
-//         console.log("ENTERING DATAMAPPER");
-
-//         const preparedQuery = {
-//             text: `
-//             SELECT explorer_id FROM explorer_has_cards
-//             WHERE card_id = $1 AND duplicate = true AND explorer_id NOT IN ($2)
-//             ORDER BY random()
-//             `,
-//             values: [cardId, explorerId],
-//         };
-//         const result = await client.query(preparedQuery);
-//         // console.log(result.rows);
-//         return result.rows;
-//     },
-//     async findSwapOpportunities(explorerId, swapExplorerId) {
-//         console.log("ENTERING DATAMAPPER");
-
-//         const preparedQuery = {
-//             text: `
-// SELECT id FROM card
-// WHERE id NOT IN (
-//     SELECT card_id FROM explorer_has_cards
-//     WHERE explorer_id = $2
-//     ) AND id IN (
-//     SELECT card_id FROM explorer_has_cards
-//     WHERE explorer_id = $1 and duplicate = true
-//     )
-//             `,
-//             values: [explorerId, swapExplorerId],
-//         };
-//         const result = await client.query(preparedQuery);
-//         // console.log(result.rows);
-//         return result.rows;
-//     },
-    
-    ////// INFINITE SCROLL //////
-    // async getOpportunitiesForOneExplorer(explorerId, limit, offset) {
-    //     console.log("ENTERING DATAMAPPER", limit, offset);
-
-    //     const preparedQuery = {
-    //         text: `
-    //         SELECT ehc.id, c.id AS card_id, c.name AS card_name, e.name AS explorer_name, p.id AS place_id FROM card AS c
-    //         JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
-    //         JOIN explorer AS e ON e.id = ehc.explorer_id
-    //         JOIN place AS p ON p.id = c.place_id
-    //         WHERE ehc.duplicate = true AND ehc.explorer_id NOT IN ($1) 
-    //         AND ehc.explorer_id NOT IN (3, $1)  
-    //         AND c.id NOT IN (SELECT DISTINCT c.id FROM card AS c
-    //         JOIN explorer_has_cards AS ehc ON c.id = ehc.card_id
-    //         WHERE ehc.explorer_id = $1)
-    //         ORDER BY c.name, e.name
-    //         LIMIT $2 
-    //         OFFSET $3
-    //             `,
-    //         values: [explorerId, limit, offset],
-    //     };
-    //     const result = await client.query(preparedQuery);
-    //     // console.log(result.rows);
-
-    //     return result.rows;
-    // },
     async getCountForOnePlaceForExplorer(explorerId, placeId) {
         const preparedQuery = {
             text: `
@@ -748,42 +750,72 @@ module.exports = {
         const result = await client.query(preparedQuery);
         //console.log(result.command);
     },
-    
-
-
-    // async getAllExplorers() {
-    //     const preparedQuery = {
-    //         text: `SELECT * FROM explorer
-    //         ORDER BY name`,
-    //     };
-    //     const result = await client.query(preparedQuery);
-    //     return result.rows;
-    // },
-
-    // async getExplorerInfo(userUID) {
-    //     console.log("ENTERING DATAMAPPER");
-    //     const preparedQuery = {
-    //         text: `
-    //         SELECT * FROM explorer 
-    //         WHERE userid = $1
-    //         `,
-    //         values: [userUID],
-    //     };
-    //     const result = await client.query(preparedQuery);
-    //     console.log("result.rows DM", result.rows);
-    //     return result.rows;
-    // },
-    // async getExplorerInfoByExplorerId(explorerId) {
-    //     console.log("ENTERING DATAMAPPER");
-    //     const preparedQuery = {
-    //         text: `
-    //         SELECT * FROM explorer 
-    //         WHERE id = $1
-    //         `,
-    //         values: [explorerId],
-    //     };
-    //     const result = await client.query(preparedQuery);
-    //     console.log("result.rows DM", result.rows[0]);
-    //     return result.rows[0];
-    // }
+    async getAllCardsStatuses(explorerId) {
+        const preparedQuery = {
+            text: ` SELECT c.id AS card_id,
+                        CASE
+                          WHEN ehc.duplicate IS TRUE  THEN 'duplicated'
+                          WHEN ehc.duplicate IS FALSE THEN 'owned'
+                          ELSE 'default'
+                        END AS status
+                    FROM card c
+                    LEFT JOIN explorer_has_cards ehc ON c.id = ehc.card_id
+                    AND ehc.explorer_id = $1
+                    ORDER BY c.id;`,
+            values: [explorerId],
+        };
+        const result = await client.query(preparedQuery);
+        // console.log("DTMP getAllCardsStatuses", result.rows);
+        const map = {};
+        for (let i = 0; i < result.rows.length; i++) {
+          const row = result.rows[i];
+          map[row.card_id] = row.status;
+        }
+        return map;    
+    },
+    async getAllCards() {
+        const preparedQuery = {
+            text: `SELECT * FROM card`,
+        };
+        const result = await client.query(preparedQuery);
+        return result.rows;
+    },
+    async markChapterOwned({ explorerId, chapterId }) {
+        const preparedQuery = {
+            text: `
+              WITH target_cards AS (
+                SELECT c.id AS card_id
+                FROM card c
+                WHERE c.place_id = $1
+              )
+              INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
+              SELECT $2, tc.card_id, FALSE
+              FROM target_cards tc
+              ON CONFLICT (explorer_id, card_id)
+              DO UPDATE SET duplicate = FALSE
+            `,
+            values: [chapterId, explorerId],
+        };
+        
+        await client.query(preparedQuery);
+    },
+    async markChapterDuplicated({ explorerId, chapterId }) {
+        const preparedQuery = {
+            text: `
+              WITH target_cards AS (
+                SELECT c.id AS card_id
+                FROM card c
+                WHERE c.place_id = $1
+              )
+              INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
+              SELECT $2, tc.card_id, TRUE
+              FROM target_cards tc
+              ON CONFLICT (explorer_id, card_id)
+              DO UPDATE SET duplicate = TRUE;
+            `,
+            values: [chapterId, explorerId],
+          };
+        
+          await client.query(preparedQuery);
+    },
 };

@@ -2,7 +2,7 @@
 
 .top-icon {
     position: fixed;
-    bottom: 50px;
+    bottom: 60px;
     right: 25px;
     z-index: 20;
     background-color: vars.$primary-color;
@@ -12,7 +12,6 @@
     width: 2rem;
     color: #fff;
     cursor: pointer;
-    // transition: all .5s ease-in-out;
     padding: 0.3rem;
 
     &:hover{

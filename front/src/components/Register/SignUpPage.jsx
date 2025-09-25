@@ -8,8 +8,7 @@ function SignUpPage() {
 
   return (
     <PageContainer>
-      <h1 className="page-title">Sign Up</h1>
-      <div className="signup-container">
+      <div className="signup-container mt-4">
         <SignUp 
           routing="virtual"
           forceRedirectUrl="/register/user"
