@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import PageContainer from '../../PageContainer/PageContainer';
-import { Spinner, Alert } from "react-bootstrap";
+import { Spinner, Alert, Button } from "react-bootstrap";
 import './cardsStyles.scss';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
@@ -14,12 +14,15 @@ import useAZIndex from "../hooks/useAZIndex";
 import AZNav from "./AZNav";
 
 import MissingCardsToggle from "./MissingCardsToggle";
+import { InfoCircle } from "react-bootstrap-icons";
+import CardsHelpModal from "./CardsHelpModal"; 
 
 function Cards() {
   const { state, handleSelect, reset, isLoading, markAllOwnedInChapter, markAllDuplicatedInChapter, isChapterPending } = useCardsLogic();
   const { chaptersData } = useChapterBuckets(state.chapters, state.cards, state.cardStatuses);
 
   const [showMissingOnly, setShowMissingOnly] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   const visibleChaptersData = showMissingOnly
   ? chaptersData.filter(({ cards, ownedOrDuplicatedCount }) => (cards.length - ownedOrDuplicatedCount) > 0)
@@ -36,8 +39,22 @@ function Cards() {
   return (
     <PageContainer className="cards-page">
       <div className="page-header d-flex align-items-center justify-content-between gap-3 mb-2">
-        <h1 className="page-title mb-0">My cards</h1>
-        <MissingCardsToggle checked={showMissingOnly} onChange={setShowMissingOnly} />
+        <div className="d-flex align-items-center gap-2">
+          <h1 className="page-title mb-0">My cards</h1>
+
+          <Button
+              variant="link"
+              className="p-0 ms-1 align-baseline"
+              onClick={() => setShowHelp(true)}
+              aria-label="How it works"
+              title="How it works"
+            >
+              <InfoCircle />
+              <span className="visually-hidden">How it works</span>
+            </Button>
+          </div>
+
+          <MissingCardsToggle checked={showMissingOnly} onChange={setShowMissingOnly} />
       </div>
 
       {isLoading &&
@@ -82,6 +99,7 @@ function Cards() {
       )}
 
         <ScrollToTop />
+      <CardsHelpModal show={showHelp} onHide={() => setShowHelp(false)} />
     </PageContainer>
   )
 }

@@ -86,3 +86,73 @@
       font-size: 1.8rem;
     }
 }
+
+
+.help-tiles {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 576px) {
+  .help-tiles {
+    grid-template-columns: repeat(3, 1fr);
+    align-items: start;
+  }
+}
+
+.help-tile {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  justify-items: center;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 575.98px) {
+  .help-tile { 
+    margin-bottom: 1rem;
+  }
+}
+
+.help-gesture {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.tap-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.help-card {
+  min-height: 3.4rem;
+  display: flex;
+  align-items: center;
+}
+
+.help-caption-title {
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.help-caption-text {
+  line-height: 1.2;
+  opacity: 0.9;
+}
+
+.help-card-mini {
+  width: 2.2rem;
+  height: 3.2rem !important;
+  pointer-events: none;
+}
+
+.help-instruction {
+  margin: 1rem 0 0;
+  text-align: center;
+  font-size: 0.95rem;
+}
