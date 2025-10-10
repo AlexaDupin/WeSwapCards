@@ -1,6 +1,6 @@
 const pool = require('../models/client');
 const { searchOne, downloadAsBuffer } = require('./pexels');
-const { uploadBuffer, slugify } = require('./cloudinary');
+const { uploadBuffer, destroyByPublicId, slugify } = require('./cloudinary');
 
 async function getPlace(id) {
   const res = await pool.query('SELECT id, name, image_url FROM "place" WHERE id = $1', [id]);
@@ -16,7 +16,7 @@ async function setImageFields(id, { imageUrl, image_origin_url, image_credit }) 
   );
 }
 
-async function ingestForPlaceId(placeId, { force = false } = {}) {
+async function ingestForPlaceId(placeId, { force = false, customQuery = null } = {}) {
   const place = await getPlace(placeId);
   if (!place) return { ok: false, reason: 'not_found' };
 
@@ -24,8 +24,11 @@ async function ingestForPlaceId(placeId, { force = false } = {}) {
     return { ok: true, reason: 'skip_exists', image_url: place.image_url };
   }
 
+  const searchTerm = customQuery || place.name;
+  console.log(`[INGEST] Searching image for "${searchTerm}"`);
+
   // 1) Pexels search
-  const hit = await searchOne(place.name);
+  const hit = await searchOne(searchTerm);
   if (!hit) return { ok: false, reason: 'pexels_no_result' };
 
   // 2) Download as buffer
@@ -33,7 +36,13 @@ async function ingestForPlaceId(placeId, { force = false } = {}) {
 
   // 3) Upload to Cloudinary
   const publicId = `place-${place.id}-${slugify(place.name)}`;
+  try {
+    await destroyByPublicId(publicId);
+  } catch (e) {
+    console.warn('[INGEST] destroyByPublicId warning:', e?.message || e);
+  }
   const result = await uploadBuffer(buf, publicId);
+  console.log('[INGEST] Cloudinary public_id:', result.public_id, 'version:', result.version);
 
   // 4) Save in DB
   await setImageFields(place.id, {

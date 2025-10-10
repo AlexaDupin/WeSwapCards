@@ -25,6 +25,13 @@ function slugify(s) {
     .slice(0, 80);
 }
 
+function destroyByPublicId(publicId) {
+  return cloudinary.uploader.destroy(publicId, {
+    resource_type: 'image',
+    invalidate: true,
+  });
+}
+
 async function uploadBuffer(buffer, publicIdHint) {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
@@ -32,6 +39,7 @@ async function uploadBuffer(buffer, publicIdHint) {
         folder: CLOUDINARY_FOLDER,
         public_id: publicIdHint,
         overwrite: true,
+        invalidate: true,
         resource_type: 'image',
       },
       (err, result) => {
@@ -43,4 +51,4 @@ async function uploadBuffer(buffer, publicIdHint) {
   });
 }
 
-module.exports = { uploadBuffer, slugify };
+module.exports = { uploadBuffer, destroyByPublicId, slugify };
