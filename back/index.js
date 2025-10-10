@@ -11,6 +11,7 @@ if (typeof(PhusionPassenger) !== 'undefined') {
 
 const express = require('express');
 require('dotenv').config();
+require('./app/worker/imageIngestionWorker');
 const { clerkMiddleware } = require('@clerk/express');
 
 const router = require('./app/routers');
