@@ -20,6 +20,7 @@ import './swapCardStyles.scss';
 
 import useSwapLogic from '../hooks/useSwapLogic';
 import LatestChapters from './LatestChapters/LatestChapters';
+import MiniLatestChaptersTiles from './LatestChapters/MiniLatestChaptersTiles';
 
 function SwapCard() {
   const [showLatest, setShowLatest] = useState(true);
@@ -83,26 +84,35 @@ function SwapCard() {
 
       {!state.alert.message && (
         <>
-      <Form>
-        <Form.Group className="mb-3" controlId="formGroupPlace">
-          <Form.Label className="visually-hidden">Select a chapter</Form.Label>
-          <Form.Select
-            ref={selectRef}
-            onChange={handleDropdownChange} 
-          >
-            <option value="">Select</option>
-            {state.places?.map((place) => (
-              <option
-                key={place.id}
-                value={place.id}>
-                {place.name}
-              </option>
-            ))}
-          </Form.Select>
-        </Form.Group>
+
+        <div className="latest-wrapper">
+          <MiniLatestChaptersTiles
+            visible={!showLatest}
+            onSelect={handleShortcutSelect}
+          />
+
+          <Form>
+            <Form.Group className="mb-3" controlId="formGroupPlace">
+              <Form.Label className="visually-hidden">Select a chapter</Form.Label>
+              <Form.Select
+                ref={selectRef}
+                onChange={handleDropdownChange} 
+              >
+                <option value="">Select</option>
+                {state.places?.map((place) => (
+                  <option
+                    key={place.id}
+                    value={place.id}>
+                    {place.name}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+            </Form>
+          </div>
 
         {showLatest && (
-              <LatestChapters onSelect={handleShortcutSelect} />
+          <LatestChapters onSelect={handleShortcutSelect} />
         )}
 
         <Form.Group
@@ -127,8 +137,7 @@ function SwapCard() {
             )}
           </div>
         </Form.Group>
-      </Form>
-      
+            
       {state.loadingOpportunities && state.selectedCardId && (
         <div className="text-center my-4">
           <Spinner animation="border" className="spinner" />
@@ -137,8 +146,8 @@ function SwapCard() {
 
       {!state.loadingOpportunities && !state.hiddenSwapOpportunities && (
         <div className="opportunity-card-container">
-  {swapOpportunities.items?.length > 0 ? (
-    <>
+    {swapOpportunities.items?.length > 0 ? (
+      <>
       <p>
         Here are the users who can give you this card: <br />
         <span className="swap-cardName">{swapCardName}</span>
