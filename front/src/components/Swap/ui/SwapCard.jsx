@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import PageContainer from '../../PageContainer/PageContainer';
 import {
     Form,
@@ -19,6 +19,7 @@ import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 import './swapCardStyles.scss';
 
 import useSwapLogic from '../hooks/useSwapLogic';
+import LatestChapters from './LatestChapters/LatestChapters';
 
 function SwapCard() {
   const { 
@@ -35,6 +36,7 @@ function SwapCard() {
     handlePageChange
   } = useSwapLogic();
   // console.log(swapOpportunities);
+
   const renderTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
       This user has been active recently
@@ -43,6 +45,20 @@ function SwapCard() {
 
   const items = swapOpportunities.items ?? [];
   const isSingle = items.length === 1;
+
+  const selectRef = useRef(null);
+
+  const handleShortcutSelect = (placeId) => {
+    if (selectRef.current) {
+      selectRef.current.value = String(placeId);
+    }
+    handleSelectPlace(String(placeId));
+
+    const cardsAnchor = document.getElementById('cards-list-anchor');
+    if (cardsAnchor) {
+      cardsAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   return (
   <PageContainer>
@@ -79,9 +95,15 @@ function SwapCard() {
           </Form.Select>
         </Form.Group>
 
+        {!state.selectedCardId && (
+              <LatestChapters onSelect={handleShortcutSelect} />
+        )}
+
         <Form.Group
+          id="cards-list-anchor"
           className={state.hidden ? 'hidden' : 'mb-5'}
-          controlId="formGroupEmail">
+          controlId="formGroupEmail"
+        >
           <Form.Label className="visually-hidden report-label">
             Click on the card you are looking for!
           </Form.Label>

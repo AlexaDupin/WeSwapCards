@@ -4,7 +4,7 @@ const {
   CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET,
-  CLOUDINARY_FOLDER = 'places',
+  CLOUDINARY_FOLDER = 'chapters',
 } = process.env;
 
 cloudinary.config({
