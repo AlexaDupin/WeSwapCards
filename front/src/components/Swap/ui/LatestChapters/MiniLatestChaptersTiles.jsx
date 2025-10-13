@@ -57,13 +57,8 @@ export default function MiniLatestChaptersTiles({ onSelect, visible }) {
 
   return (
     <div className={`mini-tiles ${visible ? "is-open" : ""}`} aria-label="Latest chapters quick access">
-      <div className="mini-tiles__row">
+      <div className="mb-2 mini-tiles__row">
         {latest.map((chapter) => (
-          <OverlayTrigger
-            key={chapter.id}
-            placement="top"
-            overlay={<Tooltip id={`tt-${chapter.id}`}>{chapter.name}</Tooltip>}
-          >
             <button
               type="button"
               className="mini-tiles__item"
@@ -78,7 +73,6 @@ export default function MiniLatestChaptersTiles({ onSelect, visible }) {
               />
               <span className="mini-tiles__label">{chapter.name}</span>
             </button>
-          </OverlayTrigger>
         ))}
       </div>
     </div>

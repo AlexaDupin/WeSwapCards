@@ -57,11 +57,7 @@ export default function LatestChapters({ onSelect }) {
 
   return (
     <section className="latest-chapters my-4" aria-labelledby="latest-chapters-title">
-      <h2 id="latest-chapters-title" className="h5 mb-3">
-        Latest chapters
-      </h2>
-
-      <Row className="g-3 latest-chapters-row">
+      <Row className="g-3 mt-4 latest-chapters-row">
         {latest.map((chapter) => (
           <Col xs={12} md={6} key={chapter.id}>
             <Card

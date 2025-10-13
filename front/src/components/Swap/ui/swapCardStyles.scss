@@ -247,13 +247,11 @@
       }
 
       .mini-tiles__label {
-        font-size: 0.6rem;
+        font-size: 0.7rem;
       }
   }
   
-  /* ===== Landing banners (LatestChapters) ===== */
-  .latest-chapters-row { margin: 0; }
-  
+  /* ===== Landing banners (LatestChapters) ===== */  
   .chapter-card.banner-style {
     position: relative;
     border: none;
@@ -265,9 +263,7 @@
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-    }
-
-    
+    }    
   }
   
   .chapter-card-image {
