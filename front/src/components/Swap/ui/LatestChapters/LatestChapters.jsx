@@ -15,7 +15,7 @@ export default function LatestChapters({ onSelect }) {
   useEffect(() => {
     let cancelled = false;
 
-    async function load() {
+    async function fetchLatestChapters() {
       try {
         setLoading(true);
         setErr("");
@@ -39,7 +39,7 @@ export default function LatestChapters({ onSelect }) {
       }
     }
 
-    load();
+    fetchLatestChapters();
     return () => {
       cancelled = true;
     };

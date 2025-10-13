@@ -169,11 +169,11 @@
     border: none;
     overflow: hidden;
     cursor: pointer;
-    height: 220px; // desktop height
+    height: 220px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   
     &:hover {
-      transform: translateY(-2px);
+      transform: translateY(-3px);
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
     }
   }
@@ -199,7 +199,7 @@
     );
     display: flex;
     align-items: flex-end;
-    justify-content: flex-start; // ensures bottom-left alignment
+    justify-content: flex-start;
   }
   
   .chapter-card-title {
@@ -210,9 +210,8 @@
     margin: 0;
   }
   
-  /* Layout: full width on mobile, 2 cards per row on desktop */
   @media (max-width: 767px) {
     .chapter-card.banner-style {
-      height: 120px; // half the previous height for banner look
+      height: 120px;
     }
   }

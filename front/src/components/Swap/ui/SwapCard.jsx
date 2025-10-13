@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import PageContainer from '../../PageContainer/PageContainer';
 import {
     Form,
@@ -22,6 +22,8 @@ import useSwapLogic from '../hooks/useSwapLogic';
 import LatestChapters from './LatestChapters/LatestChapters';
 
 function SwapCard() {
+  const [showLatest, setShowLatest] = useState(true);
+
   const { 
     state,
     handleSelectPlace, 
@@ -52,11 +54,19 @@ function SwapCard() {
     if (selectRef.current) {
       selectRef.current.value = String(placeId);
     }
-    handleSelectPlace(String(placeId));
+    setShowLatest(false);
 
-    const cardsAnchor = document.getElementById('cards-list-anchor');
-    if (cardsAnchor) {
-      cardsAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    handleSelectPlace(String(placeId));
+  };
+
+  const handleDropdownChange = (e) => {
+    const selectedValue = e.target.value;
+
+    if (selectedValue !== "") {
+      setShowLatest(false);
+      handleSelectPlace(selectedValue);
+    } else {
+      setShowLatest(true);
     }
   };
 
@@ -77,12 +87,8 @@ function SwapCard() {
         <Form.Group className="mb-3" controlId="formGroupPlace">
           <Form.Label className="visually-hidden">Select a chapter</Form.Label>
           <Form.Select
-            onChange={(e) => {
-              const selectedValue = e.target.value;
-              if (selectedValue !== "") {
-                handleSelectPlace(selectedValue);
-              }
-            } }
+            ref={selectRef}
+            onChange={handleDropdownChange} 
           >
             <option value="">Select</option>
             {state.places?.map((place) => (
@@ -95,12 +101,11 @@ function SwapCard() {
           </Form.Select>
         </Form.Group>
 
-        {!state.selectedCardId && (
+        {showLatest && (
               <LatestChapters onSelect={handleShortcutSelect} />
         )}
 
         <Form.Group
-          id="cards-list-anchor"
           className={state.hidden ? 'hidden' : 'mb-5'}
           controlId="formGroupEmail"
         >
