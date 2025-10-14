@@ -4,7 +4,7 @@ import { useAuth } from "@clerk/clerk-react";
 import { axiosInstance } from "../../../../helpers/axiosInstance";
 
 const PLACEHOLDER =
-  "https://res.cloudinary.com/placeholder/image/upload/places/placeholder.jpg"; // replace with your placeholder if you have one
+  "https://res.cloudinary.com/dwf28prby/image/upload/v1760480793/placeholder.jpg";
 
 export default function LatestChapters({ onSelect }) {
   const { getToken } = useAuth();

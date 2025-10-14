@@ -33,7 +33,7 @@ async function ingestForPlaceId(placeId, { force = false, customQuery = null } =
   const buf = await downloadAsBuffer(hit.imageUrl);
 
   // 3) Upload to Cloudinary
-  const publicId = `place-${place.id}-${slugify(place.name)}`;
+  const publicId = `chapter-${place.id}-${slugify(place.name)}`;
   try {
     await destroyByPublicId(publicId);
   } catch (e) {

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Spinner } from "react-bootstrap";
 import { useAuth } from "@clerk/clerk-react";
 import { axiosInstance } from "../../../../helpers/axiosInstance";
 
 const PLACEHOLDER =
-  "https://res.cloudinary.com/placeholder/image/upload/places/placeholder.jpg"; // replace with your placeholder
+  "https://res.cloudinary.com/dwf28prby/image/upload/v1760480793/placeholder.jpg";
 
 export default function MiniLatestChaptersTiles({ onSelect, visible }) {
   const { getToken } = useAuth();
