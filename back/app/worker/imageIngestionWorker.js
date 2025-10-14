@@ -20,9 +20,10 @@ async function startListen() {
     if (!Number.isInteger(placeId)) return;
 
     try {
-      console.log(`[LISTEN] Received place_id=${placeId}`);
       const res = await ingestForPlaceId(placeId);
-      console.log(`[LISTEN] place_id=${placeId} ->`, res);
+      if (!res?.ok) {
+        console.warn(`[LISTEN] not-ok place_id=${placeId} -> ${res?.reason || 'unknown'}`);
+      }    
     } catch (e) {
       console.error(`[LISTEN] Error processing place_id=${placeId}`, e);
     }
@@ -39,15 +40,26 @@ async function sweepOnce() {
   `;
   const r = await pool.query(sql, [BATCH]);
 
+  let okCount = 0, failCount = 0, skipped = 0;
+
   for (const row of r.rows) {
     try {
-      console.log(`[SWEEP] Processing place_id=${row.id}`);
       const res = await ingestForPlaceId(row.id);
-      console.log(`[SWEEP] place_id=${row.id} ->`, res);
+      if (res?.ok) {
+        okCount++;
+      } else if (res?.reason && ['no_results', 'already_has_image', 'rate_limited'].includes(res.reason)) {
+        skipped++;
+      } else {
+        failCount++;
+        console.warn(`[SWEEP] not-ok place_id=${row.id} -> ${res?.reason || 'unknown'}`);
+      }
     } catch (e) {
-      console.error(`[SWEEP] Error place_id=${row.id}`, e);
+      failCount++;
+      console.error(`[SWEEP] Error place_id=${row.id}`, e.message);
     }
   }
+
+  console.log(`[SWEEP] summary batch=${BATCH} -> ok=${okCount}, skipped=${skipped}, failed=${failCount}`);
 }
 
 async function startSweeper() {
@@ -62,7 +74,7 @@ async function startSweeper() {
     try {
       await startListen();
     } catch (e) {
-      console.error('[WORKER] LISTEN failed, continuing without it', e);
+      console.error('[WORKER] LISTEN failed, continuing without it', e.message);
     }
   }
   if (SWEEP_EVERY_SEC > 0) {

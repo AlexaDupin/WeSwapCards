@@ -25,8 +25,6 @@ async function ingestForPlaceId(placeId, { force = false, customQuery = null } =
   }
 
   const searchTerm = customQuery || place.name;
-  console.log(`[INGEST] Searching image for "${searchTerm}"`);
-
   // 1) Pexels search
   const hit = await searchOne(searchTerm);
   if (!hit) return { ok: false, reason: 'pexels_no_result' };
@@ -42,13 +40,15 @@ async function ingestForPlaceId(placeId, { force = false, customQuery = null } =
     console.warn('[INGEST] destroyByPublicId warning:', e?.message || e);
   }
   const result = await uploadBuffer(buf, publicId);
-  console.log('[INGEST] Cloudinary public_id:', result.public_id, 'version:', result.version);
 
   // 4) Save in DB
+  const photographer = hit.credit || 'Unknown';
+  const creditText = `Photo by ${photographer} on Pexels`;
+
   await setImageFields(place.id, {
     imageUrl: result.secure_url,
     image_origin_url: hit.pexelsPageUrl || hit.imageUrl || null,
-    image_credit: hit.credit || null,
+    image_credit: creditText,
   });
 
   return { ok: true, reason: 'updated', image_url: result.secure_url };
