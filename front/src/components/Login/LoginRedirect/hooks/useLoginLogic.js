@@ -7,27 +7,19 @@ import { useAuth } from '@clerk/clerk-react';
 
 const useLoginLogic = () => {
     const dispatch = useDispatchContext();
-    const { user } = useUser();
+    const { isLoaded, isSignedIn, user } = useUser();
     const navigate = useNavigate();
-    const location = useLocation(); // Get the current URL
-    const previousUrl = location.state?.from;
-    // console.log(previousUrl);
-  
+    const location = useLocation();
+
+    const params = new URLSearchParams(location.search);
+    const from = params.get('from');
+
     const { getToken } = useAuth()
     const { signOut } = useClerk();
   
     const [loading, setLoading] = useState(true);
     const [hiddenAlert, setHiddenAlert] = useState(true);
     const [alertMessage, setAlertMessage] = useState('');
-  
-    const handleSignOut = async () => {
-      try {
-        await signOut();
-        navigate('/login', { replace: true });
-      } catch (error) {
-        // console.error('Error signing out:', error);
-      }
-    };
   
     const fetchUserData = async (userUID) => {
       const maxRetries = 3;
@@ -55,15 +47,15 @@ const useLoginLogic = () => {
               payload: { explorerName, explorerId }
             })
 
-            navigate('/menu');
+            navigate(from || '/menu', { replace: true });
             return;
           }
   
-          if (!userInfo.data) {
-            navigate('/register/user');
-          } else {
-            navigate(previousUrl); // Redirect user to page they were on before
-          }
+          navigate({
+            pathname: '/register/user',
+            search: from ? `?from=${encodeURIComponent(from)}` : '',
+          });
+          return;
   
         } catch (error) {
           if (attempt < maxRetries) {
@@ -72,7 +64,10 @@ const useLoginLogic = () => {
             setLoading(false);
             setHiddenAlert(false);
             setAlertMessage("There was an error during sign in");
-            handleSignOut();
+            if (isSignedIn) {
+              try { await signOut(); } catch {}
+            }
+            navigate(`/login${from ? `?from=${encodeURIComponent(from)}` : ''}`, { replace: true });
             return;
           }
         }
@@ -81,17 +76,20 @@ const useLoginLogic = () => {
     
     // Fetch Clerk userid on mount
     useEffect(() => {
+      if (!isLoaded) return;
+
       dispatch({
         type: 'explorer/reset',
       })
   
-     if (user) {
-       const userUID = user.id;  // Clerk's userId
-       fetchUserData(userUID);
-     } else {
-       handleSignOut();
-     }
-    }, []);
+      if (!isSignedIn || !user) {
+        navigate(`/login${from ? `?from=${encodeURIComponent(from)}` : ''}`, { replace: true });
+        return;
+      }
+
+      fetchUserData(user.id);
+
+    }, [isLoaded, isSignedIn, user]);
 
     return {
         loading,

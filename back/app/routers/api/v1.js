@@ -46,7 +46,7 @@ router
 
 router
     .route('/cards/:placeId')
-    .get(requireAuth(), controllerHandler(reportController.getCardsFromPlace));
+    .get(controllerHandler(reportController.getCardsFromPlace));
 
 router
     .route('/opportunities/:explorerId')

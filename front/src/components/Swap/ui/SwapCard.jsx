@@ -8,6 +8,7 @@ import {
     Alert
 } from "react-bootstrap";
 import {XOctagon} from "react-bootstrap-icons";
+import { useUser, useClerk } from "@clerk/clerk-react";
 import CardPreview from './CardPreview/CardPreview';
 import PaginationControl from '../../Pagination/Pagination';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
@@ -20,6 +21,9 @@ import OpportunityCard from './OpportunityCard/OpportunityCard';
 
 function SwapCard() {
   const [showLatest, setShowLatest] = useState(true);
+  const { isLoaded, isSignedIn } = useUser();           // ⬅️ ADD
+  const { openSignIn } = useClerk();   
+  const from = `${window.location.pathname}${window.location.search}${window.location.hash || ''}`;
 
   const { 
     state,
@@ -58,6 +62,19 @@ function SwapCard() {
     } else {
       setShowLatest(true);
     }
+  };
+
+  const gatedFetchSwapOpportunities = (...args) => {
+    if (!isLoaded) return;
+
+    if (!isSignedIn) {
+      openSignIn({
+        forceRedirectUrl: `/login/redirect?from=${encodeURIComponent(from)}`,
+      });
+      return;
+    }
+
+    return fetchSwapOpportunities(...args);
   };
 
   return (
@@ -118,7 +135,7 @@ function SwapCard() {
                 <CardPreview
                   key={card.id}
                   card={card}
-                  fetchSwapOpportunities={fetchSwapOpportunities}
+                  fetchSwapOpportunities={gatedFetchSwapOpportunities}
                   isSelected={state.selectedCardId === card.id} />
               ))
             ) : (
@@ -127,13 +144,13 @@ function SwapCard() {
           </div>
         </Form.Group>
             
-      {state.loadingOpportunities && state.selectedCardId && (
+      {isSignedIn && state.loadingOpportunities && state.selectedCardId && (
         <div className="text-center my-4">
           <Spinner animation="border" className="spinner" />
         </div>
       )}
 
-      {!state.loadingOpportunities && !state.hiddenSwapOpportunities && (
+      {isSignedIn && !state.loadingOpportunities && !state.hiddenSwapOpportunities && (
         <div className="opportunity-card-container">
           {swapOpportunities.items?.length > 0 ? (
             <>

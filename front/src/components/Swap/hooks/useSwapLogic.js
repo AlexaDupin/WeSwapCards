@@ -152,11 +152,11 @@ const useSwapLogic = () => {
 
     useEffect(
       () => {
-        if (!explorerId) {
-          navigate('/login/redirect', { state: { from: "/swap/card" } });
-        } else {
+        // if (!explorerId) {
+        //   navigate('/login/redirect', { state: { from: "/swap/card" } });
+        // } else {
         fetchAllPlaces();
-        }
+        // }
       }, [],
     );
 
