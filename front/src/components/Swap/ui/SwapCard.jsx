@@ -1,18 +1,13 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import PageContainer from '../../PageContainer/PageContainer';
 import {
     Form,
 	  Row,
-    Card,
     Col,
     Spinner,
-    Badge,
-    OverlayTrigger,
-    Tooltip,
     Alert
 } from "react-bootstrap";
 import {XOctagon} from "react-bootstrap-icons";
-import Lightning from '../../../images/lightning.svg';
 import CardPreview from './CardPreview/CardPreview';
 import PaginationControl from '../../Pagination/Pagination';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
@@ -21,6 +16,7 @@ import './swapCardStyles.scss';
 import useSwapLogic from '../hooks/useSwapLogic';
 import LatestChapters from './LatestChapters/LatestChapters';
 import MiniLatestChaptersTiles from './LatestChapters/MiniLatestChaptersTiles';
+import OpportunityCard from './OpportunityCard/OpportunityCard';
 
 function SwapCard() {
   const [showLatest, setShowLatest] = useState(true);
@@ -38,16 +34,9 @@ function SwapCard() {
     totalPages,
     handlePageChange
   } = useSwapLogic();
-  // console.log(swapOpportunities);
 
-  const renderTooltip = (props) => (
-    <Tooltip id="button-tooltip" {...props}>
-      This user has been active recently
-    </Tooltip>
-  );
-
-  const items = swapOpportunities.items ?? [];
-  const isSingle = items.length === 1;
+  const items = useMemo(() => swapOpportunities.items ?? [], [swapOpportunities.items]);
+  const isSingle = useMemo(() => items.length === 1, [items]);
 
   const selectRef = useRef(null);
 
@@ -77,10 +66,10 @@ function SwapCard() {
 
       {state.alert.message && (
           <Alert
-          variant='danger' className={state.alert.hidden ? 'hidden-alert' : ''}>
+            variant='danger' className={state.alert.hidden ? 'hidden-alert' : ''}>
               {state.alert.message}
-            </Alert>
-          )}
+          </Alert>
+      )}
 
       {!state.alert.message && (
         <>
@@ -108,8 +97,8 @@ function SwapCard() {
                 ))}
               </Form.Select>
             </Form.Group>
-            </Form>
-          </div>
+          </Form>
+        </div>
 
         {showLatest && (
           <LatestChapters onSelect={handleShortcutSelect} />
@@ -146,93 +135,42 @@ function SwapCard() {
 
       {!state.loadingOpportunities && !state.hiddenSwapOpportunities && (
         <div className="opportunity-card-container">
-    {swapOpportunities.items?.length > 0 ? (
-      <>
-      <p>
-        Here are the users who can give you this card: <br />
-        <span className="swap-cardName">{swapCardName}</span>
-      </p>
-
-      <Row className={`g-3 align-items-stretch ${isSingle ? 'justify-content-center' : ''}`}>
-        {items?.map((opportunity) => (
-          <Col xs={12} md={6} key={opportunity.explorer_id} className="d-flex">
-            <Card className="opportunity-card h-100 d-flex flex-column" id={opportunity.explorer_id}>
-              <Card.Body className="d-flex flex-column">
-                          <Card.Title className="opportunity-title">
-                            <span className="opportunity-explorer-name">{opportunity.explorer_name}</span>
-                            {isRecentlyActive(opportunity.last_active_at) && (
-                              <span className="opportunity-explorer-badge">
-                                <OverlayTrigger
-                                  placement="right"
-                                  delay={{ show: 250, hide: 400 }}
-                                  overlay={renderTooltip}
-                                >
-                                  <Badge className="opportunity-explorer-badge-desktop">Active</Badge>
-                                </OverlayTrigger>
-
-
-                                <img
-                                  src={Lightning}
-                                  alt="Lightning icon"
-                                  className="opportunity-explorer-badge-mobile"
-                                  onClick={() => handleMobileTooltip(opportunity.explorer_id)} />
-                                {state.activeTooltips[opportunity.explorer_id] && (
-                                  <div className="tooltip-mobile">
-                                    <div className="tooltip-content">
-                                      Active user
-                                    </div>
-                                  </div>
-                                )}
-                              </span>
-                            )}
-                          </Card.Title>
-
-                          {opportunity.opportunities.length > 0 ? (
-                            <Card.Text className="opportunity-text">
-                              <span>In exchange, here are the cards you can offer them:</span>
-                              <br />
-                              {opportunity.opportunities.map((exchange) => (
-                                <button key={exchange.card.id} className="swap-tag">
-                                  {exchange.card.name}
-                                </button>
-                              ))}
-                            </Card.Text>
-                          ) : (
-                            <Card.Text className="opportunity-text-empty">
-                              <span>You do not have any new cards for this user, but you can still contact them.</span>
-                            </Card.Text>
-                          )}
-                        
-                          <div className="mt-auto">
-                            <button
-                              className="contact-button"
-                              onClick={() => handleContactButton(opportunity.explorer_id, opportunity.explorer_name, opportunity.opportunities)}
-                            >
-                              Contact this user to swap
-                            </button>
-                          </div>
-                          </Card.Body>
-                        </Card>
-                      </Col>
-                    ))}
-                    </Row>
-              
-                    <div className="mt-3">
-                      <PaginationControl
-                        activePage={activePage}
-                        totalPages={totalPages}
-                        onPageChange={handlePageChange}
-                      />
-                    </div>
-                  </>
-                ) : (
+          {swapOpportunities.items?.length > 0 ? (
             <>
-            <div>No opportunities available for <span className='swap-cardName'>{swapCardName}</span>, try another card!</div>
-            {/* <div className="swap-disclaimer"><em>Only users that need cards you have in duplicates will be shown at a later stage. So remember to log all your cards!</em></div> */}
-            <XOctagon className='lock-icon'/>
+            <p>
+              Here are the users who can give you this card: <br />
+              <span className="swap-cardName">{swapCardName}</span>
+            </p>
+          
+            <Row className={`g-3 align-items-stretch ${isSingle ? 'justify-content-center' : ''}`}>
+              {items?.map((opportunity) => (
+                <Col xs={12} md={6} key={opportunity.explorer_id} className="d-flex">
+                  <OpportunityCard
+                    opportunity={opportunity}
+                    isRecentlyActive={isRecentlyActive}
+                    activeTooltips={state.activeTooltips}
+                    onMobileTooltip={handleMobileTooltip}
+                    onContact={handleContactButton}
+                  />
+                </Col>
+              ))}
+            </Row>
+
+            <div className="mt-3">
+              <PaginationControl
+                activePage={activePage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </div>
+            </>
+          ) : (
+            <>
+              <div>No opportunities available for <span className='swap-cardName'>{swapCardName}</span>, try another card!</div>
+              <XOctagon className='lock-icon'/>
             </>
           )}
-      </div>
+        </div>
       )}
        </>
       )}
