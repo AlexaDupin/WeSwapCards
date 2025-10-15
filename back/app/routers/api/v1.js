@@ -27,6 +27,10 @@ router
     .get(controllerHandler(reportController.getAllPlaces))
 
 router
+    .route('/chapters/latest')
+    .get(controllerHandler(opportunitiesController.getLatestChapters));
+
+router
     .route('/cards/statuses/:explorerId')
     .get(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.getAllCardsStatuses))
 

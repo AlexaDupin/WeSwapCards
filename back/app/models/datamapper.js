@@ -818,4 +818,21 @@ module.exports = {
         
           await client.query(preparedQuery);
     },
+    async getLatestChapters(limitFromQuery) {
+        const parsed = parseInt(limitFromQuery, 10);
+        const limit = Number.isInteger(parsed) && parsed > 0 ? Math.min(parsed, 12) : 4;
+      
+        const preparedQuery = {
+          text: `
+            SELECT id, name, image_url
+            FROM "place"
+            ORDER BY id DESC
+            LIMIT $1
+          `,
+          values: [limit],
+        };
+      
+        const result = await client.query(preparedQuery);
+        return { items: result.rows };
+    }
 };

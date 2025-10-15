@@ -163,3 +163,142 @@
         display: block !important;
     };
 }
+
+  .latest-wrapper {
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Collapsible container: smooth reveal/hide to avoid jump */
+  .mini-tiles {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: max-height 220ms ease, opacity 200ms ease, transform 220ms ease;
+    margin-bottom: 0.25rem;
+  
+    &.is-open {
+      max-height: 100px; /* approx tiles height; tweak as needed */
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .mini-tiles__row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .mini-tiles__item {
+    position: relative;
+    border: none;
+    background: none;
+    padding: 0;
+    width: 100%;
+    height: 72px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+  
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+  }
+  
+  .mini-tiles__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  
+  .mini-tiles__label {
+    position: absolute;
+    left: 8px;
+    bottom: 6px;
+    right: 8px;
+    color: #fff;
+    font-size: 0.8rem;
+    line-height: 1rem;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    z-index: 1;
+    text-align: left;
+  }
+  
+  @media (max-width: 767px) {
+    .mini-tiles__row {
+        display: flex;
+        justify-content: space-between;
+      }
+      .mini-tiles__item {
+        flex: 0 0 calc(25% - 0.5rem);  /* four visible tiles at once */
+        min-width: 80px;
+        height: 56px;
+      }
+
+      .mini-tiles__label {
+        font-size: 0.7rem;
+      }
+  }
+  
+  /* ===== Landing banners (LatestChapters) ===== */  
+  .chapter-card.banner-style {
+    position: relative;
+    border: none;
+    overflow: hidden;
+    cursor: pointer;
+    height: 220px; /* desktop height; banner look */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    }    
+  }
+  
+  .chapter-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  
+  .chapter-card-overlay {
+    position: absolute;
+    bottom: 0; left: 0; width: 100%;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(
+      to top,
+      rgba(0,0,0,0.6) 0%,
+      rgba(0,0,0,0.15) 50%,
+      transparent 100%
+    );
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start; /* bottom-left label */
+  }
+  
+  .chapter-card-title {
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    margin: 0;
+  }
+  
+  /* Mobile: banner half height */
+  @media (max-width: 767px) {
+    .chapter-card.banner-style {
+      height: 120px;
+    }
+  }
