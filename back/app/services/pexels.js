@@ -13,7 +13,7 @@ async function searchOne(placeName) {
   const url = 'https://api.pexels.com/v1/search';
   const { data } = await axios.get(url, {
     headers: { Authorization: PEXELS_API_KEY },
-    params: { query, per_page: 1 },
+    params: { query, per_page: 1, orientation: 'landscape' },
     timeout: 10_000,
   });
 
