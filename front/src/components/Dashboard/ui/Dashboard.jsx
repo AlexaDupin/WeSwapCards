@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import PageContainer from '../../PageContainer/PageContainer';
 import DashboardList from './DashboardList';
 import {
@@ -33,13 +34,30 @@ function Dashboard() {
     handleTabChange,
     unreadConv,
     searchTerm,
-    setSearchTerm
+    setSearchTerm,
+    isPublicDemo
   } = useDashboardLogic();
 
   return (
     <PageContainer>
-      <h1 className="page-title">Requests dashboard</h1>
-    
+      <h1 className="page-title">
+        Requests dashboard
+      </h1>
+
+      {isPublicDemo && (
+        <Alert variant="info" className="mb-3">
+          You’re viewing a preview.{" "}
+          <Link
+            to="/login/redirect"
+            state={{ from: "/swap/dashboard" }}
+            className="fw-bold alert-link"
+          >
+            Sign in
+          </Link>{" "} 
+          to see your real requests.
+        </Alert>
+      )}
+
       {loading && (
         <><Spinner animation="border" className="spinner" /><p>Loading your requests...</p></>
       )}
@@ -80,7 +98,10 @@ function Dashboard() {
             hiddenAlert={hiddenAlert}
             alertMessage={alertMessage}
             activeTab={activeTab}
-            searchTerm={searchTerm} /></>
+            searchTerm={searchTerm} 
+            readOnly={isPublicDemo}
+        />
+        </>
       )}
 
       <ScrollToTop />

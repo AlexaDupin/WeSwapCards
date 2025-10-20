@@ -6,6 +6,7 @@ import { useStateContext } from '../../../contexts/StateContext';
 import { useDispatchContext } from '../../../contexts/DispatchContext';
 import { usePagination } from '../../../hooks/usePagination';
 import { useDebounce } from '../../../hooks/useDebounce';
+import { DEMO_CONVERSATIONS } from '../demo/publicConversations';
 
 const useDashboardLogic = () => {
     const state = useStateContext();
@@ -21,43 +22,77 @@ const useDashboardLogic = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const debouncedSearch = useDebounce(searchTerm, 300);
 
+    const isPublicDemo = !explorerId;
+
     const baseFetchUrl =
     activeTab === 'in-progress'
       ? `/conversation/${explorerId}`
       : `/conversation/past/${explorerId}`;
 
-    const { 
-        data,
-        setData,
-        loading, 
-        error,
-        activePage, 
-        setActivePage,
-        totalPages, 
-        totalItems,
-        handlePageChange,
-        refresh: refreshConversations
-    } = usePagination(
-      explorerId ? baseFetchUrl : null,
+    const serverPagination = usePagination(
+      isPublicDemo ? null : baseFetchUrl,
       40,
       { searchTerm: debouncedSearch, includeSearch: true }
-    ); 
+    );
+
+    const { 
+      data: serverData,
+      setData: setServerData,
+      loading: serverLoading,
+      error: serverError,
+      activePage: serverActivePage,
+      setActivePage: setServerActivePage,
+      totalPages: serverTotalPages,
+      totalItems: serverTotalItems,
+      handlePageChange: serverHandlePageChange,
+      refresh: refreshConversations
+    } = serverPagination;
+
+    const [demoData, setDemoData] = useState({ conversations: [], total: 0 });
+
+    useEffect(() => {
+      if (!isPublicDemo) return;
+  
+      const list = DEMO_CONVERSATIONS;
+  
+      const filtered = debouncedSearch
+        ? list.filter(
+            (c) =>
+              c.card_name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+              c.swap_explorer.toLowerCase().includes(debouncedSearch.toLowerCase())
+          )
+        : list;
+  
+      const visible =
+        activeTab === 'in-progress'
+          ? filtered.filter((c) => c.status === 'In progress')
+          : filtered.filter((c) => c.status !== 'In progress');
+  
+      setDemoData({ conversations: visible, total: visible.length });
+  
+      // unread counts for badges (computed on the full list, not just visible)
+      setUnreadConv({
+        inProgress: list.filter((c) => c.status === 'In progress' && c.unread > 0).length,
+        past: list.filter((c) => c.status !== 'In progress' && c.unread > 0).length
+      });
+    }, [isPublicDemo, activeTab, debouncedSearch]);
 
     const handleTabChange = (tab) => {
       if (tab !== activeTab) {
         setActiveTab(tab);
-        setActivePage(1);
+        if (isPublicDemo) return;
+        setServerActivePage?.(1);        
         fetchUnreadConversations();
       }
     }
     
-    // Show alert when error occurs
-    useEffect(() => {
-      if (error) {
-        setHiddenAlert(false);
-        setAlertMessage(error);
-      }
-    }, [error]);
+    // // Show alert when error occurs
+    // useEffect(() => {
+    //   if (error) {
+    //     setHiddenAlert(false);
+    //     setAlertMessage(error);
+    //   }
+    // }, [error]);
     
     const fetchSwapOpportunitiesForRecipient = async (creatorId, recipientId, conversationId) => {
       try {
@@ -83,7 +118,11 @@ const useDashboardLogic = () => {
 
     const handleOpenChat = async (swapCardName, swapExplorerId, swapExplorerName, creatorId, recipientId, conversationId) => {
         // console.log(swapCardName, swapExplorerId, swapExplorerName, creatorId, recipientId, conversationId);
-        
+        if (isPublicDemo) {
+          navigate('/login/redirect', { state: { from: '/swap/dashboard' } });
+          return;
+        }
+
         dispatch({
           type: 'dashboard/chatClicked',
           payload: { conversationId, swapExplorerId, swapExplorerName, swapCardName }
@@ -95,10 +134,12 @@ const useDashboardLogic = () => {
     };
 
     const handleStatusChange = async (conversationId, newStatus) => {
-        const updated = data.conversations.map((conv) =>
+        if (isPublicDemo) return;
+
+        const updated = serverData.conversations.map((conv) =>
           conv.db_id === conversationId ? { ...conv, status: newStatus } : conv
         );
-        setData(updated);
+        setServerData(updated);
       
         try {
         await axiosInstance.put(
@@ -130,29 +171,30 @@ const useDashboardLogic = () => {
       };
     
     const updateLastActive = async () => {
-        try {
-          const token = await getToken();
-
-          await axiosInstance.post(
-            `/exploreractivity/${explorerId}`,
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-              withCredentials: true,
-          });
-          // console.log("Successfully updated last active timestamp");        
-          return;
-          
-        } catch (error) {
-            // console.error("Error updating last active:", error);
-            return;
-        }
+      if (isPublicDemo) return;
+      try {
+        const token = await getToken();
+        await axiosInstance.post(
+          `/exploreractivity/${explorerId}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+        });
+        // console.log("Successfully updated last active timestamp");        
+        return;
         
+      } catch (error) {
+          // console.error("Error updating last active:", error);
+          return;
+      }       
     };
 
     const fetchUnreadConversations = async () => {
+      if (isPublicDemo) return;
+
       try {
         const token = await getToken();
 
@@ -172,22 +214,43 @@ const useDashboardLogic = () => {
     }
 
     useEffect(() => {
-      if (!explorerId) {
-        navigate('/login/redirect', { state: { from: "/swap/dashboard" } });
-        return;
-      }
+      if (isPublicDemo) return;
+
       updateLastActive();
       fetchUnreadConversations();
-    }, [explorerId]);
+    }, [isPublicDemo, explorerId, activeTab, debouncedSearch]);
+
+    if (isPublicDemo) {
+      return {
+        data: demoData,
+        loading: false,
+        error: null,
+        activePage: 1,
+        totalPages: 1,
+        totalItems: demoData.total,
+        handlePageChange: () => {},
+        handleOpenChat,
+        getDropdownClass,
+        handleStatusChange,
+        hiddenAlert,
+        alertMessage,
+        activeTab,
+        handleTabChange,
+        unreadConv,
+        searchTerm,
+        setSearchTerm,
+        isPublicDemo: true
+      };
+    }
 
     return {
-      data,
-      loading,
-      error,
-      activePage,
-      totalPages,
-      totalItems,
-      handlePageChange,
+      data: serverData,
+      loading: serverLoading,
+      error: serverError,
+      activePage: serverActivePage,
+      totalPages: serverTotalPages,
+      totalItems: serverTotalItems,
+      handlePageChange: serverHandlePageChange,
       handleOpenChat,
       getDropdownClass,
       handleStatusChange,
@@ -197,8 +260,9 @@ const useDashboardLogic = () => {
       handleTabChange,
       unreadConv,
       searchTerm,
-      setSearchTerm
-    }
+      setSearchTerm,
+      isPublicDemo: false
+    };
 }
 
 export default useDashboardLogic;

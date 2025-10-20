@@ -62,7 +62,7 @@ function Header() {
                 to={{ pathname: "/login", search: `?from=${encodeURIComponent(from)}` }}
                 className="header-login-link"
             >
-              Log in
+              Sign in
             </NavLink>
           </SignedOut>
         </div>

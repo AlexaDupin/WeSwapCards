@@ -64,3 +64,33 @@
     }
 }
 
+.demo-row {
+    user-select: none;
+  }
+  .demo-real .requests-chat { cursor: pointer; }
+  
+  .demo-blurred {
+    .blur-text {
+      filter: blur(4px);
+      opacity: 0.65;
+      display: inline-block;
+      min-width: 10ch;
+    }
+    .blur-badge {
+      filter: blur(4px);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    td { cursor: default; }
+  }
+  
+  /* Skeleton shimmer for Placeholder rows */
+  .demo-skeleton .placeholder {
+    animation: shimmer 1.6s linear infinite;
+  }
+  @keyframes shimmer {
+    0% { opacity: .45; }
+    50% { opacity: .9; }
+    100% { opacity: .45; }
+  }
+  
