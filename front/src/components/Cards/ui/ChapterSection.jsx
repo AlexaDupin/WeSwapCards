@@ -15,6 +15,7 @@ function ChapterSection({
   onMarkAllOwned,
   onMarkAllDuplicated,
   isPending = false,
+  readOnly = false, 
 }) {
   return (
     <section id={getChapterDomId(chapterId)} className="chapter">
@@ -44,6 +45,7 @@ function ChapterSection({
             status={statuses[card.id] || "default"}
             onSelect={() => onSelectCard(card.id)}
             onReset={() => onResetCard(card.id)}
+            readOnly={readOnly}
           />
         ))}
       </div>

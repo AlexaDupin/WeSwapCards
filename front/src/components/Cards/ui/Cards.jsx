@@ -1,4 +1,5 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useCallback } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import PageContainer from '../../PageContainer/PageContainer';
 import { Spinner, Alert, Button } from "react-bootstrap";
 import './cardsStyles.scss';
@@ -18,7 +19,7 @@ import { InfoCircle } from "react-bootstrap-icons";
 import CardsHelpModal from "./CardsHelpModal"; 
 
 function Cards() {
-  const { state, handleSelect, reset, isLoading, markAllOwnedInChapter, markAllDuplicatedInChapter, isChapterPending } = useCardsLogic();
+  const { state, isLoading, isPublic, handleSelect, reset, markAllOwnedInChapter, markAllDuplicatedInChapter, isChapterPending } = useCardsLogic();
   const { chaptersData } = useChapterBuckets(state.chapters, state.cards, state.cardStatuses);
 
   const [showMissingOnly, setShowMissingOnly] = useState(false);
@@ -36,6 +37,17 @@ function Cards() {
   const azBarRef = useRef(null);
   useStickyVars({ ref: azBarRef, cssVarName: "--az-bar-h", dimension: "height" });
   
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = `${location.pathname}${location.search}${location.hash || ""}`;
+
+  const loginRedirect = () => navigate('/login/redirect', { state: { from } });
+
+  const onSelectCard         = isPublic ? loginRedirect : handleSelect;
+  const onResetCard          = isPublic ? undefined      : reset;
+  const onMarkAllOwned       = isPublic ? loginRedirect : markAllOwnedInChapter;
+  const onMarkAllDuplicated  = isPublic ? loginRedirect : markAllDuplicatedInChapter;
+
   return (
     <PageContainer className="cards-page">
       <div className="page-header d-flex align-items-center justify-content-between gap-3 mb-2">
@@ -87,12 +99,13 @@ function Cards() {
         <ChaptersList
           chaptersData={visibleChaptersData}
           getChapterDomId={getChapterDomId}
-          onSelectCard={handleSelect}
-          onResetCard={reset}
+          onSelectCard={onSelectCard}
+          onResetCard={onResetCard}
           statuses={state.cardStatuses}
-          onMarkAllOwned={markAllOwnedInChapter}
-          onMarkAllDuplicated={markAllDuplicatedInChapter}
+          onMarkAllOwned={onMarkAllOwned}
+          onMarkAllDuplicated={onMarkAllDuplicated}
           isChapterPending={isChapterPending}
+          readOnly={isPublic}
         />
       )}
       </>

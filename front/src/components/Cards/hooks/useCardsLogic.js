@@ -1,21 +1,17 @@
-import { useEffect, useReducer, useState, useCallback } from 'react';
+import { useEffect, useReducer, useState, useCallback, useMemo } from 'react';
 import { axiosInstance } from '../../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
 import { useStateContext } from '../../../contexts/StateContext';
 import { initialState, reducer } from '../../../reducers/cardsReducer';
-import { useNavigate } from 'react-router-dom';
 
 const useCardsLogic = () => {
-    const stateContext = useStateContext();
-    const { explorer } = stateContext;
-    const { id: explorerId } = explorer;
+    const { explorer } = useStateContext();
+    const { id: explorerId } = explorer || {};
+    const isPublic = !explorerId;
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const { getToken } = useAuth()
     const [isLoading, setIsLoading] = useState(true);
-    const isNetworkError = (error) =>
-    !navigator.onLine || error?.code === 'ERR_NETWORK' || error?.message === 'Network Error';
-    const navigate = useNavigate();
 
     const [pendingChapters, setPendingChapters] = useState(new Set());
     const isChapterPending = useCallback((id) => pendingChapters.has(id), [pendingChapters]);
@@ -39,16 +35,10 @@ const useCardsLogic = () => {
       
     const fetchAllCards = async () => {
       try {
-        const token = await getToken();
-        const response = await axiosInstance.get('/cards', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const fetchedCards = response.data.cards;
+        const response = await axiosInstance.get('/cards');
         dispatch({
           type: 'cards/fetched',
-          payload: fetchedCards
+          payload: response.data.cards
         })
       } catch (error) {
         dispatch({
@@ -59,6 +49,10 @@ const useCardsLogic = () => {
   
     const fetchAllCardStatuses = async () => {
       // console.log('explorerId', explorerId);
+      if (isPublic) {
+        dispatch({ type: 'cardStatuses/fetched', payload: {} });
+        return;
+      }
       
       try {
         const token = await getToken();
@@ -74,6 +68,7 @@ const useCardsLogic = () => {
           payload: fetchedCardStatuses
         })
       } catch (error) {
+        const isNetworkError = !navigator.onLine || error?.code === 'ERR_NETWORK' || error?.message === 'Network Error';
         dispatch({
           type: 'cardStatuses/fetchedError',
           payload: isNetworkError(error) ? { message: "There was an error reaching the server. Try again." } : undefined
@@ -82,20 +77,19 @@ const useCardsLogic = () => {
     }
     
     useEffect(() => {
-      const fetchData = async () => {
-        if (!explorerId) {
-          navigate('/login/redirect', { state: { from: "/cards" } });
-        } else {
-          try {
-            await Promise.all([fetchAllChapters(), fetchAllCards(), fetchAllCardStatuses()]);
-          } finally {
-            setIsLoading(false);
-          }
+      const load = async () => {
+        try {
+          await Promise.all([
+            fetchAllChapters(),
+            fetchAllCards(),
+            fetchAllCardStatuses(),
+          ]);
+        } finally {
+          setIsLoading(false);
         }
       };
-    
-      fetchData();
-    }, []);
+      load();
+    }, [explorerId]);
 
     const getNextStatus = (current) => {
       switch (current) {
@@ -252,9 +246,10 @@ const useCardsLogic = () => {
 
     return {
         state,
+        isLoading,
+        isPublic,
         handleSelect,
         reset,
-        isLoading,
         markAllOwnedInChapter,
         markAllDuplicatedInChapter,
         isChapterPending,
