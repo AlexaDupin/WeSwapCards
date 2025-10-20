@@ -35,8 +35,13 @@ function DashboardList({
   const requireLogin = () => {
     navigate('/login/redirect', { state: { from: '/swap/dashboard' } });
   };
-  
-  const DemoRowReadable = ({ row }) => (
+
+  const readableStatus = activeTab === 'past' ? 'Completed' : 'In progress';
+  const blurredStatuses = activeTab === 'past'
+    ? ['Completed', 'Completed', 'Completed', 'Declined']
+    : ['In progress', 'In progress', 'In progress', 'In progress'];
+
+  const DemoRowReadable = ({ row, statusOverride }) => (
     <tr className="demo-row demo-real" key="demo-real">
       <td className={row.unread > 0 ? 'requests-table-unread' : 'requests-table'}>{row.row_id}</td>
       <td
@@ -60,11 +65,11 @@ function DashboardList({
       >
         {row.swap_explorer}
       </td>
-      <td className="requests-table-unread">
+      <td className={activeTab === 'past' ? "requests-table" : "requests-table-unread"}>
         <DropdownButton
           id={`dropdown-status-demo-${row.row_id}`}
-          title={row.status}
-          className={getDropdownClass(row.status)}
+          title={statusOverride}
+          className={getDropdownClass(statusOverride)}
           onSelect={() => requireLogin()}
         >
           <Dropdown.Item eventKey="Completed">Completed</Dropdown.Item>
@@ -75,7 +80,7 @@ function DashboardList({
     </tr>
   );
 
-  const DemoRowBlurred = ({ index }) => (
+  const DemoRowBlurred = ({ index, status }) => (
     <tr className="demo-row demo-blurred" key={`demo-blur-${index}`}>
       <td className="requests-table">{index}</td>
       <td className="requests-table">
@@ -90,8 +95,8 @@ function DashboardList({
       <td className="requests-table">
         <DropdownButton
           id={`dropdown-status-demo`}
-          title={"In progress"}
-          className="blur-badge secondary"
+          title={status}
+          className={`blur-badge ${getDropdownClass(status)}`}
           onSelect={() => requireLogin()}
         >
           <Dropdown.Item eventKey="Completed">Completed</Dropdown.Item>
@@ -121,11 +126,24 @@ function DashboardList({
               </tr>
             </thead>
             <tbody>
-              <DemoRowReadable row={DEMO_CONVERSATIONS[0]} />
-              <DemoRowBlurred index={2} />
-              <DemoRowBlurred index={3} />
-              <DemoRowBlurred index={4} />
-              <DemoRowBlurred index={5} />
+            {activeTab === 'past' ? (
+              <DemoRowReadable
+                row={{
+                  row_id: 1,
+                  unread: 0,
+                  card_name: "Jakarta7",
+                  swap_explorer: "SwapCards",
+                  status: "Completed"
+                }}
+                statusOverride="Completed"
+              />
+            ) : (
+              <DemoRowReadable row={DEMO_CONVERSATIONS[0]} statusOverride={readableStatus} />
+            )}
+              <DemoRowBlurred index={2} status={blurredStatuses[0]} />
+              <DemoRowBlurred index={3} status={blurredStatuses[1]} />
+              <DemoRowBlurred index={4} status={blurredStatuses[2]} />
+              <DemoRowBlurred index={5} status={blurredStatuses[3]} />
             </tbody>
           </Table>
         </>
