@@ -1,14 +1,19 @@
-export const DEMO_CONVERSATIONS = [
-    {
-      row_id: 1,
-      db_id: 10001,
-      card_name: "Orlinski9",
-      swap_explorer: "Wewarder",
-      swap_explorer_id: 501,
-      creator_id: 9001,
-      recipient_id: 9002,
-      status: "In progress",
-      unread: 1
-    }
-  ];
-  
+export const DEMO_CONVERSATIONS_INPROGRESS = [
+  {
+    row_id: 1,
+    card_name: "Orlinski9",
+    swap_explorer: "Wewarder",
+    status: "In progress",
+    unread: 1
+  }
+];
+
+export const DEMO_CONVERSATIONS_PAST = [
+  {
+    row_id: 1,
+    card_name: "Jakarta7",
+    swap_explorer: "SwapCards",
+    status: "Completed",
+    unread: 0
+  }
+];

@@ -6,7 +6,7 @@ import { useStateContext } from '../../../contexts/StateContext';
 import { useDispatchContext } from '../../../contexts/DispatchContext';
 import { usePagination } from '../../../hooks/usePagination';
 import { useDebounce } from '../../../hooks/useDebounce';
-import { DEMO_CONVERSATIONS } from '../demo/publicConversations';
+import { DEMO_CONVERSATIONS_INPROGRESS, DEMO_CONVERSATIONS_PAST } from '../demo/publicConversations';
 
 const useDashboardLogic = () => {
     const state = useStateContext();
@@ -52,30 +52,19 @@ const useDashboardLogic = () => {
 
     useEffect(() => {
       if (!isPublicDemo) return;
-  
-      const list = DEMO_CONVERSATIONS;
-  
-      const filtered = debouncedSearch
-        ? list.filter(
-            (c) =>
-              c.card_name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-              c.swap_explorer.toLowerCase().includes(debouncedSearch.toLowerCase())
-          )
-        : list;
-  
-      const visible =
+    
+      const baseList =
         activeTab === 'in-progress'
-          ? filtered.filter((c) => c.status === 'In progress')
-          : filtered.filter((c) => c.status !== 'In progress');
-  
-      setDemoData({ conversations: visible, total: visible.length });
-  
-      // unread counts for badges (computed on the full list, not just visible)
+          ? DEMO_CONVERSATIONS_INPROGRESS
+          : DEMO_CONVERSATIONS_PAST;
+    
+      setDemoData({ conversations: baseList, total: baseList.length });
+    
       setUnreadConv({
-        inProgress: list.filter((c) => c.status === 'In progress' && c.unread > 0).length,
-        past: list.filter((c) => c.status !== 'In progress' && c.unread > 0).length
+        inProgress: DEMO_CONVERSATIONS_INPROGRESS.filter((c) => c.unread > 0).length,
+        past: DEMO_CONVERSATIONS_PAST.filter((c) => c.unread > 0).length
       });
-    }, [isPublicDemo, activeTab, debouncedSearch]);
+    }, [isPublicDemo, activeTab]);    
 
     const handleTabChange = (tab) => {
       if (tab !== activeTab) {
@@ -85,14 +74,6 @@ const useDashboardLogic = () => {
         fetchUnreadConversations();
       }
     }
-    
-    // // Show alert when error occurs
-    // useEffect(() => {
-    //   if (error) {
-    //     setHiddenAlert(false);
-    //     setAlertMessage(error);
-    //   }
-    // }, [error]);
     
     const fetchSwapOpportunitiesForRecipient = async (creatorId, recipientId, conversationId) => {
       try {

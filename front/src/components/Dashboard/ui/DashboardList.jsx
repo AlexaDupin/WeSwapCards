@@ -7,7 +7,7 @@ import {
 } from "react-bootstrap";
 import {Envelope} from "react-bootstrap-icons";
 import PaginationControl from '../../Pagination/Pagination';
-import { DEMO_CONVERSATIONS } from '../demo/publicConversations';
+import { DEMO_CONVERSATIONS_INPROGRESS, DEMO_CONVERSATIONS_PAST } from '../demo/publicConversations';
 import { useNavigate } from 'react-router-dom';
 import './dashboardStyles.scss';
 
@@ -36,7 +36,6 @@ function DashboardList({
     navigate('/login/redirect', { state: { from: '/swap/dashboard' } });
   };
 
-  const readableStatus = activeTab === 'past' ? 'Completed' : 'In progress';
   const blurredStatuses = activeTab === 'past'
     ? ['Completed', 'Completed', 'Completed', 'Declined']
     : ['In progress', 'In progress', 'In progress', 'In progress'];
@@ -126,20 +125,11 @@ function DashboardList({
               </tr>
             </thead>
             <tbody>
-            {activeTab === 'past' ? (
-              <DemoRowReadable
-                row={{
-                  row_id: 1,
-                  unread: 0,
-                  card_name: "Jakarta7",
-                  swap_explorer: "SwapCards",
-                  status: "Completed"
-                }}
-                statusOverride="Completed"
-              />
-            ) : (
-              <DemoRowReadable row={DEMO_CONVERSATIONS[0]} statusOverride={readableStatus} />
-            )}
+              {activeTab === 'past' ? (
+                <DemoRowReadable row={DEMO_CONVERSATIONS_PAST[0]} statusOverride="Completed" />
+              ) : (
+                <DemoRowReadable row={DEMO_CONVERSATIONS_INPROGRESS[0]} statusOverride="In progress" />
+              )}
               <DemoRowBlurred index={2} status={blurredStatuses[0]} />
               <DemoRowBlurred index={3} status={blurredStatuses[1]} />
               <DemoRowBlurred index={4} status={blurredStatuses[2]} />
