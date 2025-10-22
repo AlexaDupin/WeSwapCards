@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { axiosInstance } from '../../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
@@ -11,7 +11,7 @@ const useChatLogic = () => {
     const dispatch = useDispatchContext();
     const { explorer, swap } = state;
     const { id: explorerId } = explorer;
-    const { explorerId: swapExplorerId, explorerName: swapExplorerName, cardName: swapCardName, opportunities: swapExplorerOpportunities, conversationId } = swap;
+    const { explorerId: swapExplorerId, explorerName: swapExplorerName, cardName: swapCardName, opportunities: swapExplorerOpportunities, conversationId } = swap || {};
 
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
@@ -21,23 +21,35 @@ const useChatLogic = () => {
     const messageInputRef = useRef(null);
 
     const navigate = useNavigate();
+    const location = useLocation();
     const [hiddenAlert, setHiddenAlert] = useState(true);
     const [alertMessage, setAlertMessage] = useState('');
+    
+    const from = useMemo(() => {
+      const search = location.search || '';
+      const hash = location.hash || '';
+      return `${location.pathname}${search}${hash}`;
+    }, [location.pathname, location.search, location.hash]);
+    const { isLoaded: isClerkLoaded, isSignedIn, getToken } = useAuth();
 
-    const location = useLocation();
-    const previousUrl = location.state?.from;
+    const hasExplorer = Boolean(explorerId);
+    const hasSwapContext = Boolean(swapExplorerId && swapCardName);
 
-    const { getToken } = useAuth()
+    const authHeader = async () => {
+      if (!isClerkLoaded || !isSignedIn) return {};
+      const token = await getToken();
+      return token ? { Authorization: `Bearer ${token}` } : {};
+    };
 
     const fetchConversation = async () => {
+      if (!isClerkLoaded || !isSignedIn || !hasExplorer || !hasSwapContext) return;
+
       try {
+        const headers = await authHeader();
         const response = await axiosInstance.get(
-          `/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`
-        , {
-          headers: {
-            Authorization: `Bearer ${await getToken()}`,
-          },
-        });
+          `/conversation/${explorerId}/${swapExplorerId}/${encodeURIComponent(swapCardName)}`,
+          { headers }
+        );
 
         setLoading(false);
 
@@ -61,42 +73,43 @@ const useChatLogic = () => {
     };
 
     const fetchMessages = async () => {
-      if (conversationId) {
-        try {
-          const response = await axiosInstance.get(
-            `/chat/${conversationId}`
-          , {
-            headers: {
-              Authorization: `Bearer ${await getToken()}`,
-            },
-          });
-          const allFetchedMessages = response.data.allMessages;
+      if (!isClerkLoaded || !isSignedIn || !conversationId) return;
 
-          const allMessagesFormattedDate = allFetchedMessages.map((message) => {
-            const messageDate = new Date(message.timestamp);
-            const today = new Date();
-            const daysDifference = (today - messageDate) / (1000 * 3600 * 24); // difference in days
-          
-            // Define a formatting function for messages older than 7 days
-            const formattedDate = daysDifference > 7
-              ? messageDate.toLocaleString(undefined, { 
-                  weekday: 'long', 
-                  day: '2-digit', 
-                  month: 'long',
-                  hour: '2-digit', 
-                  minute: '2-digit',
-                }) // For older than 7 days: Weekday, Day, Month, Hour, Minute
-              : messageDate.toLocaleString(undefined, { 
-                  weekday: 'long', 
-                  hour: '2-digit', 
-                  minute: '2-digit' 
-                }); // For messages within 7 days: Weekday, Hour, Minute
-          
-            return {
-              ...message, 
-              timestamp: formattedDate,
-            };
-          });
+      try {
+        const headers = await authHeader();
+
+        const response = await axiosInstance.get(
+          `/chat/${conversationId}`
+        , { headers }
+        );
+
+        const allFetchedMessages = response.data.allMessages || [];
+
+        const allMessagesFormattedDate = allFetchedMessages.map((message) => {
+          const messageDate = new Date(message.timestamp);
+          const today = new Date();
+          const daysDifference = (today - messageDate) / (1000 * 3600 * 24); // difference in days
+        
+          // Define a formatting function for messages older than 7 days
+          const formattedDate = daysDifference > 7
+            ? messageDate.toLocaleString(undefined, { 
+                weekday: 'long', 
+                day: '2-digit', 
+                month: 'long',
+                hour: '2-digit', 
+                minute: '2-digit',
+              }) // For older than 7 days: Weekday, Day, Month, Hour, Minute
+            : messageDate.toLocaleString(undefined, { 
+                weekday: 'long', 
+                hour: '2-digit', 
+                minute: '2-digit' 
+              }); // For messages within 7 days: Weekday, Hour, Minute
+        
+          return {
+            ...message, 
+            timestamp: formattedDate,
+          };
+        });
 
           setMessages(allMessagesFormattedDate);
           setUnreadMessagestoRead();
@@ -107,22 +120,18 @@ const useChatLogic = () => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
           // console.log(error);
         }
-      } else {
-        return
-      }
-      
     };
 
     const setUnreadMessagestoRead = async () => {
+      if (!isClerkLoaded || !isSignedIn || !conversationId || !hasExplorer) return;
+
         try {
-          const response = await axiosInstance.put(
+          const headers = await authHeader();
+          await axiosInstance.put(
             `/conversation/${conversationId}/${explorerId}`,
             {},
-          {
-            headers: {
-              Authorization: `Bearer ${await getToken()}`,
-            },
-          });
+            { headers }
+          );
 
         } catch (error) {
           // console.log(error);
@@ -130,17 +139,18 @@ const useChatLogic = () => {
     };
 
     const handleConversationStatus = async (conversationId, newStatus) => {
+      if (!isClerkLoaded || !isSignedIn) return;
+
       try {
+        const headers = await authHeader();
+
         await axiosInstance.put(
           `/conversation/${conversationId}`,
           { status: newStatus }, 
-          {
-            headers: {
-              Authorization: `Bearer ${await getToken()}`,
-            },
-          });
+          { headers }
+        );
 
-          navigate('/swap/dashboard');    
+        navigate('/swap/dashboard');    
 
       } catch (error) {
         // console.error('Error updating status:', error);
@@ -148,6 +158,8 @@ const useChatLogic = () => {
     };
 
     const sendMessage = async (conversationId) => {
+      if (!isClerkLoaded || !isSignedIn || !hasExplorer || !hasSwapContext) return;
+
       const sanitizedMessage = DOMPurify.sanitize(newMessage);
 
       const input = {
@@ -164,24 +176,20 @@ const useChatLogic = () => {
 
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-          const token = await getToken();
-          if (!token) {
-              // console.error("Token is not available!");
-              return;
-          }
+          const headers = await authHeader();
+          if (!headers.Authorization) return;
 
           if (!conversationId) {
-            fetchConversation();
+            await fetchConversation();
+            return;
           }
 
           const response = await axiosInstance.post(
             `/chat/${conversationId}`,
             input
           , {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true,
+              headers,
+              withCredentials: true,
             } 
           );
 
@@ -225,10 +233,20 @@ const useChatLogic = () => {
     };
 
     const handleSendMessage = async () => {
-      if (newMessage.trim() === '') return;
-
+      if (!newMessage.trim()) return;
       if (isSending) return;
       setIsSending(true);
+
+      if (!isClerkLoaded || !isSignedIn) {
+        navigate('/login/redirect', { state: { from } });
+        setIsSending(false);
+        return;
+      }
+
+      if (!hasExplorer || !hasSwapContext) {
+        setIsSending(false);
+        return;
+      }
 
       // If no previous conversation, create one and send message
       if (!conversationId) {
@@ -245,20 +263,16 @@ const useChatLogic = () => {
         // Retries in case of server inactivity
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
           try {
-            const token = await getToken();
-            if (!token) {
-                // console.error("Token is not available!");
-                return;
-            }
+            const headers = await authHeader();
+            if (!headers.Authorization) return;
+
             const response = await axiosInstance.post(
-                `/conversation/${explorerId}/${swapExplorerId}/${swapCardName}`,
+              `/conversation/${explorerId}/${swapExplorerId}/${encodeURIComponent(swapCardName)}`,
                 conversation
               , {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-                withCredentials: true,
-              }
+                  headers,
+                  withCredentials: true,
+                }
             );
             
               if (response.status === 201) {
@@ -269,7 +283,7 @@ const useChatLogic = () => {
                 sendMessage(response.data.id);
                 return;
               } else {
-                // console.error("Failed to create conversation");
+                setIsSending(false);
                 return;
               }
             
@@ -298,12 +312,24 @@ const useChatLogic = () => {
 
     // In case of missing explorerId in localStorage, retrieve it again
     useEffect(() => {
-      if (!explorerId) {
-        navigate('/login/redirect', { state: { from: previousUrl } });
+      if (!isClerkLoaded) return;
+
+      if (!isSignedIn) {
+        navigate('/login/redirect', { state: { from } });
+        return;
+      }
+  
+      if (!hasExplorer) {
+        return;
+      }
+  
+      if (hasSwapContext) {
+        fetchConversation();
       } else {
-        fetchConversation();    
-      };
-    }, []);
+        setLoading(false);
+      }
+    }, [isClerkLoaded, isSignedIn, hasExplorer, hasSwapContext, explorerId, swapExplorerId, swapCardName]);
+  
     
     // Scroll to the bottom of the chat after sending a new message
     useEffect(() => {
@@ -311,8 +337,9 @@ const useChatLogic = () => {
     }, [messages]);
 
     useEffect(() => {
+      if (!isClerkLoaded || !isSignedIn || !conversationId) return;
       fetchMessages();
-    }, [conversationId, setMessages]);
+    }, [isClerkLoaded, isSignedIn, conversationId]);
 
     return {
         loading,

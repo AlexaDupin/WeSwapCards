@@ -41,7 +41,6 @@ router
 
 router
   .route('/explorercards/:explorerId/chapters/:chapterId/status')
-  .options((req, res) => res.sendStatus(204))
   .post(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.markChapter));
 
 router

@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState, useCallback, useMemo } from 'react';
+import { useEffect, useReducer, useState, useCallback } from 'react';
 import { axiosInstance } from '../../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
 import { useStateContext } from '../../../contexts/StateContext';
@@ -7,14 +7,18 @@ import { initialState, reducer } from '../../../reducers/cardsReducer';
 const useCardsLogic = () => {
     const { explorer } = useStateContext();
     const { id: explorerId } = explorer || {};
-    const isPublic = !explorerId;
+    const { isLoaded: isClerkLoaded, isSignedIn, getToken } = useAuth();
+
+    const isPublic = !isSignedIn || !explorerId;
 
     const [state, dispatch] = useReducer(reducer, initialState);
-    const { getToken } = useAuth()
     const [isLoading, setIsLoading] = useState(true);
 
     const [pendingChapters, setPendingChapters] = useState(new Set());
     const isChapterPending = useCallback((id) => pendingChapters.has(id), [pendingChapters]);
+
+    const isNetworkError = (err) =>
+      !navigator.onLine || err?.code === 'ERR_NETWORK' || err?.message === 'Network Error';
 
     const fetchAllChapters = async () => {
         try {
@@ -68,7 +72,6 @@ const useCardsLogic = () => {
           payload: fetchedCardStatuses
         })
       } catch (error) {
-        const isNetworkError = !navigator.onLine || error?.code === 'ERR_NETWORK' || error?.message === 'Network Error';
         dispatch({
           type: 'cardStatuses/fetchedError',
           payload: isNetworkError(error) ? { message: "There was an error reaching the server. Try again." } : undefined
@@ -77,6 +80,8 @@ const useCardsLogic = () => {
     }
     
     useEffect(() => {
+      if (!isClerkLoaded) return;
+
       const load = async () => {
         try {
           await Promise.all([
@@ -89,7 +94,7 @@ const useCardsLogic = () => {
         }
       };
       load();
-    }, [explorerId]);
+    }, [isClerkLoaded, explorerId, isSignedIn]);
 
     const getNextStatus = (current) => {
       switch (current) {
@@ -101,6 +106,7 @@ const useCardsLogic = () => {
     };
     
     const upsertCard = useCallback(async (cardId, duplicate) => {
+      if (isPublic) return;
       const token = await getToken();
       const response = await axiosInstance.put(`/explorercards/${explorerId}/cards/${cardId}`,
         { duplicate },
@@ -124,6 +130,7 @@ const useCardsLogic = () => {
     }, [explorerId, getToken, dispatch]);
 
     const handleSelect = useCallback(async (cardId) =>  {
+      if (isPublic) return;
       const currentStatus = state.cardStatuses[cardId] || 'default';
       const nextStatus = getNextStatus(currentStatus);
       switch (nextStatus) {
@@ -163,15 +170,10 @@ const useCardsLogic = () => {
       }
     }, [state.cardStatuses, explorerId, getToken, dispatch]);
 
-    const markAllOwnedInChapter = useCallback(
-      async (chapterId) => {
-        if (pendingChapters.has(chapterId)) return;
+    const markAllOwnedInChapter = useCallback( async (chapterId) => {
+        if (isPublic || pendingChapters.has(chapterId)) return;
 
-        setPendingChapters((prev) => {
-          const next = new Set(prev);
-          next.add(chapterId);
-          return next;
-        });
+        setPendingChapters((prev) => new Set(prev).add(chapterId));
   
         try {
           const token = await getToken();
@@ -204,15 +206,10 @@ const useCardsLogic = () => {
       [dispatch, explorerId, getToken, pendingChapters]
     );
   
-    const markAllDuplicatedInChapter = useCallback(
-      async (chapterId) => {
-        if (pendingChapters.has(chapterId)) return;
+    const markAllDuplicatedInChapter = useCallback(async (chapterId) => {
+        if (isPublic || pendingChapters.has(chapterId)) return;
 
-        setPendingChapters((prev) => {
-          const next = new Set(prev);
-          next.add(chapterId);
-          return next;
-        });
+        setPendingChapters((prev) => new Set(prev).add(chapterId));
 
         try {
           const token = await getToken();
