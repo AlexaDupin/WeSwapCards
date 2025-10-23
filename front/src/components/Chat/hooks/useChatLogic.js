@@ -108,6 +108,8 @@ const useChatLogic = () => {
           return {
             ...message, 
             timestamp: formattedDate,
+            sender_id: String(message.sender_id ?? message.senderId ?? ""),
+            recipient_id: String(message.recipient_id ?? message.recipientId ?? ""),
           };
         });
 
@@ -166,8 +168,8 @@ const useChatLogic = () => {
         id: messages.length + 1,
         content: sanitizedMessage,
         timestamp: new Date(),
-        sender_id: explorerId,
-        recipient_id: swapExplorerId,
+        sender_id: Number(explorerId),
+        recipient_id: Number(swapExplorerId),
         conversation_id: conversationId,
       };
 
