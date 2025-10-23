@@ -31,7 +31,7 @@ function Footer() {
 
       
       {/* For mobile screens */}
-      {isLoaded && isSignedIn && (
+      {isLoaded && (
       <div className="footer-mobile border-top fixed-bottom">
         <NavLink 
           to="/swap/card" 
