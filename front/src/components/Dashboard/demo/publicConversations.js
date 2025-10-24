@@ -2,7 +2,7 @@ export const DEMO_CONVERSATIONS_INPROGRESS = [
   {
     row_id: 1,
     card_name: "Orlinski9",
-    swap_explorer: "Wewarder",
+    swap_explorer: "WeSwap",
     status: "In progress",
     unread: 1
   }

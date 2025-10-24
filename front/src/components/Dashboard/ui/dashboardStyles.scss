@@ -30,7 +30,6 @@
     color:#ffffff !important;
 }
 
-// Button color
 .declined .btn {
     background-color: vars.$primary-color !important;
     border-color: vars.$primary-color !important;   
@@ -64,33 +63,75 @@
     }
 }
 
-.demo-row {
-    user-select: none;
-  }
-  .demo-real .requests-chat { cursor: pointer; }
+.demo-row { user-select: none; }
+.demo-real .requests-chat { cursor: pointer; }
   
-  .demo-blurred {
-    .blur-text {
-      filter: blur(4px);
-      opacity: 0.65;
-      display: inline-block;
-      min-width: 10ch;
-    }
-    .blur-badge {
-      filter: blur(4px);
-      opacity: 0.7;
-      pointer-events: none;
-    }
-    td { cursor: default; }
+.demo-blurred {
+  .blur-text {
+    filter: blur(4px);
+    opacity: 0.65;
+    display: inline-block;
+    min-width: 6ch;
   }
+  .blur-badge {
+    filter: blur(4px);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  td { cursor: default; }
+}
+
+.demo-skeleton .placeholder {
+  animation: shimmer 1.6s linear infinite;
+}
+@keyframes shimmer {
+  0% { opacity: .45; }
+  50% { opacity: .9; }
+  100% { opacity: .45; }
+}
   
-  /* Skeleton shimmer for Placeholder rows */
-  .demo-skeleton .placeholder {
-    animation: shimmer 1.6s linear infinite;
+.requests table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.requests th,
+.requests td {
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.requests th:nth-child(2),
+.requests td:nth-child(2) {
+  width: 40px;
+  text-align: center;
+}
+
+.requests-chat {
+  text-align: center;
+}
+
+.requests .dropdown-toggle {
+  display: inline-block;
+  width: 100%;
+  max-width: 100%; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 576px) {
+  .demo-blurred .blur-text {
+    min-width: 0;      
+    max-width: 8ch;   
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  @keyframes shimmer {
-    0% { opacity: .45; }
-    50% { opacity: .9; }
-    100% { opacity: .45; }
+
+  .requests th:nth-child(2),
+  .requests td:nth-child(2) {
+    width: 36px;
   }
-  
+}

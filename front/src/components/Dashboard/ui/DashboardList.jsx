@@ -86,10 +86,10 @@ function DashboardList({
         <span className="blur-text" aria-hidden="true" />
       </td>
       <td className="requests-table">
-        <span className="blur-text" aria-hidden="true">Hidden until sign in</span>
+        <span className="blur-text" aria-hidden="true">Hidden</span>
       </td>
       <td className="requests-table">
-        <span className="blur-text" aria-hidden="true">Hidden until sign in</span>
+        <span className="blur-text" aria-hidden="true">Hidden</span>
       </td>
       <td className="requests-table">
         <DropdownButton
@@ -121,7 +121,7 @@ function DashboardList({
                 <th style={{ width: '10%' }}></th>
                 <th style={{ width: '30%' }}>Card</th>
                 <th style={{ width: '25%' }}>User</th>
-                <th style={{ width: '25%' }}>Status (demo)</th>
+                <th style={{ width: '25%' }}>Status</th>
               </tr>
             </thead>
             <tbody>
