@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import PageContainer from '../../PageContainer/PageContainer';
 import { Spinner, Alert, Button } from "react-bootstrap";
@@ -15,24 +15,54 @@ import useAZIndex from "../hooks/useAZIndex";
 import AZNav from "./AZNav";
 
 import MissingCardsToggle from "./MissingCardsToggle";
+import LatestFirstToggle from "./LatestFirstToggle";
 import { InfoCircle } from "react-bootstrap-icons";
 import CardsHelpModal from "./CardsHelpModal"; 
 
-function Cards() {
+function Cards() { 
   const { state, isLoading, isPublic, handleSelect, reset, markAllOwnedInChapter, markAllDuplicatedInChapter, isChapterPending } = useCardsLogic();
   const { chaptersData } = useChapterBuckets(state.chapters, state.cards, state.cardStatuses);
 
   const [showMissingOnly, setShowMissingOnly] = useState(false);
+  const [latestFirst, setLatestFirst] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
-  const visibleChaptersData = showMissingOnly
-  ? chaptersData.filter(({ cards, ownedOrDuplicatedCount }) => (cards.length - ownedOrDuplicatedCount) > 0)
-  : chaptersData;
+  const visibleChaptersData = useMemo(() => {
+    if (!showMissingOnly) return chaptersData;
+    return chaptersData.filter(({ cards, ownedOrDuplicatedCount }) => {
+      const missingCardsCount = cards.length - ownedOrDuplicatedCount;
+      return missingCardsCount > 0;
+    });
+  }, [chaptersData, showMissingOnly]);
 
-  const chaptersForAZ = visibleChaptersData.map(({ chapterId, chapterName }) => ({
-    id: chapterId,
-    name: chapterName,
-  }));
+  const toNumericId = (value) => {
+    if (typeof value === "number") return value;
+    const parsedValue = Number.parseInt(String(value ?? ""), 10);
+    return Number.isFinite(parsedValue) ? parsedValue : -Infinity;
+  };
+  
+  const sortedChaptersData = useMemo(() => {
+    if (!latestFirst) return visibleChaptersData;
+  
+    const sortedCopy = [...visibleChaptersData];
+    sortedCopy.sort((chapterA, chapterB) => {
+      const chapterAId = toNumericId(chapterA.placeId ?? chapterA.chapterId);
+      const chapterBId = toNumericId(chapterB.placeId ?? chapterB.chapterId);
+      return chapterBId - chapterAId;
+    });
+  
+    return sortedCopy;
+  }, [visibleChaptersData, latestFirst]);
+
+  const chaptersForAZ = useMemo(
+    () =>
+      sortedChaptersData.map(({ chapterId, chapterName }) => ({
+        id: chapterId,
+        name: chapterName,
+      })),
+    [sortedChaptersData]
+  );
+
   const { lettersWithChapters, scrollToLetter, getChapterDomId } = useAZIndex(chaptersForAZ);
   const azBarRef = useRef(null);
   useStickyVars({ ref: azBarRef, cssVarName: "--az-bar-h", dimension: "height" });
@@ -63,10 +93,13 @@ function Cards() {
             >
               <InfoCircle />
               <span className="visually-hidden">How it works</span>
-            </Button>
-          </div>
+          </Button>
+        </div>
 
+        <div className="d-flex align-items-center gap-2">
+          <LatestFirstToggle checked={latestFirst} onChange={setLatestFirst} />
           <MissingCardsToggle checked={showMissingOnly} onChange={setShowMissingOnly} />
+        </div>
       </div>
 
       {isLoading &&
@@ -93,11 +126,11 @@ function Cards() {
         />
       </section>
       
-      {visibleChaptersData.length === 0 ? (
+      {sortedChaptersData.length === 0 ? (
         <EmptyChaptersHint onClearFilter={() => setShowMissingOnly(false)} />
       ) : (
         <ChaptersList
-          chaptersData={visibleChaptersData}
+          chaptersData={sortedChaptersData}
           getChapterDomId={getChapterDomId}
           onSelectCard={onSelectCard}
           onResetCard={onResetCard}
