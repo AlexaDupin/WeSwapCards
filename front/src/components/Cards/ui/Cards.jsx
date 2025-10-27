@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from "react";
+import React, { useRef, useState, useMemo, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import PageContainer from '../../PageContainer/PageContainer';
 import { Spinner, Alert, Button } from "react-bootstrap";
@@ -19,6 +19,12 @@ import LatestFirstToggle from "./LatestFirstToggle";
 import { InfoCircle } from "react-bootstrap-icons";
 import CardsHelpModal from "./CardsHelpModal"; 
 
+const toNumericId = (value) => {
+  if (typeof value === "number") return value;
+  const parsedValue = Number.parseInt(String(value ?? ""), 10);
+  return Number.isFinite(parsedValue) ? parsedValue : -Infinity;
+};
+
 function Cards() { 
   const { state, isLoading, isPublic, handleSelect, reset, markAllOwnedInChapter, markAllDuplicatedInChapter, isChapterPending } = useCardsLogic();
   const { chaptersData } = useChapterBuckets(state.chapters, state.cards, state.cardStatuses);
@@ -34,20 +40,14 @@ function Cards() {
       return missingCardsCount > 0;
     });
   }, [chaptersData, showMissingOnly]);
-
-  const toNumericId = (value) => {
-    if (typeof value === "number") return value;
-    const parsedValue = Number.parseInt(String(value ?? ""), 10);
-    return Number.isFinite(parsedValue) ? parsedValue : -Infinity;
-  };
-  
+ 
   const sortedChaptersData = useMemo(() => {
     if (!latestFirst) return visibleChaptersData;
   
     const sortedCopy = [...visibleChaptersData];
     sortedCopy.sort((chapterA, chapterB) => {
-      const chapterAId = toNumericId(chapterA.placeId ?? chapterA.chapterId);
-      const chapterBId = toNumericId(chapterB.placeId ?? chapterB.chapterId);
+      const chapterAId = toNumericId(chapterA.chapterId);
+      const chapterBId = toNumericId(chapterB.chapterId);
       return chapterBId - chapterAId;
     });
   
@@ -69,15 +69,20 @@ function Cards() {
   
   const navigate = useNavigate();
   const location = useLocation();
-  const from = `${location.pathname}${location.search}${location.hash || ""}`;
-
-  const loginRedirect = () => navigate('/login/redirect', { state: { from } });
-
-  const onSelectCard         = isPublic ? loginRedirect : handleSelect;
-  const onResetCard          = isPublic ? undefined      : reset;
-  const onMarkAllOwned       = isPublic ? loginRedirect : markAllOwnedInChapter;
-  const onMarkAllDuplicated  = isPublic ? loginRedirect : markAllDuplicatedInChapter;
-
+  const from = useMemo(
+    () => `${location.pathname}${location.search}${location.hash || ""}`,
+    [location.pathname, location.search, location.hash]
+  );
+  const loginRedirect = useCallback(
+    () => navigate("/login/redirect", { state: { from } }),
+    [navigate, from]
+  );
+  
+  const onSelectCard = isPublic ? () => loginRedirect() : handleSelect;
+  const onResetCard = isPublic ? undefined : reset;
+  const onMarkAllOwned = isPublic ? () => loginRedirect() : markAllOwnedInChapter;
+  const onMarkAllDuplicated = isPublic ? () => loginRedirect() : markAllDuplicatedInChapter;
+  
   return (
     <PageContainer className="cards-page">
       <div className="page-header d-flex align-items-center justify-content-between gap-3 mb-2">
