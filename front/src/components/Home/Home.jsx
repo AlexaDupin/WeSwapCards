@@ -32,16 +32,10 @@ function Home() {
     }, [isSignedIn, navigate]);
 
     useEffect(() => {
-      document.querySelectorAll("[data-reveal-container]").forEach((group) => {
-        group.querySelectorAll(".reveal").forEach((el, i) => {
-          el.style.setProperty("--delay", `${i * 90}ms`);
-        });
-      });
-  
       const ENTER = 0.25;
       const EXIT  = 0.10;
       const state = new WeakMap();
-  
+    
       const io = new IntersectionObserver(
         (entries) => {
           entries.forEach((e) => {
@@ -57,11 +51,40 @@ function Home() {
         },
         { threshold: [0, EXIT, ENTER, 1], rootMargin: "-10% 0% -10% 0%" }
       );
-  
-      const nodes = document.querySelectorAll(".reveal");
-      nodes.forEach((el) => io.observe(el));
-  
-      return () => io.disconnect();
+    
+      const applyDelays = () => {
+        document.querySelectorAll("[data-reveal-container]").forEach((group) => {
+          const children = Array.from(group.querySelectorAll(".reveal"));
+          children.forEach((el, i) => {
+            el.style.setProperty("--delay", `${i * 90}ms`);
+          });
+        });
+      };
+    
+      const observeAll = () => {
+        document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+      };
+    
+      // initial pass
+      applyDelays();
+      observeAll();
+    
+      // observe future additions/changes
+      const mo = new MutationObserver(() => {
+        applyDelays();
+        observeAll();
+      });
+      mo.observe(document.body, { childList: true, subtree: true });
+    
+      // Fallback: if IO not supported, just show all
+      if (!("IntersectionObserver" in window)) {
+        document.querySelectorAll(".reveal").forEach((el) => el.classList.add("is-visible"));
+      }
+    
+      return () => {
+        io.disconnect();
+        mo.disconnect();
+      };
     }, []);
 
   return (

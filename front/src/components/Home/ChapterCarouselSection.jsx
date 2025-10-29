@@ -40,7 +40,7 @@ export default function ChapterCarouselSection({ title, endpoint, params = {} })
       try {
         setLoading(true);
         setErr("");
-        const res = await axiosInstance.get(endpoint, { params }); // public
+        const res = await axiosInstance.get(endpoint, { params });
         const rows = Array.isArray(res.data?.items) ? res.data.items : [];
         if (!cancelled) setItems(rows);
       } catch (e) {
@@ -60,24 +60,27 @@ export default function ChapterCarouselSection({ title, endpoint, params = {} })
     <section className="latest-chapters my-5" data-reveal-container aria-label={title}>
       <h2 className="home-section-title reveal mb-3">{title}</h2>
 
-      {loading && (
-        <div className="text-center reveal my-3">
-          <Spinner animation="border" />
-        </div>
-      )}
-
-      {err && <p className="text-danger text-center reveal">{err}</p>}
-
       <div className="reveal">
-      {!loading && !err && items.length > 0 ? (
-            <ChapterCarousel
-              items={items}
-              ariaLabel={title}
-              renderItem={(c) => (
-                <ChapterCard chapter={c} onSelect={(id) => navigate(`/swap/card?chapterId=${id}`)} />
-              )}
-            />
-        ) : null}
+        {loading && (
+          <div className="text-center my-3">
+            <Spinner animation="border" />
+          </div>
+        )}
+
+      {!!err && <p className="text-danger text-center">{err}</p>}
+
+      {!loading && !err && items.length > 0 && (
+          <ChapterCarousel
+            items={items}
+            ariaLabel={title}
+            renderItem={(c) => (
+              <ChapterCard
+                chapter={c}
+                onSelect={(id) => navigate(`/swap/card?chapterId=${id}`)}
+              />
+            )}
+          />
+        )}
       </div>
     </section>
   );
