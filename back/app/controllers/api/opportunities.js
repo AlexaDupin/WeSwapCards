@@ -63,7 +63,18 @@ const opportunitiesController = {
           console.error('Error fetching latest chapters:', error);
           return res.status(500).json({ error: 'Internal Server Error' });
         }
-    }
+    },
+    async getChaptersByIds(req, res) {
+        const { ids } = req.query;
+        try {
+          const chapters = await datamapper.getChaptersByIds(ids);
+          res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=300');
+          return res.status(200).json(chapters);
+        } catch (error) {
+          console.error('Error fetching chapters by ids:', error);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
 };
 
 

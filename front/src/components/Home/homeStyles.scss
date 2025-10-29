@@ -13,6 +13,11 @@
     justify-content: space-evenly;    
     align-items: center;
     min-height: 80vh;
+
+    &-title {
+        font-size: 1.7rem;
+        font-weight: 400;
+    }
 }
 
 .home-section-left {
@@ -198,3 +203,96 @@
     }
 
 }
+
+.chapter-carousel {
+    position: relative;
+  }
+  
+  .chapter-carousel__scroller {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(200px, 260px);
+    gap: 12px;
+    overflow: hidden;
+    overflow-anchor: none;
+    scrollbar-gutter: stable both-edges;
+    padding: 0 3rem; /* space for arrows overlap */
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .chapter-carousel__scroller.is-initting {
+    scroll-snap-type: none;         /* disable snap while we force to left */
+  }
+  
+  .chapter-carousel__item {
+    scroll-snap-align: start;
+  }
+  
+  /* ---- arrows ---- */
+  .chapter-carousel__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    z-index: 2;
+    transition: background-color 0.2s ease;
+  }
+  
+  /* half-overlapping arrows */
+  .chapter-carousel__nav--prev {
+    left: 0;
+    transform: translate(-50%, -50%);
+  }
+  
+  .chapter-carousel__nav--next {
+    right: 0;
+    transform: translate(50%, -50%);
+  }
+  
+  /* simple hover color change */
+  .chapter-carousel__nav:hover {
+    background: rgba(240, 240, 240, 1); /* slightly darker on hover */
+  }
+  
+  /* arrow icons */
+  .chapter-carousel__nav svg {
+    width: 20px;
+    height: 20px;
+    color: #333;
+    pointer-events: none;
+  }
+  
+/* Mobile: hide arrows, enable comfy swipe */
+@media (max-width: 576px), (pointer: coarse) {
+    .chapter-carousel__nav {
+      display: none;            /* hide both arrows */
+    }
+  
+    .chapter-carousel__scroller {
+      padding: 0 0.5rem;        /* remove the 3rem arrow room */
+      touch-action: pan-x;      /* smooth horizontal touch scrolling */
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;   /* keep nice snap */
+      scroll-snap-stop: always;        /* stop on each card */
+    }
+  
+    /* Optional: make cards a bit narrower on small screens */
+    .chapter-carousel__scroller {
+      grid-auto-columns: minmax(160px, 220px);
+    }
+
+    .home-section-title {
+        font-size: 1.5rem;
+        font-weight: 400;
+    }
+  }
+  

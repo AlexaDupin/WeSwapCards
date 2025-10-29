@@ -1,12 +1,5 @@
 const datamapper = require("../../models/datamapper");
 
-const toSnapshot = (rows) => {
-    return rows.map(row => ({
-      card_id: row.card_id,
-      status: row.duplicate ? 'duplicated' : 'owned',
-    }));
-};
-
 const cardController = {
     async getAllCards(req, res) {
         try {

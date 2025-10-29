@@ -31,6 +31,10 @@ router
     .get(controllerHandler(opportunitiesController.getLatestChapters));
 
 router
+    .route('/chapters/by-ids')
+    .get(controllerHandler(opportunitiesController.getChaptersByIds));
+
+router
     .route('/cards/statuses/:explorerId')
     .get(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.getAllCardsStatuses))
 

@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
-import { Container } from "react-bootstrap";
+import PageContainer from '../PageContainer/PageContainer';
 
+import ChapterCarouselSection from './ChapterCarouselSection';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 import CustomButton from '../CustomButton/CustomButton';
 
@@ -15,6 +16,9 @@ import Logo from '../../images/favImage.png';
 
 import './homeStyles.scss';
 
+// const VINTAGE_COLLECTOR_IDS = [47, 39, 71, 35, 42];
+const VINTAGE_COLLECTOR_IDS = [1, 2, 3, 4, 5];
+
 function Home() {
     const navigate = useNavigate();
     const { isSignedIn } = useUser();
@@ -25,7 +29,7 @@ function Home() {
       } else {
         navigate('/menu');
       }
-    }, [isSignedIn]);
+    }, [isSignedIn, navigate]);
 
     useEffect(() => {
       document.querySelectorAll("[data-reveal-container]").forEach((group) => {
@@ -61,7 +65,7 @@ function Home() {
     }, []);
 
   return (
-  <Container className="home">
+  <PageContainer className="home">
     <section data-reveal-container className="home-section">
       <div className="home-section-left reveal">
         <img src={Logo} alt="WeSwapCards logo" className="home-section-left-image"/>
@@ -109,9 +113,27 @@ function Home() {
       </div>
     </section>
 
+    <ChapterCarouselSection
+      title="Browse all latest chapters"
+      endpoint="/chapters/latest"
+      params={{ limit: 10 }}
+    />
+
+    {VINTAGE_COLLECTOR_IDS.length > 0 && (
+      <ChapterCarouselSection
+        title="All ephemeral vintage series"
+        endpoint="/chapters/by-ids"
+        params={{ ids: VINTAGE_COLLECTOR_IDS.join(',') }}
+      />
+    )}
+
+    <section className="latest-chapters my-5" data-reveal-container aria-label="And all the other chapters!">
+      <h2 className="home-section-title">And all the other chapters!</h2>
+    </section>
+
     <ScrollToTop />
   
-  </ Container>
+  </ PageContainer>
 )
 }
 
