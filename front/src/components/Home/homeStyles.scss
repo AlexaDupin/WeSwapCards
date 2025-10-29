@@ -15,8 +15,11 @@
     min-height: 80vh;
 
     &-title {
-        font-size: 1.7rem;
-        font-weight: 400;
+        width: 100%;              /* span full width */
+        text-align: left;         /* align text to left */
+        margin-left: 0;           /* reset any centering margin */
+        font-size: 1.6rem;
+        font-weight: 500;
     }
 }
 
@@ -213,18 +216,27 @@
     grid-auto-flow: column;
     grid-auto-columns: minmax(200px, 260px);
     gap: 12px;
-    overflow: hidden;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pinch-zoom;
+    overscroll-behavior-x: contain;
     overflow-anchor: none;
     scrollbar-gutter: stable both-edges;
-    padding: 0 3rem; /* space for arrows overlap */
     scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
+    scroll-snap-stop: normal;
+    padding: 0 3rem;              /* room for arrows */
+    will-change: scroll-position, transform;
+    transform: translateZ(0);
+  
+    /* Hide scrollbars */
+    scrollbar-width: none;
   }
 
-  .chapter-carousel__scroller.is-initting {
-    scroll-snap-type: none;         /* disable snap while we force to left */
+  .chapter-carousel__scroller::-webkit-scrollbar {
+    display: none;
   }
-  
+
   .chapter-carousel__item {
     scroll-snap-align: start;
   }
@@ -274,25 +286,46 @@
 /* Mobile: hide arrows, enable comfy swipe */
 @media (max-width: 576px), (pointer: coarse) {
     .chapter-carousel__nav {
-      display: none;            /* hide both arrows */
+      display: none !important;
+      pointer-events: none !important;
     }
   
     .chapter-carousel__scroller {
-      padding: 0 0.5rem;        /* remove the 3rem arrow room */
-      touch-action: pan-x;      /* smooth horizontal touch scrolling */
-      overscroll-behavior-x: contain;
-      scroll-snap-type: x mandatory;   /* keep nice snap */
-      scroll-snap-stop: always;        /* stop on each card */
-    }
-  
-    /* Optional: make cards a bit narrower on small screens */
-    .chapter-carousel__scroller {
-      grid-auto-columns: minmax(160px, 220px);
-    }
+        /* keep grid but narrower columns */
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(160px, 220px); /* 👈 narrower cards */
+        gap: 12px;
+    
+        /* enable swipe */
+        overflow-x: scroll;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x pinch-zoom;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x mandatory;
+        scroll-snap-stop: normal;
+    
+        /* hide scrollbars */
+        scrollbar-width: none; /* Firefox */
+      }
+      .chapter-carousel__scroller::-webkit-scrollbar {
+        display: none; /* Chrome / Safari */
+      }
+    
+      /* make sure each card still snaps */
+      .chapter-carousel__item {
+        scroll-snap-align: start;
+      }
+    
+      /* tighten side padding */
+      .chapter-carousel__scroller {
+        padding: 0 0.5rem;
+      }
 
     .home-section-title {
-        font-size: 1.5rem;
-        font-weight: 400;
+        font-size: 1.3rem;
+        font-weight: 500;
     }
   }
   
