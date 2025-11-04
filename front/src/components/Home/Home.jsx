@@ -151,7 +151,7 @@ function Home() {
     )}
 
     <section className="latest-chapters my-5" data-reveal-container aria-label="And all the other chapters!">
-      <h2 className="home-section-title">And all the other chapters!</h2>
+      <h2 className="home-section-title home-section-title--center">And all the other chapters!</h2>
     </section>
 
     <ScrollToTop />

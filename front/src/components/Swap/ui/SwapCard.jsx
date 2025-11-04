@@ -1,4 +1,5 @@
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import PageContainer from '../../PageContainer/PageContainer';
 import {
     Form,
@@ -21,9 +22,12 @@ import OpportunityCard from './OpportunityCard/OpportunityCard';
 
 function SwapCard() {
   const [showLatest, setShowLatest] = useState(true);
-  const { isLoaded, isSignedIn } = useUser();           // ⬅️ ADD
+  const [selectedChapterId, setSelectedChapterId] = useState('');
+  const { isLoaded, isSignedIn } = useUser();
   const { openSignIn } = useClerk();   
   const from = `${window.location.pathname}${window.location.search}${window.location.hash || ''}`;
+  const location = useLocation();
+  const appliedFromURL = useRef(false);
 
   const { 
     state,
@@ -44,17 +48,36 @@ function SwapCard() {
 
   const selectRef = useRef(null);
 
-  const handleShortcutSelect = (placeId) => {
-    if (selectRef.current) {
-      selectRef.current.value = String(placeId);
-    }
-    setShowLatest(false);
+  useEffect(() => {
+    if (appliedFromURL.current) return;
+    const params = new URLSearchParams(location.search);
+    const chapterId = params.get('chapterId');
+    if (!chapterId) return;
 
-    handleSelectPlace(String(placeId));
+    const id = String(chapterId);
+    appliedFromURL.current = true;
+
+    setSelectedChapterId(id);
+    setShowLatest(false);
+    handleSelectPlace(id);
+  
+    // (optional) remove the param from the URL after applying it
+    // so it doesn't re-trigger on internal nav/sort changes
+    const url = new URL(window.location.href);
+    url.searchParams.delete('chapterId');
+    window.history.replaceState({}, '', url.toString());
+  }, []); 
+
+  const handleShortcutSelect = (placeId) => {
+    const id = String(placeId);
+    setSelectedChapterId(id);
+    setShowLatest(false);
+    handleSelectPlace(id);
   };
 
   const handleDropdownChange = (e) => {
-    const selectedValue = e.target.value;
+    const selectedValue = String(e.target.value);
+    setSelectedChapterId(selectedValue);
 
     if (selectedValue !== "") {
       setShowLatest(false);
@@ -102,13 +125,15 @@ function SwapCard() {
               <Form.Label className="visually-hidden">Select a chapter</Form.Label>
               <Form.Select
                 ref={selectRef}
+                value={selectedChapterId} 
                 onChange={handleDropdownChange} 
               >
                 <option value="">Select</option>
                 {state.places?.map((place) => (
                   <option
                     key={place.id}
-                    value={place.id}>
+                    value={String(place.id)}
+                  >
                     {place.name}
                   </option>
                 ))}
