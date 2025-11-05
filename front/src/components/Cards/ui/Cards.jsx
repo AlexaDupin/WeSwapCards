@@ -1,5 +1,6 @@
 import React, { useRef, useState, useMemo, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useClerk } from "@clerk/clerk-react";
 import PageContainer from '../../PageContainer/PageContainer';
 import { Spinner, Alert, Button } from "react-bootstrap";
 import './cardsStyles.scss';
@@ -67,15 +68,18 @@ function Cards() {
   const azBarRef = useRef(null);
   useStickyVars({ ref: azBarRef, cssVarName: "--az-bar-h", dimension: "height" });
   
-  const navigate = useNavigate();
+  const { openSignIn } = useClerk();
   const location = useLocation();
   const from = useMemo(
     () => `${location.pathname}${location.search}${location.hash || ""}`,
     [location.pathname, location.search, location.hash]
   );
   const loginRedirect = useCallback(
-    () => navigate("/login/redirect", { state: { from } }),
-    [navigate, from]
+    () => 
+      openSignIn({
+        forceRedirectUrl: `/login/redirect?from=${encodeURIComponent(from)}`
+      }),
+    [openSignIn, from]
   );
   
   const onSelectCard = isPublic ? () => loginRedirect() : handleSelect;

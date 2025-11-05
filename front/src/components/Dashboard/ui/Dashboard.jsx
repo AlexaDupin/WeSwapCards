@@ -1,5 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useClerk } from '@clerk/clerk-react';
 import PageContainer from '../../PageContainer/PageContainer';
 import DashboardList from './DashboardList';
 import {
@@ -16,6 +17,18 @@ import useDashboardLogic from '../hooks/useDashboardLogic';
 import SearchForm from '../../SearchBar/ui/SearchBar';
 
 function Dashboard() {
+  const { openSignIn } = useClerk();
+  const location = useLocation();
+  const from = useMemo(
+    () => `${location.pathname}${location.search}${location.hash || ""}`,
+    [location.pathname, location.search, location.hash]
+  );
+
+  const requireLogin = () => {
+    openSignIn({
+      forceRedirectUrl: `/login/redirect?from=${encodeURIComponent(from)}`
+    });
+  };
 
   const { 
     data,
@@ -47,13 +60,12 @@ function Dashboard() {
       {isPublicDemo && (
         <Alert variant="info" className="mb-3">
           You’re viewing a preview.{" "}
-          <Link
-            to="/login/redirect"
-            state={{ from: "/swap/dashboard" }}
-            className="fw-bold alert-link"
+          <button
+            className="btn btn-link p-0 align-baseline fw-bold alert-link"
+            onClick={requireLogin}
           >
             Sign in
-          </Link>{" "} 
+          </button>{" "} 
           to see your real requests.
         </Alert>
       )}
@@ -100,6 +112,7 @@ function Dashboard() {
             activeTab={activeTab}
             searchTerm={searchTerm} 
             readOnly={isPublicDemo}
+            requireLogin={requireLogin}
         />
         </>
       )}

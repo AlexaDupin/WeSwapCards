@@ -8,7 +8,6 @@ import {
 import {Envelope} from "react-bootstrap-icons";
 import PaginationControl from '../../Pagination/Pagination';
 import { DEMO_CONVERSATIONS_INPROGRESS, DEMO_CONVERSATIONS_PAST } from '../demo/publicConversations';
-import { useNavigate } from 'react-router-dom';
 import './dashboardStyles.scss';
 
 function DashboardList({
@@ -23,18 +22,14 @@ function DashboardList({
     hiddenAlert,
     alertMessage,
     activeTab,
-    readOnly = false
+    readOnly = false,
+    requireLogin,
   }) {
 
   const noResultsMessage = 
   activeTab === 'in-progress'
     ? "You do not have any ongoing requests. Start swapping!"
     : "You do not have any past requests yet.";
-
-  const navigate = useNavigate();
-  const requireLogin = () => {
-    navigate('/login/redirect', { state: { from: '/swap/dashboard' } });
-  };
 
   const blurredStatuses = activeTab === 'past'
     ? ['Completed', 'Completed', 'Completed', 'Declined']
@@ -45,21 +40,21 @@ function DashboardList({
       <td className={row.unread > 0 ? 'requests-table-unread' : 'requests-table'}>{row.row_id}</td>
       <td
         className={row.unread > 0 ? 'requests-chat requests-table-unread' : 'requests-chat requests-table'}
-        onClick={() => requireLogin()}
+        onClick={requireLogin}
         role="button"
       >
         {row.unread > 0 && <Envelope />}
       </td>
       <td
         className={row.unread > 0 ? 'requests-chat requests-table-unread' : 'requests-chat requests-table'}
-        onClick={() => requireLogin()}
+        onClick={requireLogin}
         role="button"
       >
         {row.card_name}
       </td>
       <td
         className={row.unread > 0 ? 'requests-chat requests-table-unread' : 'requests-chat requests-table'}
-        onClick={() => requireLogin()}
+        onClick={requireLogin}
         role="button"
       >
         {row.swap_explorer}

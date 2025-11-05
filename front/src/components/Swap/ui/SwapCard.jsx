@@ -24,14 +24,14 @@ function SwapCard() {
   const [showLatest, setShowLatest] = useState(true);
   const [selectedChapterId, setSelectedChapterId] = useState('');
   const { isLoaded, isSignedIn } = useUser();
-  const { openSignIn } = useClerk();   
-  const from = `${window.location.pathname}${window.location.search}${window.location.hash || ''}`;
+  const { openSignIn } = useClerk();  
   const location = useLocation();
+  const from = `${location.pathname}${location.search}${location.hash || ''}`;
   const appliedFromURL = useRef(false);
 
   const { 
     state,
-    handleSelectPlace, 
+    handleSelectPlace,
     fetchSwapOpportunities,
     swapOpportunities,
     swapCardName,
@@ -46,8 +46,6 @@ function SwapCard() {
   const items = useMemo(() => swapOpportunities.items ?? [], [swapOpportunities.items]);
   const isSingle = useMemo(() => items.length === 1, [items]);
 
-  const selectRef = useRef(null);
-
   useEffect(() => {
     if (appliedFromURL.current) return;
     const params = new URLSearchParams(location.search);
@@ -61,8 +59,6 @@ function SwapCard() {
     setShowLatest(false);
     handleSelectPlace(id);
   
-    // (optional) remove the param from the URL after applying it
-    // so it doesn't re-trigger on internal nav/sort changes
     const url = new URL(window.location.href);
     url.searchParams.delete('chapterId');
     window.history.replaceState({}, '', url.toString());
@@ -124,7 +120,6 @@ function SwapCard() {
             <Form.Group className="mb-3" controlId="formGroupPlace">
               <Form.Label className="visually-hidden">Select a chapter</Form.Label>
               <Form.Select
-                ref={selectRef}
                 value={selectedChapterId} 
                 onChange={handleDropdownChange} 
               >

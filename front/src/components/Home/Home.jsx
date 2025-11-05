@@ -16,7 +16,7 @@ import Logo from '../../images/favImage.png';
 
 import './homeStyles.scss';
 
-// const VINTAGE_COLLECTOR_IDS = [47, 39, 71, 35, 42];
+// const VINTAGE_COLLECTOR_IDS = [47, 39, 71, 35, 42, 60];
 const VINTAGE_COLLECTOR_IDS = [1, 2, 3, 4, 5];
 
 function Home() {
