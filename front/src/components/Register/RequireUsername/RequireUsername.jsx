@@ -3,6 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { axiosInstance } from '../../../helpers/axiosInstance';
 import { DispatchContext } from "../../../contexts/DispatchContext";
+import { StateContext } from "../../../contexts/StateContext";
 
 const PUBLIC_ALLOWLIST = new Set([
   '/', '/home', '/privacy', '/terms', '/cookies',
@@ -10,24 +11,30 @@ const PUBLIC_ALLOWLIST = new Set([
 ]);
 
 export default function RequireUsername({ children }) {
-  const dispatch = useContext(DispatchContext);
   const location = useLocation();
   const path = location.pathname;
   const { isSignedIn, user } = useUser();
   const { getToken } = useAuth();
+  const state = useContext(StateContext);
+  const dispatch = useContext(DispatchContext);
+
+  const hasExplorer = Boolean(state?.explorer?.id);
   const isPublic = useMemo(() => PUBLIC_ALLOWLIST.has(path), [path]);
 
   const [status, setStatus] = useState('ok');
-  console.log("STATUS", status);
 
   useEffect(() => {
-    let active = true;
-
-    if (!isSignedIn || isPublic) {
+    if (isPublic || !isSignedIn) {
       setStatus('ok');
-      return () => {};
+      return;
     }
 
+    if (hasExplorer) {
+      setStatus('ok');
+      return;
+    }
+
+    let active = true;
     setStatus('checking');
     (async () => {
       try {
@@ -57,20 +64,16 @@ export default function RequireUsername({ children }) {
     })();
 
     return () => { active = false; };
-  }, [isSignedIn, isPublic, user?.id, getToken, path, dispatch]);
+  }, [isPublic, isSignedIn, hasExplorer, getToken, user?.id, dispatch]);
 
-  // Rendering rules AFTER hooks:
-  // Public routes and signed-out users are never blocked.
   if (isPublic) return <>{children}</>;
   if (!isSignedIn) return <>{children}</>;
 
-  if (status === 'checking') return null; // brief guard while verifying
+  if (status === 'checking') return <>{children}</>;
 
   if (status === 'missing') {
-    // never set "from" to /register/user — avoid echo loops
     const rawFrom = path + location.search + (location.hash || '');
     const from = path === '/register/user' ? '/menu' : rawFrom;
-
     return <Navigate to="/register/user" replace state={{ from }} />;
   }
 
