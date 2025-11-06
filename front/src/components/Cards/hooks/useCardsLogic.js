@@ -127,7 +127,7 @@ const useCardsLogic = () => {
           payload: { cardId },
         })
       }
-    }, [explorerId, getToken, dispatch]);
+    }, [isPublic, explorerId, getToken, dispatch]);
 
     const handleSelect = useCallback(async (cardId) =>  {
       if (isPublic) return;
@@ -142,7 +142,7 @@ const useCardsLogic = () => {
           break;
         default: await upsertCard(cardId, false);
       }
-    }, [state.cardStatuses, upsertCard]);
+    }, [isPublic, state.cardStatuses, upsertCard]);
 
     const reset = useCallback(async (cardId) => {
       const current = state.cardStatuses[cardId] || 'default';
@@ -203,7 +203,7 @@ const useCardsLogic = () => {
           });
         }
       },
-      [dispatch, explorerId, getToken, pendingChapters]
+      [isPublic, dispatch, explorerId, getToken, pendingChapters]
     );
   
     const markAllDuplicatedInChapter = useCallback(async (chapterId) => {
@@ -238,7 +238,7 @@ const useCardsLogic = () => {
            });
          }
        },
-       [dispatch, explorerId, getToken, pendingChapters]
+       [isPublic, dispatch, explorerId, getToken, pendingChapters]
     );
 
     return {
