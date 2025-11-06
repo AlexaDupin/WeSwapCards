@@ -137,7 +137,7 @@ function Home() {
     </section>
 
     <ChapterCarouselSection
-      title="Browse all latest chapters"
+      title="Browse all the latest chapters"
       endpoint="/chapters/latest"
       params={{ limit: 10 }}
     />
