@@ -7,6 +7,7 @@ import SignInPage from './components/Login/SignInPage';
 import SignUpPage from './components/Register/SignUpPage';
 import LoginRedirect from './components/Login/LoginRedirect/ui/LoginRedirect';
 import User from './components/Register/User/ui/User';
+import RequireUsername from './components/Register/RequireUsername/RequireUsername';
 import Home from './components/Home/Home';
 
 import Menu from './components/Menu/Menu';
@@ -33,16 +34,15 @@ function App() {
   const { getToken } = useAuth()
 
   useEffect(() => {
-    const fetchToken = async () => {
-       await getToken()
-    }
+    const fetchToken = async () => { await getToken(); };
     fetchToken();
-  }, []);
+  }, [getToken]);
 
   return (
     <div className="App">
       <Header />
 
+      <RequireUsername>
       <Routes>
         <Route path="/" element={<Home />} />
 
@@ -65,6 +65,7 @@ function App() {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </RequireUsername>
 
       <Footer />
     </div>

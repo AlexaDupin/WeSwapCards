@@ -60,7 +60,7 @@ function BootAuthLoader({ hasExplorer }) {
 
         const res = await axiosInstance.post(
           "/login/user",
-          {},
+          { userUID: (window.Clerk?.user?.id) || undefined },
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
