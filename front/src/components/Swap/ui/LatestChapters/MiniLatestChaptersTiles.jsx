@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
-import { useAuth } from "@clerk/clerk-react";
 import { axiosInstance } from "../../../../helpers/axiosInstance";
 
 const PLACEHOLDER =
   "https://res.cloudinary.com/dwf28prby/image/upload/v1760480793/placeholder.jpg";
 
 export default function MiniLatestChaptersTiles({ onSelect, visible }) {
-  const { getToken } = useAuth();
   const [latest, setLatest] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
@@ -20,7 +18,6 @@ export default function MiniLatestChaptersTiles({ onSelect, visible }) {
         setLoading(true);
         setErr("");
         const res = await axiosInstance.get(`/chapters/latest?limit=4`, {
-          headers: { Authorization: `Bearer ${await getToken()}` },
           withCredentials: true,
         });
         if (!cancelled) {
@@ -41,7 +38,7 @@ export default function MiniLatestChaptersTiles({ onSelect, visible }) {
     return () => {
       cancelled = true;
     };
-  }, [getToken]);
+  }, []);
 
   if (loading || err || latest.length === 0) {
     return (
@@ -60,6 +57,7 @@ export default function MiniLatestChaptersTiles({ onSelect, visible }) {
       <div className="mb-2 mini-tiles__row">
         {latest.map((chapter) => (
             <button
+              key={chapter.id ?? chapter.slug ?? chapter.name}
               type="button"
               className="mini-tiles__item"
               onClick={() => onSelect?.(chapter.id)}

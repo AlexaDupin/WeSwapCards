@@ -10,6 +10,7 @@ function ChaptersList({
   onMarkAllOwned,
   onMarkAllDuplicated,
   isChapterPending,
+  readOnly
 }) {
   return (
     <section className="chapter-list">
@@ -27,6 +28,7 @@ function ChaptersList({
           onMarkAllOwned={onMarkAllOwned} 
           onMarkAllDuplicated={onMarkAllDuplicated}
           isPending={isChapterPending?.(chapterId)}
+          readOnly={readOnly}
         />
       ))}
     </section>

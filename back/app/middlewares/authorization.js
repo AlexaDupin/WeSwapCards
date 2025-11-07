@@ -3,12 +3,11 @@ const datamapper = require("../models/datamapper");
 
 // Middleware to check if the logged-in user's `explorerId` matches the URL parameter
 const checkExplorerAuthorization = async (req, res, next) => {
-  const explorerId = Number(req.params.explorerId);
-  const clerkUserId = req.auth.userId;
-//   console.log("AUTH MDLW explorerId", explorerId);
-//   console.log("AUTH MDLW clerkUserId", clerkUserId);
-
   try {
+    const explorerId = Number(req.params.explorerId);
+    const clerkUserId = req.auth?.userId;
+    if (!clerkUserId) return res.status(401).json({ message: 'Unauthorized' });
+    
     // Fetch the user from the database based on Clerk's `userId`
     const user = await userDatamapper.getExplorerIdByClerkId(clerkUserId);
     // console.log("AUTH MDLW USER", user.id);
@@ -35,12 +34,11 @@ const checkExplorerAuthorization = async (req, res, next) => {
 
 // Middleware to check if the logged-in user's `explorerId` matches the URL parameter
 const checkConversationAuthorization = async (req, res, next) => {
-  const conversationId = Number(req.params.conversationId);
-  const clerkUserId = req.auth.userId;
-  // console.log("CONV MDLW conversationId", conversationId);
-  // console.log("CONV MDLW clerkUserId", clerkUserId);
-
   try {
+    const conversationId = Number(req.params.conversationId);
+    const clerkUserId = req.auth?.userId;
+    if (!clerkUserId) return res.status(401).json({ message: 'Unauthorized' });
+
     // Fetch the user from the database based on Clerk's `userId`
     // console.log("INTO CONV MDLW");
     const user = await userDatamapper.getExplorerIdByClerkId(clerkUserId);
@@ -57,10 +55,9 @@ const checkConversationAuthorization = async (req, res, next) => {
     if (!conversation) {
       return res.status(404).json({ message: 'Conversation not found' });
     }
-    // console.log("CONVERSATION MDLW", conversation);
+    
     const conversationCreator = conversation.creator_id;
     const conversationRecipient = conversation.recipient_id;
-    // console.log("CONVERSATION MDLW", explorerId, conversationCreator, conversationRecipient);
 
     if (explorerId !== conversationCreator && explorerId !== conversationRecipient) {
       console.log("Error in CONV AUTHORIZATION MDLW");

@@ -13,6 +13,20 @@
     justify-content: space-evenly;    
     align-items: center;
     min-height: 80vh;
+
+    &-title {
+        width: 100%;              /* span full width */
+        text-align: left;         /* align text to left */
+        margin-left: 0;           /* reset any centering margin */
+        font-size: 1.6rem;
+        font-weight: 500;
+    }
+
+    &-title--center {
+        text-align: center;
+        width: 100%;
+        margin: 0 auto;
+    }
 }
 
 .home-section-left {
@@ -198,3 +212,126 @@
     }
 
 }
+
+.chapter-carousel {
+    position: relative;
+  }
+  
+  .chapter-carousel__scroller {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(260px, 340px);
+    gap: 12px;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pinch-zoom;
+    overscroll-behavior-x: contain;
+    overflow-anchor: none;
+    scrollbar-gutter: stable both-edges;
+    scroll-snap-type: x mandatory;
+    scroll-snap-stop: normal;
+    padding: 0 3rem;              /* room for arrows */
+    will-change: scroll-position, transform;
+    transform: translateZ(0);
+  
+    /* Hide scrollbars */
+    scrollbar-width: none;
+  }
+
+  .chapter-carousel__scroller::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chapter-carousel__item {
+    scroll-snap-align: start;
+  }
+  
+  /* ---- arrows ---- */
+  .chapter-carousel__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    z-index: 2;
+    transition: background-color 0.2s ease;
+  }
+  
+  /* half-overlapping arrows */
+  .chapter-carousel__nav--prev {
+    left: 0;
+    transform: translate(-50%, -50%);
+  }
+  
+  .chapter-carousel__nav--next {
+    right: 0;
+    transform: translate(50%, -50%);
+  }
+  
+  /* simple hover color change */
+  .chapter-carousel__nav:hover {
+    background: rgba(240, 240, 240, 1); /* slightly darker on hover */
+  }
+  
+  /* arrow icons */
+  .chapter-carousel__nav svg {
+    width: 20px;
+    height: 20px;
+    color: #333;
+    pointer-events: none;
+  }
+  
+/* Mobile: hide arrows, enable comfy swipe */
+@media (max-width: 576px), (pointer: coarse) {
+    .chapter-carousel__nav {
+      display: none !important;
+      pointer-events: none !important;
+    }
+  
+    .chapter-carousel__scroller {
+        /* keep grid but narrower columns */
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(160px, 220px); /* 👈 narrower cards */
+        gap: 12px;
+    
+        /* enable swipe */
+        overflow-x: scroll;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x pinch-zoom;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x mandatory;
+        scroll-snap-stop: normal;
+    
+        /* hide scrollbars */
+        scrollbar-width: none; /* Firefox */
+      }
+      .chapter-carousel__scroller::-webkit-scrollbar {
+        display: none; /* Chrome / Safari */
+      }
+    
+      /* make sure each card still snaps */
+      .chapter-carousel__item {
+        scroll-snap-align: start;
+      }
+    
+      /* tighten side padding */
+      .chapter-carousel__scroller {
+        padding: 0 0.5rem;
+      }
+
+    .home-section-title {
+        font-size: 1.3rem;
+        font-weight: 500;
+    }
+  }
+  

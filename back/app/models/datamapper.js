@@ -834,5 +834,25 @@ module.exports = {
       
         const result = await client.query(preparedQuery);
         return { items: result.rows };
-    }
+    },
+    async getChaptersByIds(idsFromQuery) {
+        const ids = String(idsFromQuery || '')
+          .split(',')
+          .map(s => parseInt(s.trim(), 10))
+          .filter(Number.isInteger);
+    
+        if (!ids.length) return { items: [] };
+    
+        const preparedQuery = {
+          text: `
+            SELECT id, name, image_url
+            FROM "place"
+            WHERE id = ANY($1::int[])
+          `,
+          values: [ids],
+        };
+    
+        const result = await client.query(preparedQuery);
+        return { items: result.rows };
+    },
 };

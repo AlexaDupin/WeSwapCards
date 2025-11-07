@@ -3,22 +3,22 @@ import { axiosInstance } from '../../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
 import { useStateContext } from '../../../contexts/StateContext';
 import { initialState, reducer } from '../../../reducers/cardsReducer';
-import { useNavigate } from 'react-router-dom';
 
 const useCardsLogic = () => {
-    const stateContext = useStateContext();
-    const { explorer } = stateContext;
-    const { id: explorerId } = explorer;
+    const { explorer } = useStateContext();
+    const { id: explorerId } = explorer || {};
+    const { isLoaded: isClerkLoaded, isSignedIn, getToken } = useAuth();
+
+    const isPublic = !isSignedIn || !explorerId;
 
     const [state, dispatch] = useReducer(reducer, initialState);
-    const { getToken } = useAuth()
     const [isLoading, setIsLoading] = useState(true);
-    const isNetworkError = (error) =>
-    !navigator.onLine || error?.code === 'ERR_NETWORK' || error?.message === 'Network Error';
-    const navigate = useNavigate();
 
     const [pendingChapters, setPendingChapters] = useState(new Set());
     const isChapterPending = useCallback((id) => pendingChapters.has(id), [pendingChapters]);
+
+    const isNetworkError = (err) =>
+      !navigator.onLine || err?.code === 'ERR_NETWORK' || err?.message === 'Network Error';
 
     const fetchAllChapters = async () => {
         try {
@@ -39,16 +39,10 @@ const useCardsLogic = () => {
       
     const fetchAllCards = async () => {
       try {
-        const token = await getToken();
-        const response = await axiosInstance.get('/cards', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const fetchedCards = response.data.cards;
+        const response = await axiosInstance.get('/cards');
         dispatch({
           type: 'cards/fetched',
-          payload: fetchedCards
+          payload: response.data.cards
         })
       } catch (error) {
         dispatch({
@@ -59,6 +53,10 @@ const useCardsLogic = () => {
   
     const fetchAllCardStatuses = async () => {
       // console.log('explorerId', explorerId);
+      if (isPublic) {
+        dispatch({ type: 'cardStatuses/fetched', payload: {} });
+        return;
+      }
       
       try {
         const token = await getToken();
@@ -82,20 +80,21 @@ const useCardsLogic = () => {
     }
     
     useEffect(() => {
-      const fetchData = async () => {
-        if (!explorerId) {
-          navigate('/login/redirect', { state: { from: "/cards" } });
-        } else {
-          try {
-            await Promise.all([fetchAllChapters(), fetchAllCards(), fetchAllCardStatuses()]);
-          } finally {
-            setIsLoading(false);
-          }
+      if (!isClerkLoaded) return;
+
+      const load = async () => {
+        try {
+          await Promise.all([
+            fetchAllChapters(),
+            fetchAllCards(),
+            fetchAllCardStatuses(),
+          ]);
+        } finally {
+          setIsLoading(false);
         }
       };
-    
-      fetchData();
-    }, []);
+      load();
+    }, [isClerkLoaded, explorerId, isSignedIn]);
 
     const getNextStatus = (current) => {
       switch (current) {
@@ -107,6 +106,7 @@ const useCardsLogic = () => {
     };
     
     const upsertCard = useCallback(async (cardId, duplicate) => {
+      if (isPublic) return;
       const token = await getToken();
       const response = await axiosInstance.put(`/explorercards/${explorerId}/cards/${cardId}`,
         { duplicate },
@@ -127,9 +127,10 @@ const useCardsLogic = () => {
           payload: { cardId },
         })
       }
-    }, [explorerId, getToken, dispatch]);
+    }, [isPublic, explorerId, getToken, dispatch]);
 
     const handleSelect = useCallback(async (cardId) =>  {
+      if (isPublic) return;
       const currentStatus = state.cardStatuses[cardId] || 'default';
       const nextStatus = getNextStatus(currentStatus);
       switch (nextStatus) {
@@ -141,7 +142,7 @@ const useCardsLogic = () => {
           break;
         default: await upsertCard(cardId, false);
       }
-    }, [state.cardStatuses, upsertCard]);
+    }, [isPublic, state.cardStatuses, upsertCard]);
 
     const reset = useCallback(async (cardId) => {
       const current = state.cardStatuses[cardId] || 'default';
@@ -169,15 +170,10 @@ const useCardsLogic = () => {
       }
     }, [state.cardStatuses, explorerId, getToken, dispatch]);
 
-    const markAllOwnedInChapter = useCallback(
-      async (chapterId) => {
-        if (pendingChapters.has(chapterId)) return;
+    const markAllOwnedInChapter = useCallback( async (chapterId) => {
+        if (isPublic || pendingChapters.has(chapterId)) return;
 
-        setPendingChapters((prev) => {
-          const next = new Set(prev);
-          next.add(chapterId);
-          return next;
-        });
+        setPendingChapters((prev) => new Set(prev).add(chapterId));
   
         try {
           const token = await getToken();
@@ -207,18 +203,13 @@ const useCardsLogic = () => {
           });
         }
       },
-      [dispatch, explorerId, getToken, pendingChapters]
+      [isPublic, dispatch, explorerId, getToken, pendingChapters]
     );
   
-    const markAllDuplicatedInChapter = useCallback(
-      async (chapterId) => {
-        if (pendingChapters.has(chapterId)) return;
+    const markAllDuplicatedInChapter = useCallback(async (chapterId) => {
+        if (isPublic || pendingChapters.has(chapterId)) return;
 
-        setPendingChapters((prev) => {
-          const next = new Set(prev);
-          next.add(chapterId);
-          return next;
-        });
+        setPendingChapters((prev) => new Set(prev).add(chapterId));
 
         try {
           const token = await getToken();
@@ -247,14 +238,15 @@ const useCardsLogic = () => {
            });
          }
        },
-       [dispatch, explorerId, getToken, pendingChapters]
+       [isPublic, dispatch, explorerId, getToken, pendingChapters]
     );
 
     return {
         state,
+        isLoading,
+        isPublic,
         handleSelect,
         reset,
-        isLoading,
         markAllOwnedInChapter,
         markAllDuplicatedInChapter,
         isChapterPending,

@@ -3,18 +3,18 @@ import React from 'react';
 import './cardItemStyles.scss';
 import useLongPress from "../../hooks/useLongPress";
 
-function CardItem({ item, status, onSelect, onReset }) {
+function CardItem({ item, status, onSelect, onReset, readOnly = false }) {
     const isOwned = status === 'owned';
     const isDuplicated = status === 'duplicated';
     const isDefault = status === "default";
   
     const { onPointerDown, onPointerUp, onPointerLeave, onPointerCancel, wasLongPressRef } =
     useLongPress(() => {
-        if (!isDefault) onReset();
+        if (!readOnly && !isDefault) onReset();
     }, { threshold: 450 });
 
     const handleClick = () => {
-      if (wasLongPressRef.current) return;
+      if (!readOnly && wasLongPressRef.current) return;
       onSelect();
     };
 
@@ -24,6 +24,7 @@ function CardItem({ item, status, onSelect, onReset }) {
     };
 
     const handleReset = (e) => {
+      if (readOnly) return;
       stop(e);
       if (!isDefault) onReset();
     };
@@ -40,11 +41,11 @@ function CardItem({ item, status, onSelect, onReset }) {
             onClick={handleClick}
             onContextMenu={(e) => e.preventDefault()}
             style={{ cursor: "pointer", position: "relative" }} 
-            aria-label={`Card ${item.number} (${status})`}
+            aria-label={`Card ${item.number} (${status}) ${readOnly ? ' — sign in to log' : ''}`}
         >
             <div className="card-item-inner">{item.number}</div>
 
-            {!isDefault && (
+            {!readOnly && !isDefault && (
             <span
               className="card-item-reset"
               role="button"

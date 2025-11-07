@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import useStickyVars from "../../hooks/useStickyVars";
 import "./headerStyles.scss";
@@ -19,6 +19,9 @@ function Header() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const location = useLocation();
+  const from = `${location.pathname}${location.search}${location.hash || ""}`;
 
   const links = [
     { to: "/swap/card",      label: "Swap" },
@@ -41,15 +44,13 @@ function Header() {
           <h1 className="header-title m-0">WeSwapCards</h1>
         </NavLink>
 
-        <SignedIn>
-          <nav className="header-nav" aria-label="Primary">
-            {links.map((link) => (
-              <NavLink key={link.to} to={link.to} end className={navLinkClass}>
-                {link.label}
-              </NavLink>
-            ))}
-          </nav>
-        </SignedIn>
+        <nav className="header-nav" aria-label="Primary">
+          {links.map((link) => (
+            <NavLink key={link.to} to={link.to} end className={navLinkClass}>
+              {link.label}
+            </NavLink>
+          ))}
+        </nav>
 
         <div className="header-actions">
           <SignedIn>
@@ -57,8 +58,11 @@ function Header() {
           </SignedIn>
           
           <SignedOut>
-            <NavLink to="/login/redirect" className="header-login-link">
-              Log in
+            <NavLink
+                to={{ pathname: "/login", search: `?from=${encodeURIComponent(from)}` }}
+                className="header-login-link"
+            >
+              Sign in
             </NavLink>
           </SignedOut>
         </div>

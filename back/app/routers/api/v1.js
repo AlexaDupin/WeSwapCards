@@ -31,6 +31,10 @@ router
     .get(controllerHandler(opportunitiesController.getLatestChapters));
 
 router
+    .route('/chapters/by-ids')
+    .get(controllerHandler(opportunitiesController.getChaptersByIds));
+
+router
     .route('/cards/statuses/:explorerId')
     .get(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.getAllCardsStatuses))
 
@@ -41,12 +45,11 @@ router
 
 router
   .route('/explorercards/:explorerId/chapters/:chapterId/status')
-  .options((req, res) => res.sendStatus(204))
   .post(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.markChapter));
 
 router
     .route('/cards/:placeId')
-    .get(requireAuth(), controllerHandler(reportController.getCardsFromPlace));
+    .get(controllerHandler(reportController.getCardsFromPlace));
 
 router
     .route('/opportunities/:explorerId')

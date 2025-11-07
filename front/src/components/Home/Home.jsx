@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
-import { Container } from "react-bootstrap";
+import PageContainer from '../PageContainer/PageContainer';
 
+import ChapterCarouselSection from './ChapterCarouselSection';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 import CustomButton from '../CustomButton/CustomButton';
 
@@ -15,6 +16,9 @@ import Logo from '../../images/favImage.png';
 
 import './homeStyles.scss';
 
+const VINTAGE_COLLECTOR_IDS = [47, 39, 71, 35, 42, 60];
+// const VINTAGE_COLLECTOR_IDS = [1, 2, 3, 4, 5];
+
 function Home() {
     const navigate = useNavigate();
     const { isSignedIn } = useUser();
@@ -25,19 +29,13 @@ function Home() {
       } else {
         navigate('/menu');
       }
-    }, [isSignedIn]);
+    }, [isSignedIn, navigate]);
 
     useEffect(() => {
-      document.querySelectorAll("[data-reveal-container]").forEach((group) => {
-        group.querySelectorAll(".reveal").forEach((el, i) => {
-          el.style.setProperty("--delay", `${i * 90}ms`);
-        });
-      });
-  
       const ENTER = 0.25;
       const EXIT  = 0.10;
       const state = new WeakMap();
-  
+    
       const io = new IntersectionObserver(
         (entries) => {
           entries.forEach((e) => {
@@ -53,15 +51,44 @@ function Home() {
         },
         { threshold: [0, EXIT, ENTER, 1], rootMargin: "-10% 0% -10% 0%" }
       );
-  
-      const nodes = document.querySelectorAll(".reveal");
-      nodes.forEach((el) => io.observe(el));
-  
-      return () => io.disconnect();
+    
+      const applyDelays = () => {
+        document.querySelectorAll("[data-reveal-container]").forEach((group) => {
+          const children = Array.from(group.querySelectorAll(".reveal"));
+          children.forEach((el, i) => {
+            el.style.setProperty("--delay", `${i * 90}ms`);
+          });
+        });
+      };
+    
+      const observeAll = () => {
+        document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+      };
+    
+      // initial pass
+      applyDelays();
+      observeAll();
+    
+      // observe future additions/changes
+      const mo = new MutationObserver(() => {
+        applyDelays();
+        observeAll();
+      });
+      mo.observe(document.body, { childList: true, subtree: true });
+    
+      // Fallback: if IO not supported, just show all
+      if (!("IntersectionObserver" in window)) {
+        document.querySelectorAll(".reveal").forEach((el) => el.classList.add("is-visible"));
+      }
+    
+      return () => {
+        io.disconnect();
+        mo.disconnect();
+      };
     }, []);
 
   return (
-  <Container className="home">
+  <PageContainer className="home">
     <section data-reveal-container className="home-section">
       <div className="home-section-left reveal">
         <img src={Logo} alt="WeSwapCards logo" className="home-section-left-image"/>
@@ -109,9 +136,27 @@ function Home() {
       </div>
     </section>
 
+    <ChapterCarouselSection
+      title="Browse all the latest chapters"
+      endpoint="/chapters/latest"
+      params={{ limit: 10 }}
+    />
+
+    {VINTAGE_COLLECTOR_IDS.length > 0 && (
+      <ChapterCarouselSection
+        title="All ephemeral vintage series"
+        endpoint="/chapters/by-ids"
+        params={{ ids: VINTAGE_COLLECTOR_IDS.join(',') }}
+      />
+    )}
+
+    <section className="latest-chapters my-5" data-reveal-container aria-label="And all the other chapters!">
+      <h2 className="home-section-title home-section-title--center">And all the other chapters!</h2>
+    </section>
+
     <ScrollToTop />
   
-  </ Container>
+  </ PageContainer>
 )
 }
 

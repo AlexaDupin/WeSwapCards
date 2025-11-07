@@ -1,4 +1,5 @@
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import PageContainer from '../../PageContainer/PageContainer';
 import {
     Form,
@@ -8,6 +9,7 @@ import {
     Alert
 } from "react-bootstrap";
 import {XOctagon} from "react-bootstrap-icons";
+import { useUser, useClerk } from "@clerk/clerk-react";
 import CardPreview from './CardPreview/CardPreview';
 import PaginationControl from '../../Pagination/Pagination';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
@@ -20,10 +22,16 @@ import OpportunityCard from './OpportunityCard/OpportunityCard';
 
 function SwapCard() {
   const [showLatest, setShowLatest] = useState(true);
+  const [selectedChapterId, setSelectedChapterId] = useState('');
+  const { isLoaded, isSignedIn } = useUser();
+  const { openSignIn } = useClerk();  
+  const location = useLocation();
+  const from = `${location.pathname}${location.search}${location.hash || ''}`;
+  const appliedFromURL = useRef(false);
 
   const { 
     state,
-    handleSelectPlace, 
+    handleSelectPlace,
     fetchSwapOpportunities,
     swapOpportunities,
     swapCardName,
@@ -38,19 +46,34 @@ function SwapCard() {
   const items = useMemo(() => swapOpportunities.items ?? [], [swapOpportunities.items]);
   const isSingle = useMemo(() => items.length === 1, [items]);
 
-  const selectRef = useRef(null);
+  useEffect(() => {
+    if (appliedFromURL.current) return;
+    const params = new URLSearchParams(location.search);
+    const chapterId = params.get('chapterId');
+    if (!chapterId) return;
+
+    const id = String(chapterId);
+    appliedFromURL.current = true;
+
+    setSelectedChapterId(id);
+    setShowLatest(false);
+    handleSelectPlace(id);
+  
+    const url = new URL(window.location.href);
+    url.searchParams.delete('chapterId');
+    window.history.replaceState({}, '', url.toString());
+  }, []); 
 
   const handleShortcutSelect = (placeId) => {
-    if (selectRef.current) {
-      selectRef.current.value = String(placeId);
-    }
+    const id = String(placeId);
+    setSelectedChapterId(id);
     setShowLatest(false);
-
-    handleSelectPlace(String(placeId));
+    handleSelectPlace(id);
   };
 
   const handleDropdownChange = (e) => {
-    const selectedValue = e.target.value;
+    const selectedValue = String(e.target.value);
+    setSelectedChapterId(selectedValue);
 
     if (selectedValue !== "") {
       setShowLatest(false);
@@ -58,6 +81,19 @@ function SwapCard() {
     } else {
       setShowLatest(true);
     }
+  };
+
+  const gatedFetchSwapOpportunities = (...args) => {
+    if (!isLoaded) return;
+
+    if (!isSignedIn) {
+      openSignIn({
+        forceRedirectUrl: `/login/redirect?from=${encodeURIComponent(from)}`,
+      });
+      return;
+    }
+
+    return fetchSwapOpportunities(...args);
   };
 
   return (
@@ -84,14 +120,15 @@ function SwapCard() {
             <Form.Group className="mb-3" controlId="formGroupPlace">
               <Form.Label className="visually-hidden">Select a chapter</Form.Label>
               <Form.Select
-                ref={selectRef}
+                value={selectedChapterId} 
                 onChange={handleDropdownChange} 
               >
                 <option value="">Select</option>
                 {state.places?.map((place) => (
                   <option
                     key={place.id}
-                    value={place.id}>
+                    value={String(place.id)}
+                  >
                     {place.name}
                   </option>
                 ))}
@@ -118,7 +155,7 @@ function SwapCard() {
                 <CardPreview
                   key={card.id}
                   card={card}
-                  fetchSwapOpportunities={fetchSwapOpportunities}
+                  fetchSwapOpportunities={gatedFetchSwapOpportunities}
                   isSelected={state.selectedCardId === card.id} />
               ))
             ) : (
@@ -127,13 +164,13 @@ function SwapCard() {
           </div>
         </Form.Group>
             
-      {state.loadingOpportunities && state.selectedCardId && (
+      {isSignedIn && state.loadingOpportunities && state.selectedCardId && (
         <div className="text-center my-4">
           <Spinner animation="border" className="spinner" />
         </div>
       )}
 
-      {!state.loadingOpportunities && !state.hiddenSwapOpportunities && (
+      {isSignedIn && !state.loadingOpportunities && !state.hiddenSwapOpportunities && (
         <div className="opportunity-card-container">
           {swapOpportunities.items?.length > 0 ? (
             <>
