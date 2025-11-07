@@ -1,5 +1,5 @@
 import React, { useRef, useState, useMemo, useCallback } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useClerk } from "@clerk/clerk-react";
 import PageContainer from '../../PageContainer/PageContainer';
 import { Spinner, Alert, Button } from "react-bootstrap";
@@ -90,7 +90,7 @@ function Cards() {
   return (
     <PageContainer className="cards-page">
       <div className="page-header d-flex align-items-center justify-content-between gap-3 mb-2">
-        <div className="d-flex align-items-center gap-2">
+        <div className="d-flex align-items-center gap-2 mb-3">
           <h1 className="page-title mb-0">My cards</h1>
 
           <Button
@@ -110,6 +110,19 @@ function Cards() {
           <MissingCardsToggle checked={showMissingOnly} onChange={setShowMissingOnly} />
         </div>
       </div>
+
+      {isPublic && (
+        <Alert variant="info" className="mb-3">
+          You’re viewing a preview.{" "}
+          <button
+            className="btn btn-link p-0 align-baseline fw-bold alert-link"
+            onClick={loginRedirect}
+          >
+            Sign in
+          </button>{" "}
+          to see your saved owned/duplicated cards.
+        </Alert>
+      )}
 
       {isLoading &&
         <><Spinner
