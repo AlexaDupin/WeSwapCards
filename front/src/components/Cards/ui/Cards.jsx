@@ -111,7 +111,7 @@ function Cards() {
         </div>
       </div>
 
-      {isPublic && (
+      {isPublic && !isLoading && (
         <Alert variant="info" className="mb-3">
           You’re viewing a preview.{" "}
           <button
