@@ -27,25 +27,17 @@ Users can keep track of all their conversations in a practical dashboard.
 ## What does it look like?
 Visit [weswapcards.com  ](https://weswapcards.com/)
 
-Signed out:  https://res.cloudinary.com/dwf28prby/video/upload/v1762876491/ScreenRecording_11-11-2025_10-46-59_1_argrtg.mp4
-
-Landing page, sign in and menu:  
-https://github.com/user-attachments/assets/32107731-2b30-4ae9-96f1-444aa923fa22
+Signed out:  
+https://res.cloudinary.com/dwf28prby/video/upload/v1762876491/ScreenRecording_11-11-2025_10-46-59_1_argrtg.mp4
   
-Reporting cards:  
-https://github.com/user-attachments/assets/4018b99f-fca4-492d-a490-ffacfa9785fc
-
-Checking all cards and updating duplicate status:  
-https://github.com/user-attachments/assets/e2bcbf5d-eb65-47c3-9ad4-204acff956f3
+Reporting and updating cards:  
+https://res.cloudinary.com/dwf28prby/video/upload/v1762878578/Cards_vixnww.mov
 
 Searching for cards:  
-https://github.com/user-attachments/assets/4337ab5c-2288-4435-be58-2663a4875a1b
+https://res.cloudinary.com/dwf28prby/video/upload/v1762878645/Search_jnqtkt.mov
 
-Chat:  
-https://github.com/user-attachments/assets/dde5479f-e6b5-4252-94df-696879045869
-
-Requests dashboard:  
-https://github.com/user-attachments/assets/a9e58d6e-c9eb-4485-9156-3a6fc852ff82
+Chat and requests dashboard:  
+https://res.cloudinary.com/dwf28prby/video/upload/v1762878680/Messages_puflgv.mov
   
 ## Installation
 
