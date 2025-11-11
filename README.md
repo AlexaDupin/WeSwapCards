@@ -27,6 +27,8 @@ Users can keep track of all their conversations in a practical dashboard.
 ## What does it look like?
 Visit [weswapcards.com  ](https://weswapcards.com/)
 
+Signed out:  https://res.cloudinary.com/dwf28prby/video/upload/v1762876491/ScreenRecording_11-11-2025_10-46-59_1_argrtg.mp4
+
 Landing page, sign in and menu:  
 https://github.com/user-attachments/assets/32107731-2b30-4ae9-96f1-444aa923fa22
   
