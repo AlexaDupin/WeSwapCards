@@ -31,13 +31,13 @@ Signed out:
 https://res.cloudinary.com/dwf28prby/video/upload/v1762876491/ScreenRecording_11-11-2025_10-46-59_1_argrtg.mp4
   
 Reporting and updating cards:  
-https://res.cloudinary.com/dwf28prby/video/upload/v1762878578/Cards_vixnww.mov
+https://res.cloudinary.com/dwf28prby/video/upload/v1762878578/Cards_vixnww.mp4
 
 Searching for cards:  
-https://res.cloudinary.com/dwf28prby/video/upload/v1762878645/Search_jnqtkt.mov
+https://res.cloudinary.com/dwf28prby/video/upload/v1762878645/Search_jnqtkt.mp4
 
 Chat and requests dashboard:  
-https://res.cloudinary.com/dwf28prby/video/upload/v1762878680/Messages_puflgv.mov
+https://res.cloudinary.com/dwf28prby/video/upload/v1762878680/Messages_puflgv.mp4
   
 ## Installation
 
