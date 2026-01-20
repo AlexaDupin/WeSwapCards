@@ -1,9 +1,11 @@
-const fetch = require('node-fetch');  // Import node-fetch version 2.x
-global.fetch = fetch;  // Set fetch globally
-
-// Polyfill global Request (used by Clerk)
-global.Request = fetch.Request;  // Set global Request to node-fetch's Request
-global.Headers = fetch.Headers;     // Expose Headers globally
+if (typeof fetch !== "function") {
+  const fetch = require('node-fetch');  // Import node-fetch version 2.x
+  global.fetch = fetch;  // Set fetch globally
+  
+  // Polyfill global Request (used by Clerk)
+  global.Request = fetch.Request;  // Set global Request to node-fetch's Request
+  global.Headers = fetch.Headers;     // Expose Headers globally
+}
 
 if (typeof(PhusionPassenger) !== 'undefined') {
     PhusionPassenger.configure({ autoInstall: false });
@@ -100,7 +102,7 @@ app.post('/api/webhooks',
                   return res.status(404).json({ message: 'User not found'});
               }
           } catch (error) {
-            console.error('Error deleting user:', e);
+            console.error('Error deleting user:', error);
             res.status(500).json({ error: 'Error while deleting user: ' + error.message });
           }          
         }
@@ -126,6 +128,7 @@ app.use('/api', (_req, res) => {
 });
 
 app.use('/api', (err, _req, res, _next) => {
+  console.error("API ERROR:", err);  
   const status = err?.status || err?.statusCode || 500;
   const msg = err?.message || 'Server error';
   res.status(status).json({ error: msg });
