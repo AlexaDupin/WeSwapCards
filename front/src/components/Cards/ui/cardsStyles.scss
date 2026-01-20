@@ -1,0 +1,158 @@
+@use 'src/styles/vars';
+
+.chapter-list {
+    margin-inline: auto !important; 
+    width: 100%;
+    max-width: 960px;
+}
+
+.chapter {
+  margin-block-end: 2rem;
+  scroll-margin-top: 0px;
+
+  .chapter-title,
+  .chapter-progress {
+    margin: 0 0 0.5rem 0;
+    padding: 0;
+  }
+
+  .chapter-title {
+    font-family: 'Lobster_400Regular';
+    font-weight: 600;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+    text-align: left;
+  }
+
+  .chapter-progress {
+    display: inline-block;
+    margin-bottom: 0.75rem;
+    vertical-align: top;
+  }
+
+  .chapter-kebab .dropdown-toggle::after { display: none !important; } // hides the arrow
+  .chapter-kebab .dropdown-toggle {
+    opacity: 0.75;
+    &:hover, &:focus { opacity: 1; }
+  }
+
+  .cards-list {
+    display: flex;
+    gap: 0.2rem;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+}
+
+.cards-page { 
+  overflow-y: auto; 
+  height: 100vh;
+}
+
+.cards-sticky {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 100;                 
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.az-toolbar.equalized {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(26, 1fr);
+  column-gap: 0;
+
+  .az-pill {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    font-size: clamp(15px, 4.2vw, 14px);
+    cursor: pointer;
+    white-space: nowrap;
+    color: #333;
+
+    &:hover { text-decoration: underline; }
+    &:focus-visible { outline: 2px solid rgba(0,0,0,.2); outline-offset: 2px; border-radius: 3px; }
+    &.is-empty { opacity: .5; }
+  }
+}
+
+@media (min-width: 992px) { /* This targets large screens */
+    .chapter-title {
+      font-size: 1.8rem;
+    }
+}
+
+
+.help-tiles {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 576px) {
+  .help-tiles {
+    grid-template-columns: repeat(3, 1fr);
+    align-items: start;
+  }
+}
+
+.help-tile {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  justify-items: center;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 575.98px) {
+  .help-tile { 
+    margin-bottom: 1rem;
+  }
+}
+
+.help-gesture {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.tap-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.help-card {
+  min-height: 3.4rem;
+  display: flex;
+  align-items: center;
+}
+
+.help-caption-title {
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.help-caption-text {
+  line-height: 1.2;
+  opacity: 0.9;
+}
+
+.help-card-mini {
+  width: 2.2rem;
+  height: 3.2rem !important;
+  pointer-events: none;
+}
+
+.help-instruction {
+  margin: 1rem 0 0;
+  text-align: center;
+  font-size: 0.95rem;
+}

@@ -5,16 +5,40 @@
     display: flex;
     justify-content: space-around;
     padding: 0 !important;
-
-    &-caption {
-        font-size: 0.6rem;
-        margin-bottom: 0.5rem !important;
-    }
-
+    gap: 0;
+  
     &-link {
-        font-size: 1rem;
-        color: #000;
-        text-decoration: none;
+      font-size: 1rem;
+      color: #000;
+      text-decoration: none;
+  
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .4rem;
+      padding: .5rem .75rem .7rem;
+      position: relative;
+      min-width: 78px;
+    }
+  
+    &-caption {
+      font-size: 0.6rem;
+      line-height: 1;
+      margin: 0 0 .25rem !important;
+    }
+  
+    &-link--active::after,
+    &-link[aria-current="page"]::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: .18rem;
+      width: var(--nav-underline-width, 22px);
+      height: var(--nav-underline-thickness, 3px);
+      border-radius: var(--nav-underline-radius, 999px);
+      background: var(--nav-underline-color, #{vars.$primary-color});
     }
 }
 
@@ -27,39 +51,32 @@
     &-caption {
         font-size: 1rem;
         margin: 0 !important;
+
+        &:hover,
+        &:focus-visible {
+          color: darken(vars.$primary-color, 10%)!important;
+          outline: none;
+        }
+    
+        &:active {
+          color: darken(vars.$primary-color, 12%) !important;
+        }
+    
+        &:visited {
+          color: vars.$primary-color !important;
+        }
+      
     }
 
     &-link {
         color: vars.$primary-color !important;
         text-decoration: none;
-        cursor: pointer;
-    }
-}
-
-.footer-general {
-    background-color: #fff;
-    display: flex;
-    justify-content: space-around;
-    padding: 1rem !important;
-
-    &-caption {
-        font-size: 1rem;
-        margin: 0 !important;
-    }
-
-    &-link {
-        color: vars.$primary-color !important;
-        text-decoration: none;
-        cursor: pointer;
+        cursor: pointer;transition: color 140ms ease;     
     }
 }
 
 @media (min-width: 768px) { /* This targets larger  */
     .footer-mobile {
-        display: none;
-    }
-
-    .footer-general {
         display: none;
     }
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import PageContainer from '../../PageContainer/PageContainer';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
-import '../legalFilesStyles.scss';
+import '../legalStyles.scss';
 
 function PrivacyPolicy() {
 
@@ -11,14 +11,14 @@ function PrivacyPolicy() {
     <div className="legal">
       <section>
         <h1 className="page-title">Privacy Policy</h1>
-        <p><strong>Effective Date:</strong> February 14, 2025</p>
+        <p><strong>Effective Date:</strong> September 3, 2025</p>
         <p>At WeSwapCards ("we," "us," or "our"), we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and protect your personal data when you use our website www.weswapcards.com (the "Site"). By using the Site, you consent to the collection and use of your data in accordance with this policy.</p>
       </section>
 
       <section>
         <h2 className="legal-title">1. Information We Collect</h2>
         <p>We collect the following types of personal data when you use our Site:</p>
-        <ul>
+        <ul className="p-2">
           <li>
             <p><strong>Account Information:</strong> When you create an account, we collect your email address, username, and password.</p>
           </li>
@@ -34,7 +34,7 @@ function PrivacyPolicy() {
       <section>
         <h2 className="legal-title">2. How We Use Your Data</h2>
         <p>We use your personal data for the following purposes:</p>
-        <ul>
+        <ul className="p-2">
           <li>
             <p><strong>Account Management:</strong> To enable users to create and manage their accounts.</p>
           </li>
@@ -47,13 +47,16 @@ function PrivacyPolicy() {
           <li>
             <p><strong>User Interaction:</strong> To enable users to initiate a chat with others when they match in card needs and availability.</p>
           </li>
+          <li>
+            <p><strong>Communication:</strong> To send important information related to your account (such as issues with a trade or security concerns) and occasional updates about new features. You may opt out of non-essential communications at any time.</p>
+          </li>
         </ul>
       </section>
 
       <section>
         <h2 className="legal-title">3. User Messages</h2>
         <p>When you interact with other users on our platform, including through chat messages, we collect and store the following personal data as part of your interactions:</p>
-        <ul>
+        <ul className="p-2">
           <li>
             <p><strong>Username:</strong> To identify you in chats and other user interactions.</p>
           </li>
@@ -66,7 +69,7 @@ function PrivacyPolicy() {
       <section>
         <h2 className="legal-title">4. Data Retention</h2>
         <p>We retain personal data only as long as necessary for the purpose for which it was collected. This includes:</p>
-        <ul>
+        <ul className="p-2">
           <li>
             <p><strong>Account Information:</strong> We retain account information (email, username, password) as long as the account is active.</p>
           </li>
@@ -79,7 +82,7 @@ function PrivacyPolicy() {
       <section>
         <h2 className="legal-title">5. Your Rights</h2>
         <p>As a user, you have the following rights regarding your personal data:</p>
-        <ul>
+        <ul className="p-2">
           <li>
             <p><strong>Access:</strong> You can access and view the email address, and other account details associated with your account by logging into your account.</p>
           </li>
@@ -110,7 +113,7 @@ function PrivacyPolicy() {
       <section>
         <h2 className="legal-title">9. Contact Us</h2>
         <p>If you have any questions or concerns about this Privacy Policy, please contact us at:</p>
-        <ul>
+        <ul className="p-2">
           <li>
             <p><strong>Email:</strong> contact@weswapcards.com</p>
           </li>

@@ -1,27 +1,31 @@
 import React, { useEffect } from 'react';
 import PageContainer from '../PageContainer/PageContainer';
 import { SignIn, useUser } from '@clerk/clerk-react';
-
-import './loginStyles.scss';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const SignInPage = () => {
-  const { isSignedIn } = useUser();
+  const { isLoaded, isSignedIn } = useUser();  
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const params = new URLSearchParams(location.search);
+  const from = params.get('from') || '/';
 
   useEffect(() => {
-    if (!isSignedIn) {
-      localStorage.clear();
+    if (!isLoaded) return;
+    if (isSignedIn) {
+      navigate(`/login/redirect?from=${encodeURIComponent(from)}`, { replace: true });
+    } else {
+      try { localStorage.clear(); } catch {}
     }
-  }, [isSignedIn]);
+  }, [isLoaded, isSignedIn, from, navigate]);
 
   return (
-  <PageContainer>
-    <h1 className="page-title">Sign in</h1>
-    <div className="signup-container">
-      <SignIn 
-        forceRedirectUrl="/login/redirect"
-      />
-    </div>
-  </PageContainer>
+    <PageContainer>
+      <div className="signup-container mt-4">
+        <SignIn forceRedirectUrl={`/login/redirect?from=${encodeURIComponent(from)}`} />
+      </div>
+    </PageContainer>
   )
 }
 

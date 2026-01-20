@@ -14,9 +14,7 @@
   position: relative;
 
   &-title {
-    font-weight: bold;
-    font-style: italic;        
-    color: vars.$primary-color !important;
+    font-weight: 500;
     font-size: 1.3rem !important;
     text-align: left;
     margin-bottom: 1rem;
@@ -28,14 +26,16 @@
     margin-bottom: 1rem;
 
     &-button {
-      font-weight: 500;
-      color: #fff;
-      background-color: #16bc90;
-      border: none;
+      font-size: 0.9rem;
+      background-color: #FFF !important;
+      border: 1px solid;
+      border-color: vars.$secondary-color !important;
+      color: rgb(54, 53, 53);
+      border-radius: 5px;
       padding: 0.1rem 0.2rem;
       margin: 0.2rem;
-      cursor: default !important;
-      font-size: 0.9rem;
+      cursor: default !important; 
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
     }
   }
 }

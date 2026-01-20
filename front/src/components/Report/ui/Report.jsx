@@ -37,7 +37,7 @@ function Report() {
 
   return (
     <PageContainer>
-      <h1 className="swap-title">Report my cards</h1>
+      <h1 className="page-title">Report my cards</h1>
     
       {state.alert.message && (
       <Alert
@@ -47,6 +47,7 @@ function Report() {
         </Alert>
       )}
   
+    {!state.loading && !state.alert.message && (
       <Form onSubmit={handleSubmit}>
       
         <Form.Group className="mb-5" controlId="formGroupPlace">
@@ -141,7 +142,8 @@ function Report() {
         </button>
             
       </Form>
-            
+      )}
+
       <ScrollToTop />
     </PageContainer>
   );

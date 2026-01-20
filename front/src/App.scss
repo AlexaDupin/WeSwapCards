@@ -2,11 +2,14 @@
 
 @import '~bootstrap/scss/bootstrap';
 
+:root { --header-h: 60px; --az-bar-h: 36px; }
+
 .App {
     text-align: center;
     display: flex;
     flex-direction: column; 
     height: 100vh;   
+    font-size: 16px;
 }
 
 .loading {
@@ -19,9 +22,21 @@
     color: vars.$primary-color;
 }
 
+html, body {
+    scroll-behavior: smooth; /* optional */
+    scroll-padding-top: calc(var(--header-h) + var(--az-bar-h));
+}
+
 @media (min-width: 1200px) {
     body {
       font-size: 18px !important;
     }
 }
-  
+
+@media (min-width: 768px) {
+    :root { --header-h: 80px; }
+}
+ 
+@media (min-width: 992px) {
+    :root { --header-h: 78px; }
+}

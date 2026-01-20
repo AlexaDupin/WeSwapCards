@@ -1,22 +1,8 @@
-const savedExplorer = (() => {
-    try {
-      return JSON.parse(localStorage.getItem('explorer')) || { name: '', id: '' };
-    } catch (e) {
-      return { name: '', id: '' };
-    }
-  })();
-
 export const initialState = {
-    userUID: '',
-    explorer: savedExplorer,
-    swap: {
-        explorerId: '',
-        explorerName: '',
-        cardName: '',
-        opportunities: [],
-        conversationId: ''
-    },    
-}
+  userUID: '',
+  explorer: { id: '', name: '' },
+  swap: { explorerId: '', explorerName: '', cardName: '', opportunities: [], conversationId: '' },
+};
 
 export const reducer = (state, action) => {
     switch (action.type) {
@@ -31,15 +17,17 @@ export const reducer = (state, action) => {
         }
 
         case 'explorer/set': {
-            const { explorerName, explorerId } = action.payload;
-
+            const { explorerName, explorerId, name, id } = action.payload || {};
+            const nextName = explorerName ?? name ?? '';
+            const nextId   = explorerId   ?? id   ?? '';
+          
             return {
-                ...state,
-                explorer: {
-                    name: explorerName,
-                    id: explorerId,
-                },
-            }
+              ...state,
+              explorer: {
+                name: nextName,
+                id: nextId,
+              },
+            };
         }
 
         case 'swap/placeSelected': {

@@ -1,68 +1,75 @@
-import React from 'react';
-import { UserButton, useUser } from "@clerk/clerk-react";
-
-import {
-  NavLink, Link
-} from 'react-router-dom';
-import {
-  NavDropdown
-} from "react-bootstrap";
-
-import './headerStyles.scss';
+import React, { useRef, useEffect } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
+import useStickyVars from "../../hooks/useStickyVars";
+import "./headerStyles.scss";
 
 function Header() {
-  const { isSignedIn } = useUser();
+  const appHeaderRef = useRef(null);
+  useStickyVars({ ref: appHeaderRef, cssVarName: "--header-h", dimension: "height" });
+
+  useEffect(() => {
+    const el = appHeaderRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      if (window.scrollY > 4) el.classList.add("is-elevated");
+      else el.classList.remove("is-elevated");
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const location = useLocation();
+  const from = `${location.pathname}${location.search}${location.hash || ""}`;
+
+  const links = [
+    { to: "/swap/card",      label: "Swap" },
+    { to: "/swap/dashboard", label: "Messages" },
+    { to: "/cards",          label: "My cards" },
+  ];
+
+  const navLinkClass = ({ isActive }) =>
+    `header-nav-link header-nav-item${isActive ? " header-nav-link--active" : ""}`;
 
   return (
-    <header className="header border-bottom fixed-top">
-        
-        {isSignedIn ?
-        <div>
-          <NavLink to="/menu" style={{ textDecoration: 'none' }}>
-            <h1 className="header-title m-0 header-title-link">WeSwapCards</h1>
-          </NavLink>
-        </div>
-        :
-        <div>
-          <NavLink to="/" style={{ textDecoration: 'none' }}>
-            <h1 className="header-title m-0 header-title-link">WeSwapCards</h1>
-          </NavLink>
-        </div>
-        }
-
-        {isSignedIn ? 
-        <nav 
-          className="header-nav"
-          id="header-nav-login"
+    <header ref={appHeaderRef} className="header fixed-top">
+      <div className="header-inner container-fluid">
+        <NavLink
+          to="/"
+          className="header-brand"
+          aria-label="WeSwapCards home"
+          style={{ textDecoration: "none" }}
         >
-          <NavDropdown title="Swap" id="basic-nav-dropdown" className="header-nav-item">
-              <NavDropdown.Item as={Link} to="/swap/card">Find a card</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/swap/dashboard">
-                Check all requests
-              </NavDropdown.Item>
-              {/* <NavDropdown.Item as={Link} to="/swap/opportunities">All opportunities</NavDropdown.Item> */}
-            </NavDropdown>
-            <NavDropdown title="My cards" id="basic-nav-dropdown" className="header-nav-item">
-              <NavDropdown.Item as={Link} to="/report">Report my cards</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/check">
-                Check all my cards
-              </NavDropdown.Item>
-            </NavDropdown>
-            <UserButton 
-              afterSignOutUrl="/login" 
-            />
+          <h1 className="header-title m-0">WeSwapCards</h1>
+        </NavLink>
+
+        <nav className="header-nav" aria-label="Primary">
+          {links.map((link) => (
+            <NavLink key={link.to} to={link.to} end className={navLinkClass}>
+              {link.label}
+            </NavLink>
+          ))}
         </nav>
-        : 
-        <nav 
-          className="header-nav header-nav-login"
-        >
-          <a href="/login" className="header-nav-login">Sign in</a>
-        </nav> 
-      }
 
-    </header> 
+        <div className="header-actions">
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          
+          <SignedOut>
+            <NavLink
+                to={{ pathname: "/login", search: `?from=${encodeURIComponent(from)}` }}
+                className="header-login-link"
+            >
+              Sign in
+            </NavLink>
+          </SignedOut>
+        </div>
 
+      </div>
+    </header>
   );
 }
 
-export default React.memo(Header);
+export default Header;

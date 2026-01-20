@@ -2,7 +2,7 @@ import React from 'react';
 import PageContainer from '../../PageContainer/PageContainer';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
-import '../legalFilesStyles.scss';
+import '../legalStyles.scss';
 
 function CookiePolicy() {
 
@@ -22,7 +22,7 @@ function CookiePolicy() {
 
       <section>
         <h2 className="legal-title">2. Types of Cookies We Use</h2>
-        <ul>
+        <ul className="p-2">
           <li>
             <p><strong>Authentication Cookies:</strong> These cookies are essential for logging in to your account and maintaining your session. Without these cookies, you would not be able to access secure areas of the website or remain logged in after navigating between pages.</p>
           </li>
@@ -35,7 +35,7 @@ function CookiePolicy() {
       <section>
         <h2 className="legal-title">3. How We Use Cookies</h2>
         <p>We use cookies for the following purposes:</p>
-        <ul>
+        <ul className="p-2">
           <li>
             <p><strong>Authentication:</strong> We use cookies to facilitate and secure your login process. These cookies allow us to recognize you once you have logged in and keep you logged in while you navigate the site.</p>
           </li>

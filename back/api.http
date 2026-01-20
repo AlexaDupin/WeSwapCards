@@ -19,3 +19,9 @@ Content-Type: application/json
 }
 
 ###
+
+### Get the 4 latest places (default)
+GET http://localhost:3001/api/v1/chapters/latest
+Content-Type: application/json
+
+###

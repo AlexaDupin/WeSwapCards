@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useClerk } from '@clerk/clerk-react';
 import PageContainer from '../../PageContainer/PageContainer';
 import DashboardList from './DashboardList';
 import {
@@ -12,9 +14,21 @@ import './dashboardStyles.scss';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
 import useDashboardLogic from '../hooks/useDashboardLogic';
-import SearchForm from './SearchForm';
+import SearchForm from '../../SearchBar/ui/SearchBar';
 
 function Dashboard() {
+  const { openSignIn } = useClerk();
+  const location = useLocation();
+  const from = useMemo(
+    () => `${location.pathname}${location.search}${location.hash || ""}`,
+    [location.pathname, location.search, location.hash]
+  );
+
+  const requireLogin = () => {
+    openSignIn({
+      forceRedirectUrl: `/login/redirect?from=${encodeURIComponent(from)}`
+    });
+  };
 
   const { 
     data,
@@ -33,24 +47,28 @@ function Dashboard() {
     handleTabChange,
     unreadConv,
     searchTerm,
-    setSearchTerm
+    setSearchTerm,
+    isPublicDemo
   } = useDashboardLogic();
+
   return (
     <PageContainer>
-      <h1 className="swap-title">Requests dashboard</h1>
-    <SearchForm searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
-    <Nav
-      activeKey={activeTab}
-      onSelect={handleTabChange}
-      variant="underline"
-    >
-      <Nav.Item>
-        <Nav.Link className="dashboard-nav" eventKey="in-progress">In Progress <Badge bg="secondary">{unreadConv.inProgress}</Badge></Nav.Link>
-      </Nav.Item>
-      <Nav.Item>
-        <Nav.Link className="dashboard-nav" eventKey="past">Past Requests <Badge bg="secondary">{unreadConv.past}</Badge></Nav.Link>
-      </Nav.Item>
-    </Nav>
+      <h1 className="page-title">
+        Requests dashboard
+      </h1>
+
+      {isPublicDemo && (
+        <Alert variant="info" className="mb-3">
+          You’re viewing a preview.{" "}
+          <button
+            className="btn btn-link p-0 align-baseline fw-bold alert-link"
+            onClick={requireLogin}
+          >
+            Sign in
+          </button>{" "} 
+          to see your real requests.
+        </Alert>
+      )}
 
       {loading && (
         <><Spinner animation="border" className="spinner" /><p>Loading your requests...</p></>
@@ -65,20 +83,38 @@ function Dashboard() {
       )}
 
       {!loading && !error && (
-        <DashboardList 
-          data={data}
-          activePage={activePage}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          handlePageChange={handlePageChange}
-          handleOpenChat={handleOpenChat}
-          getDropdownClass={getDropdownClass}
-          handleStatusChange={handleStatusChange}
-          hiddenAlert={hiddenAlert}
-          alertMessage={alertMessage}
-          activeTab={activeTab}
-          searchTerm={searchTerm}
+        <><SearchForm searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        
+        <Nav
+          activeKey={activeTab}
+          onSelect={handleTabChange}
+          variant="underline"
+        >
+          <Nav.Item>
+            <Nav.Link className="dashboard-nav" eventKey="in-progress">In Progress <Badge bg="secondary">{unreadConv.inProgress}</Badge></Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link className="dashboard-nav" eventKey="past">Past Requests <Badge bg="secondary">{unreadConv.past}</Badge></Nav.Link>
+          </Nav.Item>
+        </Nav>
+        
+        <DashboardList
+            data={data}
+            activePage={activePage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            handlePageChange={handlePageChange}
+            handleOpenChat={handleOpenChat}
+            getDropdownClass={getDropdownClass}
+            handleStatusChange={handleStatusChange}
+            hiddenAlert={hiddenAlert}
+            alertMessage={alertMessage}
+            activeTab={activeTab}
+            searchTerm={searchTerm} 
+            readOnly={isPublicDemo}
+            requireLogin={requireLogin}
         />
+        </>
       )}
 
       <ScrollToTop />

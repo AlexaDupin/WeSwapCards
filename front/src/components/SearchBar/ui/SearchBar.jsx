@@ -10,7 +10,7 @@ function SearchForm({
     searchTerm, setSearchTerm
 }) {
     return (
-    <Form className="w-100 mb-3">
+    <Form className="w-100 mb-4">
       <InputGroup>
         <Form.Control 
             type="text" 

@@ -1,0 +1,18 @@
+@use 'src/styles/vars';
+
+.progress {
+    height: 0.5rem !important;
+
+    &-bar {
+        background-color: vars.$primary-color !important;
+
+        &-full {
+            background-color: vars.$secondary-color;
+        }
+    
+        &-label {
+            font-size: 0.6rem;
+            margin-left: 1rem;
+        }
+    }
+}
