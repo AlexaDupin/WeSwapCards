@@ -102,34 +102,11 @@ router
     .post(requireAuth(), checkConversationAuthorization, validateNewMessage, controllerHandler(chatController.insertNewMessage));
     
 router
-<<<<<<< HEAD
-    .route('/explorercards/:explorerId')
-    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.getExplorerCardsByPlace));
-
-// Native    
-router
-    .route('/explorercards/:explorerId/cards/:cardId')
-    .put(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.addCardToExplorer))
-    .delete(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.deleteCardFromExplorer));
-
-router
-    .route('/explorercards/:explorerId/cards/:cardId/duplicate')
-    .patch(requireAuth(), checkExplorerAuthorization, controllerHandler(explorerCardsController.editDuplicateStatus));
-
-router
-=======
->>>>>>> main
     .route('/exploreractivity/:explorerId')
     .post(requireAuth(), checkExplorerAuthorization, controllerHandler(userController.updateLastActive))
 
 router
     .route('/cards')
-<<<<<<< HEAD
-    .get(requireAuth(), controllerHandler(cardController.getAllCards))
-
-
-=======
     .get(controllerHandler(cardController.getAllCards))   
->>>>>>> main
 
 module.exports = router;
