@@ -509,7 +509,7 @@ module.exports = {
         };
         
         const countResult = await client.query(countQuery);
-        const totalCount = parseInt(countResult.rows[0].count);
+        const totalCount = parseInt(countResult.rows[0].count, 10);
         
         const offset = (page - 1) * limit;
         
@@ -530,7 +530,8 @@ module.exports = {
                     cv.creator_id,
                     cv.recipient_id,
                     cv.status,
-                    COUNT(m.id) FILTER (WHERE m.read = false AND m.recipient_id = $1) AS unread
+                    COUNT(m.id) FILTER (WHERE m.read = false AND m.recipient_id = $1)::int AS unread,
+                    MAX(m."timestamp") AS last_message_at
                 FROM conversation cv
                 JOIN explorer e1 ON e1.id = cv.creator_id
                 JOIN explorer e2 ON e2.id = cv.recipient_id
@@ -546,11 +547,10 @@ module.exports = {
             )
             SELECT 
                 ROW_NUMBER() OVER (
-                    ORDER BY 
-                        (unread > 0) DESC,
-                        CASE WHEN unread > 0 THEN card_name END,
-                        (status = 'In progress') DESC,
-                        card_name
+                    ORDER BY
+                    (unread > 0) DESC,
+                    last_message_at DESC NULLS LAST,
+                    db_id DESC
                 ) AS row_id,
                 db_id,
                 card_name,
@@ -559,13 +559,13 @@ module.exports = {
                 status,
                 creator_id,
                 recipient_id,
-                unread
+                unread,
+                last_message_at
             FROM ranked_conversations
             ORDER BY 
-                (unread > 0) DESC,  
-                CASE WHEN unread > 0 THEN card_name END,  
-                (status = 'In progress') DESC,  
-                card_name
+                (unread > 0) DESC,
+                last_message_at DESC NULLS LAST,
+                db_id DESC
             LIMIT $3 OFFSET $4;`,
             values: [explorerId, searchPattern, limit, offset],
         };
@@ -603,7 +603,7 @@ module.exports = {
         };
         
         const countResult = await client.query(countQuery);
-        const totalCount = parseInt(countResult.rows[0].count);
+        const totalCount = parseInt(countResult.rows[0].count, 10);
         
         const offset = (page - 1) * limit;
         
@@ -624,7 +624,8 @@ module.exports = {
                     cv.creator_id,
                     cv.recipient_id,
                     cv.status,
-                    COUNT(m.id) FILTER (WHERE m.read = false AND m.recipient_id = $1) AS unread
+                    COUNT(m.id) FILTER (WHERE m.read = false AND m.recipient_id = $1)::int AS unread,
+                    MAX(m."timestamp") AS last_message_at
                 FROM conversation cv
                 JOIN explorer e1 ON e1.id = cv.creator_id
                 JOIN explorer e2 ON e2.id = cv.recipient_id
@@ -653,7 +654,8 @@ module.exports = {
                 status,
                 creator_id,
                 recipient_id,
-                unread
+                unread,
+                last_message_at
             FROM ranked_conversations
             ORDER BY 
                 (unread > 0) DESC,  
@@ -663,7 +665,7 @@ module.exports = {
             values: [explorerId, searchPattern, limit, offset],
         };
         const result = await client.query(preparedQuery);
-        // console.log(totalCount, result.rows);
+
         return {
             conversations: result.rows,
             pagination: {
@@ -674,6 +676,135 @@ module.exports = {
             }        
         };
     },
+    async getPastConversationsOfExplorerCursorWebOrder(
+        explorerId,
+        limit = 50,
+        search = '',
+        cursorUnread = null, // 0 or 1
+        cursorCard = null,   // string
+        cursorSwap = null,   // string
+        cursorId = null      // number
+      ) {
+        const safeLimit = Math.min(parseInt(limit, 10) || 50, 100);
+        const searchPattern = `%${search.toLowerCase()}%`;
+      
+        const hasCursor =
+          cursorUnread !== null &&
+          cursorCard !== null &&
+          cursorSwap !== null &&
+          cursorId !== null;
+      
+        const preparedQuery = {
+          text: `
+            WITH ranked_conversations AS (
+              SELECT 
+                cv.id AS db_id,
+                cv.card_name,
+                LOWER(cv.card_name) AS card_name_sort,
+                CASE
+                  WHEN cv.creator_id = $1 THEN e2.name
+                  WHEN cv.recipient_id = $1 THEN e1.name
+                END AS swap_explorer,
+                LOWER(
+                  CASE
+                    WHEN cv.creator_id = $1 THEN e2.name
+                    WHEN cv.recipient_id = $1 THEN e1.name
+                  END
+                ) AS swap_explorer_sort,
+                CASE
+                  WHEN cv.creator_id = $1 THEN e2.id
+                  WHEN cv.recipient_id = $1 THEN e1.id
+                END AS swap_explorer_id,
+                cv.creator_id,
+                cv.recipient_id,
+                cv.status,
+                COUNT(m.id) FILTER (WHERE m.read = false AND m.recipient_id = $1)::int AS unread,
+                MAX(m."timestamp") AS last_message_at
+              FROM conversation cv
+              JOIN explorer e1 ON e1.id = cv.creator_id
+              JOIN explorer e2 ON e2.id = cv.recipient_id
+              LEFT JOIN message m ON m.conversation_id = cv.id
+              WHERE (cv.creator_id = $1 OR cv.recipient_id = $1)
+                AND (cv.status = 'Completed' OR cv.status = 'Declined')
+                AND (
+                  LOWER(cv.card_name) LIKE $2 OR
+                  LOWER(e1.name) LIKE $2 OR
+                  LOWER(e2.name) LIKE $2
+                )
+              GROUP BY cv.id, e2.name, e1.name, e2.id, e1.id
+            )
+            SELECT
+              db_id,
+              card_name,
+              swap_explorer,
+              swap_explorer_id,
+              status,
+              creator_id,
+              recipient_id,
+              unread,
+              last_message_at
+            FROM ranked_conversations
+            WHERE 1=1
+            ${
+              hasCursor
+                ? `
+                  AND (
+                    (
+                      (CASE WHEN unread > 0 THEN 1 ELSE 0 END) < $3
+                    )
+                    OR (
+                      (CASE WHEN unread > 0 THEN 1 ELSE 0 END) = $3
+                      AND (
+                        card_name_sort > $4
+                        OR (card_name_sort = $4 AND (
+                              swap_explorer_sort > $5
+                              OR (swap_explorer_sort = $5 AND db_id > $6)
+                        ))
+                      )
+                    )
+                  )
+                `
+                : ''
+            }
+            ORDER BY
+              (unread > 0) DESC,
+              card_name_sort ASC,
+              swap_explorer_sort ASC,
+              db_id ASC
+            LIMIT $${hasCursor ? 7 : 3};
+          `,
+          values: hasCursor
+            ? [
+                explorerId,
+                searchPattern,
+                Number(cursorUnread),
+                String(cursorCard).toLowerCase(),
+                String(cursorSwap).toLowerCase(),
+                Number(cursorId),
+                safeLimit + 1,
+              ]
+            : [explorerId, searchPattern, safeLimit + 1],
+        };
+      
+        const result = await client.query(preparedQuery);
+        let rows = result.rows;
+      
+        const hasMore = rows.length > safeLimit;
+        if (hasMore) rows = rows.slice(0, safeLimit);
+      
+        const last = rows[rows.length - 1];
+        const nextCursor =
+          hasMore && last
+            ? {
+                cursor_unread: last.unread > 0 ? 1 : 0,
+                cursor_card: String(last.card_name).toLowerCase(),
+                cursor_swap: String(last.swap_explorer).toLowerCase(),
+                cursor_id: last.db_id,
+              }
+            : null;
+      
+        return { conversations: rows, hasMore, nextCursor };
+    },      
     async editConversationStatus(conversationId, status) {
         //console.log("editConversationStatus DTMP")
 

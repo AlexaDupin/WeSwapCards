@@ -131,19 +131,84 @@ const chatController = {
     },
     async getPastConversations(req, res) {
         const explorerId = req.params.explorerId;
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 40;
-        const search = req.query.search || '';
-        // console.log('CHAT CTRL', explorerId, search);
-
-            try {
-                const result = await datamapper.getPastConversationsOfExplorer(explorerId, page, limit, search);
-                // console.log("CTRL CHAT result", result.pagination);
-                res.status(200).json(result);
-            } catch (error) {
-                console.error("Error while retrieving conversations:", error);
-                return res.status(500).send({ message: 'An error occurred while retrieving conversations.', error: error.message });            
+      
+        // Shared
+        const limit = parseInt(req.query.limit, 10) || 40;
+        const search = req.query.search || "";
+      
+        // Web (existing)
+        const page = parseInt(req.query.page, 10) || 1;
+      
+        // Mode switch (recommended)
+        const mode = req.query.mode; // 'cursor' for RN
+      
+        // RN cursor params (optional; present on "load more")
+        const cursorUnreadRaw = req.query.cursor_unread;
+        const cursorCardRaw = req.query.cursor_card;
+        const cursorSwapRaw = req.query.cursor_swap;
+        const cursorIdRaw = req.query.cursor_id;
+      
+        const hasCursorParams =
+          cursorUnreadRaw !== undefined &&
+          cursorCardRaw !== undefined &&
+          cursorSwapRaw !== undefined &&
+          cursorIdRaw !== undefined;
+      
+        const isCursorMode = mode === "cursor" || hasCursorParams;
+      
+        try {
+          // RN cursor mode (first load can omit cursor params)
+          if (isCursorMode) {
+            let cursorUnread = null;
+            let cursorCard = null;
+            let cursorSwap = null;
+            let cursorId = null;
+      
+            if (hasCursorParams) {
+              cursorUnread = Number(cursorUnreadRaw); // expect 0 or 1
+              cursorCard = String(cursorCardRaw);
+              cursorSwap = String(cursorSwapRaw);
+              cursorId = Number(cursorIdRaw);
+      
+              // basic validation
+              if (
+                (cursorUnread !== 0 && cursorUnread !== 1) ||
+                !Number.isFinite(cursorId)
+              ) {
+                return res.status(400).send({ message: "Invalid cursor parameters." });
+              }
             }
+      
+            const result =
+              await datamapper.getPastConversationsOfExplorerCursorWebOrder(
+                explorerId,
+                limit,        // chunk size (RN)
+                search,
+                cursorUnread,
+                cursorCard,
+                cursorSwap,
+                cursorId
+              );
+      
+            return res.status(200).json(result);
+          }
+      
+          // Web paged mode (unchanged)
+          const result = await datamapper.getPastConversationsOfExplorer(
+            explorerId,
+            page,
+            limit,
+            search
+          );
+      
+          return res.status(200).json(result);
+        } catch (error) {
+          console.error("Error while retrieving conversations:", error);
+          return res.status(500).send({
+            message: "An error occurred while retrieving conversations.",
+            error: error.message,
+          });
+        }
     },
     async editConversationStatus(req, res) {
         const conversationId = req.params.conversationId;
