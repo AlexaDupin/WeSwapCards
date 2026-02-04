@@ -78,7 +78,8 @@ router
 
 router
     .route('/conversation/:explorerId')
-    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.getCurrentConversations))
+    // .get(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.getCurrentConversations))
+    .get(controllerHandler(chatController.getCurrentConversations))
 
 router
     .route('/conversation/unread/:explorerId')
