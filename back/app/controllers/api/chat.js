@@ -78,15 +78,21 @@ const chatController = {
     },
     async getAllMessagesInConversation(req, res) {
         const conversationId = req.params.conversationId;
-        // console.log('CHAT CTRL convoId', conversationId);
-
-            try {
-                const allMessages = await datamapper.getAllMessagesInAChat(conversationId);
-                res.status(200).json({ allMessages });
-            } catch (error) {
-                console.error("Error while retrieving messages:", error);
-                return res.status(500).send({ message: 'An error occurred while retrieving messages.', error: error.message });            
-            }
+      
+        try {
+          const [allMessages, conversationStatus] = await Promise.all([
+            datamapper.getAllMessagesInAChat(conversationId),
+            datamapper.getConversationStatus(conversationId),
+          ]);
+      
+          res.status(200).json({ allMessages, conversationStatus });
+        } catch (error) {
+          console.error("Error while retrieving messages:", error);
+          return res.status(500).send({
+            message: 'An error occurred while retrieving messages.',
+            error: error.message,
+          });
+        }
     },
     async setMessagesToRead(req, res) {
         const conversationId = req.params.conversationId;

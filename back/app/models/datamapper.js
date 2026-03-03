@@ -438,6 +438,14 @@ module.exports = {
         // console.log(result.rows);
         return result.rows;
     },
+    async getConversationStatus(conversationId) {
+        const preparedQuery = {
+          text: `SELECT status FROM "conversation" WHERE id = $1`,
+          values: [conversationId],
+        };
+        const result = await client.query(preparedQuery);
+        return result.rows[0]?.status ?? null;
+    },
     async updateMessageStatus(conversationId, explorerId) {
         const preparedQuery = {
             text: `
