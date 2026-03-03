@@ -86,8 +86,7 @@ router
 
 router
     .route('/conversation/past/:explorerId')
-    // .get(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.getPastConversations))
-    .get(controllerHandler(chatController.getPastConversations))
+    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.getPastConversations))
 
 router
     .route('/conversation/:conversationId/opportunities/:creatorId/:recipientId')
