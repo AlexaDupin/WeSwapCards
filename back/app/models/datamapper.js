@@ -476,14 +476,15 @@ module.exports = {
         
         const result = await client.query(preparedQuery);
 
+        // Frequency counting: status -> unread count (from GROUP BY status)
         const counts = result.rows.reduce((acc, row) => {
-            acc[row.status] = parseInt(row.unread);
+            acc[row.status] = parseInt(row.unread, 10);
             return acc;
           }, {});
 
         return {
-          inProgress: counts['In progress'] || 0,
-          past: (counts['Completed'] || 0) + (counts['Declined'] || 0),
+          inProgress: counts['In progress'] ?? 0,
+          past: (counts['Completed'] ?? 0) + (counts['Declined'] ?? 0),
         };
     },
     async getCurrentConversationsOfExplorer(explorerId, page = 1, limit = 40, search = '') {
