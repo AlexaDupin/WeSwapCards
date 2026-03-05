@@ -464,6 +464,30 @@ module.exports = {
         }
         return 0;     
     },
+    async setConversationUnread(conversationId, explorerId) {
+        const preparedQuery = {
+          text: `
+            UPDATE message
+            SET read = false
+            WHERE id = (
+              SELECT id
+              FROM message
+              WHERE conversation_id = $1
+                AND recipient_id = $2
+              ORDER BY timestamp DESC
+              LIMIT 1
+            )
+            RETURNING id;
+          `,
+          values: [conversationId, explorerId],
+        };
+      
+        const result = await client.query(preparedQuery);
+      
+        if (result.rowCount > 0) return true;
+      
+        return false;
+    },
     async getUnreadConversations(explorerId) {
         const preparedQuery = {
             text: `

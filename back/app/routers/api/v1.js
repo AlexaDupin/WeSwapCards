@@ -77,6 +77,10 @@ router
     .put(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.setMessagesToRead))
 
 router
+    .route('/conversation/:conversationId/:explorerId/unread')
+    .put(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.setConversationToUnread));
+
+router
     .route('/conversation/:explorerId')
     .get(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.getCurrentConversations))
 

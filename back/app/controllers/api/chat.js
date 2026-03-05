@@ -108,6 +108,21 @@ const chatController = {
                 return res.status(500).send({ message: 'An error occurred while retrieving messages.', error: error.message });            
             }
     },
+    async setConversationToUnread(req, res) {
+        const conversationId = req.params.conversationId;
+        const explorerId = req.params.explorerId;
+      
+        try {
+          const unread = await datamapper.setConversationUnread(conversationId, explorerId);
+          res.status(200).json({ unread });
+        } catch (error) {
+          console.error("Error while marking conversation unread:", error);
+          return res.status(500).send({
+            message: 'An error occurred while marking conversation unread.',
+            error: error.message,
+          });
+        }
+    },
     async getUnreadConversations(req, res) {
         const explorerId = req.params.explorerId;
 
