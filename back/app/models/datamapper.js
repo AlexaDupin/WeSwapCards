@@ -713,19 +713,13 @@ module.exports = {
         explorerId,
         limit = 50,
         search = '',
-        cursorUnread = null, // 0 or 1
-        cursorCard = null,   // string
-        cursorSwap = null,   // string
-        cursorId = null      // number
+        cursorLastMessageAt = null, // string (timestamp)
+        cursorId = null,            // number
       ) {
         const safeLimit = Math.min(parseInt(limit, 10) || 50, 100);
         const searchPattern = `%${search.toLowerCase()}%`;
       
-        const hasCursor =
-          cursorUnread !== null &&
-          cursorCard !== null &&
-          cursorSwap !== null &&
-          cursorId !== null;
+        const hasCursor = cursorLastMessageAt !== null && cursorId !== null;
       
         const preparedQuery = {
           text: `
@@ -782,37 +776,23 @@ module.exports = {
               hasCursor
                 ? `
                   AND (
-                    (
-                      (CASE WHEN unread > 0 THEN 1 ELSE 0 END) < $3
-                    )
-                    OR (
-                      (CASE WHEN unread > 0 THEN 1 ELSE 0 END) = $3
-                      AND (
-                        card_name_sort > $4
-                        OR (card_name_sort = $4 AND (
-                              swap_explorer_sort > $5
-                              OR (swap_explorer_sort = $5 AND db_id > $6)
-                        ))
-                      )
-                    )
+                    last_message_at < $3
+                    OR (last_message_at = $3 AND db_id < $4)
+                    OR (last_message_at IS NULL AND $3 IS NOT NULL)
                   )
                 `
                 : ''
             }
             ORDER BY
-              (unread > 0) DESC,
-              card_name_sort ASC,
-              swap_explorer_sort ASC,
-              db_id ASC
-            LIMIT $${hasCursor ? 7 : 3};
+              last_message_at DESC NULLS LAST,
+              db_id DESC
+            LIMIT $${hasCursor ? 6 : 3};
           `,
           values: hasCursor
             ? [
                 explorerId,
                 searchPattern,
-                Number(cursorUnread),
-                String(cursorCard).toLowerCase(),
-                String(cursorSwap).toLowerCase(),
+                cursorLastMessageAt,
                 Number(cursorId),
                 safeLimit + 1,
               ]
@@ -829,15 +809,13 @@ module.exports = {
         const nextCursor =
           hasMore && last
             ? {
-                cursor_unread: last.unread > 0 ? 1 : 0,
-                cursor_card: String(last.card_name).toLowerCase(),
-                cursor_swap: String(last.swap_explorer).toLowerCase(),
+                cursor_last_message_at: last.last_message_at,
                 cursor_id: last.db_id,
               }
             : null;
       
         return { conversations: rows, hasMore, nextCursor };
-    },      
+    }, 
     async editConversationStatus(conversationId, status) {
         //console.log("editConversationStatus DTMP")
 
