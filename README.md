@@ -2,7 +2,9 @@
 
 A production peer-to-peer trading platform enabling WeWard users to exchange cards efficiently.
 
-Live platform serving 800+ members and 300+ monthly active users, supporting 15,000+ trades and 200,000+ messages exchanged.
+<img width="673" height="444" alt="Screenshot 2026-04-22 122424" src="https://github.com/user-attachments/assets/39d08540-aebc-44d5-ad0d-5145c8fe6000" />
+
+Live platform serving 900+ members and 300+ monthly active users, supporting 15,000+ trades and 200,000+ messages exchanged.
 
 🔗 Live: https://weswapcards.com
 
