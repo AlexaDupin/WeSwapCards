@@ -139,10 +139,11 @@ const chatController = {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 40;
         const search = req.query.search || '';
+        const sort = req.query.sort === 'name' ? 'name' : 'date';
         // console.log('CHAT CTRL', explorerId);
 
             try {
-                const result = await datamapper.getCurrentConversationsOfExplorer(explorerId, page, limit, search);
+                const result = await datamapper.getCurrentConversationsOfExplorer(explorerId, page, limit, search, sort);
                 // console.log("CTRL CHAT result", result);
                 res.status(200).json(result);
             } catch (error) {
@@ -162,55 +163,47 @@ const chatController = {
       
         // Mode switch (recommended)
         const mode = req.query.mode; // 'cursor' for RN
-      
-        // RN cursor params (optional; present on "load more")
-        const cursorUnreadRaw = req.query.cursor_unread;
-        const cursorCardRaw = req.query.cursor_card;
-        const cursorSwapRaw = req.query.cursor_swap;
+        const sort = req.query.sort === "name" ? "name" : "date";
+
+        // RN cursor params (optional; present on "load more").
+        // The primary cursor field depends on the active sort.
+        const cursorPrimaryRaw =
+          sort === "name"
+            ? req.query.cursor_card_name
+            : req.query.cursor_last_message_at;
         const cursorIdRaw = req.query.cursor_id;
-      
+
         const hasCursorParams =
-          cursorUnreadRaw !== undefined &&
-          cursorCardRaw !== undefined &&
-          cursorSwapRaw !== undefined &&
-          cursorIdRaw !== undefined;
-      
+          cursorPrimaryRaw !== undefined && cursorIdRaw !== undefined;
+
         const isCursorMode = mode === "cursor" || hasCursorParams;
-      
+
         try {
           // RN cursor mode (first load can omit cursor params)
           if (isCursorMode) {
-            let cursorUnread = null;
-            let cursorCard = null;
-            let cursorSwap = null;
+            let cursorPrimary = null;
             let cursorId = null;
-      
+
             if (hasCursorParams) {
-              cursorUnread = Number(cursorUnreadRaw); // expect 0 or 1
-              cursorCard = String(cursorCardRaw);
-              cursorSwap = String(cursorSwapRaw);
+              cursorPrimary = String(cursorPrimaryRaw);
               cursorId = Number(cursorIdRaw);
-      
+
               // basic validation
-              if (
-                (cursorUnread !== 0 && cursorUnread !== 1) ||
-                !Number.isFinite(cursorId)
-              ) {
+              if (!Number.isFinite(cursorId)) {
                 return res.status(400).send({ message: "Invalid cursor parameters." });
               }
             }
-      
+
             const result =
               await datamapper.getPastConversationsOfExplorerCursorWebOrder(
                 explorerId,
                 limit,        // chunk size (RN)
                 search,
-                cursorUnread,
-                cursorCard,
-                cursorSwap,
+                sort,
+                cursorPrimary,
                 cursorId
               );
-      
+
             return res.status(200).json(result);
           }
       

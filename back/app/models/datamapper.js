@@ -519,8 +519,17 @@ module.exports = {
           past: (counts['Completed'] ?? 0) + (counts['Declined'] ?? 0),
         };
     },
-    async getCurrentConversationsOfExplorer(explorerId, page = 1, limit = 40, search = '') {
+    async getCurrentConversationsOfExplorer(explorerId, page = 1, limit = 40, search = '', sort = 'date') {
         const searchPattern = `%${search.toLowerCase()}%`;
+
+        // Default ('date') reproduces the original ordering verbatim so the web
+        // frontend (which never sends `sort`) is unaffected.
+        const orderClause =
+            sort === 'name'
+                ? `LOWER(card_name) ASC, db_id ASC`
+                : `(unread > 0) DESC,
+                    last_message_at DESC NULLS LAST,
+                    db_id DESC`;
 
         const countQuery = {
             text: `
@@ -581,9 +590,7 @@ module.exports = {
             SELECT 
                 ROW_NUMBER() OVER (
                     ORDER BY
-                    (unread > 0) DESC,
-                    last_message_at DESC NULLS LAST,
-                    db_id DESC
+                    ${orderClause}
                 ) AS row_id,
                 db_id,
                 card_name,
@@ -595,10 +602,8 @@ module.exports = {
                 unread,
                 last_message_at
             FROM ranked_conversations
-            ORDER BY 
-                (unread > 0) DESC,
-                last_message_at DESC NULLS LAST,
-                db_id DESC
+            ORDER BY
+                ${orderClause}
             LIMIT $3 OFFSET $4;`,
             values: [explorerId, searchPattern, limit, offset],
         };
@@ -713,18 +718,43 @@ module.exports = {
         explorerId,
         limit = 50,
         search = '',
-        cursorLastMessageAt = null, // string (timestamp)
+        sort = 'date',              // 'date' | 'name'
+        cursorPrimary = null,       // 'date' -> last_message_at (timestamp string); 'name' -> card_name_sort (string)
         cursorId = null,            // number
       ) {
         const safeLimit = Math.min(parseInt(limit, 10) || 50, 100);
         const searchPattern = `%${search.toLowerCase()}%`;
-      
-        const hasCursor = cursorLastMessageAt !== null && cursorId !== null;
-      
+        const byName = sort === 'name';
+
+        const hasCursor = cursorPrimary !== null && cursorId !== null;
+
+        // The keyset predicate and ORDER BY must use the same columns so the
+        // cursor walks the result set with no skips/duplicates.
+        const keysetClause = byName
+          ? `
+                  AND (
+                    card_name_sort > $3
+                    OR (card_name_sort = $3 AND db_id > $4)
+                  )
+                `
+          : `
+                  AND (
+                    last_message_at < $3
+                    OR (last_message_at = $3 AND db_id < $4)
+                    OR (last_message_at IS NULL AND $3 IS NOT NULL)
+                  )
+                `;
+
+        const orderClause = byName
+          ? `card_name_sort ASC, db_id ASC`
+          : `last_message_at DESC NULLS LAST, db_id DESC`;
+
+        const limitParam = hasCursor ? '$5' : '$3';
+
         const preparedQuery = {
           text: `
             WITH ranked_conversations AS (
-              SELECT 
+              SELECT
                 cv.id AS db_id,
                 cv.card_name,
                 LOWER(cv.card_name) AS card_name_sort,
@@ -732,12 +762,6 @@ module.exports = {
                   WHEN cv.creator_id = $1 THEN e2.name
                   WHEN cv.recipient_id = $1 THEN e1.name
                 END AS swap_explorer,
-                LOWER(
-                  CASE
-                    WHEN cv.creator_id = $1 THEN e2.name
-                    WHEN cv.recipient_id = $1 THEN e1.name
-                  END
-                ) AS swap_explorer_sort,
                 CASE
                   WHEN cv.creator_id = $1 THEN e2.id
                   WHEN cv.recipient_id = $1 THEN e1.id
@@ -763,6 +787,7 @@ module.exports = {
             SELECT
               db_id,
               card_name,
+              card_name_sort,
               swap_explorer,
               swap_explorer_id,
               status,
@@ -772,50 +797,44 @@ module.exports = {
               last_message_at
             FROM ranked_conversations
             WHERE 1=1
-            ${
-              hasCursor
-                ? `
-                  AND (
-                    last_message_at < $3
-                    OR (last_message_at = $3 AND db_id < $4)
-                    OR (last_message_at IS NULL AND $3 IS NOT NULL)
-                  )
-                `
-                : ''
-            }
+            ${hasCursor ? keysetClause : ''}
             ORDER BY
-              last_message_at DESC NULLS LAST,
-              db_id DESC
-            LIMIT $${hasCursor ? 6 : 3};
+              ${orderClause}
+            LIMIT ${limitParam};
           `,
           values: hasCursor
             ? [
                 explorerId,
                 searchPattern,
-                cursorLastMessageAt,
+                cursorPrimary,
                 Number(cursorId),
                 safeLimit + 1,
               ]
             : [explorerId, searchPattern, safeLimit + 1],
         };
-      
+
         const result = await client.query(preparedQuery);
         let rows = result.rows;
-      
+
         const hasMore = rows.length > safeLimit;
         if (hasMore) rows = rows.slice(0, safeLimit);
-      
+
         const last = rows[rows.length - 1];
         const nextCursor =
           hasMore && last
-            ? {
-                cursor_last_message_at: last.last_message_at,
-                cursor_id: last.db_id,
-              }
+            ? byName
+              ? {
+                  cursor_card_name: last.card_name_sort,
+                  cursor_id: last.db_id,
+                }
+              : {
+                  cursor_last_message_at: last.last_message_at,
+                  cursor_id: last.db_id,
+                }
             : null;
-      
+
         return { conversations: rows, hasMore, nextCursor };
-    }, 
+    },
     async editConversationStatus(conversationId, status) {
         //console.log("editConversationStatus DTMP")
 
