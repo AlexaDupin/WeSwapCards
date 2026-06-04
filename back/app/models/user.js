@@ -30,13 +30,24 @@ module.exports = {
         // console.log("ENTERING DATAMAPPER");
         const preparedQuery = {
             text: `
-            SELECT id FROM explorer 
+            SELECT id FROM explorer
             WHERE userid = $1
             `,
             values: [userUID],
         };
         const result = await client.query(preparedQuery);
         return result.rows[0];
+    },
+    async getExplorerNameById(id) {
+        const preparedQuery = {
+            text: `
+            SELECT name FROM explorer
+            WHERE id = $1
+            `,
+            values: [id],
+        };
+        const result = await client.query(preparedQuery);
+        return result.rows[0]?.name ?? null;
     },
     async deleteExplorer(userUID) {
         // console.log('DATAMAPPER', userUID, username);

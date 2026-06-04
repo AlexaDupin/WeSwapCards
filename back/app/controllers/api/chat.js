@@ -1,5 +1,6 @@
 const datamapper = require("../../models/datamapper");
 const { getOpportunities } = require("./opportunities");
+const { sendNewMessageNotification } = require("../../services/pushNotificationService");
 // const validator = require('validator');
 // const { body, validationResult } = require('express-validator');
 
@@ -68,8 +69,24 @@ const chatController = {
                 conversationId: conversationId,
             });
             // console.log("result", result);
-              
-            res.status(201).json(result);             
+
+            // Respond to the client first so the message-send path (web + mobile)
+            // is never delayed or affected by push delivery.
+            res.status(201).json(result);
+
+            // Fire-and-forget: notify the recipient's registered devices. Fully
+            // isolated (the service never throws and resolves the sender name
+            // only if the recipient actually has active tokens), and it runs
+            // after the response is already sent — zero impact on the request.
+            sendNewMessageNotification({
+                recipientId,
+                senderId,
+                conversationId,
+            }).catch((err) =>
+                console.error('[push] new-message notification failed:', err?.message || err),
+            );
+
+            return;
 
         } catch (error) {
             console.error('Error while sending message:', error);

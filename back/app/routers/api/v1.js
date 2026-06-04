@@ -9,6 +9,7 @@ const opportunitiesController = require('../../controllers/api/opportunities');
 const chatController = require('../../controllers/api/chat');
 const apiController = require('../../controllers/api/index');
 const cardController = require('../../controllers/api/cards');
+const pushTokenController = require('../../controllers/api/pushToken');
 
 const controllerHandler = require('../../helpers/controllerHandler');
 
@@ -108,6 +109,13 @@ router
 router
     .route('/exploreractivity/:explorerId')
     .post(requireAuth(), checkExplorerAuthorization, controllerHandler(userController.updateLastActive))
+
+// Device push tokens. The explorer is derived from the Clerk session inside the
+// controller (no :explorerId in the path), so no checkExplorerAuthorization here.
+router
+    .route('/push-tokens')
+    .post(requireAuth(), controllerHandler(pushTokenController.registerPushToken))
+    .delete(requireAuth(), controllerHandler(pushTokenController.deletePushToken))
 
 router
     .route('/cards')
