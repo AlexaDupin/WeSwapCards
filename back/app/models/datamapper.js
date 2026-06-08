@@ -726,30 +726,68 @@ module.exports = {
         const searchPattern = `%${search.toLowerCase()}%`;
         const byName = sort === 'name';
 
-        const hasCursor = cursorPrimary !== null && cursorId !== null;
+        // For the date sort, last_message_at can be NULL (a past conversation
+        // with no messages) and sorts NULLS LAST. When the page boundary lands
+        // on such a row its cursor primary comes back null/blank. Treat that as
+        // "page through the null-timestamp tail by id" rather than binding "" as
+        // a timestamp, which Postgres rejects (-> 500).
+        const numericCursorId = cursorId === null ? null : Number(cursorId);
+        const hasCursorId =
+          numericCursorId !== null && Number.isFinite(numericCursorId);
+        const primary = cursorPrimary === '' ? null : cursorPrimary;
+        const hasCursor = byName ? hasCursorId && primary !== null : hasCursorId;
 
         // The keyset predicate and ORDER BY must use the same columns so the
-        // cursor walks the result set with no skips/duplicates.
-        const keysetClause = byName
-          ? `
+        // cursor walks the result set with no skips/duplicates. Params are built
+        // next to the clause so their positions always line up.
+        let keysetClause = '';
+        let values;
+        if (!hasCursor) {
+          values = [explorerId, searchPattern, safeLimit + 1];
+        } else if (byName) {
+          keysetClause = `
                   AND (
                     card_name_sort > $3
                     OR (card_name_sort = $3 AND db_id > $4)
                   )
-                `
-          : `
+                `;
+          values = [
+            explorerId,
+            searchPattern,
+            primary,
+            numericCursorId,
+            safeLimit + 1,
+          ];
+        } else if (primary !== null) {
+          // date sort, non-null timestamp boundary (null rows sort after, so include them)
+          keysetClause = `
                   AND (
                     last_message_at < $3
                     OR (last_message_at = $3 AND db_id < $4)
-                    OR (last_message_at IS NULL AND $3 IS NOT NULL)
+                    OR last_message_at IS NULL
                   )
                 `;
+          values = [
+            explorerId,
+            searchPattern,
+            primary,
+            numericCursorId,
+            safeLimit + 1,
+          ];
+        } else {
+          // date sort, null-timestamp boundary: only the remaining null rows,
+          // ordered by db_id DESC.
+          keysetClause = `
+                  AND (last_message_at IS NULL AND db_id < $3)
+                `;
+          values = [explorerId, searchPattern, numericCursorId, safeLimit + 1];
+        }
 
         const orderClause = byName
           ? `card_name_sort ASC, db_id ASC`
           : `last_message_at DESC NULLS LAST, db_id DESC`;
 
-        const limitParam = hasCursor ? '$5' : '$3';
+        const limitParam = `$${values.length}`;
 
         const preparedQuery = {
           text: `
@@ -797,20 +835,12 @@ module.exports = {
               last_message_at
             FROM ranked_conversations
             WHERE 1=1
-            ${hasCursor ? keysetClause : ''}
+            ${keysetClause}
             ORDER BY
               ${orderClause}
             LIMIT ${limitParam};
           `,
-          values: hasCursor
-            ? [
-                explorerId,
-                searchPattern,
-                cursorPrimary,
-                Number(cursorId),
-                safeLimit + 1,
-              ]
-            : [explorerId, searchPattern, safeLimit + 1],
+          values,
         };
 
         const result = await client.query(preparedQuery);
