@@ -117,6 +117,12 @@ router
     .post(requireAuth(), controllerHandler(pushTokenController.registerPushToken))
     .delete(requireAuth(), controllerHandler(pushTokenController.deletePushToken))
 
+// Account deletion. Explorer is derived from the Clerk session (no path param),
+// so a user can only ever delete their own account.
+router
+    .route('/account')
+    .delete(requireAuth(), controllerHandler(userController.deleteAccount))
+
 router
     .route('/cards')
     .get(controllerHandler(cardController.getAllCards))   

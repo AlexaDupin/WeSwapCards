@@ -93,18 +93,21 @@ app.post('/api/webhooks',
         if (eventType === 'user.deleted') {
           console.log('userId:', evt.data.id)
           try {
-              const response = await datamapper.deleteExplorer(evt.data.id);
-              if (response === 1) {
-                  console.log("Deleted user from db:", evt.data.id);
-                  return res.status(200).json({ message: 'User deleted from db'});
-              } else {
-                  console.log("Failed to delete user from db:", evt.data.id);
-                  return res.status(404).json({ message: 'User not found'});
-              }
+              // deleteExplorer cascades to the user's cards, push tokens,
+              // conversations, and messages. Idempotent: rowCount 0 means the
+              // explorer is already gone (e.g. the in-app DELETE /account path
+              // purged it first), which is a success, not an error.
+              const rowCount = await datamapper.deleteExplorer(evt.data.id);
+              console.log(
+                rowCount === 1
+                  ? `Deleted user from db: ${evt.data.id}`
+                  : `User already absent from db (no-op): ${evt.data.id}`,
+              );
+              return res.status(200).json({ message: 'User deleted from db' });
           } catch (error) {
             console.error('Error deleting user:', error);
-            res.status(500).json({ error: 'Error while deleting user: ' + error.message });
-          }          
+            return res.status(500).json({ error: 'Error while deleting user: ' + error.message });
+          }
         }
 
         return res.status(200).json({ ok: true });
