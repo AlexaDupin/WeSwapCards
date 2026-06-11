@@ -24,15 +24,18 @@ const userController  = {
    if (!userUID || !sanitizedUsername) {
      return res.status(400).json({ error: 'UserUID and username are required' });
    }
-   // Sanitize username to remove any characters that are not alphanumeric or underscores
+   // Sanitize username to remove any characters that are not alphanumeric,
+   // underscores, or full stops. Full stops are allowed so usernames can match
+   // external ones (e.g. WeWard) exactly. Keep this character set in sync with
+   // the mobile USERNAME_PATTERN in app/(auth)/register-user.tsx.
    const sanitizeUsername = (username) => {
-     return username.replace(/[^a-zA-Z0-9_]/g, '');
+     return username.replace(/[^a-zA-Z0-9_.]/g, '');
    };
    sanitizedUsernameBack = sanitizeUsername(sanitizedUsername);
 
-   const usernameRegex = /^[a-zA-Z0-9_]{2,20}$/;
+   const usernameRegex = /^[a-zA-Z0-9_.]{2,20}$/;
    if (!usernameRegex.test(sanitizedUsernameBack)) {
-     return res.status(400).json({ error: 'Username format is invalid. It must be 2-20 characters and contain only letters, numbers, and underscores.' });
+     return res.status(400).json({ error: 'Username format is invalid. It must be 2-20 characters and contain only letters, numbers, underscores, and full stops.' });
    }
    
    try {
