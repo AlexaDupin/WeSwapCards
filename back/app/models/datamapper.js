@@ -391,7 +391,24 @@ module.exports = {
         const preparedQuery = {
             text: `
             SELECT creator_id, recipient_id FROM conversation
-            WHERE id = $1 
+            WHERE id = $1
+            `,
+            values: [id]
+        };
+        const result = await client.query(preparedQuery);
+        if (result.rowCount > 0) {
+            return result.rows[0];
+        }
+        return null;
+    },
+    // Conversation header fields for enriching the new-message push payload so a
+    // notification tap can open the chat with the card name + offer context,
+    // not just the conversation id. Additive: not used by the web app.
+    async getConversationMetaById(id) {
+        const preparedQuery = {
+            text: `
+            SELECT card_name, creator_id, recipient_id FROM conversation
+            WHERE id = $1
             `,
             values: [id]
         };

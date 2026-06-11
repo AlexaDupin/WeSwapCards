@@ -1,6 +1,7 @@
 const { Expo } = require('expo-server-sdk');
 const pushTokenDatamapper = require('../models/pushToken');
 const userDatamapper = require('../models/user');
+const datamapper = require('../models/datamapper');
 
 // Single Expo client for the process. (Reads EXPO_ACCESS_TOKEN from env if set,
 // which is recommended once you enable enhanced push security in Expo.)
@@ -13,7 +14,9 @@ const expo = new Expo({ accessToken: process.env.EXPO_ACCESS_TOKEN });
  * push failure can never affect the message-send request (web or mobile).
  *
  * v1 content is intentionally minimal for privacy + store-review safety:
- * the body does NOT include the message text.
+ * the visible title/body do NOT include the message text. The hidden `data`
+ * payload carries the conversation header fields (partner, card, participant
+ * ids) so a tap can open the chat with full context.
  *
  * Token lookup happens first; if the recipient has no active devices (e.g. a
  * web-only user), it returns before any further work — so the shared message
@@ -32,15 +35,34 @@ async function sendNewMessageNotification({ recipientId, senderId, conversationI
             .filter((t) => Expo.isExpoPushToken(t));
         if (!tokens.length) return;
 
-        // Only now (we know there's someone to notify) resolve the sender name.
-        const senderName = await userDatamapper.getExplorerNameById(senderId);
+        // Only now (we know there's someone to notify) resolve the sender name
+        // and the conversation header fields.
+        const [senderName, meta] = await Promise.all([
+            userDatamapper.getExplorerNameById(senderId),
+            datamapper.getConversationMetaById(conversationId),
+        ]);
+
+        // Enrich `data` so a notification tap opens the chat with full context
+        // (partner name, card, and the ids needed to fetch the offer list),
+        // matching what the swap/dashboard entry points already pass as params.
+        // `data` is never shown on the lock screen, so this keeps the v1 privacy
+        // posture (no message text in the visible title/body) intact. From the
+        // recipient's perspective the swap partner is the message sender.
+        const data = {
+            conversationId,
+            swapExplorerId: senderId,
+            swapName: senderName || undefined,
+            cardName: meta ? meta.card_name : undefined,
+            creatorId: meta ? meta.creator_id : undefined,
+            recipientId: meta ? meta.recipient_id : undefined,
+        };
 
         const messages = tokens.map((token) => ({
             to: token,
             sound: 'default',
             title: senderName || 'New message',
             body: 'You have a new message',
-            data: { conversationId },
+            data,
         }));
 
         // Expo requires batching; chunks preserve message order so a ticket at
