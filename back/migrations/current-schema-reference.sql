@@ -35,6 +35,14 @@
 
 -- push_token: see migrations/push-token.sql (explorer_id ON DELETE CASCADE).
 
+-- user_block / user_report: see migrations/moderation.sql.
+-- user_block  — directional block rows (blocker_id, blocked_id → explorer,
+--               both ON DELETE CASCADE; UNIQUE pair; blocker <> blocked).
+-- user_report — report snapshots (reporter_id CASCADE, reported_id SET NULL,
+--               reported_name text snapshot survives account hard-delete,
+--               conversation_id SET NULL, reason CHECK whitelist, comment ≤500
+--               CHECK, status CHECK 'open'/'actioned'/'dismissed').
+
 -- Net effect for account deletion: DELETE FROM explorer WHERE id = $1 cascades to
 -- explorer_has_cards, push_token, conversation (as creator or recipient), and
 -- message (as sender, recipient, or via its conversation).

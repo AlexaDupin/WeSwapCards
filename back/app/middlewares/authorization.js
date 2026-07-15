@@ -64,6 +64,10 @@ const checkConversationAuthorization = async (req, res, next) => {
       return res.status(403).json({ message: 'You are not authorized to access this conversation' });
     }
 
+    // Expose the verified participants so downstream handlers (e.g. the block
+    // check on message send) work from trusted data instead of the request body.
+    req.conversationParticipants = conversation;
+
     // console.log("LEFT CONV AUTHORIZATION MDLW");
     // If the IDs match, proceed to the next middleware or controller
     next();

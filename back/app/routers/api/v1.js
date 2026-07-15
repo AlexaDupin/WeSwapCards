@@ -10,6 +10,7 @@ const chatController = require('../../controllers/api/chat');
 const apiController = require('../../controllers/api/index');
 const cardController = require('../../controllers/api/cards');
 const pushTokenController = require('../../controllers/api/pushToken');
+const moderationController = require('../../controllers/api/moderation');
 
 const controllerHandler = require('../../helpers/controllerHandler');
 
@@ -109,6 +110,21 @@ router
 router
     .route('/exploreractivity/:explorerId')
     .post(requireAuth(), checkExplorerAuthorization, controllerHandler(userController.updateLastActive))
+
+// Moderation: blocking + reports. :explorerId is the acting user, verified
+// against the Clerk session by checkExplorerAuthorization.
+router
+    .route('/block/:explorerId/:targetExplorerId')
+    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(moderationController.blockUser))
+    .delete(requireAuth(), checkExplorerAuthorization, controllerHandler(moderationController.unblockUser))
+
+router
+    .route('/block/:explorerId')
+    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(moderationController.getMyBlocks))
+
+router
+    .route('/report/:explorerId')
+    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(moderationController.reportUser))
 
 // Device push tokens. The explorer is derived from the Clerk session inside the
 // controller (no :explorerId in the path), so no checkExplorerAuthorization here.

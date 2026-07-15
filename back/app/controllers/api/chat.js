@@ -1,4 +1,5 @@
 const datamapper = require("../../models/datamapper");
+const moderationDatamapper = require("../../models/moderation");
 const { getOpportunities } = require("./opportunities");
 const { sendNewMessageNotification } = require("../../services/pushNotificationService");
 // const validator = require('validator');
@@ -33,6 +34,18 @@ const chatController = {
 
         //console.log('createConversation CTRL', explorerId, swapExplorerId, swapCardName, timestamp);
             try {
+                // Block check on the URL params (verified by checkExplorerAuthorization),
+                // not the body ids. A block in either direction stops new conversations;
+                // 'user_blocked' lets newer clients show a specific message while older
+                // clients fall back to their generic send error.
+                const blocked = await moderationDatamapper.isBlockedBetween(
+                    Number(req.params.explorerId),
+                    Number(req.params.swapExplorerId),
+                );
+                if (blocked) {
+                    return res.status(403).json({ code: 'user_blocked', message: 'Messaging is not available between these users.' });
+                }
+
                 const conversation = await datamapper.createConversation(swapCardName, explorerId, swapExplorerId, timestamp);
                 
                 if (!conversation) {
@@ -61,6 +74,18 @@ const chatController = {
         // console.log("conversationId", conversationId, typeof(conversationId));
         
         try {
+            // Block check on the participants attached by checkConversationAuthorization
+            // (trusted — fetched server-side), not the spoofable body ids. History
+            // endpoints are untouched: blocking only stops NEW messages.
+            const participants = req.conversationParticipants;
+            const blocked = await moderationDatamapper.isBlockedBetween(
+                participants.creator_id,
+                participants.recipient_id,
+            );
+            if (blocked) {
+                return res.status(403).json({ code: 'user_blocked', message: 'Messaging is not available between these users.' });
+            }
+
             const result = await datamapper.insertNewMessage({
                 content: content,
                 timestamp: timestamp,
