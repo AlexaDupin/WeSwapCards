@@ -1001,7 +1001,7 @@ module.exports = {
     },
     async getAllCards() {
         const preparedQuery = {
-            text: `SELECT * FROM card`,
+            text: `SELECT * FROM card ORDER BY place_id, number`,
         };
         const result = await client.query(preparedQuery);
         return result.rows;
