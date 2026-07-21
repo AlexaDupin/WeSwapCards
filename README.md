@@ -1,9 +1,12 @@
 # WeSwapCards
 
-This platform aims to facilitate cards exchanges between users of the WeWard app.  
-Users need to sign up first to access their account. Then they can log all the cards they have as well as their duplicates.  
-They can also search for the cards they need and message users who have these cards in order to find an agreement.  
-Users can keep track of all their conversations in a practical dashboard.
+A production peer-to-peer trading platform enabling WeWard users to exchange cards efficiently.
+
+<img width="673" height="444" alt="Screenshot 2026-04-22 122424" src="https://github.com/user-attachments/assets/39d08540-aebc-44d5-ad0d-5145c8fe6000" />
+
+Live platform serving 1,000+ members and 300+ monthly active users, supporting 16,000+ trades and 200,000+ messages exchanged.
+
+🔗 Live: https://weswapcards.com
 
 ## Technologies Used
 - React
