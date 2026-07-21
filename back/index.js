@@ -1,10 +1,11 @@
-if (typeof fetch !== "function") {
+// Only polyfill fetch/Request/Headers if the Node runtime doesn't
+// already provide them natively (Node 18+ does). On modern Node,
+// overriding these with node-fetch v2 breaks Clerk's JWKS verification.
+if (typeof globalThis.fetch !== 'function') {
   const fetch = require('node-fetch');  // Import node-fetch version 2.x
-  global.fetch = fetch;  // Set fetch globally
-  
-  // Polyfill global Request (used by Clerk)
+  global.fetch = fetch;        // Set fetch globally
   global.Request = fetch.Request;  // Set global Request to node-fetch's Request
-  global.Headers = fetch.Headers;     // Expose Headers globally
+  global.Headers = fetch.Headers;  // Expose Headers globally
 }
 
 if (typeof(PhusionPassenger) !== 'undefined') {
