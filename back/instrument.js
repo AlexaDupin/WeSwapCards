@@ -16,6 +16,10 @@ if (process.env.SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     environment: process.env.NODE_ENV || 'development',
+    // Keep the SDK's own verbose debug logging OFF. Without this explicit false,
+    // Sentry falls back to reading the SENTRY_DEBUG env var and would flood the
+    // logs with per-span "[Tracing] ..." lines.
+    debug: false,
     // Tracing: sample 20% of requests. @sentry/node auto-instruments Express,
     // Postgres (pg), and outgoing HTTP, so this surfaces slow endpoints/queries
     // and gives each error the request trace that led to it. Raise toward 1.0
