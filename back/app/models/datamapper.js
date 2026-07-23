@@ -586,6 +586,10 @@ module.exports = {
                         WHEN cv.creator_id = $1 THEN e2.id
                         WHEN cv.recipient_id = $1 THEN e1.id
                     END AS swap_explorer_id,
+                    CASE
+                        WHEN cv.creator_id = $1 THEN e2.userid
+                        WHEN cv.recipient_id = $1 THEN e1.userid
+                    END AS swap_explorer_userid,
                     cv.creator_id,
                     cv.recipient_id,
                     cv.status,
@@ -613,6 +617,7 @@ module.exports = {
                 card_name,
                 swap_explorer,
                 swap_explorer_id,
+                swap_explorer_userid,
                 status,
                 creator_id,
                 recipient_id,
@@ -821,6 +826,10 @@ module.exports = {
                   WHEN cv.creator_id = $1 THEN e2.id
                   WHEN cv.recipient_id = $1 THEN e1.id
                 END AS swap_explorer_id,
+                CASE
+                  WHEN cv.creator_id = $1 THEN e2.userid
+                  WHEN cv.recipient_id = $1 THEN e1.userid
+                END AS swap_explorer_userid,
                 cv.creator_id,
                 cv.recipient_id,
                 cv.status,
@@ -845,6 +854,7 @@ module.exports = {
               card_name_sort,
               swap_explorer,
               swap_explorer_id,
+              swap_explorer_userid,
               status,
               creator_id,
               recipient_id,

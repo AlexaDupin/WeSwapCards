@@ -2,6 +2,7 @@ const datamapper = require("../../models/datamapper");
 const moderationDatamapper = require("../../models/moderation");
 const { getOpportunities } = require("./opportunities");
 const { sendNewMessageNotification } = require("../../services/pushNotificationService");
+const { attachPartnerImages } = require("../../services/partnerImageService");
 // const validator = require('validator');
 // const { body, validationResult } = require('express-validator');
 
@@ -29,7 +30,12 @@ const chatController = {
     async createConversation(req, res) {
         const explorerId = req.body.creator_id;
         const swapExplorerId = req.body.recipient_id;
-        const swapCardName = req.body.card_name;
+        // Trim so a card name with stray trailing/leading whitespace (e.g. a
+        // newline) can't be stored on the conversation.
+        const swapCardName =
+            typeof req.body.card_name === 'string'
+                ? req.body.card_name.trim()
+                : req.body.card_name;
         const timestamp = req.body.timestamp;
 
         //console.log('createConversation CTRL', explorerId, swapExplorerId, swapCardName, timestamp);
@@ -187,6 +193,7 @@ const chatController = {
             try {
                 const result = await datamapper.getCurrentConversationsOfExplorer(explorerId, page, limit, search, sort);
                 // console.log("CTRL CHAT result", result);
+                result.conversations = await attachPartnerImages(result.conversations);
                 res.status(200).json(result);
             } catch (error) {
                 console.error("Error while retrieving conversations:", error);
@@ -245,6 +252,8 @@ const chatController = {
                 cursorPrimary,
                 cursorId
               );
+
+            result.conversations = await attachPartnerImages(result.conversations);
 
             return res.status(200).json(result);
           }
