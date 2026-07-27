@@ -221,15 +221,32 @@ module.exports = {
 
         return result.rows;
     },
-    async findSwapOpportunities(cardId, explorerId, page = 1, limit = 20) {
+    // options.excludeBlocked (native app only, opt-in via ?excludeBlocked=1):
+    // drop collectors involved in a block — either direction, matching how
+    // isBlockedBetween gates messaging — from the results entirely. Their rows
+    // exist only to open a chat, and that chat is guaranteed to 403, so they are
+    // dead weight for both sides. Callers that omit the flag (the web app) get
+    // the original query, ordering and totals, untouched.
+    async findSwapOpportunities(cardId, explorerId, page = 1, limit = 20, options = {}) {
+        // Constant SQL chosen by a boolean — no caller input reaches the string.
+        // Both queries alias explorer_has_cards as `ehc`, so one fragment fits both.
+        const blockedFilter = options.excludeBlocked === true
+            ? `AND NOT EXISTS (
+                    SELECT 1 FROM "user_block" ub
+                    WHERE (ub.blocker_id = $2 AND ub.blocked_id = ehc.explorer_id)
+                       OR (ub.blocker_id = ehc.explorer_id AND ub.blocked_id = $2)
+                )`
+            : '';
+
         const countQuery = {
-            text: 
+            text:
             `SELECT COUNT(*)
             FROM explorer_has_cards AS ehc
             JOIN explorer ON explorer.id = ehc.explorer_id
             WHERE ehc.card_id = $1
-            AND explorer.id != $2 
+            AND explorer.id != $2
             AND ehc.duplicate = true
+            ${blockedFilter}
             `,
             values: [cardId, explorerId],
         };
@@ -245,8 +262,9 @@ module.exports = {
                 FROM explorer_has_cards AS ehc
                 JOIN explorer ON explorer.id = ehc.explorer_id
                 WHERE ehc.card_id = $1
-                AND explorer.id != $2 
+                AND explorer.id != $2
                 AND ehc.duplicate = true
+                ${blockedFilter}
             ),
             explorer_duplicates AS (
                 SELECT ehc.card_id
