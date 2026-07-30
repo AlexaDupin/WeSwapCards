@@ -381,37 +381,46 @@ module.exports = {
         }
         return null;
     },
-    async createConversation(cardName, explorerId, swapExplorerId, timestamp) {
+    async createConversation(cardName, explorerId, swapExplorerId) {
         //console.log("CREATE CONV DTMP")
 
+        // now() = database clock. The client used to supply this value, which
+        // meant a device with a skewed clock could date a conversation wrongly.
         const preparedQuery = await client.query(
             `
             INSERT INTO "conversation"
-                (card_name, creator_id, recipient_id, timestamp) 
-            VALUES ($1, $2, $3, $4) 
+                (card_name, creator_id, recipient_id, timestamp)
+            VALUES ($1, $2, $3, now())
             RETURNING id
             `,
-            [cardName, explorerId, swapExplorerId, timestamp],
+            [cardName, explorerId, swapExplorerId],
             );
             return preparedQuery.rows[0];
     },
     async insertNewMessage(data) {
         // console.log("INSERT MESSAGE DTMP")
+        // Stamped by the database, never by the sender's device: a client whose
+        // clock is fast used to be able to store a future-dated message, which
+        // then sorted out of place in the thread and pinned the conversation to
+        // the top of the list until real time caught up.
         const preparedQuery = await client.query(
             `
         INSERT INTO "message"
         (content, timestamp, sender_id, recipient_id, conversation_id) VALUES
-        ($1, $2, $3, $4, $5) RETURNING *
+        ($1, now(), $2, $3, $4) RETURNING *
         `,
-            [data.content, data.timestamp, data.senderId, data.recipientId, data.conversationId],
+            [data.content, data.senderId, data.recipientId, data.conversationId],
         );
         return preparedQuery.rows[0];
     },
     async getAllMessagesInAChat(conversationId) {
+        // Ordered by id, not timestamp: id is GENERATED ALWAYS AS IDENTITY, so it
+        // is true send order and stays correct even for rows written before
+        // timestamps became server-side.
         const preparedQuery = {
             text: `SELECT * FROM "message"
                 WHERE conversation_id = $1
-                ORDER BY timestamp`,
+                ORDER BY id`,
             values: [conversationId],
         };
         const result = await client.query(preparedQuery);
@@ -454,7 +463,7 @@ module.exports = {
               FROM message
               WHERE conversation_id = $1
                 AND recipient_id = $2
-              ORDER BY timestamp DESC
+              ORDER BY id DESC
               LIMIT 1
             )
             RETURNING id;

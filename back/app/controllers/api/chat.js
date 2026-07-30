@@ -36,9 +36,10 @@ const chatController = {
             typeof req.body.card_name === 'string'
                 ? req.body.card_name.trim()
                 : req.body.card_name;
-        const timestamp = req.body.timestamp;
+        // req.body.timestamp is ignored: deployed web/native clients still send
+        // their own `new Date()`, but the database stamps the row itself.
 
-        //console.log('createConversation CTRL', explorerId, swapExplorerId, swapCardName, timestamp);
+        //console.log('createConversation CTRL', explorerId, swapExplorerId, swapCardName);
             try {
                 // Block check on the URL params (verified by checkExplorerAuthorization),
                 // not the body ids. A block in either direction stops new conversations;
@@ -52,7 +53,7 @@ const chatController = {
                     return res.status(403).json({ code: 'user_blocked', message: 'Messaging is not available between these users.' });
                 }
 
-                const conversation = await datamapper.createConversation(swapCardName, explorerId, swapExplorerId, timestamp);
+                const conversation = await datamapper.createConversation(swapCardName, explorerId, swapExplorerId);
                 
                 if (!conversation) {
                     res.status(400).json({message: "Could not create conversation", conversation});
@@ -67,14 +68,13 @@ const chatController = {
     },
     async insertNewMessage(req, res) {
         const content = req.body.content;
-        const timestamp = req.body.timestamp;
+        // req.body.timestamp is ignored — see createConversation above.
         const senderId = req.body.sender_id;
         const recipientId = req.body.recipient_id;
         const conversationId = req.body.conversation_id;
         // const sanitizedContent = validator.escape(content);
 
         // console.log("content", content, typeof(content));
-        // console.log("timestamp", timestamp, typeof(timestamp));
         // console.log("senderId", senderId, typeof(senderId));
         // console.log("recipientId", recipientId, typeof(recipientId));
         // console.log("conversationId", conversationId, typeof(conversationId));
@@ -94,7 +94,6 @@ const chatController = {
 
             const result = await datamapper.insertNewMessage({
                 content: content,
-                timestamp: timestamp,
                 senderId: senderId,
                 recipientId: recipientId,
                 conversationId: conversationId,

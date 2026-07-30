@@ -85,28 +85,52 @@ const useChatLogic = () => {
 
         const allFetchedMessages = response.data.allMessages || [];
 
+        const startOfDay = (date) =>
+          new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
         const allMessagesFormattedDate = allFetchedMessages.map((message) => {
           const messageDate = new Date(message.timestamp);
           const today = new Date();
-          const daysDifference = (today - messageDate) / (1000 * 3600 * 24); // difference in days
-        
-          // Define a formatting function for messages older than 7 days
-          const formattedDate = daysDifference > 7
-            ? messageDate.toLocaleString(undefined, { 
-                weekday: 'long', 
-                day: '2-digit', 
-                month: 'long',
-                hour: '2-digit', 
-                minute: '2-digit',
-              }) // For older than 7 days: Weekday, Day, Month, Hour, Minute
-            : messageDate.toLocaleString(undefined, { 
-                weekday: 'long', 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              }); // For messages within 7 days: Weekday, Hour, Minute
-        
+
+          // Whole calendar days between the two dates, so "yesterday at 23:50"
+          // never counts as today. Negative for a message dated in the future.
+          const daysDifference =
+            (startOfDay(today) - startOfDay(messageDate)) / (1000 * 3600 * 24);
+
+          let formattedDate;
+          if (Number.isNaN(messageDate.getTime())) {
+            formattedDate = '';
+          } else if (daysDifference === 0) {
+            // Today: the weekday adds nothing, just show the time
+            formattedDate = messageDate.toLocaleString(undefined, {
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+          } else if (daysDifference > 0 && daysDifference <= 7) {
+            // Within the last week: Weekday, Hour, Minute
+            formattedDate = messageDate.toLocaleString(undefined, {
+              weekday: 'long',
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+          } else {
+            // Older than a week — or dated in the future, which a row written by
+            // a skewed client clock still can be. Always spell out the date, so
+            // an impossible timestamp can never read as an ordinary weekday.
+            formattedDate = messageDate.toLocaleString(undefined, {
+              weekday: 'long',
+              day: '2-digit',
+              month: 'long',
+              ...(messageDate.getFullYear() === today.getFullYear()
+                ? {}
+                : { year: 'numeric' }),
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+          }
+
           return {
-            ...message, 
+            ...message,
             timestamp: formattedDate,
             sender_id: String(message.sender_id ?? message.senderId ?? ""),
             recipient_id: String(message.recipient_id ?? message.recipientId ?? ""),
@@ -167,6 +191,8 @@ const useChatLogic = () => {
       const input = {
         id: messages.length + 1,
         content: sanitizedMessage,
+        // Ignored by the API (the database stamps the row); still sent so this
+        // build keeps working against a backend deployed before that change.
         timestamp: new Date(),
         sender_id: Number(explorerId),
         recipient_id: Number(swapExplorerId),
@@ -256,6 +282,7 @@ const useChatLogic = () => {
           card_name: swapCardName,
           creator_id: explorerId,
           recipient_id: swapExplorerId,
+          // Ignored by the API — see sendMessage.
           timestamp: new Date(),
         }
 
