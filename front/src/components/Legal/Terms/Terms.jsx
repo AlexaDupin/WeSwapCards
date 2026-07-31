@@ -11,7 +11,7 @@ function Terms() {
     <div className="legal">
       <section>
         <h1 className="page-title">Terms and Conditions</h1>
-        <p><strong>Effective Date:</strong> September 3, 2025</p>
+        <p><strong>Effective Date:</strong> July 31, 2026</p>
         <p>Welcome to WeSwapCards ("we," "us," or "our"). By using our website www.weswapcards.com (the "Site"), you agree to comply with and be bound by these Terms and Conditions ("Terms"). If you do not agree to these Terms, please do not use the Site. These Terms apply to all users of the Site, including visitors, registered users, and those who access or use the Site's services.</p>
       </section>
 
@@ -21,6 +21,9 @@ function Terms() {
         <ul className="p-2">
           <li>
             <p><strong>Account Security:</strong> You are responsible for maintaining the confidentiality of your account information, including your username and password. You agree to immediately notify us of any unauthorized use of your account.</p>
+          </li>
+          <li>
+            <p><strong>Account Deletion:</strong> You can delete your account at any time. See <a href="/delete-account">Delete Your Account</a> for the steps and for what happens to your data.</p>
           </li>
         </ul>
       </section>
@@ -46,7 +49,15 @@ function Terms() {
       </section>
 
       <section>
-        <h2 className="legal-title">3. Card Swaps and Transactions</h2>
+        <h2 className="legal-title">3. Objectionable Content and User Safety</h2>
+        <p>We have <strong>no tolerance for objectionable content or for abusive users</strong>. The conduct prohibited above applies to every message sent through the Site, and we act on violations brought to our attention.</p>
+        <p>Conversations on the Site are private and one-to-one: there is no public feed, and nothing you send is visible to other users.</p>
+        <p>You can report a conversation or block a user from the actions menu at the top of any conversation in the mobile app. Blocking stops that user from sending you further messages or starting a new conversation with you. You can also write to us at contact@weswapcards.com.</p>
+        <p>We review reports promptly. Depending on what we find, we may remove content, restrict access to features, suspend an account, or terminate it permanently, as described in the Termination section below.</p>
+      </section>
+
+      <section>
+        <h2 className="legal-title">4. Card Swaps and Transactions</h2>
         <p>The Site provides a platform for users to identify others who have the cards they need and to initiate communication regarding potential swaps. However, the actual card exchange takes place on a third-party platform (which users will return to independently) and is not facilitated by our website.</p>
         <ul className="p-0">
           <li>
@@ -59,14 +70,14 @@ function Terms() {
       </section>
 
       <section>
-        <h2 className="legal-title">4. Copyright Notice</h2>
+        <h2 className="legal-title">5. Copyright Notice</h2>
         <p>All content on this website, including but not limited to text, images, graphics, logos, and software, is the property of WeSwapCards and is protected by U.S. and international copyright laws.</p>
         <p>© 2025 WeSwapCards. All rights reserved.</p>
         <p>You may not copy, reproduce, distribute, or otherwise use any content from the website without the express written permission of WeSwapCards, except for personal, non-commercial use.</p>
       </section>
 
       <section>
-        <h2 className="legal-title">5. Disclaimer</h2>
+        <h2 className="legal-title">6. Disclaimer</h2>
         <ul className="p-0">
           <li>
             <p><strong>No Liability for User Interactions:</strong> WeSwapCards provides a platform for users to connect and discuss card swaps but is not responsible for the outcome of those swaps. We do not guarantee that users will fulfill their swap agreements, and we are not liable for any issues arising from such interactions, including disputes over card condition, delivery, or compliance with swap terms.</p>
@@ -84,12 +95,12 @@ function Terms() {
       </section>
 
       <section>
-        <h2 className="legal-title">6. No Affiliation with Third-Party Platform</h2>
+        <h2 className="legal-title">7. No Affiliation with Third-Party Platform</h2>
         <p>Our platform is not affiliated with, endorsed by, or in any way connected to WeWard, which is the platform used for the actual card swap process. We merely provide users with the ability to search for card swap opportunities and facilitate communication between users. The swap itself takes place on WeWard, and we do not control or assume any responsibility for the transactions or agreements made there.</p>
       </section>
 
       <section>
-        <h2 className="legal-title">7. Limitation of Liability</h2>
+        <h2 className="legal-title">8. Limitation of Liability</h2>
         <ul className="p-0">
           <li>
             <p><strong>No Liability for User Interactions or Transactions:</strong> We are not responsible for any harm, loss, or damage arising from interactions between users or from the card swap transactions that take place on the third-party platform. Any issues, disputes, or non-compliance related to card exchanges are the sole responsibility of the users involved.</p>
@@ -101,22 +112,22 @@ function Terms() {
       </section>
 
       <section>
-        <h2 className="legal-title">8. Termination</h2>
+        <h2 className="legal-title">9. Termination</h2>
         <p>We reserve the right to suspend or terminate your account at our discretion if we believe you have violated these Terms or engaged in any unlawful or inappropriate behavior, including but not limited to fraudulent activity, failure to send agreed cards, or other wrongful conduct related to swaps. Upon termination, your right to access and use the Site will be immediately revoked.</p>
       </section>
 
       <section>
-        <h2 className="legal-title">9. Privacy and Data Protection</h2>
+        <h2 className="legal-title">10. Privacy and Data Protection</h2>
         <p>Your use of the Site is also governed by our <a href="/privacy">Privacy Policy</a>, which explains how we collect, use, and protect your personal data. By using the Site, you consent to the collection and use of your data as outlined in the Privacy Policy.</p>
       </section>
 
       <section>
-        <h2 className="legal-title">10. Changes to the Terms</h2>
+        <h2 className="legal-title">11. Changes to the Terms</h2>
         <p>We reserve the right to update, modify, or change these Terms at any time. When we do, we will post the updated version on this page and update the "Effective Date" above. We encourage you to review these Terms periodically to stay informed of any changes. Your continued use of the Site after any changes to these Terms will constitute your acceptance of those changes.</p>
       </section>
 
       <section>
-        <h2 className="legal-title">11. Contact Information</h2>
+        <h2 className="legal-title">12. Contact Information</h2>
         <p>If you have any questions or concerns about these Terms, please contact us at:</p>
         <p>contact@weswapcards.com</p>
 

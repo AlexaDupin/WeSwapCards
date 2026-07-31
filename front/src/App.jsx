@@ -20,6 +20,7 @@ import PrivacyPolicy from './components/Legal/PrivacyPolicy/PrivacyPolicy';
 import Terms from './components/Legal/Terms/Terms';
 import CookiePolicy from './components/Legal/CookiePolicy/CookiePolicy';
 import Contact from './components/Legal/Contact/Contact';
+import DeleteAccount from './components/Legal/DeleteAccount/DeleteAccount';
 import Legal from './components/Legal/Legal';
 import Cards from './components/Cards/ui/Cards';
 
@@ -62,6 +63,7 @@ function App() {
         <Route path="/cookies" element={<CookiePolicy />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/legal" element={<Legal />} />
+        <Route path="/delete-account" element={<DeleteAccount />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
