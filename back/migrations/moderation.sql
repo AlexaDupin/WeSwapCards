@@ -1,6 +1,10 @@
 -- Moderation: user blocking + user reports (App Store / Play Store UGC compliance)
--- Run manually (Supabase SQL editor or psql). Additive only — no existing
--- table/column is altered, so the web app is unaffected.
+-- Run manually (Supabase SQL editor, psql, or phpPgAdmin). Additive only — no
+-- existing table/column is altered, so the web app is unaffected.
+--
+-- `serial` rather than `GENERATED ALWAYS AS IDENTITY`: production runs
+-- PostgreSQL 9.6, which predates identity columns (PG 10+). `serial` is valid on
+-- both 9.6 and the PG 15 test database, so one file works everywhere.
 --
 -- user_block: one directional row per block (blocker → blocked). Enforcement is
 -- symmetric (neither side can message the other while a row exists in either
@@ -26,7 +30,7 @@
 BEGIN;
 
 CREATE TABLE IF NOT EXISTS "user_block" (
-    "id"         int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    "id"         serial PRIMARY KEY,
     "blocker_id" int NOT NULL REFERENCES "explorer"("id") ON DELETE CASCADE,
     "blocked_id" int NOT NULL REFERENCES "explorer"("id") ON DELETE CASCADE,
     "created_at" timestamptz NOT NULL DEFAULT now(),
@@ -40,7 +44,7 @@ CREATE INDEX IF NOT EXISTS "user_block_blocked_idx"
     ON "user_block" ("blocked_id");
 
 CREATE TABLE IF NOT EXISTS "user_report" (
-    "id"              int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    "id"              serial PRIMARY KEY,
     "reporter_id"     int NOT NULL REFERENCES "explorer"("id") ON DELETE CASCADE,
     "reported_id"     int REFERENCES "explorer"("id") ON DELETE SET NULL,
     "reported_name"   text NOT NULL,

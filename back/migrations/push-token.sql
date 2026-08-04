@@ -1,6 +1,10 @@
 -- Push notifications: device push-token storage
--- Run manually (Supabase SQL editor or psql). Additive only — no existing
--- table/column is altered, so the web app is unaffected.
+-- Run manually (Supabase SQL editor, psql, or phpPgAdmin). Additive only — no
+-- existing table/column is altered, so the web app is unaffected.
+--
+-- `serial` rather than `GENERATED ALWAYS AS IDENTITY`: production runs
+-- PostgreSQL 9.6, which predates identity columns (PG 10+). `serial` is valid on
+-- both 9.6 and the PG 15 test database, so one file works everywhere.
 --
 -- One row per device token. A device that reinstalls/rotates re-registers the
 -- same `token` (ON CONFLICT upsert). Multiple active rows per explorer = multiple
@@ -10,7 +14,7 @@
 BEGIN;
 
 CREATE TABLE IF NOT EXISTS "push_token" (
-    "id"          int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    "id"          serial PRIMARY KEY,
     "explorer_id" int  NOT NULL REFERENCES "explorer"("id") ON DELETE CASCADE,
     "token"       text NOT NULL UNIQUE,
     "platform"    text NOT NULL,
