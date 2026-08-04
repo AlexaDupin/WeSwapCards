@@ -5,6 +5,7 @@ import { useAuth } from '@clerk/clerk-react';
 import { useStateContext } from '../../../contexts/StateContext';
 import { useDispatchContext } from '../../../contexts/DispatchContext';
 import DOMPurify from 'dompurify';
+import { getBlockedSendMessage, getErrorStatus, shouldRetryRequest } from '../data/sendErrorMessages';
 
 const useChatLogic = () => {
     const state = useStateContext();
@@ -238,11 +239,19 @@ const useChatLogic = () => {
 
         } catch (error) {
           // console.error(`Attempt ${attempt} to send failed:`, error);
-          if (attempt < maxRetries) {
+          if (attempt < maxRetries && shouldRetryRequest(error)) {
             // console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
             await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
           } else {
-            if (error.status === 400) {
+            const blockedMessage = getBlockedSendMessage(error);
+            if (blockedMessage) {
+              setHiddenAlert(false);
+              setAlertMessage(blockedMessage);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              setIsSending(false);
+              return;
+            }
+            if (getErrorStatus(error) === 400) {
               setHiddenAlert(false);
               setAlertMessage("There was an error with the format of your message. Review it and retry.");
               setIsSending(false);
@@ -318,12 +327,14 @@ const useChatLogic = () => {
             
           } catch (error) {
             // console.error(`Attempt ${attempt} to create conv failed:`, error);
-            if (attempt < maxRetries) {
+            if (attempt < maxRetries && shouldRetryRequest(error)) {
               // console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
               await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
             } else {
             setHiddenAlert(false);
-            setAlertMessage("There was an error while creating the conversation");
+            setAlertMessage(
+              getBlockedSendMessage(error) ?? "There was an error while creating the conversation"
+            );
             window.scrollTo({ top: 0, behavior: 'smooth' });
             // console.log(error);
             setIsSending(false);

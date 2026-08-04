@@ -107,8 +107,11 @@ const useSwapLogic = () => {
       handlePageChange,
       refresh
     } = usePagination(
-      state.selectedCardId ? `/opportunities/${explorerId}/card/${state.selectedCardId}` : '', 
-      20
+      state.selectedCardId ? `/opportunities/${explorerId}/card/${state.selectedCardId}` : '',
+      20,
+      // Drop collectors involved in a block (either direction) from the results.
+      // Messaging them is refused server-side, so their rows are dead ends.
+      { extraParams: '&excludeBlocked=1' }
       );
 
     const fetchSwapOpportunities = async (cardId) => {
