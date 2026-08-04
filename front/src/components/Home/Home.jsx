@@ -16,8 +16,8 @@ import Logo from '../../images/favImage.png';
 
 import './homeStyles.scss';
 
-const VINTAGE_COLLECTOR_IDS = [47, 39, 71, 35, 42, 60];
-// const VINTAGE_COLLECTOR_IDS = [1, 2, 3, 4, 5];
+// Latest first. The carousel renders these in the order listed here.
+const VINTAGE_COLLECTOR_IDS = [98, 92, 85, 77, 71, 60, 47, 42, 39, 35];
 
 function Home() {
     const navigate = useNavigate();
