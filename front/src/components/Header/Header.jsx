@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import useStickyVars from "../../hooks/useStickyVars";
+import logoMark from "../../images/logo-mark.png";
 import "./headerStyles.scss";
 
 function Header() {
@@ -41,6 +42,7 @@ function Header() {
           aria-label="WeSwapCards home"
           style={{ textDecoration: "none" }}
         >
+          <img src={logoMark} alt="" className="header-logo" />
           <h1 className="header-title m-0">WeSwapCards</h1>
         </NavLink>
 
