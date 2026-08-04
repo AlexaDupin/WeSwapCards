@@ -2,7 +2,7 @@ const datamapper = require("../../models/datamapper");
 const moderationDatamapper = require("../../models/moderation");
 const { getOpportunities } = require("./opportunities");
 const { sendNewMessageNotification } = require("../../services/pushNotificationService");
-const { attachPartnerImages } = require("../../services/partnerImageService");
+const { attachPartnerImages, stripPartnerIds } = require("../../services/partnerImageService");
 // const validator = require('validator');
 // const { body, validationResult } = require('express-validator');
 
@@ -186,13 +186,23 @@ const chatController = {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 40;
         const search = req.query.search || '';
-        const sort = req.query.sort === 'name' ? 'name' : 'date';
+        // The mobile client always sends `sort` (see dashboardApi.filterQuery);
+        // the web client never does (usePagination sends only page/limit/search).
+        // Absence therefore means web, which keeps its original ordering and does
+        // not need partner avatars — so it costs no Clerk Backend API call.
+        const sort = req.query.sort === 'name' ? 'name'
+                   : req.query.sort === 'date' ? 'date'
+                   : 'legacy';
         // console.log('CHAT CTRL', explorerId);
 
             try {
                 const result = await datamapper.getCurrentConversationsOfExplorer(explorerId, page, limit, search, sort);
                 // console.log("CTRL CHAT result", result);
-                result.conversations = await attachPartnerImages(result.conversations);
+                if (sort === 'legacy') {
+                    stripPartnerIds(result.conversations);
+                } else {
+                    result.conversations = await attachPartnerImages(result.conversations);
+                }
                 res.status(200).json(result);
             } catch (error) {
                 console.error("Error while retrieving conversations:", error);

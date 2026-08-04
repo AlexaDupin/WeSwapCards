@@ -414,9 +414,9 @@ module.exports = {
         return preparedQuery.rows[0];
     },
     async getAllMessagesInAChat(conversationId) {
-        // Ordered by id, not timestamp: id is GENERATED ALWAYS AS IDENTITY, so it
-        // is true send order and stays correct even for rows written before
-        // timestamps became server-side.
+        // Ordered by id, not timestamp: id is an auto-incrementing identity/serial
+        // column, so it is true send order and stays correct even for rows written
+        // before timestamps became server-side.
         const preparedQuery = {
             text: `SELECT * FROM "message"
                 WHERE conversation_id = $1
@@ -508,17 +508,28 @@ module.exports = {
           past: (counts['Completed'] ?? 0) + (counts['Declined'] ?? 0),
         };
     },
-    async getCurrentConversationsOfExplorer(explorerId, page = 1, limit = 40, search = '', sort = 'date') {
+    async getCurrentConversationsOfExplorer(explorerId, page = 1, limit = 40, search = '', sort = 'legacy') {
         const searchPattern = `%${search.toLowerCase()}%`;
 
-        // Default ('date') reproduces the original ordering verbatim so the web
-        // frontend (which never sends `sort`) is unaffected.
+        // Three orderings, one per client contract:
+        //   'name'   — native, alphabetical by card
+        //   'date'   — native, most recent first
+        //   'legacy' — the web app's original ordering, preserved byte-for-byte
+        //
+        // The web frontend never sends `sort`, so it lands on 'legacy' and sees
+        // exactly what it saw before the native work. Defaulting the parameter
+        // to 'legacy' means an unknown value also falls back to web-safe.
         const orderClause =
             sort === 'name'
                 ? `LOWER(card_name) ASC, db_id ASC`
-                : `(unread > 0) DESC,
+                : sort === 'date'
+                ? `(unread > 0) DESC,
                     last_message_at DESC NULLS LAST,
-                    db_id DESC`;
+                    db_id DESC`
+                : `(unread > 0) DESC,
+                    CASE WHEN unread > 0 THEN card_name END,
+                    (status = 'In progress') DESC,
+                    card_name`;
 
         const countQuery = {
             text: `

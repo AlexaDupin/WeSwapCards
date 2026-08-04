@@ -127,4 +127,34 @@ async function attachPartnerImages(conversations) {
   return conversations;
 }
 
-module.exports = { attachPartnerImages };
+/**
+ * Remove the internal partner Clerk id without resolving anything.
+ *
+ * `swap_explorer_userid` is the conversation partner's Clerk user id — a join
+ * artifact the query surfaces only so avatars can be looked up. It is a third
+ * party's auth identifier and must never reach any client, web or mobile.
+ * attachPartnerImages already deletes it once it has resolved the avatar; this
+ * does the same on the paths that skip the Clerk lookup entirely.
+ *
+ * Everything else in the row is left alone: added columns are backward-
+ * compatible and both clients receive the same response shape.
+ *
+ * Mutates and returns the same array.
+ *
+ * @param {Array<object>} conversations
+ * @returns {Array<object>}
+ */
+function stripPartnerIds(conversations) {
+  if (!Array.isArray(conversations)) {
+    return conversations;
+  }
+
+  for (const conv of conversations) {
+    if (!conv || typeof conv !== 'object') continue;
+    delete conv.swap_explorer_userid;
+  }
+
+  return conversations;
+}
+
+module.exports = { attachPartnerImages, stripPartnerIds };
