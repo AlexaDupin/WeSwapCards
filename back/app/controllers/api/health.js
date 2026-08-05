@@ -1,4 +1,5 @@
 const pool = require('../../models/client');
+const { swapFilterSummary } = require('../../models/datamapper');
 
 // A real health check: it exercises the dependencies the API actually needs,
 // unlike "/" (Hello World) which proves only that the process is up. Returns
@@ -121,9 +122,12 @@ const healthController = {
 
     const healthy = db.ok && env.ok && clerk.ok;
 
+    // swapFilter is informational, not part of `healthy`: it is absent by
+    // design outside production.
     res.status(healthy ? 200 : 503).json({
       status: healthy ? 'ok' : 'degraded',
       checks: { db, env, clerk },
+      swapFilter: swapFilterSummary(),
       node: process.version,
       uptime: process.uptime(),
     });

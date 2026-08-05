@@ -162,7 +162,12 @@ const fetchKind =
     : globalThis.fetch.Promise || typeof globalThis.fetch.isRedirect === 'function'
     ? 'polyfilled (node-fetch)'
     : 'native';
-console.log(`[startup] node=${process.version} fetch=${fetchKind} env=${process.env.NODE_ENV || 'undefined'}`);
+// swapFilter is logged because losing those env vars unfilters results silently.
+const { swapFilterSummary } = require('./app/models/datamapper');
+console.log(
+  `[startup] node=${process.version} fetch=${fetchKind} ` +
+  `env=${process.env.NODE_ENV || 'undefined'} swapFilter=${swapFilterSummary()}`,
+);
 
 if (typeof(PhusionPassenger) !== 'undefined') {
     app.listen('passenger');

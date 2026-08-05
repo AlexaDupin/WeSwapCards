@@ -1,6 +1,45 @@
 const client = require('./client');
 
+// Strict parsing on purpose: parseInt('15days') would return 15.
+const parseIds = (raw) => {
+  if (!raw) return [];
+  const parts = String(raw).split(',').map((s) => s.trim()).filter(Boolean);
+  if (parts.some((s) => !/^\d+$/.test(s))) {
+    throw new Error(`Invalid SWAP_EXCLUDED_EXPLORER_IDS: ${raw}`);
+  }
+  return parts.map(Number);
+};
+
+const parseDays = (raw) => {
+  if (!raw) return null;
+  const value = String(raw).trim();
+  if (!/^\d+$/.test(value)) {
+    throw new Error(`Invalid SWAP_ACTIVE_WINDOW_DAYS: ${raw}`);
+  }
+  const days = Number(value);
+  return days > 0 ? days : null;
+};
+
+const EXCLUDED_EXPLORER_IDS = parseIds(process.env.SWAP_EXCLUDED_EXPLORER_IDS);
+const ACTIVE_WINDOW_DAYS = parseDays(process.env.SWAP_ACTIVE_WINDOW_DAYS);
+
+let visibilityFilter = '';
+if (EXCLUDED_EXPLORER_IDS.length) {
+  visibilityFilter += `\n            AND explorer.id NOT IN (${EXCLUDED_EXPLORER_IDS.join(', ')})`;
+}
+if (ACTIVE_WINDOW_DAYS) {
+  visibilityFilter += `\n            AND explorer.last_active_at > NOW() - INTERVAL '${ACTIVE_WINDOW_DAYS} days'`;
+}
+
+const swapFilterSummary = () => {
+  const parts = [];
+  parts.push(EXCLUDED_EXPLORER_IDS.length ? `ids:${EXCLUDED_EXPLORER_IDS.join(',')}` : 'ids:none');
+  parts.push(ACTIVE_WINDOW_DAYS ? `window:${ACTIVE_WINDOW_DAYS}d` : 'window:none');
+  return EXCLUDED_EXPLORER_IDS.length || ACTIVE_WINDOW_DAYS ? parts.join(' ') : 'off';
+};
+
 module.exports = {
+    swapFilterSummary,
     async getAllCountries() {
         const preparedQuery = {
             text: `SELECT * FROM country`,
@@ -190,7 +229,7 @@ module.exports = {
             JOIN explorer ON explorer.id = ehc.explorer_id
             WHERE ehc.card_id = $1
             AND explorer.id != $2
-            AND ehc.duplicate = true
+            AND ehc.duplicate = true${visibilityFilter}
             ${blockedFilter}
             `,
             values: [cardId, explorerId],
@@ -208,7 +247,7 @@ module.exports = {
                 JOIN explorer ON explorer.id = ehc.explorer_id
                 WHERE ehc.card_id = $1
                 AND explorer.id != $2
-                AND ehc.duplicate = true
+                AND ehc.duplicate = true${visibilityFilter}
                 ${blockedFilter}
             ),
             explorer_duplicates AS (
