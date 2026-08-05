@@ -3,7 +3,10 @@ import { axiosInstance } from '../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
 
 export const usePagination = (fetchUrl, itemsPerPage = 20, options = {}) => {
-  const { searchTerm = '', includeSearch = false } = options;
+  // `extraParams` is a constant query-string suffix (e.g. '&excludeBlocked=1').
+  // It is deliberately not part of the effect dependencies below, so it suits
+  // values fixed for the life of the hook — a dynamic one would not refetch.
+  const { searchTerm = '', includeSearch = false, extraParams = '' } = options;
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,7 +18,7 @@ export const usePagination = (fetchUrl, itemsPerPage = 20, options = {}) => {
   const abortControllerRef = useRef(new AbortController());
 
   const fetchData = async () => {
-    const fullUrl = `${fetchUrl}?page=${activePage}&limit=${itemsPerPage}` + (includeSearch && searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '');
+    const fullUrl = `${fetchUrl}?page=${activePage}&limit=${itemsPerPage}` + (includeSearch && searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '') + extraParams;
 
     if (!fetchUrl) {
       setData([]);

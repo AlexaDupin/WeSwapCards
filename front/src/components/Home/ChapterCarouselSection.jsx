@@ -28,6 +28,19 @@ function ChapterCard({ chapter, onSelect }) {
   );
 }
 
+// /chapters/by-ids has no ORDER BY, so the caller's id order is applied here.
+function orderByIds(rows, ids) {
+  const position = new Map(
+    String(ids)
+      .split(",")
+      .map((id, index) => [Number(id.trim()), index])
+  );
+  return [...rows].sort(
+    (a, b) =>
+      (position.get(a.id) ?? Infinity) - (position.get(b.id) ?? Infinity)
+  );
+}
+
 export default function ChapterCarouselSection({ title, endpoint, params = {} }) {
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
@@ -42,7 +55,7 @@ export default function ChapterCarouselSection({ title, endpoint, params = {} })
         setErr("");
         const res = await axiosInstance.get(endpoint, { params });
         const rows = Array.isArray(res.data?.items) ? res.data.items : [];
-        if (!cancelled) setItems(rows);
+        if (!cancelled) setItems(params.ids ? orderByIds(rows, params.ids) : rows);
       } catch (e) {
         if (!cancelled) {
           console.error(`[Home ${title}] fetch error:`, e);

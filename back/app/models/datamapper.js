@@ -1,6 +1,45 @@
 const client = require('./client');
 
+// Strict parsing on purpose: parseInt('15days') would return 15.
+const parseIds = (raw) => {
+  if (!raw) return [];
+  const parts = String(raw).split(',').map((s) => s.trim()).filter(Boolean);
+  if (parts.some((s) => !/^\d+$/.test(s))) {
+    throw new Error(`Invalid SWAP_EXCLUDED_EXPLORER_IDS: ${raw}`);
+  }
+  return parts.map(Number);
+};
+
+const parseDays = (raw) => {
+  if (!raw) return null;
+  const value = String(raw).trim();
+  if (!/^\d+$/.test(value)) {
+    throw new Error(`Invalid SWAP_ACTIVE_WINDOW_DAYS: ${raw}`);
+  }
+  const days = Number(value);
+  return days > 0 ? days : null;
+};
+
+const EXCLUDED_EXPLORER_IDS = parseIds(process.env.SWAP_EXCLUDED_EXPLORER_IDS);
+const ACTIVE_WINDOW_DAYS = parseDays(process.env.SWAP_ACTIVE_WINDOW_DAYS);
+
+let visibilityFilter = '';
+if (EXCLUDED_EXPLORER_IDS.length) {
+  visibilityFilter += `\n            AND explorer.id NOT IN (${EXCLUDED_EXPLORER_IDS.join(', ')})`;
+}
+if (ACTIVE_WINDOW_DAYS) {
+  visibilityFilter += `\n            AND explorer.last_active_at > NOW() - INTERVAL '${ACTIVE_WINDOW_DAYS} days'`;
+}
+
+const swapFilterSummary = () => {
+  const parts = [];
+  parts.push(EXCLUDED_EXPLORER_IDS.length ? `ids:${EXCLUDED_EXPLORER_IDS.join(',')}` : 'ids:none');
+  parts.push(ACTIVE_WINDOW_DAYS ? `window:${ACTIVE_WINDOW_DAYS}d` : 'window:none');
+  return EXCLUDED_EXPLORER_IDS.length || ACTIVE_WINDOW_DAYS ? parts.join(' ') : 'off';
+};
+
 module.exports = {
+    swapFilterSummary,
     async getAllCountries() {
         const preparedQuery = {
             text: `SELECT * FROM country`,
@@ -53,60 +92,21 @@ module.exports = {
 
         return result.rows;
     },
-    async checkIfCardLoggedForExplorer(explorerId, cardId) {
-        const preparedQuery = {
-            text: `
-            SELECT * FROM explorer_has_cards AS ehc
-            WHERE explorer_id = $1
-            AND card_id = $2
-            `,
-            values: [explorerId, cardId]
-        };
-        const result = await client.query(preparedQuery);
-        if (result.rowCount > 0) {
-            return true;
-        }
-        return null;    
-    },
-    async createExplorerHasCard(data) {
+    async upsertExplorerHasCard(data) {
         const preparedQuery = await client.query(
-            `
-        INSERT INTO "explorer_has_cards"
-        (explorer_id, card_id, duplicate) VALUES
-        ($1, $2, $3) RETURNING *
-        `,
-            [data.explorerId, data.cardId, data.duplicate],
+         `INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
+          VALUES ($1, $2, $3)
+          ON CONFLICT (explorer_id, card_id)
+          DO UPDATE
+            SET duplicate = EXCLUDED.duplicate
+          WHERE explorer_has_cards.duplicate IS DISTINCT FROM EXCLUDED.duplicate
+          RETURNING explorer_id, card_id, duplicate
+          `,
+          [data.explorerId, data.cardId, data.duplicate],
         );
-        return preparedQuery.rows[0];
-    },
-    async checkDuplicateStatus(explorerId, cardId) {
-        const preparedQuery = {
-            text: `
-            SELECT duplicate FROM explorer_has_cards
-            WHERE explorer_id = $1
-            AND card_id = $2
-            `,
-            values: [explorerId, cardId]
-        };
-        const result = await client.query(preparedQuery);
-        if (result.rowCount > 0) {
-            return result.rows[0];
-        }
-        return null;
-    },
-    async editExplorerHasCard(duplicateValue, explorerId, cardId) {
-        const preparedQuery = {
-            text: `
-            UPDATE explorer_has_cards SET duplicate = $1
-            WHERE explorer_id = $2
-            AND card_id = $3
-            `,
-            values: [duplicateValue, explorerId, cardId]
-        };
-        // return preparedQuery.rows[0];
-        const result = await client.query(preparedQuery);
-        return result.rows;
-    },
+        const { rows } = await preparedQuery;
+        return { explorerId: data.explorerId, cardId: data.cardId, duplicate: data.duplicate, changed: rows.length > 0 };
+    },      
     async deleteCardFromExplorerHasCard(explorerId, cardId) {
         const preparedQuery = {
             text: `
@@ -116,9 +116,9 @@ module.exports = {
             `,
             values: [explorerId, cardId]
         };
-        // return preparedQuery.rows[0];
         const result = await client.query(preparedQuery);
-        return result.rows;
+        // console.log("DTMP DELETE", result);
+        return { explorerId, cardId, changed: result.rowCount > 0 };
     },
     async manageExplorerCards(explorerId, selectedCardsData, toBeDeletedIds) {
         try {
@@ -205,15 +205,32 @@ module.exports = {
 
         return result.rows;
     },
-    async findSwapOpportunities(cardId, explorerId, page = 1, limit = 20) {
+    // options.excludeBlocked (native app only, opt-in via ?excludeBlocked=1):
+    // drop collectors involved in a block — either direction, matching how
+    // isBlockedBetween gates messaging — from the results entirely. Their rows
+    // exist only to open a chat, and that chat is guaranteed to 403, so they are
+    // dead weight for both sides. Callers that omit the flag (the web app) get
+    // the original query, ordering and totals, untouched.
+    async findSwapOpportunities(cardId, explorerId, page = 1, limit = 20, options = {}) {
+        // Constant SQL chosen by a boolean — no caller input reaches the string.
+        // Both queries alias explorer_has_cards as `ehc`, so one fragment fits both.
+        const blockedFilter = options.excludeBlocked === true
+            ? `AND NOT EXISTS (
+                    SELECT 1 FROM "user_block" ub
+                    WHERE (ub.blocker_id = $2 AND ub.blocked_id = ehc.explorer_id)
+                       OR (ub.blocker_id = ehc.explorer_id AND ub.blocked_id = $2)
+                )`
+            : '';
+
         const countQuery = {
-            text: 
+            text:
             `SELECT COUNT(*)
             FROM explorer_has_cards AS ehc
             JOIN explorer ON explorer.id = ehc.explorer_id
             WHERE ehc.card_id = $1
-            AND explorer.id != $2 
-            AND ehc.duplicate = true
+            AND explorer.id != $2
+            AND ehc.duplicate = true${visibilityFilter}
+            ${blockedFilter}
             `,
             values: [cardId, explorerId],
         };
@@ -229,8 +246,9 @@ module.exports = {
                 FROM explorer_has_cards AS ehc
                 JOIN explorer ON explorer.id = ehc.explorer_id
                 WHERE ehc.card_id = $1
-                AND explorer.id != $2 
-                AND ehc.duplicate = true
+                AND explorer.id != $2
+                AND ehc.duplicate = true${visibilityFilter}
+                ${blockedFilter}
             ),
             explorer_duplicates AS (
                 SELECT ehc.card_id
@@ -375,7 +393,7 @@ module.exports = {
         const preparedQuery = {
             text: `
             SELECT creator_id, recipient_id FROM conversation
-            WHERE id = $1 
+            WHERE id = $1
             `,
             values: [id]
         };
@@ -385,42 +403,76 @@ module.exports = {
         }
         return null;
     },
-    async createConversation(cardName, explorerId, swapExplorerId, timestamp) {
+    // Conversation header fields for enriching the new-message push payload so a
+    // notification tap can open the chat with the card name + offer context,
+    // not just the conversation id. Additive: not used by the web app.
+    async getConversationMetaById(id) {
+        const preparedQuery = {
+            text: `
+            SELECT card_name, creator_id, recipient_id FROM conversation
+            WHERE id = $1
+            `,
+            values: [id]
+        };
+        const result = await client.query(preparedQuery);
+        if (result.rowCount > 0) {
+            return result.rows[0];
+        }
+        return null;
+    },
+    async createConversation(cardName, explorerId, swapExplorerId) {
         //console.log("CREATE CONV DTMP")
 
+        // now() = database clock. The client used to supply this value, which
+        // meant a device with a skewed clock could date a conversation wrongly.
         const preparedQuery = await client.query(
             `
             INSERT INTO "conversation"
-                (card_name, creator_id, recipient_id, timestamp) 
-            VALUES ($1, $2, $3, $4) 
+                (card_name, creator_id, recipient_id, timestamp)
+            VALUES ($1, $2, $3, now())
             RETURNING id
             `,
-            [cardName, explorerId, swapExplorerId, timestamp],
+            [cardName, explorerId, swapExplorerId],
             );
             return preparedQuery.rows[0];
     },
     async insertNewMessage(data) {
         // console.log("INSERT MESSAGE DTMP")
+        // Stamped by the database, never by the sender's device: a client whose
+        // clock is fast used to be able to store a future-dated message, which
+        // then sorted out of place in the thread and pinned the conversation to
+        // the top of the list until real time caught up.
         const preparedQuery = await client.query(
             `
         INSERT INTO "message"
         (content, timestamp, sender_id, recipient_id, conversation_id) VALUES
-        ($1, $2, $3, $4, $5) RETURNING *
+        ($1, now(), $2, $3, $4) RETURNING *
         `,
-            [data.content, data.timestamp, data.senderId, data.recipientId, data.conversationId],
+            [data.content, data.senderId, data.recipientId, data.conversationId],
         );
         return preparedQuery.rows[0];
     },
     async getAllMessagesInAChat(conversationId) {
+        // Ordered by id, not timestamp: id is an auto-incrementing identity/serial
+        // column, so it is true send order and stays correct even for rows written
+        // before timestamps became server-side.
         const preparedQuery = {
             text: `SELECT * FROM "message"
                 WHERE conversation_id = $1
-                ORDER BY timestamp`,
+                ORDER BY id`,
             values: [conversationId],
         };
         const result = await client.query(preparedQuery);
         // console.log(result.rows);
         return result.rows;
+    },
+    async getConversationStatus(conversationId) {
+        const preparedQuery = {
+          text: `SELECT status FROM "conversation" WHERE id = $1`,
+          values: [conversationId],
+        };
+        const result = await client.query(preparedQuery);
+        return result.rows[0]?.status ?? null;
     },
     async updateMessageStatus(conversationId, explorerId) {
         const preparedQuery = {
@@ -439,6 +491,30 @@ module.exports = {
             return true;
         }
         return 0;     
+    },
+    async setConversationUnread(conversationId, explorerId) {
+        const preparedQuery = {
+          text: `
+            UPDATE message
+            SET read = false
+            WHERE id = (
+              SELECT id
+              FROM message
+              WHERE conversation_id = $1
+                AND recipient_id = $2
+              ORDER BY id DESC
+              LIMIT 1
+            )
+            RETURNING id;
+          `,
+          values: [conversationId, explorerId],
+        };
+      
+        const result = await client.query(preparedQuery);
+      
+        if (result.rowCount > 0) return true;
+      
+        return false;
     },
     async getUnreadConversations(explorerId) {
         const preparedQuery = {
@@ -460,18 +536,39 @@ module.exports = {
         
         const result = await client.query(preparedQuery);
 
+        // Frequency counting: status -> unread count (from GROUP BY status)
         const counts = result.rows.reduce((acc, row) => {
-            acc[row.status] = parseInt(row.unread);
+            acc[row.status] = parseInt(row.unread, 10);
             return acc;
           }, {});
 
         return {
-          inProgress: counts['In progress'] || 0,
-          past: (counts['Completed'] || 0) + (counts['Declined'] || 0),
+          inProgress: counts['In progress'] ?? 0,
+          past: (counts['Completed'] ?? 0) + (counts['Declined'] ?? 0),
         };
     },
-    async getCurrentConversationsOfExplorer(explorerId, page = 1, limit = 40, search = '') {
+    async getCurrentConversationsOfExplorer(explorerId, page = 1, limit = 40, search = '', sort = 'legacy') {
         const searchPattern = `%${search.toLowerCase()}%`;
+
+        // Three orderings, one per client contract:
+        //   'name'   — native, alphabetical by card
+        //   'date'   — native, most recent first
+        //   'legacy' — the web app's original ordering, preserved byte-for-byte
+        //
+        // The web frontend never sends `sort`, so it lands on 'legacy' and sees
+        // exactly what it saw before the native work. Defaulting the parameter
+        // to 'legacy' means an unknown value also falls back to web-safe.
+        const orderClause =
+            sort === 'name'
+                ? `LOWER(card_name) ASC, db_id ASC`
+                : sort === 'date'
+                ? `(unread > 0) DESC,
+                    last_message_at DESC NULLS LAST,
+                    db_id DESC`
+                : `(unread > 0) DESC,
+                    CASE WHEN unread > 0 THEN card_name END,
+                    (status = 'In progress') DESC,
+                    card_name`;
 
         const countQuery = {
             text: `
@@ -493,7 +590,7 @@ module.exports = {
         };
         
         const countResult = await client.query(countQuery);
-        const totalCount = parseInt(countResult.rows[0].count);
+        const totalCount = parseInt(countResult.rows[0].count, 10);
         
         const offset = (page - 1) * limit;
         
@@ -511,10 +608,15 @@ module.exports = {
                         WHEN cv.creator_id = $1 THEN e2.id
                         WHEN cv.recipient_id = $1 THEN e1.id
                     END AS swap_explorer_id,
+                    CASE
+                        WHEN cv.creator_id = $1 THEN e2.userid
+                        WHEN cv.recipient_id = $1 THEN e1.userid
+                    END AS swap_explorer_userid,
                     cv.creator_id,
                     cv.recipient_id,
                     cv.status,
-                    COUNT(m.id) FILTER (WHERE m.read = false AND m.recipient_id = $1) AS unread
+                    COUNT(m.id) FILTER (WHERE m.read = false AND m.recipient_id = $1)::int AS unread,
+                    MAX(m."timestamp") AS last_message_at
                 FROM conversation cv
                 JOIN explorer e1 ON e1.id = cv.creator_id
                 JOIN explorer e2 ON e2.id = cv.recipient_id
@@ -530,26 +632,22 @@ module.exports = {
             )
             SELECT 
                 ROW_NUMBER() OVER (
-                    ORDER BY 
-                        (unread > 0) DESC,
-                        CASE WHEN unread > 0 THEN card_name END,
-                        (status = 'In progress') DESC,
-                        card_name
+                    ORDER BY
+                    ${orderClause}
                 ) AS row_id,
                 db_id,
                 card_name,
                 swap_explorer,
                 swap_explorer_id,
+                swap_explorer_userid,
                 status,
                 creator_id,
                 recipient_id,
-                unread
+                unread,
+                last_message_at
             FROM ranked_conversations
-            ORDER BY 
-                (unread > 0) DESC,  
-                CASE WHEN unread > 0 THEN card_name END,  
-                (status = 'In progress') DESC,  
-                card_name
+            ORDER BY
+                ${orderClause}
             LIMIT $3 OFFSET $4;`,
             values: [explorerId, searchPattern, limit, offset],
         };
@@ -587,7 +685,7 @@ module.exports = {
         };
         
         const countResult = await client.query(countQuery);
-        const totalCount = parseInt(countResult.rows[0].count);
+        const totalCount = parseInt(countResult.rows[0].count, 10);
         
         const offset = (page - 1) * limit;
         
@@ -608,7 +706,8 @@ module.exports = {
                     cv.creator_id,
                     cv.recipient_id,
                     cv.status,
-                    COUNT(m.id) FILTER (WHERE m.read = false AND m.recipient_id = $1) AS unread
+                    COUNT(m.id) FILTER (WHERE m.read = false AND m.recipient_id = $1)::int AS unread,
+                    MAX(m."timestamp") AS last_message_at
                 FROM conversation cv
                 JOIN explorer e1 ON e1.id = cv.creator_id
                 JOIN explorer e2 ON e2.id = cv.recipient_id
@@ -637,7 +736,8 @@ module.exports = {
                 status,
                 creator_id,
                 recipient_id,
-                unread
+                unread,
+                last_message_at
             FROM ranked_conversations
             ORDER BY 
                 (unread > 0) DESC,  
@@ -647,7 +747,7 @@ module.exports = {
             values: [explorerId, searchPattern, limit, offset],
         };
         const result = await client.query(preparedQuery);
-        // console.log(totalCount, result.rows);
+
         return {
             conversations: result.rows,
             pagination: {
@@ -657,6 +757,162 @@ module.exports = {
                 itemsPerPage: limit
             }        
         };
+    },
+    async getPastConversationsOfExplorerCursorWebOrder(
+        explorerId,
+        limit = 50,
+        search = '',
+        sort = 'date',              // 'date' | 'name'
+        cursorPrimary = null,       // 'date' -> last_message_at (timestamp string); 'name' -> card_name_sort (string)
+        cursorId = null,            // number
+      ) {
+        const safeLimit = Math.min(parseInt(limit, 10) || 50, 100);
+        const searchPattern = `%${search.toLowerCase()}%`;
+        const byName = sort === 'name';
+
+        // For the date sort, last_message_at can be NULL (a past conversation
+        // with no messages) and sorts NULLS LAST. When the page boundary lands
+        // on such a row its cursor primary comes back null/blank. Treat that as
+        // "page through the null-timestamp tail by id" rather than binding "" as
+        // a timestamp, which Postgres rejects (-> 500).
+        const numericCursorId = cursorId === null ? null : Number(cursorId);
+        const hasCursorId =
+          numericCursorId !== null && Number.isFinite(numericCursorId);
+        const primary = cursorPrimary === '' ? null : cursorPrimary;
+        const hasCursor = byName ? hasCursorId && primary !== null : hasCursorId;
+
+        // The keyset predicate and ORDER BY must use the same columns so the
+        // cursor walks the result set with no skips/duplicates. Params are built
+        // next to the clause so their positions always line up.
+        let keysetClause = '';
+        let values;
+        if (!hasCursor) {
+          values = [explorerId, searchPattern, safeLimit + 1];
+        } else if (byName) {
+          keysetClause = `
+                  AND (
+                    card_name_sort > $3
+                    OR (card_name_sort = $3 AND db_id > $4)
+                  )
+                `;
+          values = [
+            explorerId,
+            searchPattern,
+            primary,
+            numericCursorId,
+            safeLimit + 1,
+          ];
+        } else if (primary !== null) {
+          // date sort, non-null timestamp boundary (null rows sort after, so include them)
+          keysetClause = `
+                  AND (
+                    last_message_at < $3
+                    OR (last_message_at = $3 AND db_id < $4)
+                    OR last_message_at IS NULL
+                  )
+                `;
+          values = [
+            explorerId,
+            searchPattern,
+            primary,
+            numericCursorId,
+            safeLimit + 1,
+          ];
+        } else {
+          // date sort, null-timestamp boundary: only the remaining null rows,
+          // ordered by db_id DESC.
+          keysetClause = `
+                  AND (last_message_at IS NULL AND db_id < $3)
+                `;
+          values = [explorerId, searchPattern, numericCursorId, safeLimit + 1];
+        }
+
+        const orderClause = byName
+          ? `card_name_sort ASC, db_id ASC`
+          : `last_message_at DESC NULLS LAST, db_id DESC`;
+
+        const limitParam = `$${values.length}`;
+
+        const preparedQuery = {
+          text: `
+            WITH ranked_conversations AS (
+              SELECT
+                cv.id AS db_id,
+                cv.card_name,
+                LOWER(cv.card_name) AS card_name_sort,
+                CASE
+                  WHEN cv.creator_id = $1 THEN e2.name
+                  WHEN cv.recipient_id = $1 THEN e1.name
+                END AS swap_explorer,
+                CASE
+                  WHEN cv.creator_id = $1 THEN e2.id
+                  WHEN cv.recipient_id = $1 THEN e1.id
+                END AS swap_explorer_id,
+                CASE
+                  WHEN cv.creator_id = $1 THEN e2.userid
+                  WHEN cv.recipient_id = $1 THEN e1.userid
+                END AS swap_explorer_userid,
+                cv.creator_id,
+                cv.recipient_id,
+                cv.status,
+                COUNT(m.id) FILTER (WHERE m.read = false AND m.recipient_id = $1)::int AS unread,
+                MAX(m."timestamp") AS last_message_at
+              FROM conversation cv
+              JOIN explorer e1 ON e1.id = cv.creator_id
+              JOIN explorer e2 ON e2.id = cv.recipient_id
+              LEFT JOIN message m ON m.conversation_id = cv.id
+              WHERE (cv.creator_id = $1 OR cv.recipient_id = $1)
+                AND (cv.status = 'Completed' OR cv.status = 'Declined')
+                AND (
+                  LOWER(cv.card_name) LIKE $2 OR
+                  LOWER(e1.name) LIKE $2 OR
+                  LOWER(e2.name) LIKE $2
+                )
+              GROUP BY cv.id, e2.name, e1.name, e2.id, e1.id
+            )
+            SELECT
+              db_id,
+              card_name,
+              card_name_sort,
+              swap_explorer,
+              swap_explorer_id,
+              swap_explorer_userid,
+              status,
+              creator_id,
+              recipient_id,
+              unread,
+              last_message_at
+            FROM ranked_conversations
+            WHERE 1=1
+            ${keysetClause}
+            ORDER BY
+              ${orderClause}
+            LIMIT ${limitParam};
+          `,
+          values,
+        };
+
+        const result = await client.query(preparedQuery);
+        let rows = result.rows;
+
+        const hasMore = rows.length > safeLimit;
+        if (hasMore) rows = rows.slice(0, safeLimit);
+
+        const last = rows[rows.length - 1];
+        const nextCursor =
+          hasMore && last
+            ? byName
+              ? {
+                  cursor_card_name: last.card_name_sort,
+                  cursor_id: last.db_id,
+                }
+              : {
+                  cursor_last_message_at: last.last_message_at,
+                  cursor_id: last.db_id,
+                }
+            : null;
+
+        return { conversations: rows, hasMore, nextCursor };
     },
     async editConversationStatus(conversationId, status) {
         //console.log("editConversationStatus DTMP")
@@ -690,66 +946,6 @@ module.exports = {
 
         return result.rows;
     },
-    async getCardsByPlaceForOneExplorer(explorerId) {
-        const preparedQuery = {
-            text: `
-            SELECT 
-                p.name AS place_name,
-                COALESCE(
-                  JSON_AGG(
-                    JSON_BUILD_OBJECT(
-                      'card', JSON_BUILD_OBJECT(
-                        'id', c.id,
-                        'name', c.name,
-                        'number', c.number,
-                        'place_id', c.place_id
-                      ),
-                      'duplicate', c.duplicate
-                    )
-                    ORDER BY c.number
-                  ) FILTER (WHERE c.id IS NOT NULL),
-                  '[]'
-                ) AS cards
-            FROM 
-              place p
-            LEFT JOIN (
-              SELECT 
-                c.place_id,
-                c.id,
-                c.name,
-                c.number,
-                ehc.duplicate,
-                ehc.explorer_id
-              FROM 
-                card c
-              JOIN 
-                explorer_has_cards ehc ON c.id = ehc.card_id
-              WHERE 
-                ehc.explorer_id = $1
-            ) c ON p.id = c.place_id
-            GROUP BY p.id, p.name
-            ORDER BY p.name;
-            `,
-            values: [explorerId],
-        };
-        const result = await client.query(preparedQuery);
-        // console.log(result.rows);
-
-        return result.rows;
-    },
-    async editDuplicateStatus(explorerId, cardId, newDuplicateData) {
-        const preparedQuery = {
-            text: `
-            UPDATE explorer_has_cards
-            SET duplicate = $3
-            WHERE explorer_id = $1
-            AND card_id = $2
-            `,
-            values: [explorerId, cardId, newDuplicateData]
-        };
-        const result = await client.query(preparedQuery);
-        //console.log(result.command);
-    },
     async getAllCardsStatuses(explorerId) {
         const preparedQuery = {
             text: ` SELECT c.id AS card_id,
@@ -775,7 +971,7 @@ module.exports = {
     },
     async getAllCards() {
         const preparedQuery = {
-            text: `SELECT * FROM card`,
+            text: `SELECT * FROM card ORDER BY place_id, number`,
         };
         const result = await client.query(preparedQuery);
         return result.rows;

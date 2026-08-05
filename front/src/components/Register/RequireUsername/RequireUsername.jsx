@@ -7,7 +7,8 @@ import { StateContext } from "../../../contexts/StateContext";
 
 const PUBLIC_ALLOWLIST = new Set([
   '/', '/home', '/privacy', '/terms', '/cookies',
-  '/contact', '/legal', '/login', '/login/redirect', '/register', '/register/user'
+  '/contact', '/legal', '/delete-account',
+  '/login', '/login/redirect', '/register', '/register/user'
 ]);
 
 export default function RequireUsername({ children }) {

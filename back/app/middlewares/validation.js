@@ -15,7 +15,11 @@ const validateNewMessage = [
         });
     }),
 
+  // Accepted for backward compatibility only — the value is ignored and the
+  // database stamps the message itself. Optional so newer clients can stop
+  // sending it without getting a 400 from this middleware.
   body('timestamp')
+    .optional()
     .isString().withMessage('Timestamp must be a valid string.'),
 
   body('sender_id')

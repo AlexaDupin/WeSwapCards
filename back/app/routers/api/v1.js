@@ -1,5 +1,5 @@
 const express = require('express');
-const { requireAuth } = require('@clerk/express');
+const requireApiAuth = require('../../middlewares/requireApiAuth');
 const { checkConversationAuthorization, checkExplorerAuthorization } = require('../../middlewares/authorization');
 const validateNewMessage = require('../../middlewares/validation');
 
@@ -9,6 +9,8 @@ const opportunitiesController = require('../../controllers/api/opportunities');
 const chatController = require('../../controllers/api/chat');
 const apiController = require('../../controllers/api/index');
 const cardController = require('../../controllers/api/cards');
+const pushTokenController = require('../../controllers/api/pushToken');
+const moderationController = require('../../controllers/api/moderation');
 
 const controllerHandler = require('../../helpers/controllerHandler');
 
@@ -18,9 +20,9 @@ router.get('/', apiController.home);
 router.get('/country', apiController.country);
 
 router.post('/register/user',
- requireAuth(), controllerHandler(userController.createUser));
+ requireApiAuth, controllerHandler(userController.createUser));
 router.post('/login/user',
- requireAuth(), controllerHandler(userController.getUserByUID));
+ requireApiAuth, controllerHandler(userController.getUserByUID));
 
 router
     .route('/places')
@@ -36,16 +38,16 @@ router
 
 router
     .route('/cards/statuses/:explorerId')
-    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.getAllCardsStatuses))
+    .get(requireApiAuth, checkExplorerAuthorization, controllerHandler(cardController.getAllCardsStatuses))
 
 router
     .route('/explorercards/:explorerId/cards/:cardId')
-    .put(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.addCardToExplorer))
-    .delete(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.deleteCardFromExplorer));
+    .put(requireApiAuth, checkExplorerAuthorization, controllerHandler(cardController.addCardToExplorer))
+    .delete(requireApiAuth, checkExplorerAuthorization, controllerHandler(cardController.deleteCardFromExplorer));
 
 router
   .route('/explorercards/:explorerId/chapters/:chapterId/status')
-  .post(requireAuth(), checkExplorerAuthorization, controllerHandler(cardController.markChapter));
+  .post(requireApiAuth, checkExplorerAuthorization, controllerHandler(cardController.markChapter));
 
 router
     .route('/cards/:placeId')
@@ -53,57 +55,89 @@ router
 
 router
     .route('/opportunities/:explorerId')
-    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(opportunitiesController.getOpportunities));
+    .get(requireApiAuth, checkExplorerAuthorization, controllerHandler(opportunitiesController.getOpportunities));
 
 router
     .route('/opportunities/:explorerId/:placeId')
-    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(opportunitiesController.getCountForOnePlaceForOneExplorer));
+    .get(requireApiAuth, checkExplorerAuthorization, controllerHandler(opportunitiesController.getCountForOnePlaceForOneExplorer));
 
 router
     .route('/opportunities/:explorerId/card/:cardId')
-    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(opportunitiesController.findSwapOpportunities));
+    .get(requireApiAuth, checkExplorerAuthorization, controllerHandler(opportunitiesController.findSwapOpportunities));
 
 router
     .route('/card/:cardId')
-    .get(requireAuth(), controllerHandler(opportunitiesController.getCardName));
+    .get(requireApiAuth, controllerHandler(opportunitiesController.getCardName));
 
 router
     .route('/conversation/:explorerId/:swapExplorerId/:swapCardName')
-    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.getConversation))
-    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.createConversation))
+    .get(requireApiAuth, checkExplorerAuthorization, controllerHandler(chatController.getConversation))
+    .post(requireApiAuth, checkExplorerAuthorization, controllerHandler(chatController.createConversation))
 
 router
     .route('/conversation/:conversationId/:explorerId')
-    .put(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.setMessagesToRead))
+    .put(requireApiAuth, checkConversationAuthorization, controllerHandler(chatController.setMessagesToRead))
+
+router
+    .route('/conversation/:conversationId/:explorerId/unread')
+    .put(requireApiAuth, checkConversationAuthorization, controllerHandler(chatController.setConversationToUnread));
 
 router
     .route('/conversation/:explorerId')
-    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.getCurrentConversations))
+    .get(requireApiAuth, checkExplorerAuthorization, controllerHandler(chatController.getCurrentConversations))
 
 router
     .route('/conversation/unread/:explorerId')
-    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.getUnreadConversations))
+    .get(requireApiAuth, checkExplorerAuthorization, controllerHandler(chatController.getUnreadConversations))
 
 router
     .route('/conversation/past/:explorerId')
-    .get(requireAuth(), checkExplorerAuthorization, controllerHandler(chatController.getPastConversations))
+    .get(requireApiAuth, checkExplorerAuthorization, controllerHandler(chatController.getPastConversations))
 
 router
     .route('/conversation/:conversationId/opportunities/:creatorId/:recipientId')
-    .get(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.getOpportunitiesForRecipient))
+    .get(requireApiAuth, checkConversationAuthorization, controllerHandler(chatController.getOpportunitiesForRecipient))
 
 router
     .route('/conversation/:conversationId')
-    .put(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.editConversationStatus))
+    .put(requireApiAuth, checkConversationAuthorization, controllerHandler(chatController.editConversationStatus))
 
 router
     .route('/chat/:conversationId')
-    .get(requireAuth(), checkConversationAuthorization, controllerHandler(chatController.getAllMessagesInConversation))
-    .post(requireAuth(), checkConversationAuthorization, validateNewMessage, controllerHandler(chatController.insertNewMessage));
+    .get(requireApiAuth, checkConversationAuthorization, controllerHandler(chatController.getAllMessagesInConversation))
+    .post(requireApiAuth, checkConversationAuthorization, validateNewMessage, controllerHandler(chatController.insertNewMessage));
     
 router
     .route('/exploreractivity/:explorerId')
-    .post(requireAuth(), checkExplorerAuthorization, controllerHandler(userController.updateLastActive))
+    .post(requireApiAuth, checkExplorerAuthorization, controllerHandler(userController.updateLastActive))
+
+// Moderation: blocking + reports. :explorerId is the acting user, verified
+// against the Clerk session by checkExplorerAuthorization.
+router
+    .route('/block/:explorerId/:targetExplorerId')
+    .post(requireApiAuth, checkExplorerAuthorization, controllerHandler(moderationController.blockUser))
+    .delete(requireApiAuth, checkExplorerAuthorization, controllerHandler(moderationController.unblockUser))
+
+router
+    .route('/block/:explorerId')
+    .get(requireApiAuth, checkExplorerAuthorization, controllerHandler(moderationController.getMyBlocks))
+
+router
+    .route('/report/:explorerId')
+    .post(requireApiAuth, checkExplorerAuthorization, controllerHandler(moderationController.reportUser))
+
+// Device push tokens. The explorer is derived from the Clerk session inside the
+// controller (no :explorerId in the path), so no checkExplorerAuthorization here.
+router
+    .route('/push-tokens')
+    .post(requireApiAuth, controllerHandler(pushTokenController.registerPushToken))
+    .delete(requireApiAuth, controllerHandler(pushTokenController.deletePushToken))
+
+// Account deletion. Explorer is derived from the Clerk session (no path param),
+// so a user can only ever delete their own account.
+router
+    .route('/account')
+    .delete(requireApiAuth, controllerHandler(userController.deleteAccount))
 
 router
     .route('/cards')

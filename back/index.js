@@ -8,6 +8,11 @@ if (typeof globalThis.fetch !== 'function') {
   global.Headers = fetch.Headers;  // Expose Headers globally
 }
 
+// Initialize Sentry as early as possible, but AFTER the fetch guard above so it
+// instruments the same fetch the app will use. No-op unless SENTRY_DSN is set.
+require('./instrument');
+const Sentry = require('@sentry/node');
+
 if (typeof(PhusionPassenger) !== 'undefined') {
     PhusionPassenger.configure({ autoInstall: false });
 }
@@ -22,6 +27,7 @@ const cors = require('cors');
 const { Webhook } = require('svix');
 const bodyParser = require('body-parser');
 const datamapper = require("./app/models/user");
+const { notFoundHandler, errorHandler } = require('./app/middlewares/errorHandler');
 
 const app = express();
 const port = process.env.PORT ?? 3001;
@@ -94,18 +100,21 @@ app.post('/api/webhooks',
         if (eventType === 'user.deleted') {
           console.log('userId:', evt.data.id)
           try {
-              const response = await datamapper.deleteExplorer(evt.data.id);
-              if (response === 1) {
-                  console.log("Deleted user from db:", evt.data.id);
-                  return res.status(200).json({ message: 'User deleted from db'});
-              } else {
-                  console.log("Failed to delete user from db:", evt.data.id);
-                  return res.status(404).json({ message: 'User not found'});
-              }
+              // deleteExplorer cascades to the user's cards, push tokens,
+              // conversations, and messages. Idempotent: rowCount 0 means the
+              // explorer is already gone (e.g. the in-app DELETE /account path
+              // purged it first), which is a success, not an error.
+              const rowCount = await datamapper.deleteExplorer(evt.data.id);
+              console.log(
+                rowCount === 1
+                  ? `Deleted user from db: ${evt.data.id}`
+                  : `User already absent from db (no-op): ${evt.data.id}`,
+              );
+              return res.status(200).json({ message: 'User deleted from db' });
           } catch (error) {
             console.error('Error deleting user:', error);
-            res.status(500).json({ error: 'Error while deleting user: ' + error.message });
-          }          
+            return res.status(500).json({ error: 'Error while deleting user: ' + error.message });
+          }
         }
 
         return res.status(200).json({ ok: true });
@@ -124,23 +133,41 @@ app.use(clerkMiddleware());
 
 app.use(router);
 
-app.use('/api', (_req, res) => {
-  res.status(404).json({ error: 'Not found' });
-});
-
-app.use('/api', (err, _req, res, _next) => {
-  console.error("API ERROR:", err);  
-  const status = err?.status || err?.statusCode || 500;
-  const msg = err?.message || 'Server error';
-  res.status(status).json({ error: msg });
-});
-
+// NOT a health check: no dependencies, proves only that the process is up.
+// The real check is GET /api/health.
 app.get('/', function(req, res) {
     const body = 'Hello World';
     res.setHeader('Content-Type', 'text/plain');
     res.setHeader('Content-Length', body.length);
     res.end(body);
 });
+
+// JSON 404 for unmatched /api routes, then the centralized error handler.
+// API routes never redirect — auth/authorization failures come back as JSON.
+app.use('/api', notFoundHandler);
+
+// Sentry captures errors (5xx by default) before our handler formats the
+// response. No-op when SENTRY_DSN is unset. Must be after all routes and before
+// our own error handler.
+Sentry.setupExpressErrorHandler(app);
+
+app.use(errorHandler);
+
+// Make the runtime shape visible in the logs at boot. The prod outage was a
+// silent Node bump (native fetch) vs. an unconditional node-fetch polyfill; if
+// fetch ever stops being native again, this line says so immediately.
+const fetchKind =
+  typeof globalThis.fetch !== 'function'
+    ? 'MISSING'
+    : globalThis.fetch.Promise || typeof globalThis.fetch.isRedirect === 'function'
+    ? 'polyfilled (node-fetch)'
+    : 'native';
+// swapFilter is logged because losing those env vars unfilters results silently.
+const { swapFilterSummary } = require('./app/models/datamapper');
+console.log(
+  `[startup] node=${process.version} fetch=${fetchKind} ` +
+  `env=${process.env.NODE_ENV || 'undefined'} swapFilter=${swapFilterSummary()}`,
+);
 
 if (typeof(PhusionPassenger) !== 'undefined') {
     app.listen('passenger');

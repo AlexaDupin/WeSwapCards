@@ -5,6 +5,7 @@ import { useAuth } from '@clerk/clerk-react';
 import { useStateContext } from '../../../contexts/StateContext';
 import { useDispatchContext } from '../../../contexts/DispatchContext';
 import DOMPurify from 'dompurify';
+import { getBlockedSendMessage, getErrorStatus, shouldRetryRequest } from '../data/sendErrorMessages';
 
 const useChatLogic = () => {
     const state = useStateContext();
@@ -85,28 +86,52 @@ const useChatLogic = () => {
 
         const allFetchedMessages = response.data.allMessages || [];
 
+        const startOfDay = (date) =>
+          new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
         const allMessagesFormattedDate = allFetchedMessages.map((message) => {
           const messageDate = new Date(message.timestamp);
           const today = new Date();
-          const daysDifference = (today - messageDate) / (1000 * 3600 * 24); // difference in days
-        
-          // Define a formatting function for messages older than 7 days
-          const formattedDate = daysDifference > 7
-            ? messageDate.toLocaleString(undefined, { 
-                weekday: 'long', 
-                day: '2-digit', 
-                month: 'long',
-                hour: '2-digit', 
-                minute: '2-digit',
-              }) // For older than 7 days: Weekday, Day, Month, Hour, Minute
-            : messageDate.toLocaleString(undefined, { 
-                weekday: 'long', 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              }); // For messages within 7 days: Weekday, Hour, Minute
-        
+
+          // Whole calendar days between the two dates, so "yesterday at 23:50"
+          // never counts as today. Negative for a message dated in the future.
+          const daysDifference =
+            (startOfDay(today) - startOfDay(messageDate)) / (1000 * 3600 * 24);
+
+          let formattedDate;
+          if (Number.isNaN(messageDate.getTime())) {
+            formattedDate = '';
+          } else if (daysDifference === 0) {
+            // Today: the weekday adds nothing, just show the time
+            formattedDate = messageDate.toLocaleString(undefined, {
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+          } else if (daysDifference > 0 && daysDifference <= 7) {
+            // Within the last week: Weekday, Hour, Minute
+            formattedDate = messageDate.toLocaleString(undefined, {
+              weekday: 'long',
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+          } else {
+            // Older than a week — or dated in the future, which a row written by
+            // a skewed client clock still can be. Always spell out the date, so
+            // an impossible timestamp can never read as an ordinary weekday.
+            formattedDate = messageDate.toLocaleString(undefined, {
+              weekday: 'long',
+              day: '2-digit',
+              month: 'long',
+              ...(messageDate.getFullYear() === today.getFullYear()
+                ? {}
+                : { year: 'numeric' }),
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+          }
+
           return {
-            ...message, 
+            ...message,
             timestamp: formattedDate,
             sender_id: String(message.sender_id ?? message.senderId ?? ""),
             recipient_id: String(message.recipient_id ?? message.recipientId ?? ""),
@@ -167,6 +192,8 @@ const useChatLogic = () => {
       const input = {
         id: messages.length + 1,
         content: sanitizedMessage,
+        // Ignored by the API (the database stamps the row); still sent so this
+        // build keeps working against a backend deployed before that change.
         timestamp: new Date(),
         sender_id: Number(explorerId),
         recipient_id: Number(swapExplorerId),
@@ -212,11 +239,19 @@ const useChatLogic = () => {
 
         } catch (error) {
           // console.error(`Attempt ${attempt} to send failed:`, error);
-          if (attempt < maxRetries) {
+          if (attempt < maxRetries && shouldRetryRequest(error)) {
             // console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
             await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
           } else {
-            if (error.status === 400) {
+            const blockedMessage = getBlockedSendMessage(error);
+            if (blockedMessage) {
+              setHiddenAlert(false);
+              setAlertMessage(blockedMessage);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              setIsSending(false);
+              return;
+            }
+            if (getErrorStatus(error) === 400) {
               setHiddenAlert(false);
               setAlertMessage("There was an error with the format of your message. Review it and retry.");
               setIsSending(false);
@@ -256,6 +291,7 @@ const useChatLogic = () => {
           card_name: swapCardName,
           creator_id: explorerId,
           recipient_id: swapExplorerId,
+          // Ignored by the API — see sendMessage.
           timestamp: new Date(),
         }
 
@@ -291,12 +327,14 @@ const useChatLogic = () => {
             
           } catch (error) {
             // console.error(`Attempt ${attempt} to create conv failed:`, error);
-            if (attempt < maxRetries) {
+            if (attempt < maxRetries && shouldRetryRequest(error)) {
               // console.log(`Retrying in ${delayBetweenRetries / 1000} seconds...`);
               await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries));
             } else {
             setHiddenAlert(false);
-            setAlertMessage("There was an error while creating the conversation");
+            setAlertMessage(
+              getBlockedSendMessage(error) ?? "There was an error while creating the conversation"
+            );
             window.scrollTo({ top: 0, behavior: 'smooth' });
             // console.log(error);
             setIsSending(false);

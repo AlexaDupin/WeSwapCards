@@ -25,3 +25,15 @@ GET http://localhost:3001/api/v1/chapters/latest
 Content-Type: application/json
 
 ###
+
+### Get 20 past conversations
+GET http://localhost:3001/api/v1/conversation/past/1?mode=cursor&limit=20
+Content-Type: application/json
+
+### Get 20 past conversations, 2nd batch
+GET http://localhost:3001/api/v1/conversation/past/1?mode=cursor&limit=20
+  &cursor_unread=0
+  &cursor_card=égypte8
+  &cursor_swap=test
+  &cursor_id=64
+Content-Type: application/json

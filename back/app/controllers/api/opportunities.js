@@ -6,9 +6,12 @@ const opportunitiesController = {
         const cardId = req.params.cardId;
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
+        // Opt-in, native app only. The web app never sends it and keeps the
+        // original results, ordering and pagination totals.
+        const excludeBlocked = req.query.excludeBlocked === '1' || req.query.excludeBlocked === 'true';
 
         try {
-            const result = await datamapper.findSwapOpportunities(cardId, explorerId, page, limit);
+            const result = await datamapper.findSwapOpportunities(cardId, explorerId, page, limit, { excludeBlocked });
             // console.log("CTRL opportunities result", result);
             res.status(200).json(result);
         } catch (error) {

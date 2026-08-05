@@ -107,24 +107,35 @@ const useCardsLogic = () => {
     
     const upsertCard = useCallback(async (cardId, duplicate) => {
       if (isPublic) return;
-      const token = await getToken();
-      const response = await axiosInstance.put(`/explorercards/${explorerId}/cards/${cardId}`,
-        { duplicate },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      // console.log(`Card ${cardId} status updated`, response.data);
-  
-      if (response.status === 200 && response.data.duplicate === false) { 
+
+      // The backend now answers an auth failure with 401 JSON instead of a 302
+      // redirect, so this rejects where it previously resolved silently. Handle
+      // it here — the three handleSelect call sites all await this.
+      try {
+        const token = await getToken();
+        const response = await axiosInstance.put(`/explorercards/${explorerId}/cards/${cardId}`,
+          { duplicate },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        // console.log(`Card ${cardId} status updated`, response.data);
+
+        if (response.status === 200 && response.data.duplicate === false) {
+          dispatch({
+            type: 'cardStatuses/updatedToOwned',
+            payload: { cardId },
+          })
+        }
+
+        if (response.status === 200 && response.data.duplicate === true) {
+          dispatch({
+            type: 'cardStatuses/updatedToDuplicate',
+            payload: { cardId },
+          })
+        }
+      } catch (error) {
         dispatch({
-          type: 'cardStatuses/updatedToOwned',
-          payload: { cardId },
-        })
-      } 
-  
-      if (response.status === 200 && response.data.duplicate === true) { 
-        dispatch({
-          type: 'cardStatuses/updatedToDuplicate',
-          payload: { cardId },
+          type: 'cardStatuses/fetchedError',
+          payload: isNetworkError(error) ? { message: "There was an error reaching the server. Try again." } : undefined
         })
       }
     }, [isPublic, explorerId, getToken, dispatch]);

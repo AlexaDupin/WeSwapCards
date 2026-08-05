@@ -27,8 +27,9 @@ const checkExplorerAuthorization = async (req, res, next) => {
     // If the IDs match, proceed to the next middleware or controller
     next();
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Internal server error' });
+    // Route unexpected failures to the central error handler (logged + 500 JSON)
+    // instead of swallowing them here.
+    next(err);
   }
 };
 
@@ -64,12 +65,17 @@ const checkConversationAuthorization = async (req, res, next) => {
       return res.status(403).json({ message: 'You are not authorized to access this conversation' });
     }
 
+    // Expose the verified participants so downstream handlers (e.g. the block
+    // check on message send) work from trusted data instead of the request body.
+    req.conversationParticipants = conversation;
+
     // console.log("LEFT CONV AUTHORIZATION MDLW");
     // If the IDs match, proceed to the next middleware or controller
     next();
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Internal server error' });
+    // Route unexpected failures to the central error handler (logged + 500 JSON)
+    // instead of swallowing them here.
+    next(err);
   }
 };
 
