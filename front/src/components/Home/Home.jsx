@@ -12,7 +12,7 @@ import Search from '../../images/searchPL.svg';
 import Users from '../../images/usersPL.svg';
 import Chat from '../../images/chatdealPL.svg';
 import Dashboard from '../../images/dashboardPL.svg';
-import Logo from '../../images/favImage.png';
+import Logo from '../../images/logo-mark.png';
 
 import './homeStyles.scss';
 
