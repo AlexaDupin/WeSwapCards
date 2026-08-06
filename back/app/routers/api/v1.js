@@ -17,7 +17,6 @@ const controllerHandler = require('../../helpers/controllerHandler');
 const router = express.Router();
 
 router.get('/', apiController.home);
-router.get('/country', apiController.country);
 
 router.post('/register/user',
  requireApiAuth, controllerHandler(userController.createUser));

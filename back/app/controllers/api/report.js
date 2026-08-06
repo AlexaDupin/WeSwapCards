@@ -1,17 +1,17 @@
 const datamapper = require("../../models/datamapper");
 
 const reportController = {
-    async getAllPlaces(req, res) {
+    async getAllPlaces(req, res, next) {
             //console.log("ENTERING PLACES");
             try {
                 const places = await datamapper.getAllPlaces();
                 // console.log(places);
                 res.json({places});
             } catch (error) {
-                res.status(500).send(error);
+                return next(error);
             }
     },
-    async getCardsFromPlace(req, res) {
+    async getCardsFromPlace(req, res, next) {
         const placeId = req.params.placeId;
 
         try {
@@ -19,10 +19,10 @@ const reportController = {
             // console.log(cards);
             res.json({ cards });
         } catch (error) {
-            res.status(500).send(error);
+            return next(error);
         }
     },
-    async getExplorerCardsFromOnePlace(req, res) {
+    async getExplorerCardsFromOnePlace(req, res, next) {
         const placeId = req.params.placeId;
         const explorerId = req.params.explorerId;
 
@@ -30,10 +30,10 @@ const reportController = {
             const cards = await datamapper.getCardsFromOneExplorerInOnePlace(placeId, explorerId);
             res.json({ cards });
         } catch (error) {
-            res.status(500).send(error);
+            return next(error);
         }
     },
-    async getDuplicateCards(req, res) {
+    async getDuplicateCards(req, res, next) {
         const placeId = req.params.placeId;
         const explorerId = req.params.explorerId;
 
@@ -41,7 +41,7 @@ const reportController = {
             const cards = await datamapper.getDuplicatesFromExplorerInOnePlace(explorerId, placeId);
             res.json({ cards });
         } catch (error) {
-            res.status(500).send(error);
+            return next(error);
         }
     },
     async reportCardsForExplorer(req, res) {

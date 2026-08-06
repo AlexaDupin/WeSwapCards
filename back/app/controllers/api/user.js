@@ -3,7 +3,7 @@ const datamapper = require("../../models/user");
 
 const userController  = {
   // Retrieve user info from database using Clerk userId
-  async getUserByUID(req, res) {
+  async getUserByUID(req, res, next) {
     const userUID = req.body.userUID;
     //console.log("CTRL getUserByUID userUID", userUID);
 
@@ -12,7 +12,7 @@ const userController  = {
       //console.log("CTRL user", user);
       return res.status(200).json(user);
     } catch (error) {
-      res.status(500).send(error);
+      return next(error);
     }
   },
 

@@ -1,25 +1,25 @@
 const datamapper = require("../../models/datamapper");
 
 const cardController = {
-    async getAllCards(req, res) {
+    async getAllCards(req, res, next) {
         try {
             const cards = await datamapper.getAllCards();
             // console.log("cardCtrl getAllCards", cards);
             res.json({cards});
         } catch (error) {
-            res.status(500).send(error);
+            return next(error);
         }
     },
-    async getAllCardsStatuses(req, res) {
+    async getAllCardsStatuses(req, res, next) {
         const explorerId = Number(req.params.explorerId);
         try {
             const statuses = await datamapper.getAllCardsStatuses(explorerId);
             res.json({statuses});
         } catch (error) {
-            res.status(500).send(error);
+            return next(error);
         }
     },
-    async addCardToExplorer(req, res) {
+    async addCardToExplorer(req, res, next) {
         const explorerId = Number(req.params.explorerId);
         const cardId = Number(req.params.cardId);
         const duplicate = req.body.duplicate;
@@ -36,10 +36,10 @@ const cardController = {
             const result = await datamapper.upsertExplorerHasCard({ explorerId, cardId, duplicate });
             return res.status(200).json(result);
         } catch (error) {
-            res.status(500).send(error);
+            return next(error);
         }
     },
-    async deleteCardFromExplorer(req, res) {
+    async deleteCardFromExplorer(req, res, next) {
         const explorerId = Number(req.params.explorerId);
         const cardId = Number(req.params.cardId);
         // console.log("deleteCardFromExplorer CTRL", explorerId, cardId);
@@ -52,10 +52,10 @@ const cardController = {
             const response = await datamapper.deleteCardFromExplorerHasCard(explorerId, cardId);
             return res.status(200).json(response);
         } catch (error) {
-            res.status(500).send(error);
+            return next(error);
         }
     },
-    async markChapter(req, res) {
+    async markChapter(req, res, next) {
       const explorerId = Number(req.params.explorerId);
       const chapterId  = Number(req.params.chapterId);
       const status     = req.body?.status;
@@ -75,7 +75,7 @@ const cardController = {
         }
         return res.status(200).json({ ok: true });
       } catch (error) {
-        return res.status(500).send(error);
+        return next(error);
       }
     },
 };
