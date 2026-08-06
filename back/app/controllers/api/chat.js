@@ -292,6 +292,12 @@ const chatController = {
             try {
                 const updatedStatus = await datamapper.editConversationStatus(conversationId, status);
                 // console.log("STATUS CTRL", updatedStatus );
+                // Never let the counter break a status change.
+                try {
+                    await datamapper.syncSwapCompleted(conversationId, status);
+                } catch (err) {
+                    console.error('[swap_completed] sync failed:', err?.message || err);
+                }
                 res.status(200).json({ updatedStatus });
             } catch (error) {
                 console.error("Error while updating conversation status:", error);

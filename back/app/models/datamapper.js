@@ -929,6 +929,29 @@ module.exports = {
         // console.log(result);
         return result.command;
     },
+    // Mirrors conversation status into swap_completed, which has no foreign key
+    // so the row survives the account deletion that removes the conversation.
+    async syncSwapCompleted(conversationId, status) {
+        if (status === 'Completed') {
+            await client.query({
+                text: `
+                INSERT INTO swap_completed (conversation_id, card_name, completed_at)
+                SELECT id, card_name, now() FROM conversation WHERE id = $1
+                ON CONFLICT (conversation_id) DO NOTHING
+                `,
+                values: [conversationId],
+            });
+            return;
+        }
+        await client.query({
+            text: `DELETE FROM swap_completed WHERE conversation_id = $1`,
+            values: [conversationId],
+        });
+    },
+    async getCompletedSwapCount() {
+        const result = await client.query({ text: `SELECT count(*)::int AS total FROM swap_completed` });
+        return result.rows[0].total;
+    },
     async getCountForOnePlaceForExplorer(explorerId, placeId) {
         const preparedQuery = {
             text: `
