@@ -3,6 +3,25 @@
 
 :root {
   --font-sans: "Inter", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif !important;
+
+  // Home v2 palette. Shared by homeStyles, headerStyles and footerStyles.
+  --wsc-accent:        #{vars.$primary-color};
+  --wsc-accent-hover:  #c25a05;
+  --wsc-accent-link:   #e8720c;
+  --wsc-accent-soft:   #fdeee0;
+  --wsc-accent-border: #f7d9bd;
+  --wsc-accent-glow:   rgba(240, 122, 26, 0.28);
+  --wsc-teal:          #{vars.$secondary-color};
+  --wsc-teal-deep:     #158a75;
+  --wsc-teal-soft:     #e7f6f2;
+  --wsc-ink:           #1e2024;
+  --wsc-ink-muted:     #55595f;
+  --wsc-ink-faint:     #8a8e94;
+  --wsc-bg:            #fbf9f7;
+  --wsc-surface:       #ffffff;
+  --wsc-border:        #ede7e1;
+  --wsc-hairline:      #ded6ce;
+  --wsc-tint:          #f6f2ed;
 }
 
 body { 

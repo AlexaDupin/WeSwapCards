@@ -1,27 +1,48 @@
 import React, { useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
-import PageContainer from '../PageContainer/PageContainer';
 
-import ChapterCarouselSection from './ChapterCarouselSection';
+import ChapterCarouselSection, { PLACEHOLDER } from './ChapterCarouselSection';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 import CustomButton from '../CustomButton/CustomButton';
-
-import Report from '../../images/reportPL.svg';
-import Search from '../../images/searchPL.svg';
-import Users from '../../images/usersPL.svg';
-import Chat from '../../images/chatdealPL.svg';
-import Dashboard from '../../images/dashboardPL.svg';
-import Logo from '../../images/logo-mark.png';
+import useChapters from './useChapters';
 
 import './homeStyles.scss';
 
-// Latest first. The carousel renders these in the order listed here.
-const VINTAGE_COLLECTOR_IDS = [98, 92, 85, 77, 71, 60, 47, 42, 39, 35];
+const LATEST_PARAMS = { limit: 10 };
+
+const STEPS = [
+  {
+    title: 'Log all the cards you have',
+    text: 'Mark owned, missing, and duplicate cards across every chapter in a couple of taps.',
+  },
+  {
+    title: 'Find the card you need',
+    text: 'Search any card and see instantly who has a spare copy sitting in their collection.',
+  },
+  {
+    title: 'Browse users who have it',
+    text: 'See matching collectors ranked by how well their spares fit your gaps.',
+  },
+  {
+    title: 'Chat with them and find a deal',
+    text: 'Negotiate directly in the app until both sides are happy with the swap.',
+    tone: 'teal',
+  },
+  {
+    title: 'Keep track in a dashboard',
+    text: 'Every request, pending trade, and completed swap in one place.',
+    tone: 'teal',
+  },
+];
 
 function Home() {
     const navigate = useNavigate();
     const { isSignedIn } = useUser();
+
+    // One request for /chapters/latest, shared by the hero and the carousel.
+    const latest = useChapters('/chapters/latest', LATEST_PARAMS);
+    const heroCards = latest.items.slice(0, 2);
 
     useEffect(() => {
       if (!isSignedIn) {
@@ -35,7 +56,7 @@ function Home() {
       const ENTER = 0.25;
       const EXIT  = 0.10;
       const state = new WeakMap();
-    
+
       const io = new IntersectionObserver(
         (entries) => {
           entries.forEach((e) => {
@@ -51,7 +72,7 @@ function Home() {
         },
         { threshold: [0, EXIT, ENTER, 1], rootMargin: "-10% 0% -10% 0%" }
       );
-    
+
       const applyDelays = () => {
         document.querySelectorAll("[data-reveal-container]").forEach((group) => {
           const children = Array.from(group.querySelectorAll(".reveal"));
@@ -60,27 +81,27 @@ function Home() {
           });
         });
       };
-    
+
       const observeAll = () => {
         document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
       };
-    
+
       // initial pass
       applyDelays();
       observeAll();
-    
+
       // observe future additions/changes
       const mo = new MutationObserver(() => {
         applyDelays();
         observeAll();
       });
       mo.observe(document.body, { childList: true, subtree: true });
-    
+
       // Fallback: if IO not supported, just show all
       if (!("IntersectionObserver" in window)) {
         document.querySelectorAll(".reveal").forEach((el) => el.classList.add("is-visible"));
       }
-    
+
       return () => {
         io.disconnect();
         mo.disconnect();
@@ -88,75 +109,121 @@ function Home() {
     }, []);
 
   return (
-  <PageContainer className="home">
-    <section data-reveal-container className="home-section">
-      <div className="home-section-left reveal">
-        <img src={Logo} alt="WeSwapCards logo" className="home-section-left-image"/>
+  <main className="home">
+
+    <section className="home-hero" data-reveal-container>
+      <div className="home-hero__inner">
+
+        <div className="home-hero__copy reveal">
+          <p className="home-pill">
+            <span className="home-pill__dot" />
+            1,000 collectors joined already &middot; 16,000 swaps so far
+          </p>
+
+          <h1 className="home-hero__title">
+            Your duplicates are someone else&rsquo;s{' '}
+            <span className="home-hero__title-accent">missing card.</span>
+          </h1>
+
+          <p className="home-hero__lede">
+            Track the WeCards you own, spot the ones you&rsquo;re missing, and get matched
+            with collectors whose spares fill your gaps. Then work out the trade together.
+          </p>
+
+          <div className="home-hero__actions">
+            <CustomButton text="Create an account" href="/register" />
+            <a href="#how" className="home-link-quiet">See how it works &rarr;</a>
+          </div>
+
+          <p className="home-hero__fineprint">
+            Free to join. Not affiliated with the official WeWard app.
+          </p>
+        </div>
+
+        <div className="home-hero__art reveal" aria-hidden="true">
+          <div className="home-hero__glow" />
+          <div className="home-hero__stack">
+            {[0, 1].map((i) => (
+              <div key={i} className={`home-hero__card home-hero__card--${i + 1}`}>
+                <div className="home-hero__card-art">
+                  {heroCards[i] && (
+                    <img src={heroCards[i].image_url || PLACEHOLDER} alt="" />
+                  )}
+                </div>
+                <div className="home-hero__card-label">
+                  {heroCards[i]?.name || ' '}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
+    </section>
 
-      <div className="home-section-right reveal">
-        <h1 className="home-title">Welcome to WeSwapCards!</h1><br />
-        <p className="home-text">You use WeWard and want to exchange WeCards easily?<br />This is the place for you!</p>
-        <p className="home-text">Create an account and start searching for the cards you need!</p>
-        <p className="home-disclaimer">This platform is <strong>not</strong> affiliated in any way with the official WeWard app.</p><br />
+    <section id="how" className="home-how" data-reveal-container>
+      <div className="home-how__inner">
+        <div className="home-section-head reveal">
+          <p className="home-eyebrow">How it works</p>
+          <h2 className="home-section-title">
+            From a pile of duplicates to a completed collection.
+          </h2>
+        </div>
 
-        <CustomButton 
-            text="Create an account"
-            href="/register"
+        <div className="home-how__grid">
+          {STEPS.map((step, i) => (
+            <article key={step.title} className="home-step reveal">
+              <div className={`home-step__badge${step.tone === 'teal' ? ' home-step__badge--teal' : ''}`}>
+                {i + 1}
+              </div>
+              <h3 className="home-step__title">{step.title}</h3>
+              <p className="home-step__text">{step.text}</p>
+            </article>
+          ))}
+
+          <article className="home-step home-step--cta reveal">
+            <h3 className="home-step__title">Ready to fill the gaps in your collection?</h3>
+            <CustomButton text="Create an account" href="/register" />
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="chapters" className="home-chapters" data-reveal-container>
+      <div className="home-chapters__inner">
+        <div className="home-section-head home-section-head--split reveal">
+          <div>
+            <p className="home-eyebrow">Chapters</p>
+            <h2 className="home-section-title">
+              Every chapter, every series, all swappable.
+            </h2>
+          </div>
+          <a href="/register" className="home-link">Browse all chapters &rarr;</a>
+        </div>
+
+        <ChapterCarouselSection
+          title="The latest chapters"
+          chapters={latest}
         />
+
+        <ChapterCarouselSection
+          title="Ephemeral vintage series"
+          endpoint="/chapters/vintage"
+        />
+
+        <div className="home-catalogue reveal">
+          <h3 className="home-catalogue__title">And all the other chapters</h3>
+          <p className="home-catalogue__text">
+            New chapters are added as they land in WeWard, so your tracker never falls behind.
+          </p>
+          <a href="/register" className="home-button-outline">Explore the catalogue</a>
+        </div>
       </div>
-    </section>
-
-    <section data-reveal-container> 
-    <div className='reveal home-steps'>    
-      <section className="home-image-section ">
-        <img src={Report} alt="Report icon" className="home-image" />
-        <h2 className="home-subtitle">Log all the cards you have</h2>
-      </section>
-
-      <section className="home-image-section ">
-        <img src={Search} alt="Find icon" className="home-image" />
-        <h2 className="home-subtitle">Find the card you need</h2>
-      </section>
-
-      <section className="home-image-section ">
-        <img src={Users} alt="Users icon" className="home-image" />
-        <h2 className="home-subtitle">Browse users who have this card</h2>
-      </section>
-
-      <section className="home-image-section ">
-        <img src={Chat} alt="Chat icon" className="home-image" />
-        <h2 className="home-subtitle">Chat with them and find a deal</h2>
-      </section>
-
-      <section className="home-image-section reveal">
-        <img src={Dashboard} alt="Dashboard icon" className="home-image"/>
-        <h2 className="home-subtitle">Keep track of your requests in a dashboard</h2>
-      </section>
-      </div>
-    </section>
-
-    <ChapterCarouselSection
-      title="Browse all the latest chapters"
-      endpoint="/chapters/latest"
-      params={{ limit: 10 }}
-    />
-
-    {VINTAGE_COLLECTOR_IDS.length > 0 && (
-      <ChapterCarouselSection
-        title="All ephemeral vintage series"
-        endpoint="/chapters/by-ids"
-        params={{ ids: VINTAGE_COLLECTOR_IDS.join(',') }}
-      />
-    )}
-
-    <section className="latest-chapters my-5" data-reveal-container aria-label="And all the other chapters!">
-      <h2 className="home-section-title home-section-title--center">And all the other chapters!</h2>
     </section>
 
     <ScrollToTop />
-  
-  </ PageContainer>
+
+  </main>
 )
 }
 

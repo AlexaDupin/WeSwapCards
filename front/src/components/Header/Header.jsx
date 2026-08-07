@@ -66,6 +66,9 @@ function Header() {
             >
               Sign in
             </NavLink>
+            <NavLink to="/register" className="header-cta">
+              Create an account
+            </NavLink>
           </SignedOut>
         </div>
 

@@ -15,18 +15,28 @@ function Footer() {
 
         {/* For desktop screens */}
        <div className="footer-desktop border-top">
-          <a href="/privacy" target="_blank" className="footer-desktop-link" rel="noopener noreferrer">
-                <p className="footer-desktop-caption">Privacy Policy</p>
-          </a>
-          <a href="/terms" target="_blank" className="footer-desktop-link" rel="noopener noreferrer">
-                <p className="footer-desktop-caption">Terms and Conditions</p>
-          </a>
-          <a href="/cookies" target="_blank" className="footer-desktop-link" rel="noopener noreferrer">
-                <p className="footer-desktop-caption">Cookie Policy</p>
-          </a>
-          <a href="/contact" target="_blank" className="footer-desktop-link" rel="noopener noreferrer">
-                <p className="footer-desktop-caption">Contact us</p>
-          </a>
+          <p className="footer-desktop-copyright">
+            &copy; {new Date().getFullYear()} WeSwapCards
+          </p>
+
+          <p className="footer-desktop-disclaimer">
+            This platform is <strong>not</strong> affiliated in any way with the official WeWard app.
+          </p>
+
+          <div className="footer-desktop-links">
+            <a href="/privacy" target="_blank" className="footer-desktop-link" rel="noopener noreferrer">
+                  <p className="footer-desktop-caption">Privacy Policy</p>
+            </a>
+            <a href="/terms" target="_blank" className="footer-desktop-link" rel="noopener noreferrer">
+                  <p className="footer-desktop-caption">Terms and Conditions</p>
+            </a>
+            <a href="/cookies" target="_blank" className="footer-desktop-link" rel="noopener noreferrer">
+                  <p className="footer-desktop-caption">Cookie Policy</p>
+            </a>
+            <a href="/contact" target="_blank" className="footer-desktop-link" rel="noopener noreferrer">
+                  <p className="footer-desktop-caption">Contact us</p>
+            </a>
+          </div>
       </div>
 
       

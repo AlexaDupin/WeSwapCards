@@ -1,77 +1,53 @@
-import React, { useEffect, useState } from "react";
-import { Spinner, Card } from "react-bootstrap";
+import React from "react";
+import { Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { axiosInstance } from "../../helpers/axiosInstance";
 import ChapterCarousel from "./ChapterCarousel";
+import useChapters from "./useChapters";
 
-const PLACEHOLDER =
+export const PLACEHOLDER =
   "https://res.cloudinary.com/dwf28prby/image/upload/v1760480793/placeholder.jpg";
 
 function ChapterCard({ chapter, onSelect }) {
   return (
-    <Card
-      className="chapter-card banner-style"
+    <article
+      className="home-chapter-card"
       role="button"
+      tabIndex={0}
       onClick={() => onSelect?.(chapter.id)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSelect?.(chapter.id);
+        }
+      }}
     >
-      <Card.Img
+      <img
         src={chapter.image_url || PLACEHOLDER}
         alt={chapter.name}
-        className="chapter-card-image"
+        className="home-chapter-card__image"
         loading="lazy"
         onError={(e) => { e.currentTarget.style.opacity = 0.1; }}
       />
-      <div className="chapter-card-overlay">
-        <span className="chapter-card-title">{chapter.name}</span>
+      <div className="home-chapter-card__body">
+        <span className="home-chapter-card__title">{chapter.name}</span>
       </div>
-    </Card>
+    </article>
   );
 }
 
-// /chapters/by-ids has no ORDER BY, so the caller's id order is applied here.
-function orderByIds(rows, ids) {
-  const position = new Map(
-    String(ids)
-      .split(",")
-      .map((id, index) => [Number(id.trim()), index])
-  );
-  return [...rows].sort(
-    (a, b) =>
-      (position.get(a.id) ?? Infinity) - (position.get(b.id) ?? Infinity)
-  );
-}
-
-export default function ChapterCarouselSection({ title, endpoint, params = {} }) {
+// Rows come either from `chapters` (the caller already fetched them) or from
+// this component's own request to `endpoint`.
+export default function ChapterCarouselSection({ title, endpoint, params = {}, chapters }) {
   const navigate = useNavigate();
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState("");
+  const fetched = useChapters(chapters ? null : endpoint, params);
+  const { items, loading, err } = chapters ?? fetched;
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        setLoading(true);
-        setErr("");
-        const res = await axiosInstance.get(endpoint, { params });
-        const rows = Array.isArray(res.data?.items) ? res.data.items : [];
-        if (!cancelled) setItems(params.ids ? orderByIds(rows, params.ids) : rows);
-      } catch (e) {
-        if (!cancelled) {
-          console.error(`[Home ${title}] fetch error:`, e);
-          setErr("Unable to load data.");
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [endpoint, JSON.stringify(params), title]);
+  // Nothing to show: hide the heading too rather than leave it dangling.
+  if (!loading && !err && items.length === 0) return null;
 
   return (
-    <section className="latest-chapters my-5" data-reveal-container aria-label={title}>
-      <h2 className="home-section-title reveal mb-3">{title}</h2>
+    <section className="home-chapters-row" data-reveal-container aria-label={title}>
+      <h3 className="home-chapters-row__title reveal">{title}</h3>
 
       <div className="reveal">
         {loading && (
@@ -80,9 +56,9 @@ export default function ChapterCarouselSection({ title, endpoint, params = {} })
           </div>
         )}
 
-      {!!err && <p className="text-danger text-center">{err}</p>}
+        {!!err && <p className="text-danger">{err}</p>}
 
-      {!loading && !err && items.length > 0 && (
+        {!loading && !err && items.length > 0 && (
           <ChapterCarousel
             items={items}
             ariaLabel={title}
