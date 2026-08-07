@@ -22,7 +22,7 @@ const STEPS = [
   },
   {
     title: 'Browse users who have it',
-    text: 'See matching collectors ranked by how well their spares fit your gaps.',
+    text: 'Collectors who also need one of your duplicates come first.',
   },
   {
     title: 'Chat with them and find a deal',
@@ -117,7 +117,7 @@ function Home() {
         <div className="home-hero__copy reveal">
           <p className="home-pill">
             <span className="home-pill__dot" />
-            1,000 collectors joined already &middot; 16,000 swaps so far
+            1,000+ collectors joined already &middot; 16,000+ swaps so far
           </p>
 
           <h1 className="home-hero__title">
@@ -195,7 +195,7 @@ function Home() {
           <div>
             <p className="home-eyebrow">Chapters</p>
             <h2 className="home-section-title">
-              Every chapter, every series, all swappable.
+              Every chapter, all swappable.
             </h2>
           </div>
           <Link to="/register" className="home-link">Browse all chapters &rarr;</Link>
