@@ -2,7 +2,10 @@
 @use 'vars';
 
 :root {
-  --font-sans: "Inter", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  --font-head: 'Gabarito', Helvetica, Arial, sans-serif;
+  --font-body: 'Hanken Grotesk', Helvetica, Arial, sans-serif;
+  // Wordmark only (.header-title). Loaded at 800 alone.
+  --font-wordmark: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif;
 
   // Home v2 palette. Shared by homeStyles, headerStyles and footerStyles.
   --wsc-accent:        #{vars.$primary-color};
@@ -24,7 +27,20 @@
   --wsc-tint:          #f6f2ed;
 }
 
-body { 
-  font-family: var(--font-sans) !important;
-  color: #333 !important; 
+body {
+  font-family: var(--font-body) !important;
+  color: #333 !important;
+}
+
+// The button-shaped anchors are listed too: CustomButton renders an <a> when
+// given href, so it matches neither `button` nor `.btn`.
+h1, h2, h3, h4, .logo, .btn, nav a,
+.custom-button, .home-button-outline, .header-cta {
+  font-family: var(--font-head);
+}
+
+// App.scss re-imports Bootstrap after this file, and its reboot sets
+// `button { font-family: inherit }`, so this one needs the override.
+button {
+  font-family: var(--font-head) !important;
 }
