@@ -77,20 +77,6 @@
   &:hover { color: var(--wsc-accent); }
 }
 
-.home-button-outline {
-  display: inline-block;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  border: 1.5px solid var(--wsc-ink);
-  border-radius: 999px;
-  color: var(--wsc-ink);
-  padding: 11px 22px;
-  text-decoration: none;
-  transition: background-color .15s ease, color .15s ease;
-
-  &:hover { background: var(--wsc-ink); color: #fff; }
-}
-
 /* ---- hero ---- */
 
 .home-hero__inner {
@@ -148,11 +134,8 @@
   gap: 16px;
   flex-wrap: wrap;
 
+  // Size comes from size="lg"; the glow is specific to the hero.
   .custom-button {
-    font-size: 1.0625rem;
-    font-weight: 700 !important;
-    padding: 16px 32px !important;
-    border-radius: 999px;
     box-shadow: 0 8px 20px var(--wsc-accent-glow);
   }
 }
@@ -290,9 +273,6 @@
 
     .custom-button {
       align-self: flex-start;
-      font-size: 0.9375rem;
-      padding: 12px 22px !important;
-      border-radius: 999px;
     }
   }
 }

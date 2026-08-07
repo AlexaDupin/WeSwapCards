@@ -1,27 +1,45 @@
 @use 'src/styles/vars';
 
+// !important throughout: Bootstrap is re-imported after this file via App.scss
+// and its button/anchor rules would otherwise win.
 .custom-button {
-    font-weight: 600 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  font-weight: 700 !important;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+
+  &--sm { font-size: .9375rem; padding: 10px 20px !important; }
+  &--md { font-size: .9375rem; padding: 12px 22px !important; }
+  &--lg { font-size: 1.0625rem; padding: 16px 32px !important; }
+
+  &--primary {
+    background-color: var(--wsc-accent) !important;
     color: #fff !important;
-    background-color: vars.$primary-color !important;
-    border: none;
-    border-radius: 27px;
-    padding: 0.8rem 1.6rem !important;
-    text-decoration: none;
 
-    &:hover {
-        background-color: lighten(vars.$primary-color, 10%) !important;
-        border-color: lighten(vars.$primary-color, 10%) !important;
+    &:hover,
+    &:focus-visible {
+      background-color: var(--wsc-accent-hover) !important;
+      color: #fff !important;
+      outline: none;
     }
+  }
 
-    &:focus {
-        box-shadow: vars.$primary-color;
+  &--outline {
+    background: transparent !important;
+    border: 1.5px solid var(--wsc-ink);
+    color: var(--wsc-ink) !important;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--wsc-ink) !important;
+      color: #fff !important;
+      outline: none;
     }
-
-    &:active {
-        background-color: darken(vars.$primary-color, 10%);
-        border-color: darken(vars.$primary-color, 10%);
-    }
-
+  }
 }
-

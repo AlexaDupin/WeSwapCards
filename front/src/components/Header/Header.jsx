@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import useStickyVars from "../../hooks/useStickyVars";
+import CustomButton from "../CustomButton/CustomButton";
 import logoMark from "../../images/logo-mark.png";
 import "./headerStyles.scss";
 
@@ -66,9 +67,12 @@ function Header() {
             >
               Sign in
             </NavLink>
-            <NavLink to="/register" className="header-cta">
-              Create an account
-            </NavLink>
+            <CustomButton
+              text="Create an account"
+              to="/register"
+              size="sm"
+              className="header-cta"
+            />
           </SignedOut>
         </div>
 

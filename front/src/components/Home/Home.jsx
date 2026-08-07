@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import ChapterCarouselSection, { PLACEHOLDER } from './ChapterCarouselSection';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
@@ -131,7 +131,7 @@ function Home() {
           </p>
 
           <div className="home-hero__actions">
-            <CustomButton text="Create an account" href="/register" />
+            <CustomButton text="Create an account" to="/register" size="lg" />
             <a href="#how" className="home-link-quiet">See how it works &rarr;</a>
           </div>
 
@@ -183,7 +183,7 @@ function Home() {
 
           <article className="home-step home-step--cta reveal">
             <h3 className="home-step__title">Ready to fill the gaps in your collection?</h3>
-            <CustomButton text="Create an account" href="/register" />
+            <CustomButton text="Create an account" to="/register" />
           </article>
         </div>
       </div>
@@ -198,7 +198,7 @@ function Home() {
               Every chapter, every series, all swappable.
             </h2>
           </div>
-          <a href="/register" className="home-link">Browse all chapters &rarr;</a>
+          <Link to="/register" className="home-link">Browse all chapters &rarr;</Link>
         </div>
 
         <ChapterCarouselSection
@@ -216,7 +216,11 @@ function Home() {
           <p className="home-catalogue__text">
             New chapters are added as they land in WeWard, so your tracker never falls behind.
           </p>
-          <a href="/register" className="home-button-outline">Explore the catalogue</a>
+          <CustomButton
+            text="Explore the catalogue"
+            to="/register"
+            variant="outline"
+          />
         </div>
       </div>
     </section>

@@ -88,25 +88,9 @@
     &:active { opacity: .9; }
   }
 
+  // Appearance comes from CustomButton; this class only controls placement.
   .header-cta {
-    display: inline-flex;
-    align-items: center;
-    background: var(--wsc-accent);
-    color: #fff;
-    font-size: .9375rem;
-    font-weight: 700;
-    padding: 10px 20px;
-    border-radius: 999px;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: background-color .15s ease;
-
-    &:hover,
-    &:focus-visible {
-      background: var(--wsc-accent-hover);
-      color: #fff;
-      outline: none;
-    }
+    flex-shrink: 0;
   }
 
   &::after {

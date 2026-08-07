@@ -32,10 +32,9 @@ body {
   color: #333 !important;
 }
 
-// The button-shaped anchors are listed too: CustomButton renders an <a> when
-// given href, so it matches neither `button` nor `.btn`.
-h1, h2, h3, h4, .logo, .btn, nav a,
-.custom-button, .home-button-outline, .header-cta {
+// .custom-button is listed because CustomButton renders an <a> or <Link> when
+// given href/to, so it matches neither `button` nor `.btn`.
+h1, h2, h3, h4, .btn, nav a, .custom-button {
   font-family: var(--font-head);
 }
 
