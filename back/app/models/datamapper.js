@@ -1055,15 +1055,17 @@ module.exports = {
     
         if (!ids.length) return { items: [] };
     
+        // Ordered by the caller's id order, not by id.
         const preparedQuery = {
           text: `
             SELECT id, name, image_url
             FROM "place"
             WHERE id = ANY($1::int[])
+            ORDER BY array_position($1::int[], id)
           `,
           values: [ids],
         };
-    
+
         const result = await client.query(preparedQuery);
         return { items: result.rows };
     },

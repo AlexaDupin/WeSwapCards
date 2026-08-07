@@ -78,6 +78,18 @@ const opportunitiesController = {
           return res.status(500).json({ error: 'Internal Server Error' });
         }
     },
+    // Ids come from VINTAGE_COLLECTOR_IDS so the list can change without a
+    // frontend build. Unset or empty returns no items and the section hides.
+    async getVintageChapters(req, res) {
+        try {
+          const chapters = await datamapper.getChaptersByIds(process.env.VINTAGE_COLLECTOR_IDS);
+          res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=300');
+          return res.status(200).json(chapters);
+        } catch (error) {
+          console.error('Error fetching vintage chapters:', error);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+    },
 };
 
 

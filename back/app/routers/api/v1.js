@@ -36,6 +36,10 @@ router
     .get(controllerHandler(opportunitiesController.getChaptersByIds));
 
 router
+    .route('/chapters/vintage')
+    .get(controllerHandler(opportunitiesController.getVintageChapters));
+
+router
     .route('/cards/statuses/:explorerId')
     .get(requireApiAuth, checkExplorerAuthorization, controllerHandler(cardController.getAllCardsStatuses))
 
