@@ -11,7 +11,7 @@ function PrivacyPolicy() {
     <div className="legal">
       <section>
         <h1 className="page-title">Privacy Policy</h1>
-        <p><strong>Effective Date:</strong> July 31, 2026</p>
+        <p><strong>Effective Date:</strong> August 20, 2026</p>
         <p>At WeSwapCards ("we," "us," or "our"), we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and protect your personal data when you use our website www.weswapcards.com (the "Site"). By using the Site, you consent to the collection and use of your data in accordance with this policy.</p>
       </section>
 
@@ -112,7 +112,8 @@ function PrivacyPolicy() {
 
       <section>
         <h2 className="legal-title">7. Data Sharing</h2>
-        <p>We do not sell, trade, or otherwise transfer your personal data to outside parties. However, we may share certain data with third-party service providers, such as Clerk, who help us manage authentication and ensure the security of your account. These third parties are required to handle your data in accordance with applicable privacy laws and our own privacy policies.</p>
+        <p>We do not sell, trade, or rent your personal data. We share it only with the service providers we rely on to run the Site, and only as far as each one needs it. These providers help us with authentication, hosting, notification delivery, email delivery, and error monitoring. Each acts on our instructions and is required to handle your data in accordance with applicable privacy laws.</p>
+        <p>We may also disclose data where the law requires it, or where it is necessary to protect the safety of our users.</p>
       </section>
 
       <section>
