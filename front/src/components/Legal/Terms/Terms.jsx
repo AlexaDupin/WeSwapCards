@@ -54,6 +54,7 @@ function Terms() {
         <p>Conversations on the Site are private and one-to-one: there is no public feed, and nothing you send is visible to other users.</p>
         <p>You can report a conversation or block a user from the actions menu at the top of any conversation in the mobile app. Blocking stops that user from sending you further messages or starting a new conversation with you. You can also write to us at contact@weswapcards.com.</p>
         <p>We review reports promptly. Depending on what we find, we may remove content, restrict access to features, suspend an account, or terminate it permanently, as described in the Termination section below.</p>
+        <p>Our position on child sexual abuse and exploitation, including how to report it and how we respond, is set out in our <a href="/child-safety">Child Safety Standards</a>.</p>
       </section>
 
       <section>

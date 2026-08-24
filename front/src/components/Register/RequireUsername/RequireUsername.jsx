@@ -7,7 +7,7 @@ import { StateContext } from "../../../contexts/StateContext";
 
 const PUBLIC_ALLOWLIST = new Set([
   '/', '/home', '/privacy', '/terms', '/cookies',
-  '/contact', '/legal', '/delete-account',
+  '/contact', '/legal', '/delete-account', '/child-safety',
   '/login', '/login/redirect', '/register', '/register/user'
 ]);
 
