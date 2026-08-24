@@ -1,0 +1,163 @@
+<!-- WeSwapCards tester recruitment, three languages.
+     Paste into Brevo: Campaign > Design > "Paste your code" / custom HTML.
+     Table layout and inline styles throughout: email clients do not support
+     flexbox, grid, or <style> blocks reliably.
+     Accented characters are HTML entities so a client guessing the wrong
+     encoding cannot produce mojibake. -->
+<!-- Plain white throughout, no page background. A grey background with a white
+     card looks right on desktop but on a phone the card fills the width, so the
+     grey survives only as a strip above and below and reads as a stray banner. -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+  style="background-color:#ffffff;margin:0;padding:0;">
+  <tr>
+    <td align="center">
+
+      <!-- width="100%" with max-width, not a fixed 600: a fixed width cannot
+           shrink, so iOS Mail scales the whole email down to fit a phone and it
+           renders small and letterboxed. -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+        style="width:100%;max-width:600px;background-color:#ffffff;">
+
+        <!-- Logo -->
+        <tr>
+          <td align="center" style="padding:28px 22px 8px 22px;">
+            <!-- The logo is the only body link, deliberately. The call to
+                 action is a reply, and any link in the copy competes with it. -->
+            <a href="https://weswapcards.com" style="text-decoration:none;border:0;">
+              <img src="https://img.mailinblue.com/11676117/images/content_library/original/6a8c89266461171f1daab934.png"
+                alt="WeSwapCards" width="205"
+                style="width:205px;max-width:205px;height:auto;display:block;border:0;">
+            </a>
+          </td>
+        </tr>
+
+        <!-- Language pointer -->
+        <tr>
+          <td align="center"
+            style="padding:0 22px 24px 22px;font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.5;color:#55595f;">
+            Version fran&ccedil;aise plus bas &middot; Versi&oacute;n en espa&ntilde;ol m&aacute;s abajo
+          </td>
+        </tr>
+
+        <!-- ============ ENGLISH ============ -->
+        <tr>
+          <td
+            style="padding:24px 22px;font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.6;color:#1e2024;">
+            <p style="margin:0 0 16px 0;">
+              We&rsquo;re about to release the WeSwapCards Android app! And we&rsquo;re looking for about 15 collectors
+              to test it for two weeks.
+            </p>
+            <p style="margin:0 0 16px 0;">
+              It&rsquo;s easy: install it and use it now and then. No minimum time, no report to write. We will value
+              your feedback, but it is not mandatory.
+            </p>
+            <p style="margin:0 0 16px 0;">
+              You&rsquo;ll sign in with your existing WeSwapCards account and will be able to manage your swaps from the
+              app, with notifications when someone replies!
+            </p>
+            <p style="margin:0 0 16px 0;">
+              <strong>To join, reply to this email with the email address of the Google account you use on your Android
+                phone.</strong> Google Play needs it to give you access.
+            </p>
+            <p style="margin:0;color:#55595f;font-size:15px;">
+              Android only for now. iPhone version is in progress.
+            </p>
+          </td>
+        </tr>
+
+        <!-- ============ FRAN&Ccedil;AIS ============ -->
+        <tr>
+          <td
+            style="padding:24px 22px;background-color:#faf9f7;border-top:1px solid #e8e6e1;border-bottom:1px solid #e8e6e1;font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.6;color:#1e2024;">
+            <p
+              style="margin:0 0 12px 0;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#f07a1a;">
+              Fran&ccedil;ais
+            </p>
+            <p style="margin:0 0 16px 0;">
+              Nous sommes sur le point de lancer l&rsquo;application Android WeSwapCards&nbsp;! Et nous cherchons environ
+              15 utilisateurs pour la tester pendant deux semaines.
+            </p>
+            <p style="margin:0 0 16px 0;">
+              C&rsquo;est simple&nbsp;: installez-la et utilisez-la de temps en temps. Pas de dur&eacute;e minimale,
+              aucun rapport &agrave; r&eacute;diger. Vos retours seront pr&eacute;cieux, mais ils ne sont pas
+              obligatoires.
+            </p>
+            <p style="margin:0 0 16px 0;">
+              Vous vous connecterez avec votre compte WeSwapCards habituel et pourrez g&eacute;rer vos &eacute;changes
+              depuis l&rsquo;application, avec des notifications lorsque quelqu&rsquo;un vous r&eacute;pond&nbsp;!
+            </p>
+            <p style="margin:0 0 16px 0;">
+              <strong>Pour participer, r&eacute;pondez &agrave; cet e-mail avec l&rsquo;adresse du compte Google que
+                vous utilisez sur votre t&eacute;l&eacute;phone Android.</strong> Google Play en a besoin pour vous
+              donner acc&egrave;s.
+            </p>
+            <p style="margin:0;color:#55595f;font-size:15px;">
+              Android uniquement pour le moment. La version iPhone est en cours de d&eacute;veloppement.
+            </p>
+          </td>
+        </tr>
+
+        <!-- ============ ESPA&Ntilde;OL ============ -->
+        <tr>
+          <td
+            style="padding:24px 22px;font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.6;color:#1e2024;">
+            <p
+              style="margin:0 0 12px 0;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#f07a1a;">
+              Espa&ntilde;ol
+            </p>
+            <p style="margin:0 0 16px 0;">
+              &iexcl;Estamos a punto de lanzar la aplicaci&oacute;n Android de WeSwapCards! Y buscamos unos 15
+              usuarios para probarla durante dos semanas.
+            </p>
+            <p style="margin:0 0 16px 0;">
+              Es sencillo: inst&aacute;lala y &uacute;sala de vez en cuando. Sin tiempo m&iacute;nimo ni informes que
+              escribir. Agradeceremos tus comentarios, pero no son obligatorios.
+            </p>
+            <p style="margin:0 0 16px 0;">
+              Iniciar&aacute;s sesi&oacute;n con tu cuenta habitual de WeSwapCards y podr&aacute;s gestionar tus
+              intercambios desde la aplicaci&oacute;n, &iexcl;con notificaciones cuando alguien te responda!
+            </p>
+            <p style="margin:0 0 16px 0;">
+              <strong>Para participar, responde a este correo con la direcci&oacute;n de la cuenta de Google que usas en
+                tu tel&eacute;fono Android.</strong> Google Play la necesita para darte acceso.
+            </p>
+            <p style="margin:0;color:#55595f;font-size:15px;">
+              Solo Android por ahora. La versi&oacute;n para iPhone est&aacute; en desarrollo.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Sign-off -->
+        <tr>
+          <td
+            style="padding:8px 22px 28px 22px;font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.6;color:#1e2024;border-top:1px solid #e8e6e1;">
+            <p style="margin:16px 0 0 0;">
+              Thank you &middot; Merci &middot; Gracias<br>
+              <strong>WeSwapCards</strong>
+            </p>
+          </td>
+        </tr>
+
+      </table>
+
+      <!-- Footer. Brevo appends its own default footer only when no unsubscribe
+           link is present, so including {{ unsubscribe }} here replaces it. -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+        style="width:100%;max-width:600px;">
+        <tr>
+          <td align="center"
+            style="padding:20px 22px 8px 22px;font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#8a8e94;">
+            You received this because you have a WeSwapCards account.
+          </td>
+        </tr>
+        <tr>
+          <td align="center"
+            style="padding:0 22px 24px 22px;font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;">
+            <a href="{{ unsubscribe }}" style="color:#8a8e94;text-decoration:underline;">Unsubscribe</a>
+          </td>
+        </tr>
+      </table>
+
+    </td>
+  </tr>
+</table>
