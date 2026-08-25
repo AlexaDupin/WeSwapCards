@@ -1,0 +1,243 @@
+<!-- WeSwapCards tester invitation (the test link), three languages.
+     Second email of the closed test: goes only to the people who replied to
+     tester-recruitment.html with a Google account address.
+     Paste into Brevo: Campaign > Design > "Paste your code" / custom HTML.
+     Table layout and inline styles throughout: email clients do not support
+     flexbox, grid, or <style> blocks reliably.
+     Accented characters are HTML entities so a client guessing the wrong
+     encoding cannot produce mojibake.
+
+     Copy is the locked version from mobile/docs/store-listing.md, "Invitation
+     email (the test link)", set here rather than rewritten. The only omission
+     is the "French and Spanish translations are at the end" line, whose job is
+     done by the language pointer under the logo, as in the recruitment email.
+
+     The link in each language is the closed track's "Join on the web" URL,
+     from Play Console > Closed testing > Manage track > Testers > "How testers
+     join your test". The Console also offers "Join on Android", the store
+     listing, which works too but has no "Become a tester" page: steps 2 and 3
+     describe the web opt-in page, so switching links means rewriting the steps
+     rather than swapping the URL. All three languages must stay in step. -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+  style="background-color:#ffffff;margin:0;padding:0;">
+  <tr>
+    <td align="center">
+
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+        style="width:100%;max-width:600px;background-color:#ffffff;">
+
+        <!-- Logo -->
+        <tr>
+          <td align="center" style="padding:28px 22px 8px 22px;">
+            <a href="https://weswapcards.com" style="text-decoration:none;border:0;">
+              <img
+                src="https://img.mailinblue.com/11676117/images/content_library/original/6a8c89266461171f1daab934.png"
+                alt="WeSwapCards" width="205" style="width:205px;max-width:205px;height:auto;display:block;border:0;">
+            </a>
+          </td>
+        </tr>
+
+        <!-- Language pointer -->
+        <tr>
+          <td align="center"
+            style="padding:0 22px 24px 22px;font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.5;color:#55595f;">
+            Version fran&ccedil;aise plus bas &middot; Versi&oacute;n en espa&ntilde;ol m&aacute;s abajo
+          </td>
+        </tr>
+
+        <!-- ============ ENGLISH ============ -->
+        <tr>
+          <td
+            style="padding:24px 22px;font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.6;color:#1e2024;">
+            <p style="margin:0 0 16px 0;">Hi,</p>
+            <p style="margin:0 0 16px 0;">
+              Thank you for volunteering! Here is how to install the WeSwapCards app.
+            </p>
+            <p style="margin:0 0 16px 0;">
+              Do this on your Android phone, and make sure the phone is signed in with the Google account address you
+              sent us. It will not work with a different account.
+            </p>
+            <!-- padding-left on the <ol> itself: Outlook ignores margin here and
+                 clips the numbers against the edge without it. -->
+            <ol style="margin:0 0 16px 0;padding-left:22px;">
+              <li style="margin:0 0 8px 0;">
+                Open this link:
+                <a href="https://play.google.com/apps/testing/com.weswapcards.app"
+                  style="color:#f07a1a;font-weight:700;text-decoration:underline;word-break:break-all;">WESWAPCARDS
+                  APP</a>
+              </li>
+              <li style="margin:0 0 8px 0;">Tap <strong>&ldquo;Become a tester&rdquo;</strong>.</li>
+              <li style="margin:0;">
+                On the same page, tap the <strong>Google Play</strong> link to install the app.
+              </li>
+            </ol>
+            <p style="margin:0 0 16px 0;">
+              If Google Play says the app is not available, wait a few minutes and open the link again. It can take a
+              little while after you join.
+            </p>
+            <p style="margin:0 0 12px 0;">Once the app is installed:</p>
+            <ul style="margin:0 0 16px 0;padding-left:22px;">
+              <li style="margin:0 0 8px 0;">
+                <strong>Sign in with your usual WeSwapCards account</strong>, the same one you use on the website.
+              </li>
+              <li style="margin:0;">
+                When the app asks permission to send <strong>notifications</strong>, please tap Allow. Notifications are
+                one of the main things we would like to test.
+              </li>
+            </ul>
+            <p style="margin:0 0 12px 0;">Two things to remember:</p>
+            <ul style="margin:0 0 16px 0;padding-left:22px;">
+              <li style="margin:0 0 8px 0;">
+                <strong>Please stay a tester for 14 days.</strong> Google requires this before the app can be released
+                publicly. There is no minimum amount of time to spend in the app, but please do not leave the test.
+              </li>
+              <li style="margin:0;">
+                <strong>If something goes wrong, just reply to this email.</strong> Tell us which phone you have and
+                what you were doing. Screenshots are welcome.
+              </li>
+            </ul>
+            <p style="margin:0;">Thank you again for your help!</p>
+          </td>
+        </tr>
+
+        <!-- ============ FRAN&Ccedil;AIS ============ -->
+        <tr>
+          <td
+            style="padding:24px 22px;background-color:#faf9f7;border-top:1px solid #e8e6e1;border-bottom:1px solid #e8e6e1;font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.6;color:#1e2024;">
+            <p
+              style="margin:0 0 12px 0;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#f07a1a;">
+              Fran&ccedil;ais
+            </p>
+            <p style="margin:0 0 16px 0;">Bonjour,</p>
+            <p style="margin:0 0 16px 0;">
+              Merci de votre participation&nbsp;! Voici comment installer l&rsquo;application WeSwapCards.
+            </p>
+            <p style="margin:0 0 16px 0;">
+              Effectuez ces &eacute;tapes sur votre t&eacute;l&eacute;phone Android, et assurez-vous d&rsquo;&ecirc;tre
+              connect&eacute; avec l&rsquo;adresse du compte Google que vous nous avez envoy&eacute;e. Cela ne
+              fonctionnera pas avec un autre compte.
+            </p>
+            <ol style="margin:0 0 16px 0;padding-left:22px;">
+              <li style="margin:0 0 8px 0;">
+                Ouvrez ce lien&nbsp;:
+                <a href="https://play.google.com/apps/testing/com.weswapcards.app"
+                  style="color:#f07a1a;font-weight:700;text-decoration:underline;word-break:break-all;">APPLI
+                  WESWAPCARDS</a>
+              </li>
+              <li style="margin:0 0 8px 0;">
+                Appuyez sur <strong>&laquo;&nbsp;Devenir testeur&nbsp;&raquo;</strong>.
+              </li>
+              <li style="margin:0;">
+                Sur la m&ecirc;me page, appuyez sur le lien <strong>Google Play</strong> pour installer
+                l&rsquo;application.
+              </li>
+            </ol>
+            <p style="margin:0 0 16px 0;">
+              Si Google Play indique que l&rsquo;application n&rsquo;est pas disponible, patientez quelques minutes et
+              rouvrez le lien. Cela peut prendre un peu de temps apr&egrave;s votre inscription.
+            </p>
+            <p style="margin:0 0 12px 0;">Une fois l&rsquo;application install&eacute;e&nbsp;:</p>
+            <ul style="margin:0 0 16px 0;padding-left:22px;">
+              <li style="margin:0 0 8px 0;">
+                <strong>Connectez-vous avec votre compte WeSwapCards habituel</strong>, celui que vous utilisez sur le
+                site.
+              </li>
+              <li style="margin:0;">
+                Lorsque l&rsquo;application vous demande l&rsquo;autorisation d&rsquo;envoyer des
+                <strong>notifications</strong>, appuyez sur Autoriser. Les notifications font partie des
+                &eacute;l&eacute;ments que nous souhaitons tester en priorit&eacute;.
+              </li>
+            </ul>
+            <p style="margin:0 0 12px 0;">Deux choses &agrave; retenir&nbsp;:</p>
+            <ul style="margin:0 0 16px 0;padding-left:22px;">
+              <li style="margin:0 0 8px 0;">
+                <strong>Merci de rester dans le test pendant 14&nbsp;jours.</strong> Google l&rsquo;exige avant que
+                l&rsquo;application puisse &ecirc;tre publi&eacute;e. Il n&rsquo;y a pas de dur&eacute;e
+                d&rsquo;utilisation minimale.
+              </li>
+              <li style="margin:0;">
+                <strong>Si quelque chose ne fonctionne pas, r&eacute;pondez simplement &agrave; cet e-mail.</strong>
+                Indiquez-nous quel t&eacute;l&eacute;phone vous utilisez et ce que vous &eacute;tiez en train de faire.
+                Les captures d&rsquo;&eacute;cran sont les bienvenues.
+              </li>
+            </ul>
+            <p style="margin:0;">Merci encore pour votre aide&nbsp;!</p>
+          </td>
+        </tr>
+
+        <!-- ============ ESPA&Ntilde;OL ============ -->
+        <tr>
+          <td
+            style="padding:24px 22px;font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.6;color:#1e2024;">
+            <p
+              style="margin:0 0 12px 0;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#f07a1a;">
+              Espa&ntilde;ol
+            </p>
+            <p style="margin:0 0 16px 0;">Hola,</p>
+            <p style="margin:0 0 16px 0;">
+              &iexcl;Gracias por participar! As&iacute; puedes instalar la aplicaci&oacute;n WeSwapCards.
+            </p>
+            <p style="margin:0 0 16px 0;">
+              Haz estos pasos en tu tel&eacute;fono Android y aseg&uacute;rate de que est&eacute; conectado con la
+              direcci&oacute;n de la cuenta de Google que nos enviaste. No funcionar&aacute; con otra cuenta.
+            </p>
+            <ol style="margin:0 0 16px 0;padding-left:22px;">
+              <li style="margin:0 0 8px 0;">
+                Abre este enlace:
+                <a href="https://play.google.com/apps/testing/com.weswapcards.app"
+                  style="color:#f07a1a;font-weight:700;text-decoration:underline;word-break:break-all;">APP
+                  WESWAPCARDS</a>
+              </li>
+              <li style="margin:0 0 8px 0;">
+                Pulsa <strong>&laquo;Quiero ser tester&raquo;</strong>.
+              </li>
+              <li style="margin:0;">
+                En la misma p&aacute;gina, pulsa el enlace de <strong>Google Play</strong> para instalar la
+                aplicaci&oacute;n.
+              </li>
+            </ol>
+            <p style="margin:0 0 16px 0;">
+              Si Google Play dice que la aplicaci&oacute;n no est&aacute; disponible, espera unos minutos y vuelve a
+              abrir el enlace. Puede tardar un poco despu&eacute;s de apuntarte.
+            </p>
+            <p style="margin:0 0 12px 0;">Cuando tengas la aplicaci&oacute;n instalada:</p>
+            <ul style="margin:0 0 16px 0;padding-left:22px;">
+              <li style="margin:0 0 8px 0;">
+                <strong>Inicia sesi&oacute;n con tu cuenta habitual de WeSwapCards</strong>, la misma que usas en la
+                web.
+              </li>
+              <li style="margin:0;">
+                Cuando la aplicaci&oacute;n te pida permiso para enviar <strong>notificaciones</strong>, pulsa Permitir.
+                Las notificaciones son una de las cosas que m&aacute;s nos interesa probar.
+              </li>
+            </ul>
+            <p style="margin:0 0 12px 0;">Dos cosas que recordar:</p>
+            <ul style="margin:0 0 16px 0;padding-left:22px;">
+              <li style="margin:0 0 8px 0;">
+                <strong>Te pedimos que sigas siendo tester durante 14&nbsp;d&iacute;as.</strong> Google lo exige antes
+                de que la aplicaci&oacute;n pueda publicarse. No hay un tiempo m&iacute;nimo de uso, pero por favor no
+                salgas de la prueba.
+              </li>
+              <li style="margin:0;">
+                <strong>Si algo no funciona, responde a este correo.</strong> Cu&eacute;ntanos qu&eacute;
+                tel&eacute;fono tienes y qu&eacute; estabas haciendo. Las capturas de pantalla son bienvenidas.
+              </li>
+            </ul>
+            <p style="margin:0;">&iexcl;Gracias de nuevo por tu ayuda!</p>
+          </td>
+        </tr>
+
+        <!-- Sign-off -->
+        <tr>
+          <td
+            style="padding:8px 22px 28px 22px;font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.6;color:#1e2024;border-top:1px solid #e8e6e1;">
+            <p style="margin:16px 0 0 0;">
+              <strong>WeSwapCards</strong>
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
