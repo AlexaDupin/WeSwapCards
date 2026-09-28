@@ -6,7 +6,7 @@ import ChapterCarouselSection, { PLACEHOLDER } from './ChapterCarouselSection';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 import CustomButton from '../CustomButton/CustomButton';
 import useChapters from './useChapters';
-import StoreBadges from '../AppPromo/StoreBadges';
+import AppPromoSection from '../AppPromo/AppPromoSection';
 import { clearStoragePreservingAppPromo } from '../../helpers/appPromoStorage';
 
 import './homeStyles.scss';
@@ -137,11 +137,6 @@ function Home() {
             <a href="#how" className="home-link-quiet">See how it works &rarr;</a>
           </div>
 
-          <div className="home-hero__apps">
-            <p className="home-hero__apps-label">Get the WeSwapCards app</p>
-            <StoreBadges placement="homepage" />
-          </div>
-
           <p className="home-hero__fineprint">
             Free to join. Not affiliated with the official WeWard app.
           </p>
@@ -165,6 +160,12 @@ function Home() {
           </div>
         </div>
 
+      </div>
+    </section>
+
+    <section id="app" className="home-app" data-reveal-container>
+      <div className="home-app__inner">
+        <AppPromoSection className="reveal" />
       </div>
     </section>
 

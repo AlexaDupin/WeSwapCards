@@ -79,6 +79,14 @@
   margin-top: 1.25rem;
 }
 
+// Room for the floating Legal button (mobile only), so it never covers the
+// last card: footer + its 12px offset + ~40px button + 12px breathing space.
+@media (max-width: 767px) {
+  .page-container.menu-container {
+    padding-bottom: calc(var(--footer-h, 56px) + 64px) !important;
+  }
+}
+
 .menu-legal-floating {
   position: fixed;
   right: 16px;

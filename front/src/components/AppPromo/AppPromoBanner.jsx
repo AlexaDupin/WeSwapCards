@@ -20,7 +20,8 @@ function AppPromoBanner() {
   return (
     <div className="app-promo-banner" role="region" aria-label="WeSwapCards Android app">
       <p className="app-promo-banner__text">
-        Get notified when other users reply. Same account, everything already there.
+        <strong>Get notified when other users reply.</strong>
+        <span>Same account, everything already there.</span>
       </p>
       <a
         className="app-promo-banner__link"
@@ -30,7 +31,12 @@ function AppPromoBanner() {
       >
         Get the app
       </a>
-      <CloseButton className="app-promo-banner__close" aria-label="Dismiss" onClick={dismiss} />
+      <CloseButton
+        variant="white"
+        className="app-promo-banner__close"
+        aria-label="Dismiss"
+        onClick={dismiss}
+      />
     </div>
   );
 }

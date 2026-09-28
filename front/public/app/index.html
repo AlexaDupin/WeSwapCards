@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Get the WeSwapCards app</title>
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #fbf9f7;
+      color: #1e2024;
+      font-family: Helvetica, Arial, sans-serif;
+      text-align: center;
+    }
+    main { padding: 32px 20px; }
+    h1 { margin: 0 0 8px; font-size: 1.5rem; }
+    p { margin: 0 0 24px; color: #55595f; line-height: 1.5; }
+    .badges { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 16px; }
+    .badges img { display: block; height: 48px; width: auto; }
+    /* Google's PNG carries 41px of transparent padding per 250px of height. */
+    .badges .play img { height: calc(48px * 250 / 168); margin: calc(48px * -41 / 168); }
+    #redirecting { display: none; }
+    .is-redirecting #redirecting { display: block; }
+    .is-redirecting #fallback { display: none; }
+  </style>
+  <script>
+    // Standalone on purpose: a QR scan should reach the store without loading the
+    // React app. Detection and URLs mirror src/helpers/appStores.js; keep them in step.
+    (function () {
+      var APP_STORE_URL = 'https://apps.apple.com/app/id6810779158';
+      var PLAY_URL = 'https://play.google.com/store/apps/details?id=com.weswapcards.app';
+
+      var from = new URLSearchParams(window.location.search).get('from');
+      var campaign = from && /^[a-z_]{1,32}$/.test(from) ? from + '_qr' : 'app_page';
+      var playUrl = PLAY_URL + '&referrer=' + encodeURIComponent(
+        'utm_source=weswapcards.com&utm_medium=web&utm_campaign=' + campaign
+      );
+
+      var ua = navigator.userAgent || '';
+      var platform = 'other';
+      if (/Android/i.test(ua)) platform = 'android';
+      else if (/iPhone|iPad|iPod/i.test(ua)) platform = 'ios';
+      // iPadOS Safari requests the desktop site and reports itself as a Mac.
+      else if (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1) platform = 'ios';
+
+      window.__wscStoreLinks = { ios: APP_STORE_URL, android: playUrl };
+
+      if (platform !== 'other') {
+        document.documentElement.className = 'is-redirecting';
+        window.location.replace(platform === 'android' ? playUrl : APP_STORE_URL);
+      }
+    })();
+  </script>
+</head>
+<body>
+  <main>
+    <div id="redirecting">
+      <h1>Opening the store…</h1>
+      <p>Nothing happening? <a href="/app/" id="retry">Choose your store</a>.</p>
+    </div>
+
+    <div id="fallback">
+      <h1>Get the WeSwapCards app</h1>
+      <p>Get notified when other users reply, and manage your cards and swaps wherever you are.</p>
+      <div class="badges">
+        <a class="ios" href="https://apps.apple.com/app/id6810779158">
+          <img src="/app/app-store-badge.svg" alt="Download on the App Store">
+        </a>
+        <a class="play" href="https://play.google.com/store/apps/details?id=com.weswapcards.app">
+          <img src="/app/google-play-badge.png" alt="Get it on Google Play">
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Tracked links for the fallback badges; the plain hrefs above work without JS.
+    (function () {
+      var links = window.__wscStoreLinks;
+      if (!links) return;
+      document.querySelector('#fallback .ios').href = links.ios;
+      document.querySelector('#fallback .play').href = links.android;
+      // "Choose your store" drops the redirect and shows both badges.
+      document.getElementById('retry').addEventListener('click', function (e) {
+        e.preventDefault();
+        document.documentElement.className = '';
+      });
+    })();
+  </script>
+</body>
+</html>
