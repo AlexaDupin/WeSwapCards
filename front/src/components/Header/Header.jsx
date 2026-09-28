@@ -3,6 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import useStickyVars from "../../hooks/useStickyVars";
 import CustomButton from "../CustomButton/CustomButton";
+import AppPromoBanner from "../AppPromo/AppPromoBanner";
 import logoMark from "../../images/logo-mark.png";
 import "./headerStyles.scss";
 
@@ -77,6 +78,9 @@ function Header() {
         </div>
 
       </div>
+
+      {/* Inside the fixed header so --header-h includes it and nothing is covered. */}
+      <AppPromoBanner />
     </header>
   );
 }

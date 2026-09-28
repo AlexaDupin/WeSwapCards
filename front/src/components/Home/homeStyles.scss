@@ -140,6 +140,21 @@
   }
 }
 
+// Kept below and smaller than "Create an account", which stays the main action.
+.home-hero__apps {
+  margin-top: 20px;
+
+  .store-badges {
+    --badge-h: 36px;
+  }
+}
+
+.home-hero__apps-label {
+  margin: 0 0 8px;
+  font-size: 0.8125rem;
+  color: var(--wsc-ink-muted);
+}
+
 .home-hero__fineprint {
   margin: 24px 0 0;
   font-size: 0.8125rem;

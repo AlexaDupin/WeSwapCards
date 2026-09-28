@@ -6,6 +6,8 @@ import ChapterCarouselSection, { PLACEHOLDER } from './ChapterCarouselSection';
 import ScrollToTop from '../ScrollToTopButton/ScrollToTop';
 import CustomButton from '../CustomButton/CustomButton';
 import useChapters from './useChapters';
+import StoreBadges from '../AppPromo/StoreBadges';
+import { clearStoragePreservingAppPromo } from '../../helpers/appPromoStorage';
 
 import './homeStyles.scss';
 
@@ -46,7 +48,7 @@ function Home() {
 
     useEffect(() => {
       if (!isSignedIn) {
-        localStorage.clear();
+        clearStoragePreservingAppPromo();
       } else {
         navigate('/menu');
       }
@@ -133,6 +135,11 @@ function Home() {
           <div className="home-hero__actions">
             <CustomButton text="Create an account" to="/register" size="lg" />
             <a href="#how" className="home-link-quiet">See how it works &rarr;</a>
+          </div>
+
+          <div className="home-hero__apps">
+            <p className="home-hero__apps-label">Get the WeSwapCards app</p>
+            <StoreBadges placement="homepage" />
           </div>
 
           <p className="home-hero__fineprint">

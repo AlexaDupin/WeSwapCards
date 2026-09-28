@@ -6,6 +6,7 @@ import { useStateContext } from '../../contexts/StateContext';
 import { Search, ListCheck, ChatDots } from 'react-bootstrap-icons';
 
 import CarouselModal from '../Onboarding/ui/Carousel';
+import AppPromoCard from '../AppPromo/AppPromoCard';
 import './menuStyles.scss';
 
 function Menu() {
@@ -71,6 +72,8 @@ function Menu() {
             </div>
           </button>
         </div>
+
+        <AppPromoCard />
 
         <section className="menu-tips">
           <CarouselModal />

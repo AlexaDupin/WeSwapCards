@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import PageContainer from '../PageContainer/PageContainer';
 import { SignIn, useUser } from '@clerk/clerk-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { clearStoragePreservingAppPromo } from '../../helpers/appPromoStorage';
 
 const SignInPage = () => {
   const { isLoaded, isSignedIn } = useUser();  
@@ -16,7 +17,7 @@ const SignInPage = () => {
     if (isSignedIn) {
       navigate(`/login/redirect?from=${encodeURIComponent(from)}`, { replace: true });
     } else {
-      try { localStorage.clear(); } catch {}
+      try { clearStoragePreservingAppPromo(); } catch {}
     }
   }, [isLoaded, isSignedIn, from, navigate]);
 

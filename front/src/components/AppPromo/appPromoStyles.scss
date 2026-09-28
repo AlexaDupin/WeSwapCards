@@ -1,0 +1,78 @@
+// Height of the visible badge shape; each placement can override it.
+.store-badges {
+  --badge-h: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.store-badge {
+  display: inline-flex;
+  flex-shrink: 0;
+
+  img {
+    display: block;
+    height: var(--badge-h);
+    width: auto;
+  }
+
+  // Google's PNG is 646x250 with 41px of transparent padding on every side.
+  // Scale it so the badge shape matches Apple's height, then cancel the padding.
+  &--android img {
+    height: calc(var(--badge-h) * 250 / 168);
+    margin: calc(var(--badge-h) * -41 / 168);
+  }
+}
+
+.app-promo-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--wsc-accent-soft);
+  border-top: 1px solid var(--wsc-border);
+  font-size: .875rem;
+  line-height: 1.3;
+
+  &__text {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    color: var(--wsc-ink);
+  }
+
+  &__link {
+    flex-shrink: 0;
+    font-weight: 700;
+    color: var(--wsc-accent-link);
+    white-space: nowrap;
+  }
+
+  &__close {
+    flex-shrink: 0;
+    font-size: .75rem;
+  }
+}
+
+.app-promo-card {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--wsc-accent-border);
+  border-radius: 16px;
+  background: var(--wsc-accent-soft);
+
+  &__title {
+    margin: 0 0 .25rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--wsc-ink);
+  }
+
+  &__text {
+    margin: 0 0 .75rem;
+    font-size: .9rem;
+    line-height: 1.35;
+    color: var(--wsc-ink-muted);
+  }
+}
