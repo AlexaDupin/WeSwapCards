@@ -7,9 +7,11 @@ import menuQr from '../../images/qr/app-qr-menu.svg';
 
 import './appPromoStyles.scss';
 
-// Each code points to https://weswapcards.com/app/?from=<placement>, which
-// redirects the scanning phone to its store (public/app/index.html).
-// Regenerate the SVGs if a placement is added or the URL changes.
+// Each code points to https://weswapcards.com/app/index.html?from=<placement>,
+// which redirects the scanning phone to its store (public/app/index.html).
+// The file name is explicit because .htaccess only serves real files: a bare
+// /app/ is rewritten to the React app. Regenerate the SVGs if a placement is
+// added or the URL changes.
 const QR_CODES = {
   homepage: homepageQr,
   menu: menuQr,
