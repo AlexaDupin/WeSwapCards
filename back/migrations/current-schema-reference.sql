@@ -35,6 +35,9 @@
 
 -- push_token: see migrations/push-token.sql (explorer_id ON DELETE CASCADE).
 
+-- place: trg_place_notify_image_ingest (AFTER INSERT) notifies the image
+-- worker; see migrations/image-ingest-trigger.sql.
+
 -- user_block / user_report: see migrations/moderation.sql.
 -- user_block  — directional block rows (blocker_id, blocked_id → explorer,
 --               both ON DELETE CASCADE; UNIQUE pair; blocker <> blocked).
