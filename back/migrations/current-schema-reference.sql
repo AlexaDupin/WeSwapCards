@@ -35,6 +35,9 @@
 
 -- push_token: see migrations/push-token.sql (explorer_id ON DELETE CASCADE).
 
+-- Indexes on conversation, message and explorer_has_cards created by hand on
+-- prod: see migrations/prod-indexes.sql.
+
 -- place: trg_place_notify_image_ingest (AFTER INSERT) notifies the image
 -- worker; see migrations/image-ingest-trigger.sql.
 
