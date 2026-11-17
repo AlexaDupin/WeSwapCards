@@ -16,6 +16,7 @@ import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 import './swapCardStyles.scss';
 
 import useSwapLogic from '../hooks/useSwapLogic';
+import useMissingCards from '../hooks/useMissingCards';
 import LatestChapters from './LatestChapters/LatestChapters';
 import MiniLatestChaptersTiles from './LatestChapters/MiniLatestChaptersTiles';
 import OpportunityCard from './OpportunityCard/OpportunityCard';
@@ -42,6 +43,8 @@ function SwapCard() {
     totalPages,
     handlePageChange
   } = useSwapLogic();
+
+  const missingCardIds = useMissingCards(state.cards);
 
   const items = useMemo(() => swapOpportunities.items ?? [], [swapOpportunities.items]);
   const isSingle = useMemo(() => items.length === 1, [items]);
@@ -156,7 +159,8 @@ function SwapCard() {
                   key={card.id}
                   card={card}
                   fetchSwapOpportunities={gatedFetchSwapOpportunities}
-                  isSelected={state.selectedCardId === card.id} />
+                  isSelected={state.selectedCardId === card.id}
+                  isMissing={missingCardIds.has(card.id)} />
               ))
             ) : (
               <div></div>
