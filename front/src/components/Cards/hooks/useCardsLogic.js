@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState, useCallback } from 'react';
+import { useEffect, useReducer, useState, useCallback, useMemo } from 'react';
 import { axiosInstance } from '../../../helpers/axiosInstance';
 import { useAuth } from '@clerk/clerk-react';
 import { useStateContext } from '../../../contexts/StateContext';
@@ -252,6 +252,47 @@ const useCardsLogic = () => {
        [isPublic, dispatch, explorerId, getToken, pendingChapters]
     );
 
+    // Marks every card in every chapter as owned. Cards already logged,
+    // duplicates included, are kept as they are by the backend.
+    const [isMarkingAllOwned, setIsMarkingAllOwned] = useState(false);
+    const markAllCardsOwned = useCallback(async () => {
+        if (isPublic || isMarkingAllOwned) return;
+        setIsMarkingAllOwned(true);
+
+        try {
+          const token = await getToken();
+          await axiosInstance.post(
+            `/explorercards/${explorerId}/status`,
+            { status: 'owned' },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              withCredentials: true,
+            }
+          );
+          await fetchAllCardStatuses();
+        } catch (e) {
+          dispatch({
+            type: 'cardStatuses/fetchedError',
+            payload: { message: 'Could not mark all cards as owned. Try again.' },
+          });
+        } finally {
+          setIsMarkingAllOwned(false);
+        }
+      },
+      // fetchAllCardStatuses is redefined each render and reads the same inputs.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [isPublic, isMarkingAllOwned, explorerId, getToken]
+    );
+
+    // A signed-in explorer who has not logged a single card yet.
+    const hasNoCards = useMemo(() => {
+        if (isPublic) return false;
+        const values = Object.values(state.cardStatuses || {});
+        return values.length > 0 && values.every((status) => status === 'default');
+    }, [isPublic, state.cardStatuses]);
+
     return {
         state,
         isLoading,
@@ -261,6 +302,9 @@ const useCardsLogic = () => {
         markAllOwnedInChapter,
         markAllDuplicatedInChapter,
         isChapterPending,
+        markAllCardsOwned,
+        isMarkingAllOwned,
+        hasNoCards,
     }
 }
 

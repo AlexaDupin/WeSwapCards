@@ -18,7 +18,10 @@ import AZNav from "./AZNav";
 import MissingCardsToggle from "./MissingCardsToggle";
 import LatestFirstToggle from "./LatestFirstToggle";
 import { InfoCircle } from "react-bootstrap-icons";
-import CardsHelpModal from "./CardsHelpModal"; 
+import CardsHelpModal from "./CardsHelpModal";
+import CardsPageMenu from "./CardsPageMenu";
+import NewCollectorBanner from "./NewCollectorBanner";
+import MarkAllOwnedModal from "./MarkAllOwnedModal";
 
 const toNumericId = (value) => {
   if (typeof value === "number") return value;
@@ -27,12 +30,25 @@ const toNumericId = (value) => {
 };
 
 function Cards() { 
-  const { state, isLoading, isPublic, handleSelect, reset, markAllOwnedInChapter, markAllDuplicatedInChapter, isChapterPending } = useCardsLogic();
+  const {
+    state,
+    isLoading,
+    isPublic,
+    handleSelect,
+    reset,
+    markAllOwnedInChapter,
+    markAllDuplicatedInChapter,
+    isChapterPending,
+    markAllCardsOwned,
+    isMarkingAllOwned,
+    hasNoCards,
+  } = useCardsLogic();
   const { chaptersData } = useChapterBuckets(state.chapters, state.cards, state.cardStatuses);
 
   const [showMissingOnly, setShowMissingOnly] = useState(false);
   const [latestFirst, setLatestFirst] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [showMarkAllConfirm, setShowMarkAllConfirm] = useState(false);
 
   const visibleChaptersData = useMemo(() => {
     if (!showMissingOnly) return chaptersData;
@@ -86,6 +102,11 @@ function Cards() {
   const onResetCard = isPublic ? undefined : reset;
   const onMarkAllOwned = isPublic ? () => loginRedirect() : markAllOwnedInChapter;
   const onMarkAllDuplicated = isPublic ? () => loginRedirect() : markAllDuplicatedInChapter;
+  const onMarkAllCardsOwned = isPublic ? () => loginRedirect() : () => setShowMarkAllConfirm(true);
+  const confirmMarkAllCardsOwned = async () => {
+    await markAllCardsOwned();
+    setShowMarkAllConfirm(false);
+  };
   
   return (
     <PageContainer className="cards-page">
@@ -108,6 +129,10 @@ function Cards() {
         <div className="d-flex align-items-center gap-2">
           <LatestFirstToggle checked={latestFirst} onChange={setLatestFirst} />
           <MissingCardsToggle checked={showMissingOnly} onChange={setShowMissingOnly} />
+          <CardsPageMenu
+            onMarkAllCardsOwned={onMarkAllCardsOwned}
+            disabled={isLoading || isMarkingAllOwned}
+          />
         </div>
       </div>
 
@@ -139,7 +164,14 @@ function Cards() {
       )}
 
       {!isLoading && !state.alert.message && (
-      <>           
+      <>
+      {hasNoCards && (
+        <NewCollectorBanner
+          onMarkAllCardsOwned={onMarkAllCardsOwned}
+          disabled={isMarkingAllOwned}
+        />
+      )}
+
       <section ref={azBarRef} className="cards-sticky mb-3">
         <AZNav 
           onSelect={scrollToLetter} 
@@ -168,6 +200,13 @@ function Cards() {
 
         <ScrollToTop />
       <CardsHelpModal show={showHelp} onHide={() => setShowHelp(false)} />
+      <MarkAllOwnedModal
+        show={showMarkAllConfirm}
+        cardCount={state.cards?.length ?? 0}
+        pending={isMarkingAllOwned}
+        onConfirm={confirmMarkAllCardsOwned}
+        onHide={() => setShowMarkAllConfirm(false)}
+      />
     </PageContainer>
   )
 }

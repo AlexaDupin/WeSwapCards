@@ -53,6 +53,10 @@ router
   .post(requireApiAuth, checkExplorerAuthorization, controllerHandler(cardController.markChapter));
 
 router
+  .route('/explorercards/:explorerId/status')
+  .post(requireApiAuth, checkExplorerAuthorization, controllerHandler(cardController.markAllCards));
+
+router
     .route('/cards/:placeId')
     .get(controllerHandler(reportController.getCardsFromPlace));
 

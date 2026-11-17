@@ -78,6 +78,26 @@ const cardController = {
         return next(error);
       }
     },
+    // Marks every card in every chapter as owned, keeping existing duplicates.
+    // Only "owned" is supported: there is no "mark everything duplicated".
+    async markAllCards(req, res, next) {
+      const explorerId = Number(req.params.explorerId);
+      const status     = req.body?.status;
+
+      if (!Number.isInteger(explorerId)) {
+        return res.status(400).json({ error: 'Invalid explorerId' });
+      }
+      if (status !== 'owned') {
+        return res.status(400).json({ error: 'Invalid status (must be "owned")' });
+      }
+
+      try {
+        const added = await datamapper.markAllCardsOwned({ explorerId });
+        return res.status(200).json({ ok: true, added });
+      } catch (error) {
+        return next(error);
+      }
+    },
 };
 
 module.exports = cardController;

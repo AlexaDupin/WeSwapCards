@@ -1030,6 +1030,22 @@ module.exports = {
         
           await client.query(preparedQuery);
     },
+    // Adds every card the explorer does not have yet as owned. Cards already
+    // logged (owned or duplicated) are left untouched, so duplicates survive.
+    async markAllCardsOwned({ explorerId }) {
+        const preparedQuery = {
+            text: `
+              INSERT INTO explorer_has_cards (explorer_id, card_id, duplicate)
+              SELECT $1, c.id, FALSE
+              FROM card c
+              ON CONFLICT (explorer_id, card_id) DO NOTHING
+            `,
+            values: [explorerId],
+        };
+
+        const result = await client.query(preparedQuery);
+        return result.rowCount;
+    },
     async getLatestChapters(limitFromQuery) {
         const parsed = parseInt(limitFromQuery, 10);
         const limit = Number.isInteger(parsed) && parsed > 0 ? Math.min(parsed, 12) : 4;
