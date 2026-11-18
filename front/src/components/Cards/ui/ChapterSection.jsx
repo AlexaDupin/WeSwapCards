@@ -19,16 +19,15 @@ function ChapterSection({
 }) {
   return (
     <section id={getChapterDomId(chapterId)} className="chapter">
-      <div className="d-flex align-items-center justify-content-between mb-2">
+      {/* The + sits right after the name, so it reads as "add this chapter". */}
+      <div className="d-flex align-items-center gap-1 mb-2">
         <h2 className="chapter-title m-0">{chapterName}</h2>
-  
-        <div className="d-flex align-items-center gap-2">
-          <ChapterKebabMenu
-            disabled={isPending}
-            onMarkAllOwned={() => onMarkAllOwned?.(chapterId)}
-            onMarkAllDuplicated={() => onMarkAllDuplicated?.(chapterId)}
-          />
-        </div>
+
+        <ChapterKebabMenu
+          disabled={isPending}
+          onMarkAllOwned={() => onMarkAllOwned?.(chapterId)}
+          onMarkAllDuplicated={() => onMarkAllDuplicated?.(chapterId)}
+        />
       </div>
 
       <ProgressBar

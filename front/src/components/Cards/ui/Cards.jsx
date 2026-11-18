@@ -2,7 +2,7 @@ import React, { useRef, useState, useMemo, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { useClerk } from "@clerk/clerk-react";
 import PageContainer from '../../PageContainer/PageContainer';
-import { Spinner, Alert, Button } from "react-bootstrap";
+import { Spinner, Alert } from "react-bootstrap";
 import './cardsStyles.scss';
 import ScrollToTop from '../../ScrollToTopButton/ScrollToTop';
 
@@ -10,16 +10,14 @@ import useChapterBuckets from "../hooks/useChapterBuckets";
 import useCardsLogic from '../hooks/useCardsLogic';
 import useStickyVars from "../../../hooks/useStickyVars";
 import ChaptersList from "./ChaptersList";
-import EmptyChaptersHint from "./EmptyChaptersHint";
 
 import useAZIndex from "../hooks/useAZIndex";
 import AZNav from "./AZNav";
 
-import MissingCardsToggle from "./MissingCardsToggle";
 import LatestFirstToggle from "./LatestFirstToggle";
 import { InfoCircle } from "react-bootstrap-icons";
 import CardsHelpModal from "./CardsHelpModal";
-import CardsPageMenu from "./CardsPageMenu";
+import MarkAllOwnedButton from "./MarkAllOwnedButton";
 import NewCollectorBanner from "./NewCollectorBanner";
 import MarkAllOwnedModal from "./MarkAllOwnedModal";
 
@@ -45,23 +43,14 @@ function Cards() {
   } = useCardsLogic();
   const { chaptersData } = useChapterBuckets(state.chapters, state.cards, state.cardStatuses);
 
-  const [showMissingOnly, setShowMissingOnly] = useState(false);
   const [latestFirst, setLatestFirst] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showMarkAllConfirm, setShowMarkAllConfirm] = useState(false);
 
-  const visibleChaptersData = useMemo(() => {
-    if (!showMissingOnly) return chaptersData;
-    return chaptersData.filter(({ cards, ownedOrDuplicatedCount }) => {
-      const missingCardsCount = cards.length - ownedOrDuplicatedCount;
-      return missingCardsCount > 0;
-    });
-  }, [chaptersData, showMissingOnly]);
- 
   const sortedChaptersData = useMemo(() => {
-    if (!latestFirst) return visibleChaptersData;
-  
-    const sortedCopy = [...visibleChaptersData];
+    if (!latestFirst) return chaptersData;
+
+    const sortedCopy = [...chaptersData];
     sortedCopy.sort((chapterA, chapterB) => {
       const chapterAId = toNumericId(chapterA.chapterId);
       const chapterBId = toNumericId(chapterB.chapterId);
@@ -69,7 +58,7 @@ function Cards() {
     });
   
     return sortedCopy;
-  }, [visibleChaptersData, latestFirst]);
+  }, [chaptersData, latestFirst]);
 
   const chaptersForAZ = useMemo(
     () =>
@@ -114,25 +103,25 @@ function Cards() {
         <div className="d-flex align-items-center gap-2 mb-3">
           <h1 className="page-title mb-0">My cards</h1>
 
-          <Button
-              variant="link"
-              className="p-0 ms-1 align-baseline"
-              onClick={() => setShowHelp(true)}
-              aria-label="How it works"
-              title="How it works"
-            >
-              <InfoCircle />
-              <span className="visually-hidden">How it works</span>
-          </Button>
+          {/* A plain button, not Bootstrap's link button, whose blue would
+              override the grey of .cards-header-icon. */}
+          <button
+            type="button"
+            className="cards-header-icon cards-header-icon--info ms-1"
+            onClick={() => setShowHelp(true)}
+            aria-label="How it works"
+            title="How it works"
+          >
+            <InfoCircle aria-hidden="true" />
+          </button>
         </div>
 
         <div className="d-flex align-items-center gap-2">
-          <LatestFirstToggle checked={latestFirst} onChange={setLatestFirst} />
-          <MissingCardsToggle checked={showMissingOnly} onChange={setShowMissingOnly} />
-          <CardsPageMenu
-            onMarkAllCardsOwned={onMarkAllCardsOwned}
+          <MarkAllOwnedButton
+            onClick={onMarkAllCardsOwned}
             disabled={isLoading || isMarkingAllOwned}
           />
+          <LatestFirstToggle checked={latestFirst} onChange={setLatestFirst} />
         </div>
       </div>
 
@@ -180,21 +169,17 @@ function Cards() {
         />
       </section>
       
-      {sortedChaptersData.length === 0 ? (
-        <EmptyChaptersHint onClearFilter={() => setShowMissingOnly(false)} />
-      ) : (
-        <ChaptersList
-          chaptersData={sortedChaptersData}
-          getChapterDomId={getChapterDomId}
-          onSelectCard={onSelectCard}
-          onResetCard={onResetCard}
-          statuses={state.cardStatuses}
-          onMarkAllOwned={onMarkAllOwned}
-          onMarkAllDuplicated={onMarkAllDuplicated}
-          isChapterPending={isChapterPending}
-          readOnly={isPublic}
-        />
-      )}
+      <ChaptersList
+        chaptersData={sortedChaptersData}
+        getChapterDomId={getChapterDomId}
+        onSelectCard={onSelectCard}
+        onResetCard={onResetCard}
+        statuses={state.cardStatuses}
+        onMarkAllOwned={onMarkAllOwned}
+        onMarkAllDuplicated={onMarkAllDuplicated}
+        isChapterPending={isChapterPending}
+        readOnly={isPublic}
+      />
       </>
       )}
 

@@ -30,9 +30,10 @@
   }
 
   .chapter-kebab .dropdown-toggle::after { display: none !important; } // hides the arrow
+  // Same solid grey as the info icon in the header.
   .chapter-kebab .dropdown-toggle {
-    opacity: 0.75;
-    &:hover, &:focus { opacity: 1; }
+    color: rgba(0, 0, 0, 0.45);
+    &:hover, &:focus { color: rgba(0, 0, 0, 0.7); }
   }
 
   .cards-list {
@@ -155,4 +156,145 @@
   margin: 1rem 0 0;
   text-align: center;
   font-size: 0.95rem;
+}
+// Header icons: the grey info icon next to "My cards" and the blue + before
+// the A–Z / Latest toggle that marks every card as owned. Same size.
+.cards-header-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.45);
+  text-decoration: none;
+
+  &:hover, &:focus-visible { color: rgba(0, 0, 0, 0.7); }
+  &:disabled { opacity: 0.35; }
+
+  // The info icon next to the title sits a little smaller than the +.
+  &--info { font-size: 1.05rem; }
+}
+
+// "A–Z | Latest" sort control, matching the mobile SegmentedToggle.
+.sort-toggle {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+
+  &__option {
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    // Transparent border on every option so selecting one doesn't shift layout.
+    border: 1.5px solid transparent;
+    background: transparent;
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: rgba(52, 64, 84, 0.7);
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+
+    &:hover { color: #344054; }
+
+    &:focus-visible {
+      outline: 2px solid var(--bs-primary);
+      outline-offset: 1px;
+    }
+
+    &--active {
+      background: #fff;
+      border-color: var(--bs-primary);
+      color: var(--bs-primary);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+
+      &:hover { color: var(--bs-primary); }
+    }
+  }
+}
+
+// Blue like the active A–Z / Latest option (Bootstrap primary).
+.mark-all-owned-button {
+  color: var(--bs-primary);
+
+  &:hover, &:focus-visible { color: var(--bs-link-hover-color, #0a58ca); }
+}
+
+// "Mark all cards as owned" confirmation. Rendered in a portal, so it is
+// styled at the top level rather than under .cards-page.
+.mark-all-modal {
+  border: 0;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+
+  .modal-body {
+    padding: 1.5rem 1.25rem 1rem;
+    text-align: center;
+  }
+
+  &__icon {
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto 0.75rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: var(--bs-primary);
+    background: rgba(var(--bs-primary-rgb), 0.08);
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  &__emphasis {
+    color: var(--bs-primary);
+  }
+
+  &__text {
+    color: #55595f;
+    margin-bottom: 0.5rem;
+
+    strong { color: #1e2024; }
+  }
+
+  &__reminder {
+    text-align: left;
+    margin: 1rem 0 1.25rem;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    background: #f6f2ed;
+
+    ul {
+      margin: 0;
+      padding-left: 1.1rem;
+    }
+  }
+
+  &__reminder-title {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  &__confirm {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 12px;
+    font-weight: 700;
+  }
+
+  &__cancel {
+    width: 100%;
+    margin-top: 0.25rem;
+    color: #55595f;
+    text-decoration: none;
+
+    &:hover, &:focus-visible { color: #1e2024; }
+  }
 }

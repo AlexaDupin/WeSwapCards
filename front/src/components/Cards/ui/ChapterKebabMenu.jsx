@@ -1,12 +1,14 @@
 import React from "react";
 import { Dropdown } from "react-bootstrap";
-import { ThreeDotsVertical } from "react-bootstrap-icons";
+import { PlusCircle } from "react-bootstrap-icons";
 import PropTypes from "prop-types";
 import './cardsStyles.scss';
 
+// Grey + next to the chapter name: the same sign as the blue page-level
+// "mark all owned" button, since both add cards in bulk.
 export default function ChapterKebabMenu({ onMarkAllOwned, onMarkAllDuplicated, disabled = false, }) {
   return (
-    <Dropdown align="end" className="chapter-kebab">
+    <Dropdown align="start" className="chapter-kebab">
       <Dropdown.Toggle
         as="button"
         className="btn p-0 border-0 bg-transparent"
@@ -14,7 +16,7 @@ export default function ChapterKebabMenu({ onMarkAllOwned, onMarkAllDuplicated, 
         style={{ lineHeight: 0, width: 32, height: 32 }}
         disabled={disabled}
       >
-        <ThreeDotsVertical size={18} />
+        <PlusCircle size={18} />
       </Dropdown.Toggle>
 
       <Dropdown.Menu>

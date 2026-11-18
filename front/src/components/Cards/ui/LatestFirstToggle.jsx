@@ -1,17 +1,35 @@
 import React from "react";
 import PropTypes from "prop-types";
+import './cardsStyles.scss';
 
+const OPTIONS = [
+  { latest: false, label: "A–Z" },
+  { latest: true, label: "Latest" },
+];
+
+// "A–Z | Latest" segmented control, matching the mobile app's SegmentedToggle:
+// a grey track, and the selected option as a white pill with a blue border.
 export default function LatestFirstToggle({ checked, onChange }) {
   return (
-    <button
-      type="button"
-      className={`btn btn-sm rounded-pill ${checked ? "btn-primary" : "btn-outline-primary"}`}
-      onClick={() => onChange(!checked)}
-      aria-pressed={checked}
-      aria-label="Toggle latest-first sorting"
-    >
-      {checked ? "Latest first" : "Sort By Latest"}
-    </button>
+    <div className="sort-toggle" role="radiogroup" aria-label="Sort chapters">
+      {OPTIONS.map(({ latest, label }) => {
+        const active = checked === latest;
+        return (
+          <button
+            key={label}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            className={`sort-toggle__option${active ? " sort-toggle__option--active" : ""}`}
+            onClick={() => {
+              if (!active) onChange(latest);
+            }}
+          >
+            {label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 

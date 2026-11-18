@@ -24,9 +24,16 @@ describe('MarkAllOwnedModal', () => {
       <MarkAllOwnedModal show cardCount={412} onConfirm={onConfirm} onHide={onHide} />,
     );
 
-    expect(screen.getByText(/All 412 cards in every chapter/)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Mark ALL cards as owned?' })).toBeInTheDocument();
+    expect(screen.getByText('ALL')).toHaveClass('mark-all-modal__emphasis');
+    expect(screen.getByText('All 412 cards').tagName).toBe('STRONG');
+    expect(screen.getByText(/in every chapter will be marked as owned/)).toBeInTheDocument();
     expect(screen.getByText(/including your duplicates, stay as they are/)).toBeInTheDocument();
-    expect(screen.getByText(/tap your duplicates again/)).toBeInTheDocument();
+    expect(
+      screen.getByText('Remember, you will still need to check all your cards:'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Remove the ones you’re missing')).toBeInTheDocument();
+    expect(screen.getByText('Tap your duplicates again to mark them')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Mark all as owned' }));
     expect(onConfirm).toHaveBeenCalledTimes(1);
