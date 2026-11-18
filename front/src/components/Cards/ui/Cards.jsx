@@ -43,7 +43,8 @@ function Cards() {
   } = useCardsLogic();
   const { chaptersData } = useChapterBuckets(state.chapters, state.cards, state.cardStatuses);
 
-  const [latestFirst, setLatestFirst] = useState(false);
+  // Latest first by default, like the mobile app.
+  const [latestFirst, setLatestFirst] = useState(true);
   const [showHelp, setShowHelp] = useState(false);
   const [showMarkAllConfirm, setShowMarkAllConfirm] = useState(false);
 
